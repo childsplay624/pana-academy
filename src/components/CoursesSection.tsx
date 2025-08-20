@@ -1,114 +1,103 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Clock, Users, BarChart, ArrowRight } from "lucide-react";
+import { Clock, Users, ArrowRight, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
-
-const courses = [
-  {
-    id: 1,
-    title: "Advanced Project Management",
-    description: "Master project management methodologies and tools to deliver projects on time and within budget.",
-    duration: "8 weeks",
-    students: "1200+",
-    level: "Advanced",
-    category: "Leadership"
-  },
-  {
-    id: 2,
-    title: "Digital Transformation Strategy",
-    description: "Learn to lead digital transformation initiatives and drive innovation in your organization.",
-    duration: "6 weeks",
-    students: "850+",
-    level: "Intermediate",
-    category: "Digital"
-  },
-  {
-    id: 3,
-    title: "Renewable Energy Fundamentals",
-    description: "Gain a comprehensive understanding of renewable energy technologies and their applications.",
-    duration: "4 weeks",
-    students: "1500+",
-    level: "Beginner",
-    category: "Energy"
-  },
-  {
-    id: 4,
-    title: "Data Analytics for Business",
-    description: "Develop data-driven decision making skills using modern analytics tools and techniques.",
-    duration: "10 weeks",
-    students: "2000+",
-    level: "Intermediate",
-    category: "Digital"
-  },
-  {
-    id: 5,
-    title: "Leadership in Tech",
-    description: "Develop leadership skills specifically tailored for technology-driven environments.",
-    duration: "6 weeks",
-    students: "950+",
-    level: "Advanced",
-    category: "Leadership"
-  },
-  {
-    id: 6,
-    title: "Oil & Gas Operations",
-    description: "Comprehensive overview of upstream, midstream, and downstream operations in the oil and gas industry.",
-    duration: "8 weeks",
-    students: "1750+",
-    level: "Intermediate",
-    category: "Energy"
-  }
-];
+import { fetchAllCourses } from "@/services/courseService";
+import type { Course } from "@/services/courseService";
 
 const CoursesSection = ({ showAll = false }) => {
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadCourses = async () => {
+      try {
+        const data = await fetchAllCourses();
+        setCourses(data);
+      } catch (err) {
+        console.error('Error loading courses:', err);
+        setError('Failed to load courses. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCourses();
+  }, []);
+
   const displayCourses = showAll ? courses : courses.slice(0, 4);
 
   return (
-    <section id="courses" className="py-20 bg-gray-50">
+    <section className={`py-12 ${!showAll ? 'bg-gray-50' : ''}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-pana-navy mb-4">Our Courses</h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Explore our comprehensive range of professional development programs
-          </p>
-        </div>
+        {!showAll && (
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Featured Courses</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Explore our most popular professional development programs
+            </p>
+          </div>
+        )}
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {displayCourses.map((course) => (
-            <Card key={course.id} className="group overflow-hidden hover:shadow-lg transition-shadow duration-300">
-              <div className="h-2 bg-gradient-to-r from-pana-navy to-pana-blue"></div>
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <span className="inline-block px-3 py-1 text-xs font-semibold text-pana-navy bg-pana-light-gray rounded-full mb-2">
-                      {course.category}
-                    </span>
-                    <CardTitle className="text-xl">{course.title}</CardTitle>
-                  </div>
-                  <span className="text-xs font-medium px-2 py-1 bg-pana-gold/10 text-pana-gold rounded">
-                    {course.level}
-                  </span>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">{course.description}</p>
-                <div className="flex items-center justify-between text-sm text-muted-foreground mt-4 pt-4 border-t border-border">
-                  <div className="flex items-center space-x-2">
-                    <Clock className="w-4 h-4" />
-                    <span>{course.duration}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Users className="w-4 h-4" />
-                    <span>{course.students}</span>
-                  </div>
-                  <Button variant="outline" size="sm" className="text-xs">
-                    Enroll Now
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+{loading ? (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-pana-blue" />
+          </div>
+        ) : error ? (
+          <div className="text-center py-12 text-red-600">{error}</div>
+        ) : displayCourses.length === 0 ? (
+          <div className="text-center py-12 text-gray-500">No courses found.</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {displayCourses.map((course) => (
+              <Link to={`/courses/${course.id}`} key={course.id} className="block h-full">
+                <Card className="h-full flex flex-col hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                  {course.thumbnail_url ? (
+                    <img 
+                      src={course.thumbnail_url} 
+                      alt={course.title}
+                      className="h-48 w-full object-cover rounded-t-lg"
+                    />
+                  ) : (
+                    <div className="h-48 bg-gradient-to-r from-pana-blue to-pana-navy rounded-t-lg"></div>
+                  )}
+                  <CardHeader>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <CardTitle className="text-xl">{course.title}</CardTitle>
+                        <p className="text-sm text-gray-500 mt-1 capitalize">{course.category?.replace('_', ' ')}</p>
+                      </div>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-pana-gold/20 text-amber-800">
+                        {course.level}
+                      </span>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <p className="text-gray-600 mb-4 line-clamp-3">{course.description}</p>
+                    <div className="flex items-center text-sm text-gray-500 space-x-4 mt-auto">
+                      <div className="flex items-center">
+                        <Users className="h-4 w-4 mr-1" />
+                        <span>{course.students_count || 0} students</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <div className="w-full flex justify-between items-center">
+                      <div className="text-sm font-medium">
+                        {course.price ? `₦${course.price.toLocaleString()}` : 'Free'}
+                      </div>
+                      <Button variant="link" className="text-pana-blue hover:text-pana-navy p-0">
+                        Learn more <ArrowRight className="ml-1 h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardFooter>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        )}
 
         {!showAll && (
           <div className="text-center mt-12">

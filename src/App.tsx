@@ -23,11 +23,13 @@ import Help from "./pages/student/Help";
 import CourseLearning from "./pages/CourseLearning";
 import PublicCoursesPage from "./pages/PublicCoursesPage";
 import CoursesPage from "./pages/CoursesPage";
+import CourseDetails from "./pages/course/CourseDetails";
 import { CourseEditor } from "./components/course-management/CourseEditor";
 import CourseCreator from "./components/course-management/CourseCreator";
 import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/NotFound";
 import VerifyCertificate from "./pages/VerifyCertificate";
+import TestPage from "./pages/TestPage";
 
 const queryClient = new QueryClient();
 
@@ -41,7 +43,9 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/courses" element={<PublicCoursesPage />} />
+            <Route path="/courses/:id" element={<CourseDetails />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/test" element={<TestPage />} />
             <Route path="/verify-certificate" element={<VerifyCertificate />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
             <Route 

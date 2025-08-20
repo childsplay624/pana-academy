@@ -123,8 +123,8 @@ export default function CourseCreator() {
             status: updatedCourse.status,
             thumbnail_url: updatedCourse.thumbnail_url,
             course_type: updatedCourse.course_type,
-            zoom_meeting_id: updatedCourse.zoom_meeting_id,
-            scheduled_date: updatedCourse.scheduled_date
+            zoom_meeting_id: updatedCourse.zoom_meeting_id || null,
+            scheduled_date: updatedCourse.scheduled_date || null
           })
           .eq('id', courseId);
 
@@ -149,8 +149,8 @@ export default function CourseCreator() {
             thumbnail_url: updatedCourse.thumbnail_url,
             instructor_id: user.id,
             course_type: updatedCourse.course_type,
-            zoom_meeting_id: updatedCourse.zoom_meeting_id,
-            scheduled_date: updatedCourse.scheduled_date
+            zoom_meeting_id: updatedCourse.zoom_meeting_id || null,
+            scheduled_date: updatedCourse.scheduled_date || null
           })
           .select()
           .single();

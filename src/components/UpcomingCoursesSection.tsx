@@ -213,14 +213,25 @@ export default function UpcomingCoursesSection() {
                       <Users className="w-4 h-4" />
                       <span>{course.enrolled_count}+</span>
                     </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="text-xs"
-                      onClick={() => user ? handleEnroll(course.id) : window.location.href = '/auth'}
-                    >
-                      Enroll Now
-                    </Button>
+                    <div className="flex space-x-2">
+                      <Link to={`/courses/${course.id}`}>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="text-xs"
+                        >
+                          View Details
+                        </Button>
+                      </Link>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="text-xs bg-pana-navy text-white hover:bg-pana-navy/90"
+                        onClick={() => user ? handleEnroll(course.id) : window.location.href = '/auth'}
+                      >
+                        Enroll Now
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

@@ -144,11 +144,22 @@ const TestimonialsSection = () => {
         {/* Client Logos Grid */}
         <div className="text-center">
           <h3 className="text-xl font-semibold text-white mb-8">Trusted by Industry Leaders</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center opacity-70">
-            {['Shell', 'Total', 'Chevron', 'NNPC', 'Access Bank', 'MTN'].map((company, index) => (
-              <div key={index} className="text-center">
-                <div className="bg-white/20 rounded-lg p-4 h-16 flex items-center justify-center mb-2">
-                  <span className="text-white font-semibold text-sm">{company}</span>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 items-center">
+            {[
+              { name: 'Shell', logo: '/shell.png' },
+              { name: 'Total', logo: '/total.png' },
+              { name: 'Chevron', logo: '/chevron.png' },
+              { name: 'NNPC', logo: '/nnpc.png' },
+              { name: 'Access Bank', logo: '/access-bank.png' },
+              { name: 'MTN', logo: '/mtn.png' }
+            ].map((company, index) => (
+              <div key={index} className="flex justify-center p-2">
+                <div className="bg-white/5 hover:bg-white/10 rounded-lg p-4 w-full h-24 flex items-center justify-center transition-all duration-300">
+                  <img 
+                    src={company.logo} 
+                    alt={company.name}
+                    className="max-h-12 max-w-full object-contain filter brightness-0 invert opacity-80 hover:opacity-100 transition-opacity"
+                  />
                 </div>
               </div>
             ))}
