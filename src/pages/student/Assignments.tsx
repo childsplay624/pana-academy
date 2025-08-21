@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAssignments } from '@/hooks';
 import { 
   FileText, 
   Clock, 
@@ -15,49 +16,14 @@ import {
   Download,
   Search,
   Filter,
-  Eye
+  Eye,
+  Loader2
 } from 'lucide-react';
-
-// Mock assignments data
-const mockAssignments = [
-  {
-    id: '1',
-    title: 'React Component Analysis',
-    courseName: 'React Fundamentals',
-    dueDate: '2024-01-25',
-    status: 'pending',
-    submittedAt: null,
-    grade: null,
-    maxScore: 100,
-    description: 'Analyze the provided React components and identify optimization opportunities.'
-  },
-  {
-    id: '2',
-    title: 'TypeScript Interface Design',
-    courseName: 'Advanced TypeScript',
-    dueDate: '2024-01-20',
-    status: 'submitted',
-    submittedAt: '2024-01-19',
-    grade: 85,
-    maxScore: 100,
-    description: 'Design TypeScript interfaces for a complex e-commerce system.'
-  },
-  {
-    id: '3',
-    title: 'State Management Implementation',
-    courseName: 'React Fundamentals',
-    dueDate: '2024-01-15',
-    status: 'graded',
-    submittedAt: '2024-01-14',
-    grade: 92,
-    maxScore: 100,
-    description: 'Implement a state management solution for the provided application.'
-  }
-];
 
 export default function Assignments() {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('all');
+  const { assignments, loading, error, getAssignmentsByStatus, getStats } = useAssignments();
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -77,24 +43,44 @@ export default function Assignments() {
     }
   };
 
-  const filteredAssignments = mockAssignments.filter(assignment => {
+  const getAssignmentStatus = (assignment: any) => {
+    if (!assignment.submission) return 'pending';
+    return assignment.submission.status;
+  };
+
+  const filteredAssignments = getAssignmentsByStatus(activeTab as any).filter(assignment => {
     const matchesSearch = assignment.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         assignment.courseName.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    if (activeTab === 'all') return matchesSearch;
-    return matchesSearch && assignment.status === activeTab;
+                         assignment.course_title.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesSearch;
   });
 
-  const stats = {
-    total: mockAssignments.length,
-    pending: mockAssignments.filter(a => a.status === 'pending').length,
-    submitted: mockAssignments.filter(a => a.status === 'submitted').length,
-    graded: mockAssignments.filter(a => a.status === 'graded').length,
-    avgGrade: mockAssignments
-      .filter(a => a.grade !== null)
-      .reduce((sum, a) => sum + (a.grade || 0), 0) / 
-      mockAssignments.filter(a => a.grade !== null).length || 0
-  };
+  const stats = getStats();
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="p-6 md:p-8 max-w-7xl mx-auto">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <Loader2 className="h-8 w-8 animate-spin" />
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <DashboardLayout>
+        <div className="p-6 md:p-8 max-w-7xl mx-auto">
+          <Card className="p-6 text-center">
+            <AlertCircle className="h-16 w-16 text-destructive mx-auto mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Error loading assignments</h3>
+            <p className="text-muted-foreground">{error}</p>
+          </Card>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -117,48 +103,48 @@ export default function Assignments() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <Card>
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Total</p>
                   <p className="text-2xl font-bold">{stats.total}</p>
                 </div>
-                <FileText className="h-8 w-8 text-blue-500" />
+                <FileText className="h-8 w-8 text-primary/60" />
               </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Pending</p>
                   <p className="text-2xl font-bold">{stats.pending}</p>
                 </div>
-                <AlertCircle className="h-8 w-8 text-red-500" />
+                <AlertCircle className="h-8 w-8 text-destructive/60" />
               </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Submitted</p>
                   <p className="text-2xl font-bold">{stats.submitted}</p>
                 </div>
-                <Clock className="h-8 w-8 text-orange-500" />
+                <Clock className="h-8 w-8 text-secondary-foreground/60" />
               </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Avg Grade</p>
                   <p className="text-2xl font-bold">{Math.round(stats.avgGrade)}%</p>
                 </div>
-                <CheckCircle className="h-8 w-8 text-green-500" />
+                <CheckCircle className="h-8 w-8 text-primary/60" />
               </div>
             </CardContent>
           </Card>
@@ -200,31 +186,33 @@ export default function Assignments() {
                         <div className="flex items-start justify-between">
                           <div>
                             <h3 className="text-lg font-semibold">{assignment.title}</h3>
-                            <p className="text-sm text-muted-foreground">{assignment.courseName}</p>
+                            <p className="text-sm text-muted-foreground">{assignment.course_title} • {assignment.lesson_title}</p>
                           </div>
-                          <Badge variant={getStatusColor(assignment.status)} className="flex items-center gap-1">
-                            {getStatusIcon(assignment.status)}
-                            {assignment.status.charAt(0).toUpperCase() + assignment.status.slice(1)}
+                          <Badge variant={getStatusColor(getAssignmentStatus(assignment))} className="flex items-center gap-1">
+                            {getStatusIcon(getAssignmentStatus(assignment))}
+                            {getAssignmentStatus(assignment).charAt(0).toUpperCase() + getAssignmentStatus(assignment).slice(1)}
                           </Badge>
                         </div>
 
-                        <p className="text-sm text-muted-foreground">{assignment.description}</p>
+                        <p className="text-sm text-muted-foreground">{assignment.description || 'No description available'}</p>
 
                         <div className="flex items-center gap-6 text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="h-4 w-4" />
-                            <span>Due: {new Date(assignment.dueDate).toLocaleDateString()}</span>
-                          </div>
-                          {assignment.submittedAt && (
+                          {assignment.due_date && (
                             <div className="flex items-center gap-1">
-                              <Upload className="h-4 w-4" />
-                              <span>Submitted: {new Date(assignment.submittedAt).toLocaleDateString()}</span>
+                              <Calendar className="h-4 w-4" />
+                              <span>Due: {new Date(assignment.due_date).toLocaleDateString()}</span>
                             </div>
                           )}
-                          {assignment.grade !== null && (
+                          {assignment.submission?.submitted_at && (
+                            <div className="flex items-center gap-1">
+                              <Upload className="h-4 w-4" />
+                              <span>Submitted: {new Date(assignment.submission.submitted_at).toLocaleDateString()}</span>
+                            </div>
+                          )}
+                          {assignment.submission?.score !== null && assignment.submission?.score !== undefined && (
                             <div className="flex items-center gap-1">
                               <CheckCircle className="h-4 w-4" />
-                              <span>Grade: {assignment.grade}/{assignment.maxScore}</span>
+                              <span>Grade: {assignment.submission.score}/{assignment.max_score || 100}</span>
                             </div>
                           )}
                         </div>
@@ -235,13 +223,13 @@ export default function Assignments() {
                           <Eye className="h-4 w-4 mr-2" />
                           View
                         </Button>
-                        {assignment.status === 'pending' && (
+                        {getAssignmentStatus(assignment) === 'pending' && (
                           <Button size="sm">
                             <Upload className="h-4 w-4 mr-2" />
                             Submit
                           </Button>
                         )}
-                        {assignment.status === 'graded' && (
+                        {getAssignmentStatus(assignment) === 'graded' && (
                           <Button size="sm" variant="outline">
                             <Download className="h-4 w-4 mr-2" />
                             Download

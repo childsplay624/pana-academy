@@ -1,4 +1,4 @@
-import { Mail, Phone, MapPin, ArrowRight } from "lucide-react";
+import { Mail, Phone, MapPin, ArrowRight, Instagram, Linkedin, Facebook } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -58,6 +58,19 @@ const Footer = () => {
                 <div className="flex items-center space-x-3">
                   <MapPin className="w-4 h-4 text-pana-gold" />
                   <span className="text-sm">Abuja & Port Harcourt</span>
+                </div>
+                <div className="pt-4">
+                  <div className="flex space-x-4">
+                    <a href="https://www.instagram.com/pana_academy/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-pana-gold transition-colors">
+                      <Instagram className="h-5 w-5" />
+                    </a>
+                    <a href="https://www.linkedin.com/company/pana-academy/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-pana-gold transition-colors">
+                      <Linkedin className="h-5 w-5" />
+                    </a>
+                    <a href="https://www.facebook.com/profile.php?id=61555861660075" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-pana-gold transition-colors">
+                      <Facebook className="h-5 w-5" />
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
