@@ -5,13 +5,16 @@ import { useStudentData } from '@/hooks/useStudentData';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { 
   BookOpen, Award, Calendar, Clock, TrendingUp, 
   AlertCircle, Info, Target, CheckCircle, ChevronRight, 
   Plus, Trophy, RefreshCw, FileText, Video, FileCode, 
   AlertTriangle, Download, Play, Code, Settings, 
-  BarChart3, Flame, Activity, FileType, Eye
+  BarChart3, Flame, Activity, FileType, Eye, CalendarDays, X
 } from 'lucide-react';
+import { SetGoals } from '@/components/dashboard/SetGoals';
+import { StudySchedule } from '@/components/dashboard/StudySchedule';
 import { CourseCard } from '@/components/dashboard/CourseCard';
 import { ContinueLearning } from '@/components/ContinueLearning';
 import { DashboardLayout } from '@/components/DashboardLayout';
@@ -139,6 +142,8 @@ const DashboardError = ({ onRetry }: { onRetry: () => void }) => (
 );
 
 export default function StudentDashboard() {
+  const [goalsDialogOpen, setGoalsDialogOpen] = useState(false);
+  const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
   const { profile, signOut } = useAuth();
   const { 
     isLoading, 
@@ -346,14 +351,47 @@ export default function StudentDashboard() {
                     <span className="text-xs">No Certificates</span>
                   </Button>
                 )}
-                <Button variant="outline" className="h-20 flex flex-col gap-2" size="sm">
-                  <Calendar className="h-5 w-5" />
-                  <span className="text-xs">Study Schedule</span>
-                </Button>
-                <Button variant="outline" className="h-20 flex flex-col gap-2" size="sm">
-                  <Target className="h-5 w-5" />
-                  <span className="text-xs">Set Goals</span>
-                </Button>
+                <Dialog open={scheduleDialogOpen} onOpenChange={setScheduleDialogOpen}>
+                  <Button 
+                    variant="outline" 
+                    className="h-20 flex flex-col gap-2" 
+                    size="sm"
+                    type="button"
+                    onClick={() => setScheduleDialogOpen(true)}
+                  >
+                    <CalendarDays className="h-5 w-5" />
+                    <span className="text-xs">Study Schedule</span>
+                  </Button>
+                  <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Study Schedule</DialogTitle>
+                    </DialogHeader>
+                    <div className="p-4">
+                      <StudySchedule />
+                    </div>
+                  </DialogContent>
+                </Dialog>
+
+                <Dialog open={goalsDialogOpen} onOpenChange={setGoalsDialogOpen}>
+                  <Button 
+                    variant="outline" 
+                    className="h-20 flex flex-col gap-2" 
+                    size="sm"
+                    type="button"
+                    onClick={() => setGoalsDialogOpen(true)}
+                  >
+                    <Target className="h-5 w-5" />
+                    <span className="text-xs">Set Goals</span>
+                  </Button>
+                  <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Set Learning Goals</DialogTitle>
+                    </DialogHeader>
+                    <div className="p-4">
+                      <SetGoals />
+                    </div>
+                  </DialogContent>
+                </Dialog>
                 <Button variant="outline" className="h-20 flex flex-col gap-2" size="sm" asChild>
                   <Link to="/dashboard/progress">
                     <BarChart3 className="h-5 w-5" />
@@ -362,6 +400,7 @@ export default function StudentDashboard() {
                 </Button>
               </div>
             </div>
+
 
             {/* Learning Resources */}
             <div className="mb-8">
