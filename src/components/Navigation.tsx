@@ -8,9 +8,11 @@ import Logo from './Logo';
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [isHovering, setIsHovering] = useState(false);
   const { user, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  let closeTimer: NodeJS.Timeout;
 
   // Close mobile menu when route changes
   useEffect(() => {
@@ -58,6 +60,27 @@ const Navigation = () => {
     setIsOpen(false);
   };
 
+  const handleDropdownEnter = (dropdownName: string) => {
+    clearTimeout(closeTimer);
+    setActiveDropdown(dropdownName.toLowerCase());
+    setIsHovering(true);
+  };
+
+  const handleDropdownLeave = () => {
+    setIsHovering(false);
+    closeTimer = setTimeout(() => {
+      setActiveDropdown(null);
+    }, 300); // 300ms delay before closing
+  };
+
+  const handleDropdownClick = (e: React.MouseEvent<HTMLAnchorElement>, dropdownName: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const newDropdown = activeDropdown === dropdownName.toLowerCase() ? null : dropdownName.toLowerCase();
+    setActiveDropdown(newDropdown);
+    return false;
+  };
+
   const navItems = [
     { 
       name: "Home", 
@@ -65,14 +88,30 @@ const Navigation = () => {
       onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleNavigation(e, "/")
     },    
     { 
-      name: "About Us", 
+      name: "About Us",
       href: "#about",
-      onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleNavigation(e, "#about")
+      onMouseEnter: () => handleDropdownEnter('about'),
+      onMouseLeave: handleDropdownLeave,
+      onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleDropdownClick(e, 'about'),
+      dropdown: [
+        { 
+          name: "About", 
+          href: "#about",
+          onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleNavigation(e, "#about")
+        },
+        { 
+          name: "Our Team", 
+          href: "/team",
+          onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleNavigation(e, "/team")
+        }
+      ]
     },
     { 
       name: "Services", 
       href: "#services",
-      onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleNavigation(e, "#services"),
+      onMouseEnter: () => handleDropdownEnter('services'),
+      onMouseLeave: handleDropdownLeave,
+      onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleDropdownClick(e, 'services'),
       dropdown: [
         { 
           name: "Training Programs", 
@@ -88,6 +127,11 @@ const Navigation = () => {
           name: "Research & Development", 
           href: "#research",
           onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleNavigation(e, "#research")
+        },
+        { 
+          name: "Training Delivery", 
+          href: "/training-delivery",
+          onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleNavigation(e, "/training-delivery")
         }
       ]
     },
@@ -108,6 +152,73 @@ const Navigation = () => {
     }
   ];
 
+  const renderDesktopNav = () => (
+    <nav className="hidden md:flex items-center space-x-1">
+      {navItems.map((item) => (
+        <div 
+          key={item.name} 
+          className="relative group"
+          onMouseEnter={() => item.onMouseEnter?.()}
+          onMouseLeave={() => item.onMouseLeave?.()}
+        >
+          <div className="relative">
+            <a 
+              href={item.href} 
+              className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-md ${
+                location.pathname === item.href || 
+                (item.href.startsWith('#') && location.pathname === '/' && location.hash === item.href)
+                  ? 'text-primary'
+                  : 'text-foreground/60 hover:text-foreground/80 hover:bg-gray-100'
+              }`}
+              onClick={(e) => {
+                if (item.dropdown) {
+                  e.preventDefault();
+                  handleDropdownClick(e, item.name);
+                } else {
+                  item.onClick?.(e as any);
+                }
+              }}
+            >
+              {item.name}
+              {item.dropdown && (
+                <ChevronDown 
+                  className={`ml-1 h-4 w-4 transition-transform ${
+                    activeDropdown === item.name.toLowerCase() ? 'rotate-180' : ''
+                  }`} 
+                />
+              )}
+            </a>
+          </div>      
+          {item.dropdown && (
+            <div 
+              className={`absolute left-0 mt-1 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50 transition-all duration-200 ${
+                activeDropdown === item.name.toLowerCase() ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1 pointer-events-none'
+              }`}
+              onMouseEnter={() => handleDropdownEnter(item.name)}
+              onMouseLeave={handleDropdownLeave}
+            >
+              <div className="py-1">
+                {item.dropdown.map((subItem) => (
+                  <a
+                    key={subItem.name}
+                    href={subItem.href}
+                    onClick={(e) => {
+                      subItem.onClick?.(e as any);
+                      setActiveDropdown(null);
+                    }}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                  >
+                    {subItem.name}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      ))}
+    </nav>
+  );
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-border shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -118,59 +229,22 @@ const Navigation = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
-              <div 
-                key={item.name} 
-                className="relative"
-                onMouseEnter={() => item.dropdown && setActiveDropdown(item.name)}
-                onMouseLeave={() => setActiveDropdown(null)}
-              >
-                <a
-                  href={item.href}
-                  onClick={item.onClick}
-                  className="text-foreground hover:text-pana-blue transition-colors duration-200 font-medium flex items-center gap-1 cursor-pointer"
-                >
-                  {item.name}
-                  {item.dropdown && <ChevronDown className="w-4 h-4" />}
-                </a>
-                
-                {/* Dropdown Menu */}
-                {item.dropdown && activeDropdown === item.name && (
-                  <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-border py-2">
-                    {item.dropdown.map((dropdownItem) => (
-                      <a
-                        key={dropdownItem.name}
-                        href={dropdownItem.href}
-                        onClick={(e) => {
-                          dropdownItem.onClick(e);
-                          setActiveDropdown(null);
-                        }}
-                        className="block px-4 py-2 text-sm text-foreground hover:bg-pana-light-gray hover:text-pana-blue transition-colors duration-200 cursor-pointer"
-                      >
-                        {dropdownItem.name}
-                      </a>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+          {renderDesktopNav()}
 
           {/* CTA Button */}
           <div className="hidden md:flex items-center space-x-4">
             {user ? (
               <div className="flex items-center gap-4">
                 <Link to="/dashboard">
-                  <Button variant="outline" size="sm">Dashboard</Button>
+                  <Button variant="outline" size="sm" className="border-red-600 text-red-600 hover:bg-red-50 hover:text-red-700">Dashboard</Button>
                 </Link>
-                <Button variant="ghost" size="sm" onClick={signOut}>
+                <Button variant="ghost" size="sm" onClick={signOut} className="text-red-600 hover:bg-red-50 hover:text-red-700">
                   Sign Out
                 </Button>
               </div>
             ) : (
               <Link to="/auth">
-                <Button variant="premium" size="sm">
+                <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white">
                   Sign In
                 </Button>
               </Link>

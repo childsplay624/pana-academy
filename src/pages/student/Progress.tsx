@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useStudentData } from '@/hooks/useStudentData';
 import { useGamification } from '@/hooks/useGamification';
+import { goalsApi } from '@/lib/api/goals';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { ProgressChart } from '@/components/dashboard/ProgressChart';
 import { CourseProgressChart } from '@/components/dashboard/CourseProgressChart';
@@ -14,18 +15,24 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
+import { toast } from 'sonner';
 import { 
-  TrendingUp, 
-  Target, 
-  Clock, 
-  BookOpen,
-  Calendar,
-  Trophy,
-  Flame,
+  AlertCircle,
   BarChart3,
+  BookOpen,
+  Calendar as CalendarIcon,
+  Clock,
+  Flame,
+  Loader2,
+  RefreshCw,
   Settings,
-  Zap
+  Target,
+  Trophy,
+  TrendingUp,
+  Zap,
 } from 'lucide-react';
+import { SetGoalsDialog } from '@/components/goals/SetGoalsDialog';
+import { ScheduleDialog } from '@/components/schedule/ScheduleDialog';
 
 export default function ProgressPage() {
   const { user } = useAuth();
@@ -40,12 +47,91 @@ export default function ProgressPage() {
     getLevelProgress 
   } = useGamification();
   const [selectedPeriod, setSelectedPeriod] = useState('week');
+  const [goals, setGoals] = useState({
+    weeklyStudyHours: 5,
+    targetCoursesCompleted: 2,
+    targetWeeklyStreak: 7,
+  });
+  const [progress, setProgress] = useState({
+    weeklyStudyHours: 0,
+    completedCourses: 0,
+    currentStreak: 0,
+  });
+  const [isLoadingGoals, setIsLoadingGoals] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const levelProgress = getLevelProgress();
 
+  const refreshProgress = async () => {
+    try {
+      setIsLoadingGoals(true);
+      setError(null);
+      await loadGoalsAndProgress();
+      // Show success message if refresh was successful
+      toast.success('Progress data refreshed successfully');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to refresh progress. Please try again.';
+      setError(errorMessage);
+      console.error('Error refreshing progress:', err);
+      toast.error(errorMessage);
+    }
+  };
+
+  const loadGoalsAndProgress = async () => {
+    try {
+      setIsLoadingGoals(true);
+      setError(null);
+      
+      // Load goals
+      const goalsData = await goalsApi.getOrCreateGoals();
+      setGoals({
+        weeklyStudyHours: goalsData.weekly_study_hours,
+        targetCoursesCompleted: goalsData.target_courses_completed,
+        targetWeeklyStreak: goalsData.target_weekly_streak,
+      });
+      
+      // Load progress
+      const stats = await goalsApi.getStudyStatistics();
+      setProgress({
+        weeklyStudyHours: Math.min(stats.totalMinutesThisWeek / 60, goalsData.weekly_study_hours || 1),
+        completedCourses: stats.completedCourses,
+        currentStreak: stats.currentStreak,
+      });
+      
+      return true; // Indicate success
+    } catch (error) {
+      console.error('Error loading goals and progress:', error);
+      const errorMessage = error.message || 'Failed to load your progress data. Please try again later.';
+      setError(errorMessage);
+      throw new Error(errorMessage); // Re-throw with consistent error format
+    } finally {
+      setIsLoadingGoals(false);
+    }
+  };
+
+  useEffect(() => {
+    loadGoalsAndProgress();
+  }, []);
+
+  const handleGoalsUpdated = async () => {
+    try {
+      setIsLoadingGoals(true);
+      const goalsData = await goalsApi.getOrCreateGoals();
+      setGoals({
+        weeklyStudyHours: goalsData.weekly_study_hours,
+        targetCoursesCompleted: goalsData.target_courses_completed,
+        targetWeeklyStreak: goalsData.target_weekly_streak,
+      });
+    } catch (error) {
+      console.error('Error refreshing goals:', error);
+    } finally {
+      setIsLoadingGoals(false);
+    }
+  };
+
   return (
     <DashboardLayout>
-      <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8">
+      <div className="space-y-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
@@ -54,16 +140,144 @@ export default function ProgressPage() {
               Track your learning journey and achievements
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline">
-              <Settings className="h-4 w-4 mr-2" />
-              Set Goals
+          <div className="flex flex-wrap gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={refreshProgress}
+              disabled={isLoadingGoals}
+            >
+              {isLoadingGoals ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4 mr-2" />
+              )}
+              Refresh
             </Button>
-            <Button variant="outline">
-              <Calendar className="h-4 w-4 mr-2" />
-              Schedule
-            </Button>
+            <SetGoalsDialog onGoalsUpdated={handleGoalsUpdated}>
+              <Button variant="outline" size="sm">
+                <Settings className="h-4 w-4 mr-2" />
+                Set Goals
+              </Button>
+            </SetGoalsDialog>
+            <ScheduleDialog>
+              <Button variant="outline" size="sm">
+                <CalendarIcon className="h-4 w-4 mr-2" />
+                Schedule
+              </Button>
+            </ScheduleDialog>
           </div>
+        </div>
+
+        {/* Error display with retry button */}
+        {error && (
+          <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6 rounded-md">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <AlertCircle className="h-5 w-5 text-red-400" aria-hidden="true" />
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">Error loading progress data</h3>
+                <div className="mt-2 text-sm text-red-700">
+                  <p>{error}</p>
+                </div>
+                <div className="mt-4">
+                  <button
+                    type="button"
+                    onClick={refreshProgress}
+                    className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                    disabled={isLoadingGoals}
+                  >
+                    <RefreshCw className={`h-4 w-4 mr-2 ${isLoadingGoals ? 'animate-spin' : ''}`} />
+                    {isLoadingGoals ? 'Refreshing...' : 'Try Again'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Loading State */}
+        {isLoadingGoals && !error && (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="ml-2">Loading your progress...</span>
+          </div>
+        )}
+
+        {/* Progress Overview */}
+        <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 ${isLoadingGoals ? 'opacity-50 pointer-events-none' : ''}`}>
+          <Card>
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium">Study Time</CardTitle>
+                <Clock className="h-4 w-4 text-muted-foreground" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {Math.round(progress.weeklyStudyHours * 10) / 10}h / {goals.weeklyStudyHours}h
+              </div>
+              <div className="mt-2">
+                <div className="flex justify-between text-sm text-muted-foreground mb-1">
+                  <span>Weekly Goal</span>
+                  <span>{Math.round((progress.weeklyStudyHours / goals.weeklyStudyHours) * 100)}%</span>
+                </div>
+                <Progress 
+                  value={Math.min((progress.weeklyStudyHours / goals.weeklyStudyHours) * 100, 100)} 
+                  className="h-2" 
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium">Course Completion</CardTitle>
+                <BookOpen className="h-4 w-4 text-muted-foreground" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {progress.completedCourses} / {goals.targetCoursesCompleted}
+              </div>
+              <div className="mt-2">
+                <div className="flex justify-between text-sm text-muted-foreground mb-1">
+                  <span>Target Completed</span>
+                  <span>{Math.round((progress.completedCourses / goals.targetCoursesCompleted) * 100)}%</span>
+                </div>
+                <Progress 
+                  value={Math.min((progress.completedCourses / goals.targetCoursesCompleted) * 100, 100)} 
+                  className="h-2" 
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium">Study Streak</CardTitle>
+                <Flame className="h-4 w-4 text-muted-foreground" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {progress.currentStreak} day{progress.currentStreak !== 1 ? 's' : ''}
+              </div>
+              <div className="mt-2">
+                <div className="flex justify-between text-sm text-muted-foreground mb-1">
+                  <span>Weekly Goal</span>
+                  <span>{Math.round((progress.currentStreak / goals.targetWeeklyStreak) * 100)}%</span>
+                </div>
+                <Progress 
+                  value={Math.min((progress.currentStreak / goals.targetWeeklyStreak) * 100, 100)} 
+                  className="h-2" 
+                />
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Gamification Overview */}

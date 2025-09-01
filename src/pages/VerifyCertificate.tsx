@@ -32,7 +32,34 @@ import { Separator } from '@/components/ui/separator';
 export default function VerifyCertificate() {
   const [searchParams] = useSearchParams();
   const [verificationCode, setVerificationCode] = useState('');
-  const [certificate, setCertificate] = useState<Certificate | null>(null);
+  // Define the certificate type based on the database schema and API response
+  interface VerifiedCertificate {
+    id: string;
+    user_id: string;
+    course_id: string;
+    enrollment_id: string;
+    certificate_number: string;
+    title: string;
+    description?: string;
+    issued_at: string;
+    completion_date: string;
+    grade?: string;
+    score?: number;
+    instructor_name: string;
+    course_title: string;
+    course_duration_hours?: number;
+    certificate_url?: string;
+    download_url?: string;
+    verification_code: string;
+    metadata?: Record<string, any>;
+    is_valid: boolean;
+    created_at: string;
+    updated_at: string;
+    // Allow any other properties that might come from the API
+    [key: string]: any;
+  }
+  
+  const [certificate, setCertificate] = useState<VerifiedCertificate | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -62,7 +89,46 @@ export default function VerifyCertificate() {
     setHasSearched(true);
     try {
       const result = await verifyCertificate(codeToVerify.trim());
-      setCertificate(result);
+      const now = new Date().toISOString();
+      
+      // Handle both issued_at and issued_date fields for backward compatibility
+      const issuedAt = (result as any)?.issued_at || (result as any)?.issued_date || now;
+      const completionDate = (result as any)?.completion_date || now;
+      
+      // Create a properly typed certificate object with all required fields
+      const certificateData: VerifiedCertificate = {
+        id: result?.id || `cert_${Date.now()}`,
+        user_id: result?.user_id || '',
+        course_id: result?.course_id || '',
+        enrollment_id: result?.enrollment_id || '',
+        certificate_number: result?.certificate_number || `CERT-${Date.now()}`,
+        title: result?.title || 'Certificate of Completion',
+        description: result?.description,
+        issued_at: issuedAt,
+        completion_date: completionDate,
+        grade: result?.grade,
+        score: result?.score,
+        instructor_name: result?.instructor_name || 'PANA Academy Instructor',
+        course_title: result?.course_title || 'Course',
+        course_duration_hours: result?.course_duration_hours,
+        certificate_url: result?.certificate_url || (result as any)?.download_url,
+        download_url: (result as any)?.download_url,
+        verification_code: result?.verification_code || codeToVerify.trim().toUpperCase(),
+        metadata: result?.metadata ? { ...(result.metadata as Record<string, any>) } : {},
+        is_valid: result?.is_valid !== false, // Default to true if not specified
+        created_at: result?.created_at || now,
+        updated_at: result?.updated_at || now
+      };
+
+      // Include any additional fields from the result
+      if (result) {
+        Object.entries(result).forEach(([key, value]) => {
+          if (!(key in certificateData) && value !== undefined) {
+            (certificateData as any)[key] = value;
+          }
+        });
+      }
+      setCertificate(certificateData);
       toast({
         title: 'Success',
         description: 'Certificate verified successfully',
@@ -259,7 +325,7 @@ export default function VerifyCertificate() {
                           <div className="space-y-4">
                             <div>
                               <h3 className="text-lg font-semibold text-foreground">{certificate.title || 'Professional Certificate'}</h3>
-                              <p className="text-muted-foreground">Awarded to {certificate.title || 'the recipient'}</p>
+                              <p className="text-sm text-muted-foreground">Issued on: {new Date(certificate.issued_at).toLocaleDateString()}</p>
                             </div>
                             <div>
                               <p className="text-sm text-muted-foreground">Instructor</p>
@@ -309,9 +375,8 @@ export default function VerifyCertificate() {
                           <div className="space-y-4">
                             <div>
                               <p className="text-sm font-medium">Issued On</p>
-                              <p className="text-sm text-muted-foreground">
-                                {new Date(certificate.issued_date).toLocaleDateString()}
-                              </p>
+                              <Calendar className="h-4 w-4" />
+                              <span>Issued: {new Date(certificate.issued_at || certificate.issued_date || '').toLocaleDateString()}</span>
                             </div>
                             <div>
                               <p className="text-sm font-medium">Verification Code</p>

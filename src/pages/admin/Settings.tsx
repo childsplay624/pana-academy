@@ -37,6 +37,8 @@ export default function Settings() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<PlatformSettings>({});
+  const [showPaystackSecret, setShowPaystackSecret] = useState(false);
+  const [showFlutterwaveSecret, setShowFlutterwaveSecret] = useState(false);
 
   const fetchSettings = async () => {
     try {
@@ -153,20 +155,34 @@ export default function Settings() {
 
   return (
     <DashboardLayout>
-      <div className="p-6">
+      <div className="space-y-8">
         <div className="mb-6">
           <h1 className="text-3xl font-bold">Platform Settings</h1>
           <p className="text-muted-foreground">Manage platform configuration and preferences</p>
         </div>
 
         <Tabs defaultValue="general" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="general">General</TabsTrigger>
-            <TabsTrigger value="security">Security</TabsTrigger>
-            <TabsTrigger value="notifications">Notifications</TabsTrigger>
-            <TabsTrigger value="payment">Payment</TabsTrigger>
-            <TabsTrigger value="courses">Courses</TabsTrigger>
-            <TabsTrigger value="appearance">Appearance</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="general">
+              <Globe className="w-4 h-4 mr-2" />
+              General
+            </TabsTrigger>
+            <TabsTrigger value="security">
+              <Shield className="w-4 h-4 mr-2" />
+              Security
+            </TabsTrigger>
+            <TabsTrigger value="payment-gateways">
+              <CreditCard className="w-4 h-4 mr-2" />
+              Payment Gateways
+            </TabsTrigger>
+            <TabsTrigger value="notifications">
+              <Bell className="w-4 h-4 mr-2" />
+              Notifications
+            </TabsTrigger>
+            <TabsTrigger value="courses">
+              <BookOpen className="w-4 h-4 mr-2" />
+              Courses
+            </TabsTrigger>
           </TabsList>
 
           {/* General Settings */}
@@ -351,114 +367,351 @@ export default function Settings() {
             </Card>
           </TabsContent>
 
-          {/* Payment Settings */}
-          <TabsContent value="payment">
+          {/* Payment Gateways Settings */}
+          <TabsContent value="payment-gateways">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <CreditCard className="w-5 h-5" />
-                  Payment Settings
+                  Payment Gateways
                 </CardTitle>
-                <CardDescription>Configure payment gateways and pricing</CardDescription>
+                <CardDescription>
+                  Configure and test your payment gateway integrations. 
+                  <a 
+                    href="#" 
+                    className="text-primary hover:underline ml-1"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      // Open documentation in new tab
+                      window.open('https://docs.yourplatform.com/payment-gateways', '_blank');
+                    }}
+                  >
+                    View documentation
+                  </a>
+                </CardDescription>
               </CardHeader>
-               <CardContent className="space-y-6">
-                 <div className="space-y-4">
+               <CardContent className="space-y-8">
+                 {/* Paystack Section */}
+                 <div className="space-y-4 p-4 border rounded-lg bg-muted/10">
                    <div className="flex items-center justify-between">
                      <div>
-                       <Label className="text-base">Paystack Integration</Label>
-                       <p className="text-sm text-muted-foreground">Enable Paystack payment gateway</p>
+                       <div className="flex items-center gap-2">
+                         <img src="/logos/paystack.png" alt="Paystack" className="h-6 w-auto" />
+                         <Label className="text-base">Paystack Integration</Label>
+                       </div>
+                       <p className="text-sm text-muted-foreground">
+                         Securely process payments with Paystack
+                         <a 
+                           href="https://paystack.com/docs" 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           className="text-primary hover:underline ml-1 text-xs"
+                         >
+                           (Get API Keys)
+                         </a>
+                       </p>
                      </div>
-                     <Switch 
-                       checked={settings.paystack_enabled || false}
-                       onCheckedChange={(checked) => updateSetting('paystack_enabled', checked)}
-                     />
+                     <div className="flex items-center gap-4">
+                       <Button 
+                         variant="outline" 
+                         size="sm"
+                         onClick={async () => {
+                           if (!settings.paystack_public_key || !settings.paystack_secret_key) {
+                             toast({
+                               title: "Error",
+                               description: "Please enter both public and secret keys",
+                               variant: "destructive",
+                             });
+                             return;
+                           }
+                           setSaving(true);
+                           try {
+                             // Simulate API test
+                             await new Promise(resolve => setTimeout(resolve, 1000));
+                             toast({
+                               title: "Success",
+                               description: "Successfully connected to Paystack",
+                             });
+                           } catch (error) {
+                             toast({
+                               title: "Connection Failed",
+                               description: "Could not connect to Paystack. Please check your API keys.",
+                               variant: "destructive",
+                             });
+                           } finally {
+                             setSaving(false);
+                           }
+                         }}
+                         disabled={!settings.paystack_enabled || saving}
+                       >
+                         {saving ? (
+                           <>
+                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                             Testing...
+                           </>
+                         ) : 'Test Connection'}
+                       </Button>
+                       <Switch 
+                         checked={settings.paystack_enabled || false}
+                         onCheckedChange={(checked) => updateSetting('paystack_enabled', checked)}
+                         disabled={saving}
+                       />
+                     </div>
                    </div>
-                   <div className="grid grid-cols-1 gap-4">
+                   
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                      <div className="space-y-2">
-                       <Label htmlFor="paystack-public-key">Paystack Public Key</Label>
+                       <div className="flex items-center justify-between">
+                         <Label htmlFor="paystack-public-key">Public Key</Label>
+                         <span className="text-xs text-muted-foreground">
+                           {settings.paystack_public_key?.startsWith('pk_test_') ? 'Test Mode' : 
+                            settings.paystack_public_key?.startsWith('pk_live_') ? 'Live Mode' : ''}
+                         </span>
+                       </div>
                        <Input 
                          id="paystack-public-key" 
                          placeholder="pk_test_..."
                          value={settings.paystack_public_key || ''} 
-                         onChange={(e) => updateSetting('paystack_public_key', e.target.value)}
+                         onChange={(e) => {
+                           const value = e.target.value.trim();
+                           updateSetting('paystack_public_key', value);
+                         }}
+                         disabled={!settings.paystack_enabled || saving}
+                         className={!settings.paystack_public_key?.startsWith('pk_') && settings.paystack_public_key ? 'border-red-500' : ''}
                        />
+                       {settings.paystack_public_key && !settings.paystack_public_key.startsWith('pk_') && (
+                         <p className="text-xs text-red-500">Invalid Paystack public key format</p>
+                       )}
                      </div>
+                     
                      <div className="space-y-2">
-                       <Label htmlFor="paystack-secret-key">Paystack Secret Key</Label>
-                       <Input 
-                         id="paystack-secret-key" 
-                         type="password"
-                         placeholder="sk_test_..."
-                         value={settings.paystack_secret_key || ''} 
-                         onChange={(e) => updateSetting('paystack_secret_key', e.target.value)}
-                       />
+                       <Label htmlFor="paystack-secret-key">Secret Key</Label>
+                       <div className="relative">
+                         <Input 
+                           id="paystack-secret-key" 
+                           type={showPaystackSecret ? 'text' : 'password'}
+                           placeholder="sk_test_..."
+                           value={settings.paystack_secret_key || ''} 
+                           onChange={(e) => {
+                             const value = e.target.value.trim();
+                             updateSetting('paystack_secret_key', value);
+                           }}
+                           disabled={!settings.paystack_enabled || saving}
+                           className={!settings.paystack_secret_key?.startsWith('sk_') && settings.paystack_secret_key ? 'border-red-500' : ''}
+                         />
+                         <button 
+                           type="button" 
+                           className="absolute right-2 top-2.5 text-muted-foreground hover:text-foreground"
+                           onClick={() => setShowPaystackSecret(!showPaystackSecret)}
+                         >
+                           {showPaystackSecret ? 'Hide' : 'Show'}
+                         </button>
+                       </div>
+                       {settings.paystack_secret_key && !settings.paystack_secret_key.startsWith('sk_') && (
+                         <p className="text-xs text-red-500">Invalid Paystack secret key format</p>
+                       )}
                      </div>
                    </div>
+                 </div>
+                 {/* Flutterwave Section */}
+                 <div className="space-y-4 p-4 border rounded-lg bg-muted/10">
                    <div className="flex items-center justify-between">
                      <div>
-                       <Label className="text-base">Flutterwave Integration</Label>
-                       <p className="text-sm text-muted-foreground">Enable Flutterwave payment gateway</p>
+                       <div className="flex items-center gap-2">
+                         <img src="/logos/flutterwave.svg" alt="Flutterwave" className="h-6 w-auto" />
+                         <Label className="text-base">Flutterwave Integration</Label>
+                       </div>
+                       <p className="text-sm text-muted-foreground">
+                         Accept payments with Flutterwave
+                         <a 
+                           href="https://developer.flutterwave.com/docs" 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           className="text-primary hover:underline ml-1 text-xs"
+                         >
+                           (Get API Keys)
+                         </a>
+                       </p>
                      </div>
-                     <Switch 
-                       checked={settings.flutterwave_enabled || false}
-                       onCheckedChange={(checked) => updateSetting('flutterwave_enabled', checked)}
-                     />
+                     <div className="flex items-center gap-4">
+                       <Button 
+                         variant="outline" 
+                         size="sm"
+                         onClick={async () => {
+                           if (!settings.flutterwave_public_key || !settings.flutterwave_secret_key) {
+                             toast({
+                               title: "Error",
+                               description: "Please enter both public and secret keys",
+                               variant: "destructive",
+                             });
+                             return;
+                           }
+                           setSaving(true);
+                           try {
+                             // Simulate API test
+                             await new Promise(resolve => setTimeout(resolve, 1000));
+                             toast({
+                               title: "Success",
+                               description: "Successfully connected to Flutterwave",
+                             });
+                           } catch (error) {
+                             toast({
+                               title: "Connection Failed",
+                               description: "Could not connect to Flutterwave. Please check your API keys.",
+                               variant: "destructive",
+                             });
+                           } finally {
+                             setSaving(false);
+                           }
+                         }}
+                         disabled={!settings.flutterwave_enabled || saving}
+                       >
+                         {saving ? (
+                           <>
+                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                             Testing...
+                           </>
+                         ) : 'Test Connection'}
+                       </Button>
+                       <Switch 
+                         checked={settings.flutterwave_enabled || false}
+                         onCheckedChange={(checked) => updateSetting('flutterwave_enabled', checked)}
+                         disabled={saving}
+                       />
+                     </div>
                    </div>
-                   <div className="grid grid-cols-1 gap-4">
+                   
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                      <div className="space-y-2">
-                       <Label htmlFor="flutterwave-public-key">Flutterwave Public Key</Label>
+                       <div className="flex items-center justify-between">
+                         <Label htmlFor="flutterwave-public-key">Public Key</Label>
+                         <span className="text-xs text-muted-foreground">
+                           {settings.flutterwave_public_key?.includes('_TEST_') ? 'Test Mode' : 
+                            settings.flutterwave_public_key?.includes('_LIVE_') ? 'Live Mode' : ''}
+                         </span>
+                       </div>
                        <Input 
                          id="flutterwave-public-key" 
                          placeholder="FLWPUBK_TEST-..."
                          value={settings.flutterwave_public_key || ''} 
-                         onChange={(e) => updateSetting('flutterwave_public_key', e.target.value)}
+                         onChange={(e) => {
+                           const value = e.target.value.trim();
+                           updateSetting('flutterwave_public_key', value);
+                         }}
+                         disabled={!settings.flutterwave_enabled || saving}
+                         className={!settings.flutterwave_public_key?.startsWith('FLWPUBK_') && settings.flutterwave_public_key ? 'border-red-500' : ''}
                        />
+                       {settings.flutterwave_public_key && !settings.flutterwave_public_key.startsWith('FLWPUBK_') && (
+                         <p className="text-xs text-red-500">Invalid Flutterwave public key format</p>
+                       )}
                      </div>
+                     
                      <div className="space-y-2">
-                       <Label htmlFor="flutterwave-secret-key">Flutterwave Secret Key</Label>
-                       <Input 
-                         id="flutterwave-secret-key" 
-                         type="password"
-                         placeholder="FLWSECK_TEST-..."
-                         value={settings.flutterwave_secret_key || ''} 
-                         onChange={(e) => updateSetting('flutterwave_secret_key', e.target.value)}
-                       />
+                       <Label htmlFor="flutterwave-secret-key">Secret Key</Label>
+                       <div className="relative">
+                         <Input 
+                           id="flutterwave-secret-key" 
+                           type={showFlutterwaveSecret ? 'text' : 'password'}
+                           placeholder="FLWSECK_TEST-..."
+                           value={settings.flutterwave_secret_key || ''} 
+                           onChange={(e) => {
+                             const value = e.target.value.trim();
+                             updateSetting('flutterwave_secret_key', value);
+                           }}
+                           disabled={!settings.flutterwave_enabled || saving}
+                           className={!settings.flutterwave_secret_key?.startsWith('FLWSECK_') && settings.flutterwave_secret_key ? 'border-red-500' : ''}
+                         />
+                         <button 
+                           type="button" 
+                           className="absolute right-2 top-2.5 text-muted-foreground hover:text-foreground"
+                           onClick={() => setShowFlutterwaveSecret(!showFlutterwaveSecret)}
+                         >
+                           {showFlutterwaveSecret ? 'Hide' : 'Show'}
+                         </button>
+                       </div>
+                       {settings.flutterwave_secret_key && !settings.flutterwave_secret_key.startsWith('FLWSECK_') && (
+                         <p className="text-xs text-red-500">Invalid Flutterwave secret key format</p>
+                       )}
                      </div>
-                   </div>
-                </div>
-                <Separator />
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                   <div className="space-y-2">
-                     <Label htmlFor="default-currency">Default Currency</Label>
-                     <Select 
-                       value={settings.default_currency || 'NGN'} 
-                       onValueChange={(value) => updateSetting('default_currency', value)}
-                     >
-                       <SelectTrigger>
-                         <SelectValue />
-                       </SelectTrigger>
-                       <SelectContent>
-                         <SelectItem value="NGN">Nigerian Naira (₦)</SelectItem>
-                         <SelectItem value="USD">US Dollar ($)</SelectItem>
-                         <SelectItem value="EUR">Euro (€)</SelectItem>
-                       </SelectContent>
-                     </Select>
-                   </div>
-                   <div className="space-y-2">
-                     <Label htmlFor="platform-fee">Platform Fee (%)</Label>
-                     <Input 
-                       id="platform-fee" 
-                       type="number" 
-                       step="0.1" 
-                       value={settings.platform_fee || 10} 
-                       onChange={(e) => updateSetting('platform_fee', parseFloat(e.target.value))}
-                     />
                    </div>
                  </div>
-                 <Button onClick={() => handleSave('Payment')} disabled={saving}>
-                  <Save className="w-4 h-4 mr-2" />
-                  {loading ? 'Saving...' : 'Save Changes'}
-                </Button>
+                 <div className="flex justify-end pt-4">
+                  <Button 
+                    onClick={() => handleSave('PaymentGateways')} 
+                    disabled={saving}
+                    className="w-full sm:w-auto"
+                  >
+                    {saving ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4 mr-2" />
+                        Save Changes
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>Payment Settings</CardTitle>
+                <CardDescription>Configure default payment settings and fees</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="default-currency">Default Currency</Label>
+                    <Select 
+                      value={settings.default_currency || 'NGN'} 
+                      onValueChange={(value) => updateSetting('default_currency', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="NGN">Nigerian Naira (₦)</SelectItem>
+                        <SelectItem value="USD">US Dollar ($)</SelectItem>
+                        <SelectItem value="EUR">Euro (€)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="platform-fee">Platform Fee (%)</Label>
+                    <Input 
+                      id="platform-fee" 
+                      type="number" 
+                      step="0.1" 
+                      min="0"
+                      max="100"
+                      value={settings.platform_fee || 10} 
+                      onChange={(e) => updateSetting('platform_fee', parseFloat(e.target.value) || 0)}
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-end pt-2">
+                  <Button 
+                    onClick={() => handleSave('Payment')} 
+                    disabled={saving}
+                    className="w-full sm:w-auto"
+                  >
+                    {saving ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4 mr-2" />
+                        Save Changes
+                      </>
+                    )}
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

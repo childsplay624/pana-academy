@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useGamification } from '@/hooks/useGamification';
+import { useEmailNotifications } from '@/hooks/useEmailNotifications';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -65,6 +66,7 @@ export default function CourseLearning() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { awardPoints, updateStreak } = useGamification();
+  const { sendEnrollmentConfirmation, sendCertificateNotification } = useEmailNotifications();
   const { toast } = useToast();
   
   const [loading, setLoading] = useState(true);
@@ -240,22 +242,63 @@ export default function CourseLearning() {
           .eq('id', enrollment.id);
       }
 
-      // If completed, award certificate and mark enrollment as completed
-      if (newProgress === 100 && enrollment?.id && user?.id && courseId) {
-        const { error: certError } = await supabase.rpc('award_certificate', {
-          _user_id: user.id,
-          _course_id: courseId,
-          _enrollment_id: enrollment.id,
-        });
-        if (certError) {
-          console.error('Error awarding certificate:', certError);
-        } else {
-          const { data: refreshed } = await supabase
-            .from('enrollments')
-            .select('*')
-            .eq('id', enrollment.id)
-            .maybeSingle();
-          setEnrollment(refreshed);
+      // If completed, generate certificate and mark enrollment as completed
+      if (newProgress === 100 && enrollment?.id && user?.id && courseId && course) {
+        try {
+          const params = {
+            _user_id: user.id,
+            _course_id: courseId,
+            _enrollment_id: enrollment.id,
+            _title: `${course.title} Completion Certificate`,
+            _course_title: course.title,
+            _instructor_name: course.profiles?.full_name || 'PANA Academy Instructor',
+            _course_duration_hours: course.duration_hours || 0,
+            _completion_date: new Date().toISOString(),
+            _score: 100, // Default score for completion
+            _grade: 'A' as const // Default grade
+          };
+
+          // Use type assertion to handle the RPC call
+          const { data, error } = await supabase.rpc('generate_certificate', params as any);
+
+          if (error) {
+            console.error('Error generating certificate:', error);
+            toast({
+              title: 'Error',
+              description: 'Failed to generate certificate. Please try again.',
+              variant: 'destructive' as const
+            });
+          } else if (data?.success) {
+            // Refresh enrollment data
+            const { data: refreshed, error: refreshError } = await supabase
+              .from('enrollments')
+              .select('*')
+              .eq('id', enrollment.id)
+              .maybeSingle();
+            
+            if (refreshed && !refreshError) {
+              setEnrollment(refreshed);
+              toast({
+                title: 'Success',
+                description: 'Certificate generated successfully!',
+                variant: 'default' as const
+              });
+            } else if (refreshError) {
+              console.error('Error refreshing enrollment:', refreshError);
+              toast({
+                title: 'Warning',
+                description: 'Certificate generated but could not refresh enrollment data.',
+                variant: 'default' as const
+              });
+            }
+          }
+        } catch (error) {
+          console.error('Unexpected error during certificate generation:', error);
+          toast({
+            title: 'Error',
+            description: 'An unexpected error occurred while generating the certificate.',
+            variant: 'destructive' as const
+          });
         }
       }
 
@@ -289,9 +332,12 @@ export default function CourseLearning() {
 
       if (error) throw error;
 
+      // Send enrollment confirmation email
+      await sendEnrollmentConfirmation(courseId, user.id);
+
       toast({
         title: "Enrolled Successfully! 🎉",
-        description: "You can now access all course content",
+        description: "You can now access all course content. A confirmation email has been sent.",
       });
 
       // Refresh data

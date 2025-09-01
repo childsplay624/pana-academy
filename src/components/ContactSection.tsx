@@ -23,12 +23,12 @@ const ContactSection = () => {
   ];
 
   return (
-    <section id="contact" className="py-20 bg-pana-light-gray">
+    <section id="contact" className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-pana-navy mb-4">Get in Touch</h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <h2 className="text-3.6xl md:text-4.8xl font-bold text-pana-navy mb-4">Get in Touch</h2>
+          <p className="text-2xl text-muted-foreground max-w-3xl mx-auto">
             Ready to transform your career or organization? Contact us to discuss your training and development needs.
           </p>
         </div>
@@ -38,18 +38,18 @@ const ContactSection = () => {
           <div className="lg:col-span-2">
             <Card className="shadow-lg border-0">
               <CardHeader>
-                <CardTitle className="text-2xl text-pana-navy">Send us a Message</CardTitle>
+                <CardTitle className="text-2.4xl text-pana-navy">Send us a Message</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="firstName" className="block text-sm font-medium text-foreground mb-2">
+                    <label htmlFor="firstName" className="block text-base font-medium text-foreground mb-2">
                       First Name *
                     </label>
                     <Input id="firstName" placeholder="Enter your first name" required />
                   </div>
                   <div>
-                    <label htmlFor="lastName" className="block text-sm font-medium text-foreground mb-2">
+                    <label htmlFor="lastName" className="block text-base font-medium text-foreground mb-2">
                       Last Name *
                     </label>
                     <Input id="lastName" placeholder="Enter your last name" required />
@@ -58,13 +58,13 @@ const ContactSection = () => {
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
+                    <label htmlFor="email" className="block text-base font-medium text-foreground mb-2">
                       Email Address *
                     </label>
                     <Input id="email" type="email" placeholder="Enter your email" required />
                   </div>
                   <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-2">
+                    <label htmlFor="phone" className="block text-base font-medium text-foreground mb-2">
                       Phone Number
                     </label>
                     <Input id="phone" placeholder="Enter your phone number" />
@@ -72,14 +72,14 @@ const ContactSection = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="company" className="block text-sm font-medium text-foreground mb-2">
+                  <label htmlFor="company" className="block text-base font-medium text-foreground mb-2">
                     Company/Organization
                   </label>
                   <Input id="company" placeholder="Enter your company name" />
                 </div>
 
                 <div>
-                  <label htmlFor="interest" className="block text-sm font-medium text-foreground mb-2">
+                  <label htmlFor="interest" className="block text-base font-medium text-foreground mb-2">
                     Area of Interest
                   </label>
                   <select 
@@ -96,7 +96,7 @@ const ContactSection = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
+                  <label htmlFor="message" className="block text-base font-medium text-foreground mb-2">
                     Message *
                   </label>
                   <Textarea 
@@ -107,7 +107,9 @@ const ContactSection = () => {
                   />
                 </div>
 
-                <Button variant="premium" className="w-full">
+                <Button 
+                  className="w-full bg-black text-white hover:bg-red-600 transition-colors"
+                >
                   <Send className="w-4 h-4 mr-2" />
                   Send Message
                 </Button>
@@ -121,7 +123,7 @@ const ContactSection = () => {
             {offices.map((office, index) => (
               <Card key={index} className="shadow-lg border-0">
                 <CardHeader>
-                  <CardTitle className="text-lg text-pana-navy flex items-center">
+                  <CardTitle className="text-xl text-pana-navy flex items-center">
                     <MapPin className="w-5 h-5 mr-2 text-pana-gold" />
                     {office.city}
                   </CardTitle>
@@ -129,64 +131,46 @@ const ContactSection = () => {
                 <CardContent className="space-y-4">
                   <div className="flex items-start space-x-3">
                     <MapPin className="w-4 h-4 text-muted-foreground mt-1" />
-                    <p className="text-sm text-foreground">{office.address}</p>
+                    <p className="text-base text-foreground">{office.address}</p>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Phone className="w-4 h-4 text-muted-foreground" />
-                    <p className="text-sm text-foreground">{office.phone}</p>
+                    <p className="text-base text-foreground">{office.phone}</p>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Mail className="w-4 h-4 text-muted-foreground" />
-                    <p className="text-sm text-foreground">{office.email}</p>
+                    <p className="text-base text-foreground">{office.email}</p>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Clock className="w-4 h-4 text-muted-foreground" />
-                    <p className="text-sm text-foreground">{office.hours}</p>
+                    <p className="text-base text-foreground">{office.hours}</p>
                   </div>
                 </CardContent>
               </Card>
             ))}
 
             {/* Quick Contact */}
-            <Card className="shadow-lg border-0 bg-gradient-to-br from-pana-navy to-pana-blue text-white">
+            <Card className="shadow-lg border-0 bg-black text-white">
               <CardContent className="p-6">
-                <h3 className="text-lg font-semibold mb-4">Quick Contact</h3>
+                <h3 className="text-xl font-semibold mb-4">Quick Contact</h3>
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
                     <Phone className="w-4 h-4 text-pana-gold" />
-                    <p className="text-sm">+234 809 123 4567</p>
+                    <p className="text-base">+234 809 123 4567</p>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Mail className="w-4 h-4 text-pana-gold" />
-                    <p className="text-sm">info@panaacademy.com</p>
+                    <p className="text-base">info@panaacademy.com</p>
                   </div>
                 </div>
-                <Button variant="hero" className="w-full mt-4">
+                <Button className="w-full mt-4 bg-red-600 text-white hover:bg-white hover:text-red-600 transition-colors">
                   Schedule Call
                 </Button>
               </CardContent>
             </Card>
 
             {/* Social Media */}
-            <Card className="shadow-lg border-0">
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold text-pana-navy mb-4">Follow Us</h3>
-                <div className="flex space-x-4">
-                  <a href="#" className="w-10 h-10 bg-pana-navy text-white rounded-full flex items-center justify-center hover:bg-pana-blue transition-colors">
-                    <span className="text-xs font-bold">Li</span>
-                  </a>
-                  <a href="#" className="w-10 h-10 bg-pana-navy text-white rounded-full flex items-center justify-center hover:bg-pana-blue transition-colors">
-                    <span className="text-xs font-bold">Tw</span>
-                  </a>
-                  <a href="#" className="w-10 h-10 bg-pana-navy text-white rounded-full flex items-center justify-center hover:bg-pana-blue transition-colors">
-                    <span className="text-xs font-bold">Fb</span>
-                  </a>
-                  <a href="#" className="w-10 h-10 bg-pana-navy text-white rounded-full flex items-center justify-center hover:bg-pana-blue transition-colors">
-                    <span className="text-xs font-bold">Ig</span>
-                  </a>
-                </div>
-              </CardContent>
-            </Card>
+           
           </div>
         </div>
 
@@ -194,11 +178,11 @@ const ContactSection = () => {
         <div className="mt-12">
           <Card className="shadow-lg border-0">
             <CardContent className="p-0">
-              <div className="h-64 bg-gradient-to-r from-pana-light-gray to-muted rounded-lg flex items-center justify-center">
+              <div className="h-64 bg-black/5 rounded-lg flex items-center justify-center">
                 <div className="text-center">
                   <MapPin className="w-12 h-12 text-pana-gold mx-auto mb-4" />
-                  <p className="text-muted-foreground">Interactive map will be integrated here</p>
-                  <p className="text-sm text-muted-foreground">Showing our office locations in Abuja and Port Harcourt</p>
+                  <p className="text-lg text-muted-foreground">Interactive map will be integrated here</p>
+                  <p className="text-base text-muted-foreground">Showing our office locations in Abuja and Port Harcourt</p>
                 </div>
               </div>
             </CardContent>

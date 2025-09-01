@@ -194,7 +194,7 @@ export default function StudentDashboard() {
       }
     >
       <DashboardLayout>
-        <div className="p-6 md:p-8 max-w-7xl mx-auto">
+        <div className="space-y-8">
           {/* Header */}
           <header className="border-b pb-6 mb-8">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

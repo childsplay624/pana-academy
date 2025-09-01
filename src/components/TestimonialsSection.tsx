@@ -2,52 +2,37 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Star, Quote } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Testimonial } from "@/types/testimonial.types";
 
 const TestimonialsSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const testimonials = [
-    {
-      name: "Dr. Sarah Okonkwo",
-      position: "Head of Learning & Development",
-      company: "Shell Nigeria",
-      image: "SO",
-      rating: 5,
-      content: "PANA Academy's energy sector training program transformed our team's capabilities. The practical approach and industry expertise delivered immediate value to our operations."
-    },
-    {
-      name: "Michael Adebayo",
-      position: "Digital Transformation Director",
-      company: "Access Bank",
-      image: "MA",
-      rating: 5,
-      content: "The digital leadership program exceeded our expectations. Our executives gained crucial skills that directly translated to improved organizational performance."
-    },
-    {
-      name: "Fatima Al-Hassan", 
-      position: "Operations Manager",
-      company: "Total Energies",
-      image: "FA",
-      rating: 5,
-      content: "Outstanding consulting services! PANA Academy helped us streamline our processes and achieve 30% efficiency improvement within six months."
-    },
-    {
-      name: "James Okafor",
-      position: "CEO",
-      company: "TechAdvance Solutions",
-      image: "JO", 
-      rating: 5,
-      content: "The research and development partnership with PANA Academy has been invaluable. Their insights helped us stay ahead of industry trends."
-    },
-    {
-      name: "Aisha Mohammed",
-      position: "Project Manager",
-      company: "NNPC Limited",
-      image: "AM",
-      rating: 5,
-      content: "Exceptional training quality and professional delivery. The technical excellence program equipped our team with skills that made an immediate impact."
+  useEffect(() => {
+    fetchTestimonials();
+  }, []);
+
+  const fetchTestimonials = async () => {
+    try {
+      const { data, error } = await (supabase
+        .from('testimonials' as any)
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true }) as any);
+
+      if (error) throw error;
+      
+      setTestimonials(data || []);
+    } catch (error) {
+      console.error('Error fetching testimonials:', error);
+      // Fallback to empty array - component will show fallback message
+      setTestimonials([]);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   const nextTestimonial = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
@@ -59,13 +44,49 @@ const TestimonialsSection = () => {
 
   // Auto-rotate testimonials
   useEffect(() => {
-    const interval = setInterval(nextTestimonial, 5000);
-    return () => clearInterval(interval);
-  }, []);
+    if (testimonials.length > 0) {
+      const interval = setInterval(nextTestimonial, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [testimonials.length]);
+
+  if (loading) {
+    return (
+      <section id="testimonials" className="py-20 relative bg-cover bg-center" style={{ backgroundImage: 'url(/src/assets/hero-training.jpg)' }}>
+      {/* Black overlay */}
+      <div className="absolute inset-0 bg-black/70 z-0"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-pana-gold mx-auto"></div>
+            <p className="text-white mt-4">Loading testimonials...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (testimonials.length === 0) {
+    return (
+      <section id="testimonials" className="py-20 relative bg-cover bg-center" style={{ backgroundImage: 'url(/src/assets/hero-training.jpg)' }}>
+      {/* Black overlay */}
+      <div className="absolute inset-0 bg-black/70 z-0"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">What Our Clients Say</h2>
+            <p className="text-xl text-gray-200">No testimonials available at the moment.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const currentTestimonial = testimonials[currentIndex];
 
   return (
-    <section id="testimonials" className="py-20 bg-gradient-to-br from-pana-navy via-pana-blue to-pana-navy">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="testimonials" className="py-20 relative bg-cover bg-center" style={{ backgroundImage: 'url(/src/assets/hero-training.jpg)' }}>
+      {/* Black overlay */}
+      <div className="absolute inset-0 bg-black/70 z-0"></div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">What Our Clients Say</h2>
@@ -85,23 +106,23 @@ const TestimonialsSection = () => {
                 {/* Testimonial Content */}
                 <div className="flex-1">
                   <div className="flex items-center space-x-1 mb-4">
-                    {[...Array(testimonials[currentIndex].rating)].map((_, i) => (
+                    {[...Array(currentTestimonial.rating)].map((_, i) => (
                       <Star key={i} className="w-5 h-5 fill-pana-gold text-pana-gold" />
                     ))}
                   </div>
                   
                   <blockquote className="text-lg md:text-xl text-white leading-relaxed mb-6">
-                    "{testimonials[currentIndex].content}"
+                    "{currentTestimonial.content}"
                   </blockquote>
                   
                   <div className="flex items-center space-x-4">
                     <div className="w-12 h-12 bg-pana-gold rounded-full flex items-center justify-center text-pana-navy font-bold">
-                      {testimonials[currentIndex].image}
+                      {currentTestimonial.image_initials || currentTestimonial.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
                     </div>
                     <div>
-                      <div className="text-white font-semibold">{testimonials[currentIndex].name}</div>
-                      <div className="text-gray-300 text-sm">{testimonials[currentIndex].position}</div>
-                      <div className="text-pana-gold text-sm font-medium">{testimonials[currentIndex].company}</div>
+                      <div className="text-white font-semibold">{currentTestimonial.name}</div>
+                      <div className="text-gray-300 text-sm">{currentTestimonial.position}</div>
+                      <div className="text-pana-gold text-sm font-medium">{currentTestimonial.company}</div>
                     </div>
                   </div>
                 </div>
@@ -172,7 +193,10 @@ const TestimonialsSection = () => {
           <p className="text-gray-200 mb-8 max-w-2xl mx-auto">
             Ready to transform your organization? Let's discuss how PANA Academy can help you achieve your goals.
           </p>
-          <Button variant="hero" size="lg">
+          <Button 
+            size="lg"
+            className="bg-red-600 text-white hover:bg-white hover:text-red-600 transition-colors"
+          >
             Get Started Today
           </Button>
         </div>

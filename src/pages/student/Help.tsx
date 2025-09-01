@@ -91,7 +91,7 @@ export default function Help() {
 
   return (
     <DashboardLayout>
-      <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8">
+      <div className="p-6 md:p-8 w-full space-y-8">
         {/* Header */}
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold tracking-tight">Help Center</h1>
@@ -136,7 +136,7 @@ export default function Help() {
         </div>
 
         {/* Search */}
-        <div className="max-w-2xl mx-auto">
+        <div className="w-full max-w-4xl mx-auto">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input

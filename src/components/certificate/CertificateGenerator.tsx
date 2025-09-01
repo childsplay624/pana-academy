@@ -76,16 +76,18 @@ export function CertificateGenerator({
 
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.rpc('award_certificate', {
+      const { data, error } = await supabase.rpc('generate_certificate', {
         _user_id: formData.studentId,
         _course_id: formData.courseId,
         _enrollment_id: formData.enrollmentId,
-        _completion_date: new Date(formData.completionDate).toISOString(),
-        _score: formData.score ? parseInt(formData.score) : null,
-        _grade: formData.grade || null
+        _completion_date: formData.completionDate || new Date().toISOString(),
+        _score: formData.score,
+        _grade: formData.grade
       });
 
-      if (error) throw error;
+      if (error || !data?.success) {
+        throw new Error(error?.message || data?.error || 'Failed to generate certificate');
+      }
 
       // If custom title or description, update the certificate
       if (formData.customTitle || formData.customDescription) {

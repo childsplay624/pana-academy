@@ -20,6 +20,7 @@ export interface Certificate {
   course_duration_hours?: number;
   certificate_url?: string;
   verification_code: string;
+  student_name?: string;
   metadata?: any;
   is_valid: boolean;
   created_at: string;
@@ -137,44 +138,33 @@ export function useCertificates() {
 
   const downloadCertificate = async (certificateId: string) => {
     try {
-      // For now, we'll create a simple certificate download
-      // In a real implementation, this would generate a PDF
       const certificate = certificates.find(cert => cert.id === certificateId);
       if (!certificate) {
         throw new Error('Certificate not found');
       }
 
-      // Create a simple text representation for download
-      const certificateContent = `
-CERTIFICATE OF COMPLETION
+      // Call the edge function to generate certificate HTML
+      const { data, error } = await supabase.functions.invoke('generate-certificate-pdf', {
+        body: { certificateId }
+      });
 
-This is to certify that the course:
-${certificate.course_title}
+      if (error) {
+        throw error;
+      }
 
-Has been successfully completed by the recipient on:
-${new Date(certificate.completion_date).toLocaleDateString()}
-
-Certificate Number: ${certificate.certificate_number}
-Verification Code: ${certificate.verification_code}
-Instructor: ${certificate.instructor_name}
-Grade: ${certificate.grade || 'N/A'}
-Duration: ${certificate.course_duration_hours || 'N/A'} hours
-
-This certificate is valid and can be verified using the verification code.
-`;
-
-      // Create and download the file
-      const blob = new Blob([certificateContent], { type: 'text/plain' });
+      // Create a downloadable HTML file that can be printed as PDF
+      const htmlContent = data.html;
+      const blob = new Blob([htmlContent], { type: 'text/html' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `certificate-${certificate.certificate_number}.txt`;
+      a.download = `certificate-${certificate.certificate_number}.html`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
 
-      toast.success('Certificate downloaded successfully');
+      toast.success('Certificate downloaded - open the file and print to PDF');
     } catch (err: any) {
       console.error('Error downloading certificate:', err);
       toast.error('Failed to download certificate');

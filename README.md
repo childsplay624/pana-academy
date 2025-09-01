@@ -49,17 +49,40 @@ Analytics and reports on platform usage.
 
 Backend Integration
 
-Built with a scalable backend supporting user authentication, course data storage, and analytics.
+- Built with Supabase for authentication and database.
+- Real-time updates using Supabase's real-time features.
+- Secure file storage for course materials.
 
-Real-time database for student progress and course updates.
+## Email Notifications
 
-Secure APIs for course, user, and content management.
+The platform uses [Resend](https://resend.com) for sending email notifications. The following emails are sent automatically:
 
-Tech Stack
+- **Welcome Email**: Sent when a new user signs up
+- **Password Reset**: Sent when a user requests a password reset
+- **Course Enrollment**: Sent when a user enrolls in a course
 
-Frontend: React + Tailwind CSS (responsive and mobile-friendly design).
+### Email Templates
 
-Backend: Node.js + Supabase (authentication, data, and storage).
+Email templates are defined in `src/services/emailService.ts` and can be customized as needed. The following templates are available:
+
+- `welcome(name: string)`: Welcome email for new users
+- `passwordReset(userName: string, resetLink: string)`: Password reset email
+- `courseEnrollment(courseTitle: string, userName: string)`: Course enrollment confirmation
+
+## Environment Setup
+
+Create a `.env` file in the root directory with the following variables:
+
+```
+VITE_APP_URL=http://localhost:5173
+VITE_RESEND_API_KEY=your_resend_api_key_here
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+## Backend
+
+Built with Node.js + Supabase (authentication, data, and storage).
 
 Database: PostgreSQL (structured and scalable).
 

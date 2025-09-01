@@ -19,6 +19,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   signInWithProvider: (provider: 'google' | 'github') => Promise<{ error: any }>;
+  resetPassword: (email: string) => Promise<{ error: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -81,20 +82,73 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signUp = async (email: string, password: string, fullName?: string) => {
-    const redirectUrl = `${window.location.origin}/`;
+    const displayName = fullName || email;
     
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl,
-        data: {
-          full_name: fullName || email,
+    try {
+      // First create the user without sending Supabase's confirmation email
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/login`,
+          data: {
+            full_name: displayName,
+            email_verified: false // Custom flag to track verification status
+          }
+        }
+      });
+
+      if (signUpError) throw signUpError;
+      
+      // If signup was successful, send verification email via Resend
+      if (data.user) {
+        try {
+          const { sendEmail, emailTemplates } = await import('@/services/emailService');
+          
+          // Generate email verification link
+          const verificationLink = `${window.location.origin}/verify-email?token=${data.user.id}`;
+          
+          // Send verification email
+          await sendEmail({
+            to: email,
+            subject: 'Verify your email address',
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2>Welcome to PANA Academy, ${displayName}!</h2>
+                <p>Thank you for signing up. Please verify your email address by clicking the button below:</p>
+                <a href="${verificationLink}" 
+                   style="display: inline-block; padding: 12px 24px; background-color: #ba000e; color: white; text-decoration: none; border-radius: 4px; margin: 20px 0;">
+                  Verify Email
+                </a>
+                <p>Or copy and paste this link into your browser:</p>
+                <p style="word-break: break-all; color: #666; font-size: 14px;">${verificationLink}</p>
+                <p>This link will expire in 24 hours.</p>
+              </div>
+            `
+          });
+          
+          // Send welcome email
+          const { subject, html } = emailTemplates.welcome(displayName);
+          await sendEmail({ to: email, subject, html });
+          
+          return { error: null };
+          
+        } catch (emailError) {
+          console.error('Failed to send verification email:', emailError);
+          // Delete the user if email sending fails to maintain data consistency
+          if (data.user) {
+            await supabase.auth.admin.deleteUser(data.user.id);
+          }
+          throw new Error('Failed to send verification email. Please try again.');
         }
       }
-    });
-    
-    return { error };
+      
+      return { error: null };
+      
+    } catch (error) {
+      console.error('Signup error:', error);
+      return { error };
+    }
   };
 
   const signIn = async (email: string, password: string) => {
@@ -121,6 +175,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error };
   };
 
+  const resetPassword = async (email: string) => {
+    try {
+      const redirectUrl = `${window.location.origin}/reset-password`;
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl,
+      });
+
+      if (!error) {
+        try {
+          const { sendEmail, emailTemplates } = await import('@/services/emailService');
+          const resetLink = `${redirectUrl}?token=reset_token_placeholder`; // In a real app, this would be the actual reset token
+          
+          const { subject, html } = emailTemplates.passwordReset('User', resetLink);
+          
+          await sendEmail({
+            to: email,
+            subject,
+            html,
+          });
+        } catch (emailError) {
+          console.error('Failed to send password reset email:', emailError);
+          // Don't fail the reset if email sending fails
+        }
+      }
+
+      return { error };
+    } catch (error) {
+      console.error('Error in resetPassword:', error);
+      return { error };
+    }
+  };
+
   const value = {
     user,
     session,
@@ -130,6 +216,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signIn,
     signOut,
     signInWithProvider,
+    resetPassword,
   };
 
   return (

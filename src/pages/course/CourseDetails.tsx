@@ -23,7 +23,8 @@ import {
 import { fetchCourseById, type Course } from '@/services/courseService';
 import { ModuleManager } from '@/components/course-management/ModuleManager';
 import { useAuth } from '@/hooks/useAuth';
-import { enrollInCourse, checkEnrollment } from '@/services/enrollmentService';
+import { checkEnrollment } from '@/services/enrollmentService';
+import { PaymentButton } from '@/components/payment/PaymentButton';
 import { useToast } from '@/components/ui/use-toast';
 
 interface Module {
@@ -38,50 +39,10 @@ const CourseDetails: React.FC = () => {
   const { user } = useAuth();
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isEnrolling, setIsEnrolling] = useState(false);
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showEnrollPrompt, setShowEnrollPrompt] = useState(false);
   const { toast } = useToast();
   const isInstructor = user?.id === course?.instructor_id;
-
-  const handleEnroll = async () => {
-    if (!id) return;
-    
-    if (!user) {
-      // Redirect to login with the current course URL as the return path
-      navigate('/auth', { state: { from: window.location.pathname } });
-      return;
-    }
-    
-    try {
-      setIsEnrolling(true);
-      const { data, error } = await enrollInCourse(id);
-      
-      if (error) {
-        throw error;
-      }
-      
-      if (data) {
-        setIsEnrolled(true);
-        toast({
-          title: 'Successfully Enrolled!',
-          description: 'You have successfully enrolled in this course.',
-        });
-        // Redirect to course learning page
-        navigate(`/learn/${id}`);
-      }
-    } catch (error) {
-      console.error('Error enrolling in course:', error);
-      toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to enroll in course',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsEnrolling(false);
-    }
-  };
 
   useEffect(() => {
     const loadCourse = async () => {
@@ -98,8 +59,18 @@ const CourseDetails: React.FC = () => {
 
         if (!courseData) {
           setError('Course not found');
+          setLoading(false);
           return;
         }
+
+        // Set course data first to ensure it's available to all users
+        setCourse({
+          ...courseData,
+          students_count: courseData.students_count || 0,
+          price: courseData.price || 0,
+          learning_outcomes: courseData.learning_outcomes || [],
+          modules: courseData.modules || []
+        });
 
         // Only check enrollment for logged-in users
         if (user?.id) {
@@ -111,19 +82,6 @@ const CourseDetails: React.FC = () => {
             // Continue with course loading even if enrollment check fails
           }
         }
-
-        console.log('Course data loaded:', {
-          ...courseData,
-          modules: courseData.modules || []
-        });
-        
-        setCourse({
-          ...courseData,
-          students_count: courseData.students_count || 0,
-          price: courseData.price || 0,
-          learning_outcomes: courseData.learning_outcomes || [],
-          modules: courseData.modules || []
-        });
       } catch (err) {
         console.error('Error loading course:', err);
         setError('Failed to load course. Please try again later.');
@@ -134,6 +92,23 @@ const CourseDetails: React.FC = () => {
 
     loadCourse();
   }, [id, user]);
+
+  useEffect(() => {
+    const checkUserEnrollment = async () => {
+      if (user && id && !isInstructor) {
+        try {
+          const { isEnrolled } = await checkEnrollment(id);
+          setIsEnrolled(isEnrolled);
+        } catch (error) {
+          console.error('Error checking enrollment:', error);
+        }
+      } else if (!user) {
+        // Reset enrollment state for non-logged in users
+        setIsEnrolled(false);
+      }
+    };
+    checkUserEnrollment();
+  }, [user, id, isInstructor]);
 
   if (loading) {
     return (
@@ -189,11 +164,10 @@ const CourseDetails: React.FC = () => {
   const duration = course.duration || `${course.duration_hours} hours`;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <Navigation />
-      <div className="pt-8 flex-1">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-pana-navy to-pana-blue text-white py-12 px-4 sm:px-6 lg:px-8">
+      <main className="flex-1 w-full">
+        <div className="w-full bg-gradient-to-r from-pana-navy to-pana-blue text-white py-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <Button 
               variant="ghost" 
@@ -247,29 +221,28 @@ const CourseDetails: React.FC = () => {
                   <div className="text-pana-light-gray">No ratings yet</div>
                 )}
               </div>
-              {isEnrolled ? (
+              {user && isInstructor ? (
                 <Button 
-                  size="lg" 
-                  className="bg-pana-green hover:bg-green-600 text-white font-semibold"
-                  onClick={() => navigate(`/learn/${id}`)}
+                  variant="outline" 
+                  className="mt-4"
+                  onClick={() => navigate(`/instructor/courses/${id}/edit`)}
                 >
-                  Continue Learning
+                  Edit Course
                 </Button>
+              ) : user ? (
+                !isInstructor && !isEnrolled && (
+                  <PaymentButton
+                    courseId={course.id}
+                    amount={course.price || 0}
+                    courseTitle={course.title}
+                  />
+                )
               ) : (
                 <Button 
-                  size="lg" 
-                  className="bg-pana-gold hover:bg-amber-500 text-pana-navy font-semibold"
-                  onClick={handleEnroll}
-                  disabled={isEnrolling}
+                  className="mt-4"
+                  onClick={() => navigate('/auth', { state: { from: window.location.pathname } })}
                 >
-                  {isEnrolling ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Enrolling...
-                    </>
-                  ) : (
-                    'Enroll Now'
-                  )}
+                  Sign In to Enroll
                 </Button>
               )}
             </div>
@@ -277,21 +250,22 @@ const CourseDetails: React.FC = () => {
         </div>
 
         {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column */}
-            <div className="lg:col-span-2 space-y-8">
-              {/* Course Description */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-2xl font-bold">Course Description</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-700 leading-relaxed">
-                    {course.description}
-                  </p>
-                </CardContent>
-              </Card>
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-12">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Left Column */}
+              <div className="lg:col-span-2 space-y-8">
+                {/* Course Description */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-2xl font-bold">Course Description</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-700 leading-relaxed">
+                      {course.description}
+                    </p>
+                  </CardContent>
+                </Card>
 
               {/* What You'll Learn */}
               <Card>
@@ -408,8 +382,9 @@ const CourseDetails: React.FC = () => {
               </Card>
             </div>
           </div>
+          </div>
         </div>
-      </div>
+      </main>
       <Footer />
     </div>
   );

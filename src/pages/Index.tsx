@@ -7,11 +7,13 @@ import UpcomingCoursesSection from "@/components/UpcomingCoursesSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
+import SocialMediaIcons from "@/components/SocialMediaIcons";
 
 const Index = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
       <Navigation />
+      <SocialMediaIcons />
       <HeroSection />
       <AboutSection />
       <ServicesSection />

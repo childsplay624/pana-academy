@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Target, Eye, Heart, CheckCircle, Users, Globe, BookOpen } from "lucide-react";
+import { Target, Eye, Heart, CheckCircle, Users, Globe, BookOpen, ChevronRight } from "lucide-react";
 import panaBuilding from "@/assets/pana-building.jpg";
+import { Button } from "@/components/ui/button";
 
 const AboutSection = () => {
   const coreValues = [
@@ -77,6 +78,7 @@ const AboutSection = () => {
               <p className="text-foreground leading-relaxed">
                 To be the leading academy for professional development across Africa, recognized globally for excellence in training, consulting, and research that transforms careers and organizations.
               </p>
+              
             </div>
 
             {/* Highlights */}
@@ -92,6 +94,16 @@ const AboutSection = () => {
                   </div>
                 </div>
               ))}
+              <div className="mt-8">
+                <Button 
+                  variant="default"
+                  size="lg"
+                  className="bg-red-600 hover:bg-red-700 transition-colors duration-200 text-white"
+                >
+                  Learn more about our programs
+                  <ChevronRight className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>

@@ -11,7 +11,9 @@ import {
   Calendar,
   FileText,
   HelpCircle,
-  LogOut
+  LogOut,
+  CreditCard,
+  MessageSquareText
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -52,6 +54,7 @@ export function DashboardSidebar() {
         ...baseItems,
         { title: "User Management", url: "/dashboard/users", icon: Users },
         { title: "Course Management", url: "/dashboard/courses", icon: BookOpen },
+        { title: "Testimonials", url: "/dashboard/testimonials", icon: MessageSquareText },
         { title: "Analytics", url: "/dashboard/analytics", icon: TrendingUp },
         { title: "Settings", url: "/dashboard/settings", icon: Settings },
       ];

@@ -153,7 +153,7 @@ export default function UserManagement() {
 
   return (
     <DashboardLayout>
-      <div className="container mx-auto px-6 py-6">
+      <div className="space-y-8">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-3xl font-bold">User Management</h1>

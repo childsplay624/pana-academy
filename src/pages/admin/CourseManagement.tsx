@@ -123,7 +123,7 @@ export default function CourseManagement() {
 
   return (
     <DashboardLayout>
-      <div className="container mx-auto px-6 py-6">
+      <div className="space-y-8">
         {/* Add Course Button */}
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold tracking-tight">Course Management</h1>

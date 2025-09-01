@@ -11,9 +11,106 @@ export type Database = {
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "13.0.4"
-  }
+  };
+  
   public: {
     Tables: {
+      testimonials: {
+        Row: {
+          id: string
+          name: string
+          position: string
+          company: string
+          content: string
+          rating: number
+          image_initials: string | null
+          avatar_url: string | null
+          is_active: boolean
+          display_order: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          position: string
+          company: string
+          content: string
+          rating: number
+          image_initials?: string | null
+          avatar_url?: string | null
+          is_active?: boolean
+          display_order?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          position?: string
+          company?: string
+          content?: string
+          rating?: number
+          image_initials?: string | null
+          avatar_url?: string | null
+          is_active?: boolean
+          display_order?: number
+          updated_at?: string
+        }
+      }
+      payments: {
+        Row: {
+          id: string
+          user_id: string
+          course_id: string
+          amount: number
+          provider: 'paystack' | 'flutterwave'
+          reference: string
+          status: 'pending' | 'completed' | 'failed'
+          metadata: Json | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          course_id: string
+          amount: number
+          provider: 'paystack' | 'flutterwave'
+          reference: string
+          status?: 'pending' | 'completed' | 'failed'
+          metadata?: Json | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          course_id?: string
+          amount?: number
+          provider?: 'paystack' | 'flutterwave'
+          reference?: string
+          status?: 'pending' | 'completed' | 'failed'
+          metadata?: Json | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_course_id_fkey"
+            columns: ["course_id"]
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          }
+        ]
+      },
+      
       assignment_submissions: {
         Row: {
           assignment_id: string
@@ -794,47 +891,57 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      award_certificate: {
+      generate_certificate: {
         Args: {
-          _completion_date?: string
-          _course_id: string
-          _enrollment_id: string
-          _grade?: string
-          _score?: number
-          _user_id: string
-        }
-        Returns: string
-      }
+          _user_id: string;
+          _course_id: string;
+          _enrollment_id: string;
+          _title: string;
+          _course_title: string;
+          _instructor_name: string;
+          _course_duration_hours: number;
+          _completion_date?: string;
+          _score?: number;
+          _grade?: string;
+        };
+        Returns: {
+          success: boolean;
+          certificate_id?: string;
+          data?: any;
+          error?: string;
+          error_code?: string;
+        };
+      };
       award_points: {
         Args: {
-          _action_type: string
-          _description?: string
-          _points: number
-          _reference_id?: string
-          _user_id: string
-        }
-        Returns: boolean
-      }
+          _action_type: string;
+          _description?: string;
+          _points: number;
+          _reference_id?: string;
+          _user_id: string;
+        };
+        Returns: boolean;
+      };
       calculate_user_level: {
-        Args: { exp_points: number }
-        Returns: number
-      }
+        Args: { exp_points: number };
+        Returns: number;
+      };
       generate_certificate_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+        Args: Record<PropertyKey, never>;
+        Returns: string;
+      };
       generate_verification_code: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+        Args: Record<PropertyKey, never>;
+        Returns: string;
+      };
       is_admin: {
-        Args: { _user_id: string }
-        Returns: boolean
-      }
+        Args: { _user_id: string };
+        Returns: boolean;
+      };
       update_user_streak: {
-        Args: { _user_id: string }
-        Returns: boolean
-      }
+        Args: { _user_id: string };
+        Returns: boolean;
+      };
     }
     Enums: {
       assignment_status: "pending" | "submitted" | "graded" | "late"

@@ -198,7 +198,10 @@ export default function Auth() {
                     Password
                   </Label>
                   {isLogin && (
-                    <Link to="/forgot-password" className="text-xs text-pana-blue hover:underline">
+                    <Link 
+                      to="/reset-password" 
+                      className="text-sm font-medium text-pana-blue hover:text-pana-navy transition-colors"
+                    >
                       Forgot password?
                     </Link>
                   )}

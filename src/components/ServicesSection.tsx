@@ -96,7 +96,7 @@ const ServicesSection = () => {
             <Card key={index} className="group border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
               <div className={`h-2 bg-gradient-to-r ${service.gradient}`}></div>
               <CardHeader className="text-center pb-4">
-                <div className={`inline-flex w-16 h-16 items-center justify-center rounded-full bg-gradient-to-r ${service.gradient} text-white mb-4 mx-auto group-hover:scale-110 transition-transform duration-300`}>
+                <div className="inline-flex w-16 h-16 items-center justify-center rounded-full bg-black text-white mb-4 mx-auto group-hover:scale-110 transition-transform duration-300">
                   <service.icon className="w-8 h-8" />
                 </div>
                 <CardTitle className="text-xl text-pana-navy">{service.title}</CardTitle>
@@ -113,7 +113,7 @@ const ServicesSection = () => {
                   ))}
                 </div>
 
-                <Button variant="outline" className="w-full group">
+                <Button variant="outline" className="w-full group border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white transition-colors">
                   Learn More
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
@@ -145,10 +145,17 @@ const ServicesSection = () => {
             Get in touch with our experts to discuss how PANA Academy can help you achieve your training and development goals.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="premium" size="lg">
+            <Button 
+              size="lg" 
+              className="bg-black text-white hover:bg-red-600 transition-colors"
+            >
               Schedule Consultation
             </Button>
-            <Button variant="outline" size="lg">
+            <Button 
+              variant="outline" 
+              size="lg"
+              className="border-black text-black hover:bg-red-600 hover:border-red-600 hover:text-white transition-colors"
+            >
               Download Brochure
             </Button>
           </div>
