@@ -2,27 +2,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Target, Eye, Heart, CheckCircle, Users, Globe, BookOpen, ChevronRight } from "lucide-react";
 import panaBuilding from "@/assets/pana-building.jpg";
 import { Button } from "@/components/ui/button";
+import { Link } from 'react-router-dom';
 
 const AboutSection = () => {
-  const coreValues = [
-    {
-      category: "3Ts of Excellence",
-      values: [
-        { name: "Trust", description: "Building lasting relationships through integrity" },
-        { name: "Time", description: "Delivering value on schedule, every time" },
-        { name: "Transparency", description: "Clear communication and honest practices" }
-      ]
-    },
-    {
-      category: "3Cs of Excellence", 
-      values: [
-        { name: "Character", description: "Ethical leadership and moral excellence" },
-        { name: "Capacity", description: "Continuous learning and skill development" },
-        { name: "Commitment", description: "Dedication to excellence and results" }
-      ]
-    }
-  ];
-
   const highlights = [
     {
       icon: Users,
@@ -95,45 +77,20 @@ const AboutSection = () => {
                 </div>
               ))}
               <div className="mt-8">
-                <Button 
-                  variant="default"
-                  size="lg"
-                  className="bg-red-600 hover:bg-red-700 transition-colors duration-200 text-white"
-                >
-                  Learn more about our programs
-                  <ChevronRight className="ml-2 h-4 w-4" />
-                </Button>
+                <Link to="/courses">
+                  <Button 
+                    variant="default"
+                    size="lg"
+                    className="bg-red-600 hover:bg-red-700 transition-colors duration-200 text-white"
+                  >
+                    Learn more about our programs
+                    <ChevronRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Core Values */}
-        <div className="mb-16">
-          <h3 className="text-3xl font-bold text-center text-pana-navy mb-12">Our Core Values</h3>
-          <div className="grid md:grid-cols-2 gap-8">
-            {coreValues.map((category, categoryIndex) => (
-              <Card key={categoryIndex} className="bg-white border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <CardContent className="p-8">
-                  <h4 className="text-xl font-bold text-pana-navy mb-6 text-center">{category.category}</h4>
-                  <div className="space-y-4">
-                    {category.values.map((value, valueIndex) => (
-                      <div key={valueIndex} className="flex items-start space-x-3">
-                        <CheckCircle className="w-5 h-5 text-pana-gold mt-1 flex-shrink-0" />
-                        <div>
-                          <h5 className="font-semibold text-pana-navy">{value.name}</h5>
-                          <p className="text-muted-foreground text-sm">{value.description}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-       
+        </div>               
       </div>
     </section>
   );

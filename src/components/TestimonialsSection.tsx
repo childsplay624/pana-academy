@@ -179,7 +179,7 @@ const TestimonialsSection = () => {
                   <img 
                     src={company.logo} 
                     alt={company.name}
-                    className="max-h-12 max-w-full object-contain filter brightness-0 invert opacity-80 hover:opacity-100 transition-opacity"
+                    className="max-h-12 max-w-full object-contain opacity-100 hover:opacity-100 transition-opacity"
                   />
                 </div>
               </div>

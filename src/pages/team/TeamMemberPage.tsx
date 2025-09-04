@@ -9,56 +9,81 @@ import Footer from "@/components/Footer";
 
 const teamMembers = [
   {
-    id: "igilar-chukwuemeka",
-    name: "Mr. Igilar Chukwuemeka",
-    title: "Vice President, Synergy E&P",
-    subtitle: "Technical Sales & Business Growth Leader",
-    description: "A visionary leader with over 15 years of experience in technical sales and business development. Specializes in driving growth and innovation in the energy sector.",
-    fullBio: "Mr. Igilar Chukwuemeka is a seasoned executive with a proven track record in technical sales and business development. With over 15 years of experience in the energy sector, he has successfully led numerous high-value projects and strategic initiatives. His expertise lies in identifying new business opportunities, building strong client relationships, and driving revenue growth. Mr. Chukwuemeka holds an MBA in Business Administration and is known for his innovative approach to solving complex business challenges.",
+    id: "daere-akobo",
+    name: "Dr. Daere Afonya-a Akobo, FCIoD (London)",
+    title: "Chairman and Group CEO",
+    subtitle: "PANA Holdings",
+    description: "Visionary entrepreneur and business leader with over 25 years of experience across multiple industries including oil & gas, power, and technology.",
+    fullBio: "Dr. Daere Akobo, FCIoD (London) is a visionary entrepreneur, business mentor, and philanthropist celebrated for his unwavering commitment to excellence and innovation. As the Chairman and Group CEO of PANA Holdings, he oversees a dynamic portfolio of companies, including PE Energy Ltd, Synergy E&P Ltd, AKD Digital Solutions, PE Goldland, PANA Academy, PANA Infrastructure, Afriksnus, Ataraxia, Diplomatic Village Limited (DVL), and the Daere Afonya-a Akobo Foundation (DAAF). Through DAAF, Dr. Akobo is deeply dedicated to giving back to the community, empowering the less privileged, and driving meaningful social impact. In business, his bold, creative, and innovative mindset enables him to tackle complex challenges, deliver transformative solutions, and inspire growth across industries.",
     experience: [
-      "15+ years in technical sales and business development",
-      "Expertise in energy sector growth strategies",
-      "Proven track record in client relationship management"
-    ]
+      "Over 25 years of experience in electrical engineering and flow measurement",
+      "Former Electrical and Instrumentation Superintendent at International Petroleum of Nigeria",
+      "Recognized as African Continental Top Talent at General Electric (GE)",
+      "Extensive business portfolio across multiple industries including power, water technology, and IT"
+    ],
+    image: "/team/daere-akobo.jpg"
   },
   {
-    id: "sylvia-agbamuche-maduka",
-    name: "Dr. Sylvia Agbamuche‑Maduka",
-    title: "Vice President",
+    id: "iyenemi-akobo",
+    name: "Mrs. Iyenemi Akobo",
+    title: "Executive Director",
     subtitle: "Global Business Services",
-    description: "Seasoned executive with a Ph.D. in Business Administration. Leads our global operations with a focus on operational excellence and customer satisfaction.",
-    fullBio: "Dr. Sylvia Agbamuche‑Maduka is a distinguished executive with a Ph.D. in Business Administration. She brings over 20 years of experience in global operations and business strategy. Dr. Agbamuche‑Maduka has a strong background in driving operational excellence and implementing best practices across international markets. Her leadership has been instrumental in scaling operations and improving customer satisfaction metrics across all regions. She is a published author and frequent speaker at international business conferences.",
+    description: "Seasoned business administrator with international training and expertise in corporate governance and business administration.",
+    fullBio: "Mrs. Iyenemi Akobo has been the backbone of the entire organization since its inception. With a background in Business Administration and CLE training in various international institutions in London, Dubai, Switzerland and Harvard, she is an alumna of the prestigious IMD Business School. She is a central figure in the administration of the group and a valued contributor to the growth of the business structure. She has held and efficiently managed key positions enabling and spurring the growth vision of the Chairman. She is the Executive Director (ED) for the Global Business Services unit, additionally supervising HR, Commercial Services and part of the Accounting functions. She is also driving the implementation of all Corporate Governance requirements on the ground together with a dedicated team of professionals.",
     experience: [
-      "20+ years in global operations",
-      "Ph.D. in Business Administration",
-      "Expert in operational excellence"
-    ]
+      "Extensive training in Business Administration and CLE from top international institutions",
+      "Alumna of IMD Business School",
+      "Expertise in corporate governance and business administration",
+      "Key role in implementing corporate governance requirements"
+    ],
+    image: "/team/iyenemi-akobo.jpg"
   },
   {
-    id: "lalit-zavar",
-    name: "Mr. Lalit Zavar",
-    title: "VP AKD Digital",
-    subtitle: "Digital Transformation Leader",
-    description: "Technology strategist with a passion for digital innovation. Leads our digital transformation initiatives and technology partnerships.",
-    fullBio: "Lalit Zavar is a technology visionary with over 18 years of experience in digital transformation and technology strategy. As VP of AKD Digital, he leads the company's digital innovation initiatives and strategic technology partnerships. Mr. Zavar has a unique ability to bridge the gap between business needs and technological solutions, having led successful digital transformation projects for Fortune 500 companies. He holds multiple certifications in emerging technologies and is a sought-after advisor for digital strategy.",
+    id: "callista-azogu",
+    name: "Mrs. Callista C. Azogu",
+    title: "Board Member",
+    subtitle: "Former Deputy Managing Director, NAOC",
+    description: "Accomplished executive with extensive experience in the oil and gas industry, specializing in finance, HR, and corporate governance.",
+    fullBio: "Mrs. Callista C. Azogu attended FGGC Gboko and University of Ilorin, bagging MSc. in Managerial Accounting, BSc. Accounting & Finance. She joined Nigerian Agip Oil Company Limited (NAOC) in August 1996 as a Budget Analyst and rose through the ranks working through various professional areas in the Oil and Gas sector within the Eni ('AGIP') group locally and abroad. Her experiences span topmost level industry advocacy, Accounting, Finance, Nigerian content, Human Resources, Administration, and Commercial. She became a director of the company in 2015 and rose to the position of Deputy Managing Director from 2018 to August 2022 (Retirement date). In addition, she held the position of General Manager Human Resources & Organization of the Company from 2015 to 2022. She is the first female to hold the position in the over 60 years of existence of the Company. She won the award of the first Nigerian Content Operator of the year for the Company and received the PETAN Chairman's Outstanding Achievement Recognition Award for Nigerian content in 2015. She was also a director of the Nigerian Agip Closed Pension Fund Ltd from 2015 to August 2022.",
     experience: [
-      "18+ years in digital transformation",
-      "Expert in technology strategy",
-      "Leader in digital innovation"
-    ]
+      "Former Deputy Managing Director, Nigerian Agip Oil Company Limited (NAOC)",
+      "Over 25 years of experience in the oil and gas industry",
+      "Fellow of the Institute of Chartered Accountants of Nigeria",
+      "Recipient of PETAN Chairman's Outstanding Achievement Recognition Award"
+    ],
+    image: "/team/callista-azogu.jpg"
   },
   {
-    id: "domotimi-leghemo",
-    name: "Mr. Domotimi Leghemo",
-    title: "General Manager",
-    subtitle: "PANA Infrastructure",
-    description: "Infrastructure expert with extensive experience in managing complex technical operations and large-scale projects across multiple regions.",
-    fullBio: "Domotimi Leghemo is a results-driven General Manager with over 25 years of experience in infrastructure development and technical operations. His expertise spans across project management, operational strategy, and team leadership in complex, multi-stakeholder environments. Mr. Leghemo has successfully overseen the delivery of large-scale infrastructure projects across multiple regions, consistently meeting or exceeding performance targets. He holds a Master's degree in Civil Engineering and is a certified Project Management Professional (PMP).",
+    id: "ifeyinwa-achumba",
+    name: "Dr. Ifeyinwa Eucharia Achumba",
+    title: "Advisory Board Member",
+    subtitle: "MNCS, MNSE, COREN Reg, CPN Reg, MIEEE, FFTF Fellow",
+    description: "Experienced academic and industry professional with expertise in STEM education and industry-academia partnerships.",
+    fullBio: "Dr. Ifeyinwa Eucharia Achumba is an accomplished academic and industry professional with over twenty-five years of university service in various capacities including Head of Department (Electrical and Electronic Engineering), Head of Department (Computer Engineering), University Senate member, and Director of Information and Communication Technology (DICT). Her teaching efforts are geared towards producing graduate entrepreneurs and industry-ready graduates. She is a passionate advocate for Academia-Industry Partnerships (AIP) and a strong proponent of increasing female participation in STEM fields.",
     experience: [
-      "25+ years in infrastructure management",
-      "Expert in large-scale project delivery",
-      "PMP certified professional"
-    ]
+      "Over 25 years of university service in various academic and administrative roles",
+      "PhD from the University of Portsmouth, United Kingdom with Postdoctoral research experience",
+      "Current Chair of the Institute of Electrical and Electronic Engineers (IEEE) Nigeria Section",
+      "Intellectual Property Commissioner for Oil and Gas Trainers Association of Nigeria (OGTAN)",
+      "Active participant in Oil & Gas National Occupational Standards (NOS) development",
+      "Member of the Sector Working Group (SWG) on Education for NCDMB"
+    ],
+    image: "/team/Ifeyinwa-Eucharia.jpg"
+  },
+  {
+    id: "kennedy-dike",
+    name: "Kennedy Okechukwu Dike MCIPM, HRPL, FSM, FMCI",
+    title: "Advisory Board Member",
+    subtitle: "PANA Academy",
+    description: "Seasoned HR practitioner with vast experience in Oil & Gas, Manufacturing, and Corporate Governance.",
+    fullBio: "Kennedy Okechukwu Dike MCIPM, HRPL, FSM, FMCI is a seasoned Human Resources practitioner with vast experience spanning Oil & Gas, Manufacturing, Shipping, International Freight Logistics, Business Sustainability and Corporate governance. As certified HR Manager, he is licensed to practice Human Resources in Nigeria by the Chartered Institute of Personnel Management (CIPMN) the apex regulatory body for human resources practice Nigeria. He is also a member of the Society for Corporate Governance in Nigeria and currently the GM, Global Business Services PANA Holdings. Before joining PANA Holdings, he worked for Belemaoil Producing Ltd, Notore Chemical Industries Plc, The Oiltest Group and Ideke Shipping Ltd working in partnership with Hellmann Worldwide Logistics. Mr. Dike had served as a member of the Governing Council of the University of Calabar and Governing Council of the Chartered Institute of Personnel Management Nigeria (CIPMN). He is presently a member of the Board of Trustees of a number of organizations. He is the Rivers State Branch Chairman of Learning & Development Network International LDNI; Fellow Mentoring and Career Development Institute of Nigeria; Fellow, Institute of Strategic Management Nigeria (Chartered) and Fellow Chartered Business Institute London.",
+    experience: [
+      "GM, Global Business Services PANA Holdings",
+      "Former member of Governing Council, University of Calabar",
+      "Fellow, Institute of Strategic Management Nigeria",
+      "Extensive experience in HR, corporate governance, and business sustainability"
+    ],
+    image: "/team/kennedy-dike.jpg"
   }
 ];
 

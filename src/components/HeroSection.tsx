@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import heroSlide1 from "@/assets/hero-slide-1.jpg";
 import heroSlide2 from "@/assets/hero-slide-2.jpg";
 import heroSlide3 from "@/assets/hero-slide-3.jpg";
-import { Button } from "@/components/ui/button";
 
 const slides = [
   {
@@ -80,12 +81,14 @@ const HeroSection = () => {
             <span className="block text-white">{current.highlight}</span>
           </h1>
           <p className="mt-6 text-lg md:text-xl text-gray-200">{current.subtitle}</p>
-          <Button
-            size="lg"
-            className="mt-8 bg-red-600 text-white hover:bg-red-700"
-          >
-            Explore Programs
-          </Button>
+          <Link to="/courses">
+            <Button
+              size="lg"
+              className="mt-8 bg-red-600 text-white hover:bg-red-700"
+            >
+              Explore Programs
+            </Button>
+          </Link>
         </motion.div>
       </div>
 

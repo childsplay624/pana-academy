@@ -8,6 +8,7 @@ import TestimonialsSection from "@/components/TestimonialsSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import SocialMediaIcons from "@/components/SocialMediaIcons";
+import ValuesSection from "@/components/ValuesSection";
 
 const Index = () => {
   return (
@@ -16,6 +17,7 @@ const Index = () => {
       <SocialMediaIcons />
       <HeroSection />
       <AboutSection />
+      <ValuesSection />
       <ServicesSection />
       <CoursesSection />
       <UpcomingCoursesSection />

@@ -5,9 +5,9 @@ const Logo = () => {
   return (
     <Link to="/" className="flex items-center">
       <img 
-        src="/logo.png" // Replace with your logo path
+        src="/logo.png"
         alt="PANA Academy Logo"
-        className="h-10 w-auto" // Adjust height as needed
+        className="h-16 w-auto transition-all duration-200 hover:scale-105"
       />
     </Link>
   );

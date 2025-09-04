@@ -9,10 +9,26 @@ const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isHovering, setIsHovering] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { user, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   let closeTimer: NodeJS.Timeout;
+
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 10;
+      if (isScrolled !== scrolled) {
+        setScrolled(isScrolled);
+      }
+    };
+
+    document.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      document.removeEventListener('scroll', handleScroll);
+    };
+  }, [scrolled]);
 
   // Close mobile menu when route changes
   useEffect(() => {
@@ -153,7 +169,7 @@ const Navigation = () => {
   ];
 
   const renderDesktopNav = () => (
-    <nav className="hidden md:flex items-center space-x-1">
+    <nav className="hidden md:flex items-center space-x-2">
       {navItems.map((item) => (
         <div 
           key={item.name} 
@@ -191,8 +207,8 @@ const Navigation = () => {
           </div>      
           {item.dropdown && (
             <div 
-              className={`absolute left-0 mt-1 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50 transition-all duration-200 ${
-                activeDropdown === item.name.toLowerCase() ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1 pointer-events-none'
+              className={`absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white/95 backdrop-blur-md ring-1 ring-black/5 focus:outline-none z-50 transition-all duration-200 transform ${
+                activeDropdown === item.name.toLowerCase() ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
               }`}
               onMouseEnter={() => handleDropdownEnter(item.name)}
               onMouseLeave={handleDropdownLeave}
@@ -206,7 +222,7 @@ const Navigation = () => {
                       subItem.onClick?.(e as any);
                       setActiveDropdown(null);
                     }}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-red-600 transition-colors duration-150 font-medium"
                   >
                     {subItem.name}
                   </a>
@@ -220,11 +236,15 @@ const Navigation = () => {
   );
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-border shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+    <nav className={`fixed top-0 left-0 right-0 z-50 h-24 flex items-center transition-all duration-300 ${
+      scrolled 
+        ? 'bg-white/95 backdrop-blur-md shadow-md' 
+        : 'bg-white/10 backdrop-blur-sm before:absolute before:inset-0 before:bg-white/30 before:backdrop-blur-sm before:z-[-1]'
+    } relative`}>
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center">
           {/* Logo */}
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 flex items-center">
             <Logo />
           </div>
 
@@ -232,7 +252,7 @@ const Navigation = () => {
           {renderDesktopNav()}
 
           {/* CTA Button */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-4 h-full">
             {user ? (
               <div className="flex items-center gap-4">
                 <Link to="/dashboard">
@@ -289,7 +309,7 @@ const Navigation = () => {
                             dropdownItem.onClick(e);
                             setIsOpen(false);
                           }}
-                          className="block px-4 py-2 text-foreground hover:bg-pana-light-gray hover:text-pana-blue rounded-md transition-colors duration-200 cursor-pointer"
+                          className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200 cursor-pointer"
                         >
                           {dropdownItem.name}
                         </a>

@@ -15,9 +15,9 @@ const TrainingDelivery = () => {
       <div className="min-h-screen bg-gradient-subtle">
         <Navigation />
         
-        <main className="pt-20">
+        <main>
           {/* Hero Section with Visual Impact */}
-          <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden bg-cover bg-center" style={{ backgroundImage: 'url(/src/assets/hero-training.jpg)' }}>
+          <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-cover bg-center" style={{ backgroundImage: 'url(/src/assets/hero-training.jpg)' }}>
             {/* Black overlay */}
             <div className="absolute inset-0 bg-black/60"></div>
             
@@ -38,14 +38,14 @@ const TrainingDelivery = () => {
               <div className="space-y-8 animate-fade-in">
                 <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full text-white/90 text-sm font-medium border border-white/20">
                   <Zap className="w-5 h-5 text-pana-gold" />
-                  World-Class Training Excellence
+                  <span className="text-red-500">World-Class Training Excellence</span>
                   <ArrowRight className="w-4 h-4" />
                 </div>
                 
-                <h1 className="text-6xl md:text-8xl font-bold text-white mb-6 leading-tight">
-                  Training
+                <h1 className="text-6xl md:text-8xl font-bold mb-6 leading-tight">
+                  <span className="text-red-500">Training</span>
                   <span className="block bg-gradient-to-r from-pana-gold to-yellow-300 bg-clip-text text-transparent">
-                    Delivery
+                    <span className="text-red-500">Delivery</span>
                   </span>
                 </h1>
                 
@@ -314,7 +314,7 @@ const TrainingDelivery = () => {
 
           {/* Dynamic Call to Action */}
           <section className="py-20 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-pana-navy via-pana-blue to-pana-navy"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-red-400 via-red-300 to-red-500"></div>
             <div className="absolute inset-0">
               <div className="absolute top-0 left-0 w-full h-full opacity-10">
                 <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-pana-gold rounded-full blur-3xl animate-pulse"></div>
@@ -332,7 +332,7 @@ const TrainingDelivery = () => {
                 <h3 className="text-4xl md:text-6xl font-bold text-white leading-tight">
                   Ready to Experience
                   <span className="block bg-gradient-to-r from-pana-gold to-yellow-300 bg-clip-text text-transparent">
-                    Training Excellence?
+                    <span className="text-red-500">Training Excellence?</span>
                   </span>
                 </h3>
                 

@@ -6,27 +6,19 @@ import { Link } from "react-router-dom";
 import { fetchAllCourses } from "@/services/courseService";
 import type { Course } from "@/services/courseService";
 
-const CoursesSection = ({ showAll = false }) => {
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface CoursesSectionProps {
+  showAll?: boolean;
+  courses?: Course[];
+  loading?: boolean;
+  error?: string | null;
+}
 
-  useEffect(() => {
-    const loadCourses = async () => {
-      try {
-        const data = await fetchAllCourses();
-        setCourses(data);
-      } catch (err) {
-        console.error('Error loading courses:', err);
-        setError('Failed to load courses. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadCourses();
-  }, []);
-
+const CoursesSection = ({ 
+  showAll = false, 
+  courses = [], 
+  loading = false, 
+  error = null 
+}: CoursesSectionProps) => {
   const displayCourses = showAll ? courses : courses.slice(0, 4);
 
   return (

@@ -8,6 +8,10 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { Link } from 'react-router-dom';
 
+interface Profile {
+  full_name: string;
+}
+
 interface Course {
   id: string;
   title: string;
@@ -18,9 +22,7 @@ interface Course {
   thumbnail_url: string;
   instructor_name: string;
   enrolled_count: number;
-  profiles?: {
-    full_name: string;
-  };
+  profiles: Profile[];
 }
 
 export default function UpcomingCoursesSection() {
@@ -53,11 +55,15 @@ export default function UpcomingCoursesSection() {
 
       if (error) throw error;
 
-      const coursesWithInstructor = data?.map(course => ({
-        ...course,
-        instructor_name: course.profiles?.full_name || 'Instructor',
-        enrolled_count: Math.floor(Math.random() * 150) + 20 // Placeholder enrollment count
-      })) || [];
+      const coursesWithInstructor = data?.map(course => {
+        const instructorName = course.profiles?.[0]?.full_name || 'Instructor';
+        return {
+          ...course,
+          instructor_name: instructorName,
+          enrolled_count: Math.floor(Math.random() * 150) + 20, // Placeholder enrollment count
+          profiles: course.profiles || []
+        };
+      }) || [];
 
       setCourses(coursesWithInstructor);
     } catch (error) {
