@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Target, Eye, Heart, CheckCircle, Users, Globe, BookOpen, ChevronRight } from "lucide-react";
-import panaBuilding from "@/assets/pana-building.jpg";
+import trainingImage from "@/assets/pana.jpg";
 import { Button } from "@/components/ui/button";
 import { Link } from 'react-router-dom';
 
@@ -39,9 +39,9 @@ const AboutSection = () => {
           {/* Left Column - Image */}
           <div className="relative">
             <img 
-              src={panaBuilding} 
-              alt="PANA Academy Building" 
-              className="rounded-2xl shadow-lg w-full h-96 object-cover"
+              src={trainingImage} 
+              alt="Professional Training at PANA Academy" 
+              className="rounded-2xl shadow-lg w-full h-[40rem] object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-pana-navy/20 to-transparent rounded-2xl"></div>
           </div>

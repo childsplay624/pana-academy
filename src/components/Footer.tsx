@@ -132,7 +132,7 @@ const Footer = () => {
                   placeholder="Enter your email address" 
                   className="bg-white/10 border-gray-600 text-white placeholder:text-gray-400"
                 />
-                <Button variant="hero">
+                <Button variant="default" className="bg-red-600 hover:bg-red-700">
                   Subscribe
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
