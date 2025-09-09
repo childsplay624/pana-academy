@@ -313,30 +313,30 @@ const TrainingDelivery = () => {
           </section>
 
           {/* Dynamic Call to Action */}
-          <section className="py-20 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-red-400 via-red-300 to-red-500"></div>
+          <section className="bg-gray-50 dark:bg-gray-900 py-20 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900"></div>
             <div className="absolute inset-0">
               <div className="absolute top-0 left-0 w-full h-full opacity-10">
-                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-pana-gold rounded-full blur-3xl animate-pulse"></div>
-                <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-white rounded-full blur-3xl animate-pulse animation-delay-2000"></div>
+                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-pana-gold/20 rounded-full blur-3xl animate-pulse"></div>
+                <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gray-400/20 rounded-full blur-3xl animate-pulse animation-delay-2000"></div>
               </div>
             </div>
             
             <div className="relative max-w-6xl mx-auto px-6 lg:px-8 text-center">
               <div className="space-y-8">
-                <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full text-white border border-white/20">
+                <div className="inline-flex items-center gap-3 bg-white dark:bg-gray-800 px-6 py-3 rounded-full text-gray-800 dark:text-gray-200 font-medium border border-gray-200 dark:border-gray-700 shadow-sm">
                   <Zap className="w-5 h-5 text-pana-gold" />
                   Transform Your Organization Today
                 </div>
                 
-                <h3 className="text-4xl md:text-6xl font-bold text-white leading-tight">
+                <h3 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white leading-tight">
                   Ready to Experience
                   <span className="block bg-gradient-to-r from-pana-gold to-yellow-300 bg-clip-text text-transparent">
-                    <span className="text-red-500">Training Excellence?</span>
+                    <span className="text-red-500 dark:text-red-400">Training Excellence?</span>
                   </span>
                 </h3>
                 
-                <p className="text-xl md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+                <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
                   Join over 10,000 professionals who have transformed their careers through our revolutionary training delivery methods and achieved measurable success.
                 </p>
 
@@ -351,21 +351,23 @@ const TrainingDelivery = () => {
                   
                   <a 
                     href="#courses" 
-                    className="inline-flex items-center gap-3 px-10 py-5 bg-white/10 backdrop-blur-sm text-white font-semibold rounded-2xl border border-white/20 hover:bg-white/20 transition-all duration-300"
+                    className="inline-flex items-center gap-3 px-10 py-5 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 font-semibold rounded-2xl border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300 shadow-sm"
                   >
                     Explore Courses
                   </a>
                 </div>
 
                 {/* Trust Indicators */}
-                <div className="pt-12 border-t border-white/20">
-                  <p className="text-white/60 text-sm mb-6">Trusted by leading organizations worldwide</p>
-                  <div className="flex justify-center items-center gap-8 opacity-60">
-                    <div className="text-white font-semibold">Fortune 500</div>
-                    <div className="w-px h-6 bg-white/30"></div>
-                    <div className="text-white font-semibold">ISO Certified</div>
-                    <div className="w-px h-6 bg-white/30"></div>
-                    <div className="text-white font-semibold">Global Partners</div>
+                <div className="bg-white dark:bg-gray-800 -mx-6 px-6 py-12 border-t border-gray-200 dark:border-gray-700 mt-12">
+                  <div className="max-w-7xl mx-auto">
+                    <p className="text-gray-500 dark:text-gray-400 text-sm mb-6 text-center">Trusted by leading organizations worldwide</p>
+                    <div className="flex flex-wrap justify-center items-center gap-6 md:gap-8">
+                      <div className="text-gray-700 dark:text-gray-200 font-semibold">Fortune 500</div>
+                      <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 hidden md:block"></div>
+                      <div className="text-gray-700 dark:text-gray-200 font-semibold">ISO Certified</div>
+                      <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 hidden md:block"></div>
+                      <div className="text-gray-700 dark:text-gray-200 font-semibold">Global Partners</div>
+                    </div>
                   </div>
                 </div>
               </div>

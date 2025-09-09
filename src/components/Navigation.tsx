@@ -83,10 +83,28 @@ const Navigation = () => {
   };
 
   const handleDropdownLeave = () => {
+    // Don't close the dropdown if the mouse is still over the dropdown content
+    if (isHovering) return;
+    
+    closeTimer = setTimeout(() => {
+      // Only close if we're not hovering over any dropdown
+      if (!isHovering) {
+        setActiveDropdown(null);
+      }
+    }, 500); // Increased delay to 500ms for better user experience
+  };
+  
+  // Handle mouse enter/leave on the dropdown content
+  const handleDropdownContentEnter = () => {
+    clearTimeout(closeTimer);
+    setIsHovering(true);
+  };
+  
+  const handleDropdownContentLeave = () => {
     setIsHovering(false);
     closeTimer = setTimeout(() => {
       setActiveDropdown(null);
-    }, 300); // 300ms delay before closing
+    }, 300);
   };
 
   const handleDropdownClick = (e: React.MouseEvent<HTMLAnchorElement>, dropdownName: string) => {
@@ -104,14 +122,14 @@ const Navigation = () => {
       onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleNavigation(e, "/")
     },    
     { 
-      name: "About Us",
+      name: "About PANA",
       href: "#about",
       onMouseEnter: () => handleDropdownEnter('about'),
       onMouseLeave: handleDropdownLeave,
       onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleDropdownClick(e, 'about'),
       dropdown: [
         { 
-          name: "About", 
+          name: "About Us", 
           href: "#about",
           onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleNavigation(e, "#about")
         },
@@ -169,22 +187,17 @@ const Navigation = () => {
   ];
 
   const renderDesktopNav = () => (
-    <nav className="hidden md:flex items-center space-x-2">
-      {navItems.map((item) => (
-        <div 
-          key={item.name} 
-          className="relative group"
-          onMouseEnter={() => item.onMouseEnter?.()}
-          onMouseLeave={() => item.onMouseLeave?.()}
-        >
-          <div className="relative">
-            <a 
-              href={item.href} 
-              className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-md ${
-                location.pathname === item.href || 
+    <nav className="hidden md:flex items-center">
+      <div className="flex items-center space-x-4">
+        {navItems.map((item) => (
+          <div key={item.name} className="relative group">
+            <a
+              href={item.href}
+              className={`px-4 py-2.5 rounded-md text-xs font-medium tracking-wider uppercase transition-colors ${
+                location.pathname === item.href ||
                 (item.href.startsWith('#') && location.pathname === '/' && location.hash === item.href)
-                  ? 'text-primary'
-                  : 'text-foreground/60 hover:text-foreground/80 hover:bg-gray-100'
+                  ? 'bg-gray-100 dark:bg-gray-800 text-foreground'
+                  : 'text-foreground/70 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-foreground/90'
               }`}
               onClick={(e) => {
                 if (item.dropdown) {
@@ -195,43 +208,43 @@ const Navigation = () => {
                 }
               }}
             >
-              {item.name}
-              {item.dropdown && (
-                <ChevronDown 
-                  className={`ml-1 h-4 w-4 transition-transform ${
-                    activeDropdown === item.name.toLowerCase() ? 'rotate-180' : ''
-                  }`} 
-                />
-              )}
-            </a>
-          </div>      
-          {item.dropdown && (
-            <div 
-              className={`absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white/95 backdrop-blur-md ring-1 ring-black/5 focus:outline-none z-50 transition-all duration-200 transform ${
-                activeDropdown === item.name.toLowerCase() ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
-              }`}
-              onMouseEnter={() => handleDropdownEnter(item.name)}
-              onMouseLeave={handleDropdownLeave}
-            >
-              <div className="py-1">
-                {item.dropdown.map((subItem) => (
-                  <a
-                    key={subItem.name}
-                    href={subItem.href}
-                    onClick={(e) => {
-                      subItem.onClick?.(e as any);
-                      setActiveDropdown(null);
-                    }}
-                    className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-red-600 transition-colors duration-150 font-medium"
-                  >
-                    {subItem.name}
-                  </a>
-                ))}
+              <div className="flex items-center gap-1.5 whitespace-nowrap">
+                {item.name}
+                {item.dropdown && (
+                  <ChevronDown 
+                    className={`h-3.5 w-3.5 transition-transform ${
+                      activeDropdown === item.name.toLowerCase() ? 'transform rotate-180' : ''
+                    }`}
+                  />
+                )}
               </div>
-            </div>
-          )}
-        </div>
-      ))}
+            </a>
+            {item.dropdown && activeDropdown === item.name.toLowerCase() && (
+              <div 
+                className="absolute left-0 mt-1 w-56 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black/5 dark:ring-white/10 z-50"
+                onMouseEnter={handleDropdownContentEnter}
+                onMouseLeave={handleDropdownContentLeave}
+              >
+                <div className="py-1">
+                  {item.dropdown.map((subItem) => (
+                    <a
+                      key={subItem.name}
+                      href={subItem.href}
+                      className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                      onClick={(e) => {
+                        subItem.onClick?.(e as any);
+                        setActiveDropdown(null);
+                      }}
+                    >
+                      {subItem.name}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
     </nav>
   );
 
@@ -299,14 +312,16 @@ const Navigation = () => {
                   >
                     {item.name}
                   </a>
-                  {item.dropdown && (
-                    <div className="pl-6 space-y-1">
-                      {item.dropdown.map((dropdownItem) => (
+                  {item.dropdown && activeDropdown === item.name.toLowerCase() && (
+                    <div className="mt-1 pl-4 space-y-1">
+                      {item.dropdown.map((subItem) => (
                         <a
-                          key={dropdownItem.name}
-                          href={dropdownItem.href}
+                          key={subItem.name}
+                          href={subItem.href}
+                          className="block px-4 py-3 rounded-md text-base font-medium text-foreground/70 dark:text-foreground/60 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-foreground/90 dark:hover:text-foreground/90 transition-colors"
                           onClick={(e) => {
-                            dropdownItem.onClick(e);
+                            subItem.onClick?.(e as any);
+                            setActiveDropdown(null);
                             setIsOpen(false);
                           }}
                           className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200 cursor-pointer"

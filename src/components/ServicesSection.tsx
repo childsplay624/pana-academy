@@ -156,7 +156,7 @@ const ServicesSection = () => {
               size="lg"
               className="border-black text-black hover:bg-red-600 hover:border-red-600 hover:text-white transition-colors"
             >
-              Download Brochure
+              Download Training Calendar
             </Button>
           </div>
         </div>

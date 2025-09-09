@@ -167,7 +167,7 @@ const CourseDetails: React.FC = () => {
     <div className="min-h-screen flex flex-col">
       <Navigation />
       <main className="flex-1 w-full">
-        <div className="w-full bg-gradient-to-r from-pana-navy to-pana-blue text-white py-12 px-4 sm:px-6 lg:px-8">
+        <div className="w-full bg-gradient-to-r from-red-700 to-red-500 text-white py-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <Button 
               variant="ghost" 

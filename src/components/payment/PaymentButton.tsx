@@ -75,14 +75,14 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
         <Button
           variant={selectedProvider === 'paystack' ? 'default' : 'outline'}
           onClick={() => setSelectedProvider('paystack')}
-          className="flex-1"
+          className="flex-1 bg-black text-white hover:bg-black/90 hover:text-white"
         >
           Pay with Paystack
         </Button>
         <Button
           variant={selectedProvider === 'flutterwave' ? 'default' : 'outline'}
           onClick={() => setSelectedProvider('flutterwave')}
-          className="flex-1"
+          className="flex-1 bg-black text-white hover:bg-black/90 hover:text-white"
         >
           Pay with Flutterwave
         </Button>
@@ -91,7 +91,7 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
       <Button
         onClick={handlePayment}
         disabled={isProcessing}
-        className="w-full bg-primary hover:bg-primary/90 text-white"
+        className="w-full bg-black hover:bg-black/90 text-white hover:text-white"
       >
         {isProcessing ? (
           <>
@@ -101,7 +101,7 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
         ) : (
           <>
             <CreditCard className="mr-2 h-4 w-4" />
-            Pay ${amount.toFixed(2)} for {courseTitle}
+            Pay ₦{amount.toLocaleString()} for {courseTitle}
           </>
         )}
       </Button>

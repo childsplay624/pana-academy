@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Clock, Users, ArrowRight, Loader2 } from "lucide-react";
+import { Clock, Users, ArrowRight, Loader2, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
 import { fetchAllCourses } from "@/services/courseService";
 import type { Course } from "@/services/courseService";
@@ -68,10 +68,18 @@ const CoursesSection = ({
                   </CardHeader>
                   <CardContent className="flex-grow">
                     <p className="text-gray-600 mb-4 line-clamp-3">{course.description}</p>
-                    <div className="flex items-center text-sm text-gray-500 space-x-4 mt-auto">
+                    <div className="flex items-center justify-between text-sm text-gray-500 mt-auto">
+                      <div className="flex items-center">
+                        <Clock className="h-4 w-4 mr-1" />
+                        <span>{course.duration_hours} hours</span>
+                      </div>
+                      <div className="flex items-center">
+                        <BookOpen className="h-4 w-4 mr-1" />
+                        <span>{course.modules?.length || 0} lessons</span>
+                      </div>
                       <div className="flex items-center">
                         <Users className="h-4 w-4 mr-1" />
-                        <span>{course.students_count || 0} students</span>
+                        <span>{course.students_count?.toLocaleString() || '0'}</span>
                       </div>
                     </div>
                   </CardContent>
@@ -80,8 +88,10 @@ const CoursesSection = ({
                       <div className="text-sm font-medium">
                         {course.price ? `₦${course.price.toLocaleString()}` : 'Free'}
                       </div>
-                      <Button variant="link" className="text-pana-blue hover:text-pana-navy p-0">
-                        Learn more <ArrowRight className="ml-1 h-4 w-4" />
+                      <Button variant="link" className="p-0">
+                        <span className="text-pana-blue hover:text-red-600 transition-colors duration-200 flex items-center">
+                          View Details <ArrowRight className="ml-1 h-4 w-4" />
+                        </span>
                       </Button>
                     </div>
                   </CardFooter>

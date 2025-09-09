@@ -56,7 +56,7 @@ INSERT INTO public.platform_settings (key, value, category) VALUES
   ('certificate_generation', 'true', 'courses'),
   ('max_enrollment', '1000', 'courses'),
   ('certificate_validity', '5', 'courses'),
-  ('primary_color', '"#0ea5e9"', 'appearance'),
+  ('primary_color', '"#ef4444"', 'appearance'),
   ('secondary_color', '"#64748b"', 'appearance'),
   ('dark_mode_support', 'true', 'appearance'),
   ('logo_url', '""', 'appearance'),

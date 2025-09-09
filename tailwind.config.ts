@@ -55,9 +55,9 @@ export default {
 				// PANA Academy Brand Colors
 				pana: {
 					navy: 'hsl(var(--pana-navy))',
-					blue: 'hsl(var(--pana-blue))',
+					red: 'hsl(var(--pana-red))',
 					gold: 'hsl(var(--pana-gold))',
-					'light-blue': 'hsl(var(--pana-light-blue))',
+					'light-red': 'hsl(var(--pana-light-red))',
 					gray: 'hsl(var(--pana-gray))',
 					'light-gray': 'hsl(var(--pana-light-gray))'
 				},

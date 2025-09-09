@@ -87,21 +87,23 @@ export function useStudentData() {
         console.log('Enrollments data:', enrollmentsData);
 
         // Transform enrolled courses data
-        const transformedEnrolledCourses: Course[] = (enrollmentsData || []).map((enrollment: any) => ({
-          id: enrollment.courses.id,
-          course_id: enrollment.course_id,
-          enrollment_id: enrollment.id,
-          title: enrollment.courses.title,
-          instructor: enrollment.courses.profiles?.full_name || 'Unknown Instructor',
-          instructor_name: enrollment.courses.profiles?.full_name || 'Unknown Instructor',
-          progress: enrollment.progress_percentage || 0,
-          thumbnail: enrollment.courses.thumbnail_url,
-          lastAccessed: enrollment.enrolled_at,
-          timeSpent: Math.floor(Math.random() * 180) + 30, // Mock time spent for now
-          category: enrollment.courses.category || 'General',
-          totalHours: enrollment.courses.duration_hours || 0,
-          image: enrollment.courses.thumbnail_url
-        }));
+        const transformedEnrolledCourses: Course[] = (enrollmentsData || [])
+          .filter(enrollment => enrollment?.courses) // Filter out any null/undefined courses
+          .map((enrollment: any) => ({
+            id: enrollment.courses?.id || enrollment.course_id,
+            course_id: enrollment.course_id,
+            enrollment_id: enrollment.id,
+            title: enrollment.courses?.title || 'Untitled Course',
+            instructor: enrollment.courses?.profiles?.full_name || 'Unknown Instructor',
+            instructor_name: enrollment.courses?.profiles?.full_name || 'Unknown Instructor',
+            progress: enrollment.progress_percentage || 0,
+            thumbnail: enrollment.courses?.thumbnail_url,
+            lastAccessed: enrollment.enrolled_at,
+            timeSpent: Math.floor(Math.random() * 180) + 30, // Mock time spent for now
+            category: enrollment.courses?.category || 'General',
+            totalHours: enrollment.courses?.duration_hours || 0,
+            image: enrollment.courses?.thumbnail_url
+          }));
 
         console.log('Transformed enrolled courses:', transformedEnrolledCourses);
 

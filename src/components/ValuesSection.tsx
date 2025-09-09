@@ -3,13 +3,13 @@ import { motion } from "framer-motion";
 const ValuesSection = () => {
   const values = [
     {
-      title: "Excellence",
-      description: "We strive for the highest standards in all our training programs, ensuring quality education and professional development.",
+      title: "3T's and 3C's" ,
+      description: "",
       image: "/values/sands.PNG"  // Note the uppercase .PNG extension
     },
     {
-      title: "Innovation",
-      description: "Embracing cutting-edge technologies and teaching methodologies to provide forward-thinking education solutions.",
+      title: "Operations",
+      description: "",
       image: "/values/maxims.png"
     }
   ];

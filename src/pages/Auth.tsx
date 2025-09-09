@@ -87,15 +87,30 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-white">
-      {/* Left Side - Branding */}
-      <div className="w-full md:w-1/2 bg-gradient-to-br from-pana-navy to-pana-blue text-white p-8 md:p-12 flex flex-col justify-center">
-        <Link to="/" className="text-2xl font-bold mb-8 inline-block">
-          PANA <span className="text-pana-gold">Academy</span>
-        </Link>
-        
-        <div className="max-w-md mx-auto">
-          <h1 className="text-4xl font-bold mb-4">
-            {isLogin ? 'Welcome Back!' : 'Join Us Today'}
+      {/* Left Side - Background with Image Overlay */}
+      <div 
+        className="w-full md:w-1/2 relative text-white p-8 md:p-12 flex flex-col min-h-screen"
+        style={{
+          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("/values/log.jpg")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-end',
+          paddingBottom: '4rem'
+        }}
+      >
+        <div className="relative z-10 mb-12">
+          <div className="mb-8">
+            <img 
+              src="/panawhy.png" 
+              alt="PANA Academy" 
+              className="h-20 w-auto brightness-125 drop-shadow-lg" 
+            />
+          </div>
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">
+            {isLogin ? 'Welcome back!' : 'Join us today'}
           </h1>
           <p className="text-pana-light-gray mb-8">
             {isLogin 
@@ -116,7 +131,7 @@ export default function Auth() {
           </div>
         </div>
         
-        <div className="mt-auto pt-8 text-center text-sm text-white/70">
+        <div className="text-center text-sm text-white/70 mt-8">
           &copy; {new Date().getFullYear()} PANA Academy. All rights reserved.
         </div>
       </div>
@@ -125,8 +140,8 @@ export default function Auth() {
       <div className="w-full md:w-1/2 p-8 md:p-12 flex items-center justify-center">
         <Card className="w-full max-w-md border-0 shadow-none md:shadow-md">
           <CardHeader className="text-center space-y-1">
-            <div className="w-12 h-12 bg-pana-blue/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Lock className="h-6 w-6 text-pana-blue" />
+            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Lock className="h-6 w-6 text-red-600" />
             </div>
             <CardTitle className="text-2xl font-bold text-gray-900">
               {isLogin ? 'Sign in to your account' : 'Create an account'}
@@ -139,7 +154,7 @@ export default function Auth() {
                   setIsLogin(!isLogin);
                   setFormData({ email: '', password: '', fullName: '' });
                 }}
-                className="font-medium text-pana-blue hover:text-pana-navy transition-colors"
+                className="font-medium text-red-600 hover:text-red-800 transition-colors"
               >
                 {isLogin ? 'Sign up' : 'Sign in'}
               </button>
@@ -200,7 +215,7 @@ export default function Auth() {
                   {isLogin && (
                     <Link 
                       to="/reset-password" 
-                      className="text-sm font-medium text-pana-blue hover:text-pana-navy transition-colors"
+                      className="text-sm font-medium text-red-600 hover:text-red-800 transition-colors"
                     >
                       Forgot password?
                     </Link>
@@ -242,7 +257,7 @@ export default function Auth() {
               
               <Button
                 type="submit"
-                className="w-full bg-pana-blue hover:bg-pana-navy transition-colors"
+                className="w-full bg-red-600 hover:bg-red-800 transition-colors"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -298,11 +313,11 @@ export default function Auth() {
             
             <p className="mt-6 text-center text-sm text-gray-500">
               By {isLogin ? 'signing in' : 'signing up'}, you agree to our{' '}
-              <Link to="/terms" className="font-medium text-pana-blue hover:text-pana-navy">
+              <Link to="/terms" className="font-medium text-red-600 hover:text-red-800">
                 Terms of Service
               </Link>{' '}
               and{' '}
-              <Link to="/privacy" className="font-medium text-pana-blue hover:text-pana-navy">
+              <Link to="/privacy" className="font-medium text-red-600 hover:text-red-800">
                 Privacy Policy
               </Link>.
             </p>
