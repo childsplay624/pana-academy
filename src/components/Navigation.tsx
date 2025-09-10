@@ -154,18 +154,32 @@ const Navigation = () => {
         },
         { 
           name: "Consulting Services", 
-          href: "#consulting",
-          onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleNavigation(e, "#consulting")
+          href: "/consulting-services",
+          onClick: (e: React.MouseEvent<HTMLAnchorElement>) => {
+            e.preventDefault();
+            navigate('/consulting-services');
+          }
         },
         { 
           name: "Research & Development", 
-          href: "#research",
-          onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleNavigation(e, "#research")
+          href: "/research-development",
+          onClick: (e: React.MouseEvent<HTMLAnchorElement>) => {
+            e.preventDefault();
+            navigate('/research-development');
+          }
         },
         { 
           name: "Training Delivery", 
           href: "/training-delivery",
           onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleNavigation(e, "/training-delivery")
+        },
+        { 
+          name: "Training Calendar", 
+          href: "/training-calendar",
+          onClick: (e: React.MouseEvent<HTMLAnchorElement>) => {
+            e.preventDefault();
+            navigate('/training-calendar');
+          }
         }
       ]
     },
@@ -180,7 +194,7 @@ const Navigation = () => {
       onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleNavigation(e, "#testimonials")
     },
     { 
-      name: "Contact", 
+      name: "Contact Us", 
       href: "#contact",
       onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleNavigation(e, "#contact")
     }
@@ -230,9 +244,10 @@ const Navigation = () => {
                     <a
                       key={subItem.name}
                       href={subItem.href}
-                      className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={(e) => {
-                        subItem.onClick?.(e as any);
+                        e.preventDefault();
+                        subItem.onClick?.(e);
                         setActiveDropdown(null);
                       }}
                     >
@@ -318,15 +333,14 @@ const Navigation = () => {
                         <a
                           key={subItem.name}
                           href={subItem.href}
-                          className="block px-4 py-3 rounded-md text-base font-medium text-foreground/70 dark:text-foreground/60 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-foreground/90 dark:hover:text-foreground/90 transition-colors"
+                          className="block px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 cursor-pointer"
                           onClick={(e) => {
                             subItem.onClick?.(e as any);
                             setActiveDropdown(null);
                             setIsOpen(false);
                           }}
-                          className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200 cursor-pointer"
                         >
-                          {dropdownItem.name}
+                          {subItem.name}
                         </a>
                       ))}
                     </div>

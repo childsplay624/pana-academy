@@ -342,15 +342,14 @@ const TrainingDelivery = () => {
 
                 <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
                   <a 
-                    href="#contact" 
-                    className="group inline-flex items-center gap-3 px-10 py-5 bg-pana-gold text-white font-bold rounded-2xl hover:bg-pana-gold/90 transition-all duration-300 hover:scale-105 shadow-2xl shadow-pana-gold/25"
+                    href="/auth?mode=signup" 
+                    className="inline-flex items-center gap-3 px-10 py-5 bg-pana-gold text-pana-navy font-semibold rounded-2xl hover:bg-pana-gold/90 transition-all duration-300 shadow-md"
                   >
                     Get Started Today
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </a>
-                  
+                 
                   <a 
-                    href="#courses" 
+                    href="/courses" 
                     className="inline-flex items-center gap-3 px-10 py-5 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 font-semibold rounded-2xl border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300 shadow-sm"
                   >
                     Explore Courses

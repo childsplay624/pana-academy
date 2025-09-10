@@ -27,6 +27,8 @@ interface Course {
   course_type: 'self_paced' | 'live';
   zoom_meeting_id?: string;
   scheduled_date?: string;
+  start_date?: string; // For both course types, but required for live courses
+  is_free: boolean;
 }
 
 export default function CourseCreator() {
@@ -49,7 +51,9 @@ export default function CourseCreator() {
     instructor_id: user?.id || '',
     course_type: 'self_paced',
     zoom_meeting_id: '',
-    scheduled_date: ''
+    scheduled_date: '',
+    start_date: '',
+    is_free: false
   });
 
   const saveCourse = async () => {
@@ -70,6 +74,24 @@ export default function CourseCreator() {
       });
       return;
     }
+
+    if (course.course_type === 'live' && !course.start_date) {
+      toast({
+        title: "Error",
+        description: "Start date is required for live courses",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // If course is free, set price to 0
+    const courseData = {
+      ...course,
+      price: course.is_free ? 0 : course.price,
+      // Convert empty string to null for database
+      start_date: course.start_date || null,
+      scheduled_date: course.scheduled_date || null
+    };
 
     setSaving(true);
     
@@ -117,14 +139,16 @@ export default function CourseCreator() {
             title: updatedCourse.title,
             description: updatedCourse.description,
             category: updatedCourse.category,
-            price: updatedCourse.price,
+            price: courseData.price, // Use the potentially adjusted price
             duration_hours: updatedCourse.duration_hours,
             level: updatedCourse.level,
             status: updatedCourse.status,
             thumbnail_url: updatedCourse.thumbnail_url,
             course_type: updatedCourse.course_type,
             zoom_meeting_id: updatedCourse.zoom_meeting_id || null,
-            scheduled_date: updatedCourse.scheduled_date || null
+            scheduled_date: updatedCourse.scheduled_date || null,
+            start_date: courseData.start_date,
+            is_free: courseData.is_free
           })
           .eq('id', courseId);
 
@@ -142,7 +166,7 @@ export default function CourseCreator() {
             title: updatedCourse.title,
             description: updatedCourse.description,
             category: updatedCourse.category,
-            price: updatedCourse.price,
+            price: courseData.price, // Use the potentially adjusted price
             duration_hours: updatedCourse.duration_hours,
             level: updatedCourse.level,
             status: updatedCourse.status,
@@ -150,7 +174,9 @@ export default function CourseCreator() {
             instructor_id: user.id,
             course_type: updatedCourse.course_type,
             zoom_meeting_id: updatedCourse.zoom_meeting_id || null,
-            scheduled_date: updatedCourse.scheduled_date || null
+            scheduled_date: updatedCourse.scheduled_date || null,
+            start_date: courseData.start_date,
+            is_free: courseData.is_free
           })
           .select()
           .single();
@@ -280,81 +306,123 @@ export default function CourseCreator() {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Course Type</label>
-                  <Select
-                    value={course.course_type}
-                    onValueChange={(value: 'self_paced' | 'live') => setCourse(prev => ({ ...prev, course_type: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="self_paced">Self-Paced</SelectItem>
-                      <SelectItem value="live">Live (Zoom)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {course.course_type === 'live' && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border rounded-lg bg-muted/50">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Zoom Meeting ID</label>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-1">
+                        Course Type
+                      </label>
+                      <Select
+                        value={course.course_type}
+                        onValueChange={(value: 'self_paced' | 'live') =>
+                          setCourse({ ...course, course_type: value })
+                        }
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select course type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="self_paced">Self-Paced</SelectItem>
+                          <SelectItem value="live">Live</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-1">
+                        {course.course_type === 'live' ? 'Start Date & Time' : 'Start Date (Optional)'}
+                      </label>
                       <Input
-                        value={course.zoom_meeting_id}
-                        onChange={(e) => setCourse(prev => ({ ...prev, zoom_meeting_id: e.target.value }))}
-                        placeholder="Enter Zoom Meeting ID"
+                        type={course.course_type === 'live' ? 'datetime-local' : 'date'}
+                        value={course.start_date || ''}
+                        onChange={(e) => setCourse({ ...course, start_date: e.target.value })}
+                        required={course.course_type === 'live'}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {course.course_type === 'live' && (
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-1">
+                          Zoom Meeting ID (Optional)
+                        </label>
+                        <Input
+                          value={course.zoom_meeting_id || ''}
+                          onChange={(e) => setCourse(prev => ({ ...prev, zoom_meeting_id: e.target.value }))}
+                          placeholder="Enter Zoom Meeting ID"
+                        />
+                      </div>
+                    )}
+                    
+                    <div className="flex items-center space-x-2 pt-6">
+                      <input
+                        type="checkbox"
+                        id="is_free"
+                        checked={course.is_free}
+                        onChange={(e) => {
+                          const isFree = e.target.checked;
+                          setCourse({
+                            ...course,
+                            is_free: isFree,
+                            price: isFree ? 0 : course.price
+                          });
+                        }}
+                        className="h-4 w-4 rounded border-gray-300 text-pana-navy focus:ring-pana-navy"
+                      />
+                      <label htmlFor="is_free" className="text-sm font-medium text-foreground">
+                        This is a free course
+                      </label>
+                    </div>
+                  </div>
+
+                  {!course.is_free && (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Price (₦)</label>
+                        <Input
+                          type="number"
+                          min="0"
+                          step="1"
+                          value={course.price}
+                          onChange={(e) => {
+                            // Only allow numbers and convert to number
+                            const value = e.target.value.replace(/[^0-9]/g, '');
+                            setCourse(prev => ({ ...prev, price: Number(value) || 0 }));
+                          }}
+                          placeholder="0"
+                        />
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Duration (hours)</label>
+                      <Input
+                        type="number"
+                        value={course.duration_hours}
+                        onChange={(e) => setCourse(prev => ({ ...prev, duration_hours: Number(e.target.value) }))}
+                        min="1"
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Scheduled Date & Time</label>
-                      <Input
-                        type="datetime-local"
-                        value={course.scheduled_date}
-                        onChange={(e) => setCourse(prev => ({ ...prev, scheduled_date: e.target.value }))}
-                      />
+                      <label className="text-sm font-medium">Level</label>
+                      <Select
+                        value={course.level}
+                        onValueChange={(value) => setCourse(prev => ({ ...prev, level: value }))}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="beginner">Beginner</SelectItem>
+                          <SelectItem value="intermediate">Intermediate</SelectItem>
+                          <SelectItem value="advanced">Advanced</SelectItem>
+                          <SelectItem value="all_levels">All Levels</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Price (₦)</label>
-                    <Input
-                      type="text"
-                      value={course.price}
-                      onChange={(e) => {
-                        const value = e.target.value.replace(/[^0-9]/g, '');
-                        setCourse(prev => ({ ...prev, price: Number(value) || 0 }));
-                      }}
-                      placeholder="0"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Duration (hours)</label>
-                    <Input
-                      type="number"
-                      value={course.duration_hours}
-                      onChange={(e) => setCourse(prev => ({ ...prev, duration_hours: Number(e.target.value) }))}
-                      min="1"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Level</label>
-                    <Select
-                      value={course.level}
-                      onValueChange={(value) => setCourse(prev => ({ ...prev, level: value }))}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="beginner">Beginner</SelectItem>
-                        <SelectItem value="intermediate">Intermediate</SelectItem>
-                        <SelectItem value="advanced">Advanced</SelectItem>
-                        <SelectItem value="all_levels">All Levels</SelectItem>
-                      </SelectContent>
-                    </Select>
                   </div>
                 </div>
               </CardContent>

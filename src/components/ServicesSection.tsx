@@ -99,7 +99,7 @@ const ServicesSection = () => {
                 <div className="inline-flex w-16 h-16 items-center justify-center rounded-full bg-black text-white mb-4 mx-auto group-hover:scale-110 transition-transform duration-300">
                   <service.icon className="w-8 h-8" />
                 </div>
-                <CardTitle className="text-xl text-pana-navy">{service.title}</CardTitle>
+                <CardTitle className="text-xl text-black">{service.title}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <p className="text-muted-foreground">{service.description}</p>
@@ -107,16 +107,18 @@ const ServicesSection = () => {
                 <div className="space-y-3">
                   {service.categories.map((category, catIndex) => (
                     <div key={catIndex} className="border-l-2 border-pana-gold/30 pl-4">
-                      <h4 className="font-semibold text-pana-navy text-sm">{category.name}</h4>
+                      <h4 className="font-semibold text-black text-sm">{category.name}</h4>
                       <p className="text-xs text-muted-foreground">{category.programs}</p>
                     </div>
                   ))}
                 </div>
 
-                <Button variant="outline" className="w-full group border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white transition-colors">
-                  Learn More
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
+                <a href={service.title === 'Training Programs' ? '/training-delivery' : service.title === 'Consulting Services' ? '/consulting-services' : '/research-development'} className="w-full block">
+                  <Button variant="outline" className="w-full group border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white transition-colors">
+                    Learn More
+                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </a>
               </CardContent>
             </Card>
           ))}
@@ -124,14 +126,14 @@ const ServicesSection = () => {
 
         {/* Service Features */}
         <div className="bg-pana-light-gray rounded-3xl p-8 md:p-12">
-          <h3 className="text-2xl font-bold text-center text-pana-navy mb-12">Why Choose Our Services</h3>
+          <h3 className="text-2xl font-bold text-black mb-12">Why Choose Our Services</h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
               <div key={index} className="text-center group">
                 <div className="inline-flex w-12 h-12 items-center justify-center rounded-lg bg-pana-gold/10 text-pana-gold mb-4 group-hover:bg-pana-gold group-hover:text-white transition-colors duration-300">
                   <feature.icon className="w-6 h-6" />
                 </div>
-                <h4 className="font-semibold text-pana-navy mb-2">{feature.title}</h4>
+                <h4 className="font-semibold text-black mb-2">{feature.title}</h4>
                 <p className="text-muted-foreground text-sm">{feature.description}</p>
               </div>
             ))}
@@ -140,24 +142,28 @@ const ServicesSection = () => {
 
         {/* CTA Section */}
         <div className="text-center mt-16">
-          <h3 className="text-2xl font-bold text-pana-navy mb-4">Ready to Transform Your Organization?</h3>
+          <h3 className="text-2xl font-bold text-black mb-4">Ready to Transform Your Organization?</h3>
           <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
             Get in touch with our experts to discuss how PANA Academy can help you achieve your training and development goals.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              size="lg" 
-              className="bg-black text-white hover:bg-red-600 transition-colors"
-            >
-              Schedule Consultation
-            </Button>
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="border-black text-black hover:bg-red-600 hover:border-red-600 hover:text-white transition-colors"
-            >
-              Download Training Calendar
-            </Button>
+            <a href="/contact">
+              <Button 
+                size="lg" 
+                className="bg-black text-white hover:bg-red-600 transition-colors"
+              >
+                Schedule Consultation
+              </Button>
+            </a>
+            <a href="/training-calendar" download>
+              <Button 
+                variant="outline" 
+                size="lg"
+                className="border-black text-black hover:bg-red-600 hover:border-red-600 hover:text-white transition-colors"
+              >
+                Download Training Calendar
+              </Button>
+            </a>
           </div>
         </div>
       </div>

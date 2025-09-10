@@ -21,6 +21,8 @@ export interface Module {
   updated_at: string;
 }
 
+export type CourseType = 'self_paced' | 'live';
+
 export interface Course {
   id: string;
   title: string;
@@ -31,6 +33,9 @@ export interface Course {
   instructor_id: string;
   category_id?: string;
   level?: 'beginner' | 'intermediate' | 'advanced';
+  course_type: CourseType;
+  start_date?: string; // ISO date string
+  is_free: boolean;
   total_lessons?: number;
   total_duration_seconds?: number;
   students_count?: number;

@@ -40,6 +40,10 @@ import TeamPage from "./pages/team/TeamPage";
 import TeamMemberPage from "./pages/team/TeamMemberPage";
 import TrainingDeliveryPage from "./pages/TrainingDeliveryPage";
 import TestimonialManagement from "./pages/admin/TestimonialManagement";
+import ConsultingServicesPage from "./pages/ConsultingServicesPage";
+import RnDServicesPage from "./pages/RnDServicesPage";
+import ContactPage from "./pages/ContactPage";
+import TrainingCalendarPage from "./pages/TrainingCalendarPage";
 
 const queryClient = new QueryClient();
 
@@ -74,6 +78,10 @@ const App = () => (
                 <Route path="/team" element={<TeamPage />} />
                 <Route path="/team/:memberId" element={<TeamMemberPage />} />
                 <Route path="/training-delivery" element={<TrainingDeliveryPage />} />
+                <Route path="/consulting-services" element={<ConsultingServicesPage />} />
+                <Route path="/research-development" element={<RnDServicesPage />} />
+                <Route path="/contact" element={<ContactPage />} />
+                <Route path="/training-calendar" element={<TrainingCalendarPage />} />
                 <Route path="/test" element={<TestPage />} />
                 <Route 
                   path="/dashboard" 

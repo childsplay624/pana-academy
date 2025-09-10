@@ -7,28 +7,28 @@ const Footer = () => {
 
   const footerLinks = {
     company: [
-      { name: "About Us", href: "#about" },
-      { name: "Our Mission", href: "#about" },
-      { name: "Leadership Team", href: "#about" },
-      { name: "Careers", href: "#careers" }
+      { name: "About Us", href: "/#about" },
+      { name: "Our Mission", href: "/#mission" },
+      { name: "Leadership Team", href: "/team" },
+      { name: "Careers", href: "/careers" }
     ],
     services: [
-      { name: "Training Programs", href: "#services" },
-      { name: "Consulting", href: "#services" },
-      { name: "Research & Development", href: "#services" },
-      { name: "Corporate Solutions", href: "#services" }
+      { name: "Training Programs", href: "/training-delivery" },
+      { name: "Consulting", href: "/consulting-services" },
+      { name: "Research & Development", href: "/research-development" },
+      { name: "Corporate Solutions", href: "/corporate-solutions" }
     ],
     programs: [
-      { name: "Energy Sector", href: "#training" },
-      { name: "Digital Transformation", href: "#training" },
-      { name: "Leadership Development", href: "#training" },
-      { name: "Technical Excellence", href: "#training" }
+      { name: "Energy Sector", href: "/courses?category=energy" },
+      { name: "Digital Transformation", href: "/courses?category=digital-transformation" },
+      { name: "Leadership Development", href: "/courses?category=leadership" },
+      { name: "Technical Excellence", href: "/courses?category=technical" }
     ],
     support: [
-      { name: "Contact Us", href: "#contact" },
-      { name: "FAQ", href: "#faq" },
-      { name: "Support Center", href: "#support" },
-      { name: "Privacy Policy", href: "#privacy" }
+      { name: "Contact Us", href: "/contact" },
+      { name: "FAQ", href: "/faq" },
+      { name: "Support Center", href: "/support" },
+      { name: "Privacy Policy", href: "/privacy-policy" }
     ]
   };
 
