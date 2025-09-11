@@ -62,7 +62,7 @@ const teamMembers: TeamMember[] = [
   }
 ];
 
-// Compact Team member card component with avatar
+// Team member card component with enhanced image display
 const TeamMemberCard = ({ member, index }: { member: TeamMember; index: number }) => {
   const avatarUrl = member.image || getAvatarUrl(member.name);
   const initials = member.name
@@ -76,30 +76,36 @@ const TeamMemberCard = ({ member, index }: { member: TeamMember; index: number }
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2, delay: index * 0.05 }}
+      whileHover={{ scale: 1.02 }}
+      transition={{ duration: 0.3, delay: index * 0.05 }}
       className="h-full"
     >
-      <Card className="h-full hover:shadow-md transition-all duration-300 hover:shadow-lg overflow-hidden">
-        <div className="relative h-40 bg-gradient-to-r from-red-50 to-red-50">
-          <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2">
-            <div className="h-32 w-32 rounded-full overflow-hidden border-4 border-white bg-white shadow-lg">
-              <img 
-                src={avatarUrl} 
-                alt={member.name}
-                className="w-full h-full object-cover object-center"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  const fallback = target.nextElementSibling as HTMLElement;
-                  if (fallback) fallback.style.display = 'flex';
-                }}
-              />
-              <div 
-                className="h-full w-full flex items-center justify-center bg-gray-100 text-gray-600 text-xl font-semibold" 
-                style={{ display: 'none' }}
-              >
-                {initials}
-              </div>
+      <Card className="h-full hover:shadow-lg transition-all duration-300 overflow-hidden group flex flex-col">
+        {/* Full-width image container */}
+        <div className="relative pt-[100%] overflow-hidden">
+          {member.image ? (
+            <img 
+              src={member.image} 
+              alt={member.name}
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                const fallback = target.nextElementSibling as HTMLElement;
+                if (fallback) fallback.style.display = 'flex';
+              }}
+            />
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center">
+              <span className="text-4xl font-bold text-red-400">{initials}</span>
+            </div>
+          )}
+          
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+            <div className="text-white text-center w-full mb-4">
+              <h3 className="text-lg font-semibold drop-shadow-md">{member.name}</h3>
+              <p className="text-sm text-red-100">{member.title}</p>
             </div>
           </div>
         </div>
@@ -158,7 +164,7 @@ const TeamPage = () => {
         <section className="relative w-full h-96 md:h-[500px] overflow-hidden">
           <div className="absolute inset-0">
             <img
-              src="/assets/team/team-header.jpg"
+              src="/img/team-header.jpg"
               alt="Our Leadership Team"
               className="w-full h-full object-cover"
             />

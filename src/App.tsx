@@ -44,6 +44,8 @@ import ConsultingServicesPage from "./pages/ConsultingServicesPage";
 import RnDServicesPage from "./pages/RnDServicesPage";
 import ContactPage from "./pages/ContactPage";
 import TrainingCalendarPage from "./pages/TrainingCalendarPage";
+import AuthCallback from "./pages/auth/callback";
+import OurJourney from "./pages/our-journey";
 
 const queryClient = new QueryClient();
 
@@ -72,6 +74,7 @@ const App = () => (
                   </ProtectedRoute>
                 } />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/auth/callback" element={<AuthCallback />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/verify-email" element={<VerifyEmail />} />
                 <Route path="/verify-certificate" element={<VerifyCertificate />} />
@@ -82,6 +85,7 @@ const App = () => (
                 <Route path="/research-development" element={<RnDServicesPage />} />
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/training-calendar" element={<TrainingCalendarPage />} />
+                <Route path="/our-journey" element={<OurJourney />} />
                 <Route path="/test" element={<TestPage />} />
                 <Route 
                   path="/dashboard" 

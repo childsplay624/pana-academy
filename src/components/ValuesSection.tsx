@@ -3,14 +3,14 @@ import { motion } from "framer-motion";
 const ValuesSection = () => {
   const values = [
     {
-      title: "3T's and 3C's" ,
+      title: "Our Core Values" ,
       description: "",
       image: "/values/sands.PNG"  // Note the uppercase .PNG extension
     },
     {
-      title: "Operations",
+      title: "Our 5 Operating Maxims",
       description: "",
-      image: "/values/maxims.png"
+      image: "/values/maxims.jpg"
     }
   ];
 

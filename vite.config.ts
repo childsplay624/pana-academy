@@ -9,6 +9,14 @@ export default defineConfig(({ mode }) => ({
     host: "localhost",
     port: 8080,
     strictPort: true,
+    hmr: {
+      host: 'localhost',
+      protocol: 'ws',
+    },
+    allowedHosts: [
+      '7bca6d68447f.ngrok-free.app',
+      'localhost',
+    ]
   },
   plugins: [
     react(),

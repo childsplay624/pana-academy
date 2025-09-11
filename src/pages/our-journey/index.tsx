@@ -1,0 +1,418 @@
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { ChevronLeft } from 'lucide-react';
+import Navigation from '../../components/Navigation';
+import Footer from '../../components/Footer';
+
+export default function OurJourney() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <Navigation />
+      <main className="flex-grow">
+      {/* Hero Section with Header Image */}
+      <section className="relative w-full h-96 md:h-[500px] overflow-hidden">
+        <div className="absolute inset-0">
+          <img
+            src="/img/team-header.jpg"
+            alt="Our Journey"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-red-900/80 to-gray-900/80 flex items-center justify-center">
+            <div className="text-center px-4">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
+                Our Journey of Excellence
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto">
+                Discover the story of PANA Academy and our commitment to transforming the energy sector through world-class training and development.
+              </p>
+              <div className="mt-8 flex flex-wrap justify-center gap-4">
+                <a 
+                  href="#evolution-journey"
+                  className="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-200"
+                >
+                  View Timeline
+                </a>
+                <Link 
+                  to="/contact" 
+                  className="bg-transparent hover:bg-white/20 text-white font-medium py-3 px-8 border-2 border-white/30 rounded-lg transition-colors duration-200"
+                >
+                  Contact Us
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Content */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+        {/* Floating Cards Section */}
+        <div className="relative mb-24">
+          {/* Background Decorative Elements */}
+          <div className="absolute -top-20 -right-20 w-64 h-64 bg-yellow-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+          <div className="absolute -bottom-20 left-20 w-64 h-64 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+          
+          {/* Main Content Grid */}
+          <div className="relative grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Vision Card */}
+            <motion.div 
+              className="bg-white p-8 rounded-2xl shadow-xl border-l-4 border-blue-600 transform transition-all hover:scale-105"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              whileHover={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' }}
+            >
+              <div className="w-12 h-1 bg-blue-600 mb-6"></div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Our Foundation</h3>
+              <p className="text-gray-600">
+                PANA Academy Limited, a competency cultivation hub and subsidiary of PANA Holdings Group, began with a bold vision to close critical in-country competency gaps in the oil and gas industry and empower a new generation of professionals.
+              </p>
+            </motion.div>
+
+            {/* Growth Card */}
+            <motion.div 
+              className="bg-white p-8 rounded-2xl shadow-xl border-l-4 border-yellow-500 transform transition-all hover:scale-105"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              whileHover={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' }}
+            >
+              <div className="w-12 h-1 bg-yellow-500 mb-6"></div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Our Growth</h3>
+              <p className="text-gray-600">
+                PANA Academy has become a trusted training provider for the oil and gas industry. Our training programmes encompass craftsmanship, technician, specialist, professional, engineering, and digital courses designed for all levels of professionals.
+              </p>
+            </motion.div>
+
+            {/* Impact Card */}
+            <motion.div 
+              className="bg-white p-8 rounded-2xl shadow-xl border-l-4 border-red-600 transform transition-all hover:scale-105"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              whileHover={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' }}
+            >
+              <div className="w-12 h-1 bg-red-600 mb-6"></div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Our Impact</h3>
+              <p className="text-gray-600">
+                Our journey is marked by measurable achievements in competency cultivation, reflecting our commitment to training for performance, prevention, and sustainability. We're proud to be a catalyst for positive change in the energy sector.
+              </p>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* Animated Stats */}
+        <div className="bg-gradient-to-r from-red-700 to-red-900 text-white py-16 rounded-2xl overflow-hidden mb-24">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+              {[
+                { number: '1000+', label: 'Trained Professionals' },
+                { number: '50+', label: 'Industry Experts' },
+                { number: '20+', label: 'Training Programs' },
+                { number: '10+', label: 'Years of Excellence' }
+              ].map((stat, index) => (
+                <motion.div 
+                  key={index}
+                  className="p-6"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                >
+                  <div className="text-3xl md:text-4xl font-bold text-white mb-2">{stat.number}</div>
+                  <div className="text-white opacity-90">{stat.label}</div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Creative Timeline Section */}
+        <div id="evolution-journey" className="relative overflow-hidden py-20 bg-gradient-to-br from-red-50 to-gray-50">
+          {/* Decorative elements */}
+          <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+            <div className="absolute -top-20 -right-20 w-96 h-96 bg-red-100 rounded-full opacity-20"></div>
+            <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-yellow-100 rounded-full opacity-30"></div>
+          </div>
+          
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <motion.div 
+              className="text-center mb-20"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                Our <span className="text-red-600">Evolution</span> Journey
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Charting the milestones that shaped PANA Academy's path to excellence
+              </p>
+              <div className="w-24 h-1.5 bg-gradient-to-r from-red-500 to-yellow-500 mx-auto mt-6 rounded-full"></div>
+            </motion.div>
+
+            <div className="relative">
+              {/* Animated timeline line */}
+              <div className="absolute left-1/2 h-[calc(100%-100px)] w-0.5 bg-gradient-to-b from-red-200 to-yellow-200 transform -translate-x-1/2 top-12">
+                <motion.div 
+                  className="h-0 w-full bg-gradient-to-b from-red-600 to-yellow-600"
+                  initial={{ height: 0 }}
+                  whileInView={{ height: "100%" }}
+                  transition={{ duration: 2, ease: "easeInOut" }}
+                  viewport={{ once: true }}
+                ></motion.div>
+              </div>
+
+              <div className="space-y-32">
+                {/* 2023 */}
+                <motion.div 
+                  className="relative group"
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  viewport={{ once: true }}
+                >
+                  <div className="md:flex items-center">
+                    <div className="hidden md:block md:w-1/2 pr-12">
+                      <div className="relative">
+                        <div className="absolute -right-12 top-1/2 transform -translate-y-1/2 w-6 h-6 rounded-full bg-red-600 border-4 border-white shadow-lg"></div>
+                        <div className="bg-white p-8 rounded-2xl shadow-xl transform transition-all duration-500 group-hover:scale-105">
+                          <div className="text-red-600 text-5xl font-bold mb-2">2023</div>
+                          <div className="h-1 w-16 bg-gradient-to-r from-red-400 to-red-200 mb-6"></div>
+                          <p className="text-gray-700 text-lg leading-relaxed">
+                            The Vision & Mandate: Capacity Development and Assessment Centre (CapDAC) is born as the training arm of PE Energy Ltd at the Centre of Excellence.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="md:w-1/2 md:pl-12 mt-8 md:mt-0">
+                      <div className="bg-gradient-to-br from-red-600 to-red-800 p-1 rounded-2xl shadow-xl transform transition-all duration-500 group-hover:scale-[1.02]">
+                        <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 text-white">
+                          <div className="flex items-center mb-4">
+                            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mr-4">
+                              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                              </svg>
+                            </div>
+                            <h3 className="text-xl font-bold">The Beginning</h3>
+                          </div>
+                          <p className="text-red-100 leading-relaxed">
+                            Launched with a vision to bridge competency gaps in the energy sector through world-class training and development programs.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* 2024 */}
+                <motion.div 
+                  className="relative group"
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                  viewport={{ once: true }}
+                >
+                  <div className="md:flex md:flex-row-reverse items-center">
+                    <div className="md:w-1/2 pl-12">
+                      <div className="relative">
+                        <div className="absolute -left-12 top-1/2 transform -translate-y-1/2 w-6 h-6 rounded-full bg-red-600 border-4 border-white shadow-lg"></div>
+                        <div className="bg-white p-8 rounded-2xl shadow-xl transform transition-all duration-500 group-hover:scale-105">
+                          <div className="text-red-600 text-5xl font-bold mb-2">2024</div>
+                          <div className="h-1 w-16 bg-gradient-to-r from-red-400 to-red-200 mb-6"></div>
+                          <ul className="space-y-4 text-gray-700">
+                            <li className="flex items-start">
+                              <span className="text-red-500 mr-2">•</span>
+                              <span>CapDAC transforms into PANA Academy (Competency Cultivation Hub), a CAC registered business entity within the PANA Holdings Group.</span>
+                            </li>
+                            <li className="flex items-start">
+                              <span className="text-red-500 mr-2">•</span>
+                              <span>PANA Academy becomes OGTAN Life Member.</span>
+                            </li>
+                            <li className="flex items-start">
+                              <span className="text-red-500 mr-2">•</span>
+                              <span>First set of HCD Trainees graduate on Hydraulic Mechanics for TotalEnergies/PIDWAL Deep Offshore Rig project.</span>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="md:w-1/2 pr-12 mt-8 md:mt-0">
+                      <div className="bg-gradient-to-br from-red-600 to-red-800 p-1 rounded-2xl shadow-xl transform transition-all duration-500 group-hover:scale-[1.02]">
+                        <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 text-white">
+                          <div className="flex items-center mb-4">
+                            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mr-4">
+                              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                              </svg>
+                            </div>
+                            <h3 className="text-xl font-bold">Transformation</h3>
+                          </div>
+                          <p className="text-red-100 leading-relaxed">
+                            Evolved into a full-fledged academy with industry recognition, expanding our training programs and industry partnerships.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* 2025 */}
+                <motion.div 
+                  className="relative group"
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.6 }}
+                  viewport={{ once: true }}
+                >
+                  <div className="md:flex items-center">
+                    <div className="md:w-1/2 pr-12">
+                      <div className="relative">
+                        <div className="absolute -right-12 top-1/2 transform -translate-y-1/2 w-6 h-6 rounded-full bg-red-500 border-4 border-white shadow-lg"></div>
+                        <div className="bg-white p-8 rounded-2xl shadow-xl transform transition-all duration-500 group-hover:scale-105">
+                          <div className="text-red-600 text-5xl font-bold mb-2">2025</div>
+                          <div className="h-1 w-16 bg-gradient-to-r from-red-400 to-red-200 mb-6"></div>
+                          <p className="text-gray-700 mb-4">
+                            Graduated 50 HCD trainees in advanced technical programs through the Chevron/PE Energy Makaraba Utonana Gas Management Project.
+                          </p>
+                          <div className="bg-red-50 p-4 rounded-lg border-l-4 border-red-500">
+                            <p className="font-semibold text-red-700">
+                              🎉 Six (6) trainees secured employment on graduation day, a testament to our program's effectiveness.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="md:w-1/2 pl-12 mt-8 md:mt-0">
+                      <div className="bg-gradient-to-br from-red-500 to-red-700 p-1 rounded-2xl shadow-xl transform transition-all duration-500 group-hover:scale-[1.02]">
+                        <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 text-white">
+                          <div className="flex items-center mb-4">
+                            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mr-4">
+                              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            </div>
+                            <h3 className="text-xl font-bold">Impact & Growth</h3>
+                          </div>
+                          <p className="text-red-100 leading-relaxed">
+                            Significant expansion of training programs with proven employment outcomes, establishing PANA Academy as a leader in energy sector education.
+                          </p>
+                          <div className="mt-4 pt-4 border-t border-white/10">
+                            <div className="flex items-center">
+                              <div className="text-3xl font-bold mr-3">50+</div>
+                              <div className="text-sm text-red-200">Trained Professionals<br/>in 2025</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* Animated scroll indicator */}
+              <motion.div 
+                className="mt-20 text-center"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1 }}
+                viewport={{ once: true }}
+              >
+                <div className="inline-flex items-center text-gray-500 text-sm">
+                  <span className="mr-2">Scroll to explore</span>
+                  <svg className="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                  </svg>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+
+        {/* Values Section */}
+        <div className="max-w-6xl mx-auto py-16 md:py-24">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Guiding Principles</h2>
+            <div className="w-20 h-1 bg-red-600 mx-auto"></div>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                icon: '🌟',
+                title: 'Excellence',
+                description: 'Delivering world-class training that meets international standards and industry best practices.'
+              },
+              {
+                icon: '💡',
+                title: 'Innovation',
+                description: 'Continuously evolving our programs to address emerging industry needs and technological advancements.'
+              },
+              {
+                icon: '🌍',
+                title: 'Impact',
+                description: 'Creating measurable, positive change in the lives of our trainees and the industries they serve.'
+              }
+            ].map((value, index) => (
+              <motion.div 
+                key={index}
+                className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 text-center"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                whileHover={{ 
+                  y: -10,
+                  boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+                }}
+              >
+                <div className="text-4xl mb-4">{value.icon}</div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">{value.title}</h3>
+                <p className="text-gray-600">{value.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* CTA Section */}
+        <div className="bg-gradient-to-r from-blue-50 to-gray-50 p-8 md:p-12 rounded-2xl shadow-xl">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="absolute -top-10 -right-10 w-40 h-40 bg-yellow-100 rounded-full opacity-30 -z-10"></div>
+              <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-100 rounded-full opacity-30 -z-10"></div>
+              
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+                Join Our Growing Community of Professionals
+              </h2>
+              <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
+                Be part of our mission to transform the energy sector through competency development and professional excellence.
+              </p>
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
+                <Link 
+                  to="/courses" 
+                  className="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-200 inline-block text-center"
+                >
+                  Explore Our Programs
+                </Link>
+                <Link 
+                  to="/contact" 
+                  className="bg-white hover:bg-gray-50 text-gray-800 font-medium py-3 px-8 border-2 border-gray-200 rounded-lg transition-colors duration-200 inline-block text-center"
+                >
+                  Get In Touch
+                </Link>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+      </main>
+      <Footer />
+    </div>
+  );
+}

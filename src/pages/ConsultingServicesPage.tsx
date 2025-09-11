@@ -18,7 +18,7 @@ const ConsultingServicesPage = () => {
         
         <main>
           {/* Hero Section with Visual Impact */}
-          <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-cover bg-center" style={{ backgroundImage: 'url(/src/assets/hero-consulting.jpg)' }}>
+          <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-cover bg-center" style={{ backgroundImage: 'url(/img/consultancy.jpg)' }}>
             {/* Black overlay */}
             <div className="absolute inset-0 bg-black/60"></div>
             

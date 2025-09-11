@@ -21,7 +21,7 @@ const teamMembers = [
       "Recognized as African Continental Top Talent at General Electric (GE)",
       "Extensive business portfolio across multiple industries including power, water technology, and IT"
     ],
-    image: "/team/daere-akobo.jpg"
+    image: "/team/daere-akobo.png"
   },
   {
     id: "iyenemi-akobo",
@@ -36,7 +36,7 @@ const teamMembers = [
       "Expertise in corporate governance and business administration",
       "Key role in implementing corporate governance requirements"
     ],
-    image: "/team/iyenemi-akobo.jpg"
+    image: "/team/iyenemi-akobo.png"
   },
   {
     id: "callista-azogu",
@@ -102,39 +102,74 @@ export default function TeamMemberPage() {
   if (!member) return <div>Team member not found</div>;
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <Navigation />
-      <main className="flex-grow py-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
+      <main className="flex-grow py-12">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Back button outside the box */}
+          <div className="mb-6">
             <Button 
               asChild 
               variant="ghost" 
-              className="mb-6 hover:bg-blue-50"
+              className="hover:bg-red-50"
             >
-              <Link to="/team" className="flex items-center text-blue-600">
+              <Link to="/team" className="flex items-center text-red-600">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Team
               </Link>
             </Button>
-
-            <Card className="overflow-hidden">
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 h-48 relative">
-                <div className="absolute -bottom-16 left-8">
-                  <Avatar className="h-32 w-32 border-4 border-white shadow-lg">
-                    <AvatarImage src={member.image} alt={member.name} />
-                    <AvatarFallback className="text-3xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
-                      {member.name.split(' ').map(n => n[0]).join('')}
-                    </AvatarFallback>
-                  </Avatar>
+          </div>
+          
+          {/* Main content box */}
+          <div className="bg-white rounded-xl shadow-md overflow-hidden">
+            <Card className="overflow-hidden group border-0 shadow-none">
+              {/* Full-width header image */}
+              <div className="relative h-80 w-full overflow-hidden">
+                {/* Large header image */}
+                <div className="absolute inset-0">
+                  {member.image ? (
+                    <img 
+                      src={member.image} 
+                      alt={member.name}
+                      className="w-full h-full object-cover object-top"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center">
+                      <span className="text-6xl font-bold text-red-400">
+                        {member.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                
+                {/* Profile image */}
+                <div className="absolute -bottom-16 left-8 z-10">
+                  <div className="h-40 w-40 rounded-full overflow-hidden border-4 border-white shadow-2xl bg-white">
+                    {member.image ? (
+                      <img 
+                        src={member.image} 
+                        alt={member.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-red-100 flex items-center justify-center">
+                        <span className="text-4xl font-bold text-red-600">
+                          {member.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              <CardHeader className="pt-20 px-8">
-                <div className="flex justify-between items-start">
-                  <div>
+              <CardHeader className="pt-20 px-8 pb-6">
+                <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-6">
+                  <div className="space-y-2">
                     <CardTitle className="text-3xl font-bold text-gray-900">{member.name}</CardTitle>
-                    <p className="text-lg font-medium text-blue-600">{member.title}</p>
+                    <p className="text-lg font-medium text-red-600">{member.title}</p>
                     {member.subtitle && <p className="text-gray-500">{member.subtitle}</p>}
                   </div>
                 </div>
@@ -142,15 +177,23 @@ export default function TeamMemberPage() {
 
               <CardContent className="px-8 pb-8">
                 <div className="prose max-w-none">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Biography</h3>
-                  <p className="text-gray-700 mb-8">{member.fullBio || member.description}</p>
-                  
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Experience</h3>
-                  <ul className="list-disc pl-5 space-y-2 text-gray-700">
-                    {member.experience?.map((exp: string, index: number) => (
-                      <li key={index}>{exp}</li>
-                    ))}
-                  </ul>
+                  <div className="mb-8">
+                    <h3 className="text-xl font-semibold mb-4 text-gray-800">Biography</h3>
+                    <div className="prose text-gray-600">
+                      {member.fullBio || member.description}
+                    </div>
+                  </div>
+
+                  {member.experience && member.experience.length > 0 && (
+                    <div>
+                      <h3 className="text-xl font-semibold mb-4 text-gray-800">Experience</h3>
+                      <ul className="space-y-3 list-disc pl-5">
+                        {member.experience.map((exp: string, index: number) => (
+                          <li key={index} className="text-gray-600">{exp}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

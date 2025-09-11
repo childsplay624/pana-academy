@@ -8,30 +8,70 @@ export default function ConsultingServices() {
     <div className="min-h-screen flex flex-col">
       <Navigation />
       <main className="flex-grow">
-      {/* Page Header */}
-      <section className="relative bg-pana-navy text-white">
-        <div className="absolute inset-0 bg-black/60 z-0">
-          <div className="absolute inset-0 bg-gradient-to-r from-pana-navy/90 to-pana-blue/80"></div>
-        </div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
-          <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-              Transform Your Organization with Expert Consulting
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-100 mb-8 max-w-2xl">
-              Strategic solutions tailored to your unique challenges and goals
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button className="bg-pana-gold hover:bg-pana-gold/90 text-pana-navy px-8 py-6 text-lg font-semibold">
-                Get Started Today
-              </Button>
-              <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white/10 px-8 py-6 text-lg">
-                Learn More
-              </Button>
+      {/* Page Header with Image */}
+      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-cover bg-center" style={{ backgroundImage: 'url(/src/assets/hero-training.jpg)' }}>
+            {/* Black overlay */}
+            <div className="absolute inset-0 bg-black/60"></div>
+            
+            {/* Subtle animated elements */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-pana-gold/30 rounded-full blur-3xl animate-pulse"></div>
+              <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-white/20 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
             </div>
-          </div>
-        </div>
-      </section>
+
+            {/* Floating Elements */}
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute top-20 left-20 w-6 h-6 bg-pana-gold/40 rounded-full animate-bounce"></div>
+              <div className="absolute top-40 right-32 w-4 h-4 bg-white/30 rounded-full animate-ping"></div>
+              <div className="absolute bottom-32 left-1/3 w-8 h-8 bg-pana-blue/30 rounded-full animate-pulse"></div>
+            </div>
+
+            <div className="relative max-w-7xl mx-auto px-6 lg:px-8 text-center z-10">
+              <div className="space-y-8 animate-fade-in">
+                <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full text-white/90 text-sm font-medium border border-white/20">
+                  <Zap className="w-5 h-5 text-pana-gold" />
+                  <span className="text-red-500">World-Class Training Excellence</span>
+                  <ArrowRight className="w-4 h-4" />
+                </div>
+                
+                <h1 className="text-6xl md:text-8xl font-bold mb-6 leading-tight">
+                  <span className="text-red-500">Training</span>
+                  <span className="block bg-gradient-to-r from-pana-gold to-yellow-300 bg-clip-text text-transparent">
+                    <span className="text-red-500">Delivery</span>
+                  </span>
+                </h1>
+                
+                <p className="text-xl md:text-2xl text-white/80 max-w-4xl mx-auto leading-relaxed">
+                  Revolutionary methods and cutting-edge approaches designed to 
+                  <span className="text-pana-gold font-semibold"> maximize learning impact</span> and drive 
+                  <span className="text-pana-gold font-semibold"> organizational transformation</span>
+                </p>
+
+                {/* Stats Bar */}
+                <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto mt-12">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-pana-gold">200+</div>
+                    <div className="text-white/70 text-sm">Professionals Trained</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-pana-gold">95%</div>
+                    <div className="text-white/70 text-sm">Success Rate</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-pana-gold">50+</div>
+                    <div className="text-white/70 text-sm">Global Partners</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Scroll Indicator */}
+            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+              <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
+                <div className="w-1 h-3 bg-white/60 rounded-full mt-2 animate-pulse"></div>
+              </div>
+            </div>
+          </section>
 
       {/* Main Content Section */}
       <section className="bg-white py-20">

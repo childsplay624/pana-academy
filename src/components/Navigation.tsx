@@ -137,6 +137,11 @@ const Navigation = () => {
           name: "Our Team", 
           href: "/team",
           onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleNavigation(e, "/team")
+        },
+        { 
+          name: "Our Journey", 
+          href: "/our-journey",
+          onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleNavigation(e, "/our-journey")
         }
       ]
     },
@@ -147,11 +152,6 @@ const Navigation = () => {
       onMouseLeave: handleDropdownLeave,
       onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleDropdownClick(e, 'services'),
       dropdown: [
-        { 
-          name: "Training Programs", 
-          href: "#training",
-          onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleNavigation(e, "#training")
-        },
         { 
           name: "Consulting Services", 
           href: "/consulting-services",
@@ -172,15 +172,8 @@ const Navigation = () => {
           name: "Training Delivery", 
           href: "/training-delivery",
           onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleNavigation(e, "/training-delivery")
-        },
-        { 
-          name: "Training Calendar", 
-          href: "/training-calendar",
-          onClick: (e: React.MouseEvent<HTMLAnchorElement>) => {
-            e.preventDefault();
-            navigate('/training-calendar');
-          }
         }
+        
       ]
     },
     { 

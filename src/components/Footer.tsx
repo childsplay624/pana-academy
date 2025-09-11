@@ -1,4 +1,5 @@
 import { Mail, Phone, MapPin, ArrowRight, Instagram, Linkedin, Facebook } from "lucide-react";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -31,6 +32,19 @@ const Footer = () => {
       { name: "Privacy Policy", href: "/privacy-policy" }
     ]
   };
+
+  // Load Mailchimp script on component mount
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = '//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js';
+    script.type = 'text/javascript';
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   return (
     <footer className="bg-black text-white">
@@ -127,15 +141,70 @@ const Footer = () => {
                   Subscribe to our newsletter for the latest insights, training updates, and industry news.
                 </p>
               </div>
-              <div className="flex space-x-3">
-                <Input 
-                  placeholder="Enter your email address" 
-                  className="bg-white/10 border-gray-600 text-white placeholder:text-gray-400"
+              <div id="mc_embed_signup" className="w-full">
+                <form 
+                  action="https://pana-academy.us5.list-manage.com/subscribe/post?u=c3b793e3a53abf91535915fb2&amp;id=6cd696a57a&amp;f_id=00de32e0f0" 
+                  method="post" 
+                  id="mc-embedded-subscribe-form" 
+                  name="mc-embedded-subscribe-form" 
+                  className="validate flex space-x-3" 
+                  target="_blank"
+                  noValidate
+                >
+                  <div className="mc-field-group flex-grow">
+                    <input 
+                      type="email" 
+                      name="EMAIL" 
+                      className="required email w-full px-3 py-2 bg-white/10 border border-gray-600 text-white placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-pana-gold" 
+                      id="mce-EMAIL" 
+                      required 
+                      placeholder="Enter your email address"
+                    />
+                    <div id="mce-responses" className="hidden">
+                      <div className="response hidden" id="mce-error-response"></div>
+                      <div className="response hidden" id="mce-success-response"></div>
+                    </div>
+                    <div aria-hidden="true" style={{ position: 'absolute', left: '-5000px' }}>
+                      <input type="text" name="b_c3b793e3a53abf91535915fb2_6cd696a57a" tabIndex={-1} value="" />
+                    </div>
+                  </div>
+                  <Button 
+                    type="submit" 
+                    name="subscribe" 
+                    id="mc-embedded-subscribe" 
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    Subscribe
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </form>
+                <script 
+                  src="//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js" 
+                  type="text/javascript"
+                  dangerouslySetInnerHTML={{
+                    __html: `
+                      (function($) {
+                        window.fnames = new Array();
+                        window.ftypes = new Array();
+                        fnames[0]='EMAIL';
+                        ftypes[0]='email';
+                        fnames[1]='FNAME';
+                        ftypes[1]='text';
+                        fnames[2]='LNAME';
+                        ftypes[2]='text';
+                        fnames[3]='ADDRESS';
+                        ftypes[3]='address';
+                        fnames[4]='PHONE';
+                        ftypes[4]='phone';
+                        fnames[5]='BIRTHDAY';
+                        ftypes[5]='birthday';
+                        fnames[6]='COMPANY';
+                        ftypes[6]='text';
+                      }(jQuery));
+                      var $mcj = jQuery.noConflict(true);
+                    `
+                  }}
                 />
-                <Button variant="default" className="bg-red-600 hover:bg-red-700">
-                  Subscribe
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
               </div>
             </div>
           </div>

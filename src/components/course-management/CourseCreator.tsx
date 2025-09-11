@@ -52,7 +52,7 @@ export default function CourseCreator() {
     course_type: 'self_paced',
     zoom_meeting_id: '',
     scheduled_date: '',
-    start_date: '',
+    start_date: new Date().toISOString().split('T')[0], // Default to today's date
     is_free: false
   });
 
@@ -159,25 +159,32 @@ export default function CourseCreator() {
           description: "Course updated successfully"
         });
       } else {
-        // Create new course
+        // Create new course with all required fields
+        const newCourse = {
+          title: updatedCourse.title,
+          description: updatedCourse.description || '',
+          category: updatedCourse.category,
+          instructor_id: user.id,
+          price: courseData.price,
+          status: updatedCourse.status,
+          thumbnail_url: updatedCourse.thumbnail_url || '',
+          duration_hours: updatedCourse.duration_hours,
+          level: updatedCourse.level,
+          requirements: [],
+          learning_outcomes: [],
+          // Additional fields from the form
+          course_type: updatedCourse.course_type,
+          zoom_meeting_id: updatedCourse.zoom_meeting_id || null,
+          scheduled_date: updatedCourse.scheduled_date || null,
+          start_date: courseData.start_date,
+          is_free: courseData.is_free
+        };
+
+        console.log('Creating course with data:', newCourse);
+
         const { data, error } = await supabase
           .from('courses')
-          .insert({
-            title: updatedCourse.title,
-            description: updatedCourse.description,
-            category: updatedCourse.category,
-            price: courseData.price, // Use the potentially adjusted price
-            duration_hours: updatedCourse.duration_hours,
-            level: updatedCourse.level,
-            status: updatedCourse.status,
-            thumbnail_url: updatedCourse.thumbnail_url,
-            instructor_id: user.id,
-            course_type: updatedCourse.course_type,
-            zoom_meeting_id: updatedCourse.zoom_meeting_id || null,
-            scheduled_date: updatedCourse.scheduled_date || null,
-            start_date: courseData.start_date,
-            is_free: courseData.is_free
-          })
+          .insert(newCourse)
           .select()
           .single();
 
