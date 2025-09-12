@@ -315,7 +315,15 @@ export default function Auth() {
                   Google
                 </Button>
                 
-                
+                <Button
+                  variant="ghost"
+                  type="button"
+                  className="w-full mt-3 text-sm font-medium text-black hover:text-gray-800 hover:bg-gray-100"
+                  onClick={() => navigate('/')}
+                  disabled={isLoading}
+                >
+                  ← Back to Home
+                </Button>
               </div>
             </div>
             

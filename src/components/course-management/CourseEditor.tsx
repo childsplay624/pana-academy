@@ -146,18 +146,55 @@ export function CourseEditor() {
   const deleteCourse = async () => {
     if (!courseId || !course) return;
     
-    if (confirm('Are you sure you want to delete this course? This action cannot be undone.')) {
+    if (confirm('Are you sure you want to delete this course? This will also delete all related modules, lessons, and enrollment records. This action cannot be undone.')) {
       try {
-        const { error } = await supabase
+        // First, delete related data in a transaction
+        const { error: enrollmentsError } = await supabase
+          .from('enrollments')
+          .delete()
+          .eq('course_id', courseId);
+
+        if (enrollmentsError) throw enrollmentsError;
+
+        // Get all modules for this course to delete their lessons
+        const { data: modules, error: modulesError } = await supabase
+          .from('modules')
+          .select('id')
+          .eq('course_id', courseId);
+
+        if (modulesError) throw modulesError;
+
+        // Delete all lessons for each module
+        if (modules && modules.length > 0) {
+          for (const module of modules) {
+            const { error: lessonsError } = await supabase
+              .from('lessons')
+              .delete()
+              .eq('module_id', module.id);
+
+            if (lessonsError) throw lessonsError;
+          }
+        }
+
+        // Delete all modules for this course
+        const { error: modulesDeleteError } = await supabase
+          .from('modules')
+          .delete()
+          .eq('course_id', courseId);
+
+        if (modulesDeleteError) throw modulesDeleteError;
+
+        // Finally, delete the course
+        const { error: courseDeleteError } = await supabase
           .from('courses')
           .delete()
           .eq('id', courseId);
 
-        if (error) throw error;
+        if (courseDeleteError) throw courseDeleteError;
 
         toast({
           title: "Success",
-          description: "Course deleted successfully",
+          description: "Course and all related content deleted successfully",
         });
         
         navigate('/dashboard/courses');
@@ -165,7 +202,7 @@ export function CourseEditor() {
         console.error('Error deleting course:', error);
         toast({
           title: "Error",
-          description: "Failed to delete course",
+          description: error instanceof Error ? error.message : "Failed to delete course. Please try again.",
           variant: "destructive",
         });
       }

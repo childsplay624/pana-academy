@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => ({
       protocol: 'ws',
     },
     allowedHosts: [
-      '7bca6d68447f.ngrok-free.app',
+      '4a4c7902a111.ngrok-free.app',
       'localhost',
     ]
   },
