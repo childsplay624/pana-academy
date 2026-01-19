@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useStudentData } from '@/hooks/useStudentData';
@@ -6,12 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { 
-  BookOpen, Award, Calendar, Clock, TrendingUp, 
-  AlertCircle, Info, Target, CheckCircle, ChevronRight, 
-  Plus, Trophy, RefreshCw, FileText, Video, FileCode, 
-  AlertTriangle, Download, Play, Code, Settings, 
-  BarChart3, Flame, Activity, FileType, Eye, CalendarDays, X
+import {
+  BookOpen, Award, Calendar, Clock, TrendingUp,
+  AlertCircle, Info, Target, CheckCircle, ChevronRight,
+  Plus, Trophy, RefreshCw, FileText, Video, FileCode,
+  AlertTriangle, Download, Play, Code, Settings,
+  BarChart3, Flame, Activity, FileType, Eye, CalendarDays, X,
+  Search, Filter
 } from 'lucide-react';
 import { SetGoals } from '@/components/dashboard/SetGoals';
 import { StudySchedule } from '@/components/dashboard/StudySchedule';
@@ -24,6 +25,10 @@ import { ProgressChart } from '@/components/dashboard/ProgressChart';
 import { CourseProgressChart } from '@/components/dashboard/CourseProgressChart';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { EmptyState } from '@/components/dashboard/EmptyState';
+import { DeadlinesWidget } from '@/components/dashboard/DeadlinesWidget';
 
 // Define interfaces for our data models
 interface UserProfile {
@@ -85,10 +90,10 @@ interface StatCardProps {
   className?: string;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ 
-  title, 
-  value, 
-  description, 
+const StatCard: React.FC<StatCardProps> = ({
+  title,
+  value,
+  description,
   icon: Icon,
   tooltip,
   isLoading = false,
@@ -141,15 +146,19 @@ const DashboardError = ({ onRetry }: { onRetry: () => void }) => (
   </div>
 );
 
+type CourseFilter = 'all' | 'in_progress' | 'completed' | 'not_started';
+
 export default function StudentDashboard() {
   const [goalsDialogOpen, setGoalsDialogOpen] = useState(false);
   const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [courseFilter, setCourseFilter] = useState<CourseFilter>('all');
   const { profile, signOut } = useAuth();
-  const { 
-    isLoading, 
-    error, 
-    enrolledCourses = [], 
-    recommendedCourses = [], 
+  const {
+    isLoading,
+    error,
+    enrolledCourses = [],
+    recommendedCourses = [],
     stats: rawStats = {
       enrolledCourses: 0,
       certificates: 0,
@@ -159,18 +168,48 @@ export default function StudentDashboard() {
   } = useStudentData();
 
   // Ensure stats has all required properties with default values
-  const stats: Stats = isCompleteStats(rawStats) 
-    ? rawStats 
+  const stats: Stats = isCompleteStats(rawStats)
+    ? rawStats
     : {
-        ...rawStats,
-        weeklyGoalProgress: 0,
-        completedCourses: 0,
-        streakDays: 0
-      };
-  
+      ...rawStats,
+      weeklyGoalProgress: 0,
+      completedCourses: 0,
+      streakDays: 0
+    };
+
   const userProfile = profile as UserProfile | null;
   const [retryCount, setRetryCount] = useState(0);
   const handleRetry = () => setRetryCount(prev => prev + 1);
+
+  // Filter enrolled courses based on search and filter
+  const filteredCourses = useMemo(() => {
+    let filtered = enrolledCourses;
+
+    // Apply search query
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(course =>
+        course.title.toLowerCase().includes(query) ||
+        course.instructor.toLowerCase().includes(query) ||
+        course.category.toLowerCase().includes(query)
+      );
+    }
+
+    // Apply status filter
+    switch (courseFilter) {
+      case 'in_progress':
+        filtered = filtered.filter(c => c.progress > 0 && c.progress < 100);
+        break;
+      case 'completed':
+        filtered = filtered.filter(c => c.progress === 100);
+        break;
+      case 'not_started':
+        filtered = filtered.filter(c => c.progress === 0);
+        break;
+    }
+
+    return filtered;
+  }, [enrolledCourses, searchQuery, courseFilter]);
 
   if (error && !isLoading) {
     console.error('Dashboard error:', error);
@@ -184,7 +223,7 @@ export default function StudentDashboard() {
   }
 
   return (
-    <ErrorBoundary 
+    <ErrorBoundary
       fallback={
         <DashboardLayout>
           <div className="p-8 flex items-center justify-center">
@@ -237,8 +276,8 @@ export default function StudentDashboard() {
                 title="Enrolled Courses"
                 value={stats.enrolledCourses}
                 description={
-                  stats.enrolledCourses === 0 
-                    ? 'Start your learning journey' 
+                  stats.enrolledCourses === 0
+                    ? 'Start your learning journey'
                     : `${stats.enrolledCourses} active ${stats.enrolledCourses === 1 ? 'course' : 'courses'}`
                 }
                 icon={BookOpen}
@@ -307,13 +346,13 @@ export default function StudentDashboard() {
                   <CardDescription>Your progress across all enrolled courses</CardDescription>
                 </CardHeader>
                 <CardContent className="h-[400px] w-full">
-                  <CourseProgressChart 
+                  <CourseProgressChart
                     data={enrolledCourses.map(course => ({
                       name: course.title,
                       value: course.progress,
                       color: '#0088FE'
-                    }))} 
-                    isLoading={isLoading} 
+                    }))}
+                    isLoading={isLoading}
                   />
                 </CardContent>
               </Card>
@@ -323,8 +362,8 @@ export default function StudentDashboard() {
             <div className="mb-8">
               <h2 className="text-xl font-bold tracking-tight mb-4">Quick Actions</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-                <ContinueLearning 
-                  enrolledCourses={enrolledCourses} 
+                <ContinueLearning
+                  enrolledCourses={enrolledCourses}
                   isLoading={isLoading}
                 />
                 <Button variant="outline" className="h-20 flex flex-col gap-2" size="sm" asChild>
@@ -341,9 +380,9 @@ export default function StudentDashboard() {
                     </Link>
                   </Button>
                 ) : (
-                  <Button 
-                    variant="outline" 
-                    className="h-20 flex flex-col gap-2 opacity-50 cursor-not-allowed" 
+                  <Button
+                    variant="outline"
+                    className="h-20 flex flex-col gap-2 opacity-50 cursor-not-allowed"
                     size="sm"
                     disabled
                   >
@@ -352,9 +391,9 @@ export default function StudentDashboard() {
                   </Button>
                 )}
                 <Dialog open={scheduleDialogOpen} onOpenChange={setScheduleDialogOpen}>
-                  <Button 
-                    variant="outline" 
-                    className="h-20 flex flex-col gap-2" 
+                  <Button
+                    variant="outline"
+                    className="h-20 flex flex-col gap-2"
                     size="sm"
                     type="button"
                     onClick={() => setScheduleDialogOpen(true)}
@@ -373,9 +412,9 @@ export default function StudentDashboard() {
                 </Dialog>
 
                 <Dialog open={goalsDialogOpen} onOpenChange={setGoalsDialogOpen}>
-                  <Button 
-                    variant="outline" 
-                    className="h-20 flex flex-col gap-2" 
+                  <Button
+                    variant="outline"
+                    className="h-20 flex flex-col gap-2"
                     size="sm"
                     type="button"
                     onClick={() => setGoalsDialogOpen(true)}
@@ -401,119 +440,140 @@ export default function StudentDashboard() {
               </div>
             </div>
 
-
-            {/* Learning Resources */}
+            {/* My Courses Section with Search & Filter */}
             <div className="mb-8">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h2 className="text-xl font-bold tracking-tight">Learning Resources</h2>
+                  <h2 className="text-2xl font-bold tracking-tight">My Courses</h2>
                   <p className="text-muted-foreground text-sm">
-                    Recommended resources to enhance your learning
+                    {isLoading ? (
+                      <Skeleton className="h-4 w-64 inline-block" />
+                    ) : (
+                      `Managing ${enrolledCourses.length} ${enrolledCourses.length === 1 ? 'course' : 'courses'}`
+                    )}
                   </p>
                 </div>
-                <Button variant="ghost" size="sm" className="text-primary">
-                  View All <ChevronRight className="ml-1 h-4 w-4" />
-                </Button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                        <FileType className="h-5 w-5 text-red-600" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <Badge variant="secondary" className="mb-2 text-xs">PDF</Badge>
-                        <h3 className="font-medium text-sm mb-1">Complete Guide to React Hooks</h3>
-                        <p className="text-xs text-muted-foreground mb-2">
-                          Master React Hooks with this comprehensive guide covering all the essential hooks and patterns.
-                        </p>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-muted-foreground">2.4 MB</span>
-                          <Button size="sm" variant="outline" className="h-7 text-xs">
-                            <Download className="h-3 w-3 mr-1" />
-                            Download
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+              {/* Search and Filter Bar */}
+              <div className="mb-6 space-y-4">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  {/* Search Input */}
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search your courses..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
 
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <Video className="h-5 w-5 text-blue-600" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <Badge variant="secondary" className="mb-2 text-xs">Video</Badge>
-                        <h3 className="font-medium text-sm mb-1">TypeScript Crash Course</h3>
-                        <p className="text-xs text-muted-foreground mb-2">
-                          Learn TypeScript fundamentals and advanced patterns in this comprehensive video tutorial.
-                        </p>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-muted-foreground">45 min</span>
-                          <Button size="sm" variant="outline" className="h-7 text-xs">
-                            <Play className="h-3 w-3 mr-1" />
-                            Watch Now
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                  {/* Filter Dropdown */}
+                  <Select value={courseFilter} onValueChange={(value) => setCourseFilter(value as CourseFilter)}>
+                    <SelectTrigger className="w-full sm:w-[200px]">
+                      <Filter className="mr-2 h-4 w-4" />
+                      <SelectValue placeholder="Filter courses" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Courses ({enrolledCourses.length})</SelectItem>
+                      <SelectItem value="in_progress">
+                        In Progress ({enrolledCourses.filter(c => c.progress > 0 && c.progress < 100).length})
+                      </SelectItem>
+                      <SelectItem value="completed">
+                        Completed ({enrolledCourses.filter(c => c.progress === 100).length})
+                      </SelectItem>
+                      <SelectItem value="not_started">
+                        Not Started ({enrolledCourses.filter(c => c.progress === 0).length})
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
 
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                        <Code className="h-5 w-5 text-green-600" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <Badge variant="secondary" className="mb-2 text-xs">Code</Badge>
-                        <h3 className="font-medium text-sm mb-1">React Performance Optimization</h3>
-                        <p className="text-xs text-muted-foreground mb-2">
-                          Code examples and patterns for optimizing React application performance.
-                        </p>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-muted-foreground">12 files</span>
-                          <Button size="sm" variant="outline" className="h-7 text-xs">
-                            <Eye className="h-3 w-3 mr-1" />
-                            View Code
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                  {/* Clear Filters */}
+                  {(searchQuery || courseFilter !== 'all') && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        setSearchQuery('');
+                        setCourseFilter('all');
+                      }}
+                      className="flex-shrink-0"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
 
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <FileText className="h-5 w-5 text-purple-600" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <Badge variant="secondary" className="mb-2 text-xs">Article</Badge>
-                        <h3 className="font-medium text-sm mb-1">State Management in 2023</h3>
-                        <p className="text-xs text-muted-foreground mb-2">
-                          Comparing different state management solutions for modern React applications.
-                        </p>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-muted-foreground">8 min read</span>
-                          <Button size="sm" variant="outline" className="h-7 text-xs">
-                            <FileText className="h-3 w-3 mr-1" />
-                            Read More
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                {/* Results count */}
+                {!isLoading && (
+                  <p className="text-sm text-muted-foreground">
+                    Showing {filteredCourses.length} of {enrolledCourses.length} courses
+                  </p>
+                )}
               </div>
+
+              {/* Course Display */}
+              {isLoading ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="space-y-3">
+                      <Skeleton className="h-40 w-full rounded-lg" />
+                      <Skeleton className="h-4 w-3/4" />
+                      <Skeleton className="h-4 w-1/2" />
+                    </div>
+                  ))}
+                </div>
+              ) : filteredCourses.length === 0 ? (
+                searchQuery || courseFilter !== 'all' ? (
+                  <EmptyState
+                    icon={Search}
+                    title="No courses found"
+                    description={`No courses match your current filters. Try adjusting your search or filter settings.`}
+                    action={{
+                      label: "Clear Filters",
+                      onClick: () => {
+                        setSearchQuery('');
+                        setCourseFilter('all');
+                      }
+                    }}
+                  />
+                ) : (
+                  <EmptyState
+                    icon={BookOpen}
+                    title="Start your learning journey"
+                    description="You haven't enrolled in any courses yet. Browse our course catalog to find courses that match your interests and career goals."
+                    action={{
+                      label: "Browse Courses",
+                      onClick: () => window.location.href = '/courses'
+                    }}
+                  />
+                )
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredCourses.map((course) => (
+                    <CourseCard
+                      key={course.id}
+                      id={course.id}
+                      title={course.title}
+                      instructor={course.instructor}
+                      progress={course.progress}
+                      thumbnail={course.thumbnail || course.image}
+                      lastAccessed={course.lastAccessed}
+                      className="h-full"
+                    />
+                  ))}
+                </div>
+              )}
             </div>
+
+            {/* Deadlines Widget */}
+            <div className="mb-8">
+              <DeadlinesWidget />
+            </div>
+
+            {/* Learning Resources */}
+
 
             {/* Study Goals and Weekly Streak */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
@@ -537,7 +597,7 @@ export default function StudentDashboard() {
                     </div>
                     <Progress value={0} className="h-2" />
                   </div>
-                  
+
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium">Course Completion</span>
@@ -579,9 +639,7 @@ export default function StudentDashboard() {
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-xl font-bold tracking-tight">Recent Activity</h2>
-                  <p className="text-muted-foreground text-sm">
-                    Your recent learning activities and progress
-                  </p>
+
                 </div>
                 <div className="flex gap-2">
                   <Button variant="ghost" size="sm" className="text-primary">
@@ -597,7 +655,7 @@ export default function StudentDashboard() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Recent Activity</CardTitle>
+
                   <CardDescription>Your latest learning activities and achievements</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -666,14 +724,15 @@ export default function StudentDashboard() {
                   ))}
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed rounded-lg">
-                  <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium mb-2">No recommendations yet</h3>
-                  <p className="text-muted-foreground mb-6 max-w-md px-4">
-                    Complete some courses or update your interests to get personalized recommendations.
-                  </p>
-                  <Button>Update Interests</Button>
-                </div>
+                <EmptyState
+                  icon={BookOpen}
+                  title="No recommendations yet"
+                  description="Complete some courses or update your interests to get personalized recommendations."
+                  action={{
+                    label: "Update Interests",
+                    onClick: () => window.location.href = '/dashboard/settings'
+                  }}
+                />
               )}
             </div>
           </TooltipProvider>

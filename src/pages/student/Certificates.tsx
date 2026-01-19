@@ -5,10 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  Award, 
-  Download, 
-  Search, 
+import {
+  Award,
+  Download,
+  Search,
   Calendar,
   ExternalLink,
   Trophy,
@@ -65,7 +65,7 @@ export default function Certificates() {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button 
+            <Button
               variant="outline"
               onClick={() => {
                 const profileUrl = `${window.location.origin}/user-profile`;
@@ -92,7 +92,7 @@ export default function Certificates() {
                     <p className="text-2xl font-bold">{stats.totalCertificates}</p>
                   )}
                 </div>
-                <Award className="h-8 w-8 text-yellow-500" />
+                <Award className="h-8 w-8 text-red-500" />
               </div>
             </CardContent>
           </Card>
@@ -179,7 +179,7 @@ export default function Certificates() {
                 <Card key={cert.id} className="hover:shadow-lg transition-shadow">
                   <CardHeader className="pb-4">
                     <div className="flex items-start justify-between">
-                      <Award className="h-8 w-8 text-yellow-500 flex-shrink-0" />
+                      <Award className="h-8 w-8 text-red-500 flex-shrink-0" />
                       <Badge variant="secondary">{cert.grade || 'Completed'}</Badge>
                     </div>
                   </CardHeader>
@@ -208,23 +208,23 @@ export default function Certificates() {
                     </div>
 
                     <div className="flex gap-2 pt-2">
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         className="flex-1"
                         onClick={() => handleDownload(cert.id)}
                       >
                         <Download className="h-4 w-4 mr-2" />
                         Download
                       </Button>
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         variant="outline"
                         onClick={() => handleShare(cert.id)}
                       >
                         <Share2 className="h-4 w-4" />
                       </Button>
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         variant="outline"
                         onClick={() => handleVerify(cert.verification_code)}
                       >

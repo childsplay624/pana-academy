@@ -3,8 +3,12 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { ArrowRight, Zap, CheckCircle, Target, TrendingUp, Lightbulb, BarChart2, Users, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSiteImage } from "@/hooks/useSiteImage";
 
 const ConsultingServicesPage = () => {
+  // Fetch header image from centralized system
+  const { imageUrl: headerImage } = useSiteImage('header_consultancy', '/img/consultancy.jpg');
+
   return (
     <>
       <Helmet>
@@ -12,16 +16,25 @@ const ConsultingServicesPage = () => {
         <meta name="description" content="Transform your organization with PANA Academy's expert consulting services. We provide strategic solutions to help businesses navigate complexity and drive growth." />
         <meta name="keywords" content="business consulting, strategic planning, organizational development, PANA Academy consulting" />
       </Helmet>
-      
+
       <div className="min-h-screen bg-gradient-subtle">
         <Navigation />
-        
+
         <main>
           {/* Hero Section with Visual Impact */}
-          <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-cover bg-center" style={{ backgroundImage: 'url(/img/consultancy.jpg)' }}>
+          <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
+            {/* Background Image */}
+            <div className="absolute inset-0">
+              <img
+                src={headerImage}
+                alt="Consulting Services"
+                className="w-full h-full object-cover object-center"
+                loading="eager"
+              />
+            </div>
             {/* Black overlay */}
             <div className="absolute inset-0 bg-black/60"></div>
-            
+
             {/* Subtle animated elements */}
             <div className="absolute inset-0 opacity-10">
               <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-pana-gold/30 rounded-full blur-3xl animate-pulse"></div>
@@ -42,18 +55,18 @@ const ConsultingServicesPage = () => {
                   <span>Strategic Business Solutions</span>
                   <ArrowRight className="w-4 h-4" />
                 </div>
-                
+
                 <h1 className="text-6xl md:text-8xl font-bold mb-6 leading-tight">
                   <span className="text-white">Consulting</span>
                   <span className="block text-red-600">
                     Services
                   </span>
                 </h1>
-                
+
                 <p className="text-xl md:text-2xl text-gray-200 max-w-4xl mx-auto">
                   Transform your organization with our expert consulting services designed to drive growth, innovation, and sustainable success.
                 </p>
-                
+
                 <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
                   <a href="/contact" className="no-underline">
                     <Button className="bg-pana-gold hover:bg-pana-gold/90 text-pana-navy px-8 py-6 text-lg font-semibold group">
@@ -81,7 +94,7 @@ const ConsultingServicesPage = () => {
                   <p className="text-lg text-gray-600 mb-8 leading-relaxed">
                     At PANA Academy, we don't just advise, we transform. Our consultancy services are designed to help organizations navigate complexity, unlock growth, and build resilient strategies. Whether you're a startup seeking market entry, an NGO refining impact models, or a government agency driving policy innovation, PANA Academy delivers actionable insights, and we turn challenges into opportunities and ideas into results.
                   </p>
-                  
+
                   <div className="space-y-6">
                     <div className="flex items-start">
                       <div className="flex-shrink-0 h-6 w-6 text-pana-gold mr-4 mt-1">
@@ -92,7 +105,7 @@ const ConsultingServicesPage = () => {
                         <p className="text-gray-600">Problems using data-driven analysis and sector expertise.</p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-start">
                       <div className="flex-shrink-0 h-6 w-6 text-pana-gold mr-4 mt-1">
                         <Lightbulb className="h-6 w-6" />
@@ -102,7 +115,7 @@ const ConsultingServicesPage = () => {
                         <p className="text-gray-600">Solutions that work, from business models to operational frameworks.</p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-start">
                       <div className="flex-shrink-0 h-6 w-6 text-pana-gold mr-4 mt-1">
                         <TrendingUp className="h-6 w-6" />
@@ -112,7 +125,7 @@ const ConsultingServicesPage = () => {
                         <p className="text-gray-600">Measurable impact with strategies tailored to your goals and context.</p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-start">
                       <div className="flex-shrink-0 h-6 w-6 text-pana-gold mr-4 mt-1">
                         <Users className="h-6 w-6" />
@@ -124,7 +137,7 @@ const ConsultingServicesPage = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="bg-gray-50 p-8 rounded-xl border border-gray-100 shadow-sm">
                   <div className="space-y-6">
                     <div className="p-6 bg-pana-navy/5 rounded-lg">
@@ -138,7 +151,7 @@ const ConsultingServicesPage = () => {
                         To empower organizations with strategic insights and practical solutions that drive sustainable growth and innovation.
                       </p>
                     </div>
-                    
+
                     <div className="p-6 bg-pana-navy/5 rounded-lg">
                       <div className="flex items-center gap-4 mb-4">
                         <div className="p-3 bg-pana-gold/10 rounded-full">
@@ -150,7 +163,7 @@ const ConsultingServicesPage = () => {
                         With experience across multiple industries and regions, we bring a global perspective to local challenges.
                       </p>
                     </div>
-                    
+
                     <div className="p-6 bg-pana-navy/5 rounded-lg">
                       <div className="flex items-center gap-4 mb-4">
                         <div className="p-3 bg-pana-gold/10 rounded-full">
@@ -167,7 +180,7 @@ const ConsultingServicesPage = () => {
               </div>
             </div>
           </section>
-          
+
           {/* CTA Section */}
           <section className="bg-gray-50 text-pana-navy py-20">
             <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
@@ -192,7 +205,7 @@ const ConsultingServicesPage = () => {
             </div>
           </section>
         </main>
-        
+
         <Footer />
       </div>
     </>

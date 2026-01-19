@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 // Simple interface to avoid deep instantiation issues
 interface Progress {
   id: string;
-  user_id: string;
+  student_id: string;
   course_id: string;
   module_id: string;  // Added module_id
   lesson_id: string;
@@ -72,7 +72,7 @@ export const progressService = {
       const { data: existingProgress, error: fetchError } = await supabase
         .from('lesson_progress')
         .select('*')
-        .eq('user_id', params.userId)
+        .eq('student_id', params.userId)
         .eq('lesson_id', params.lessonId)
         .single() as { data: Progress | null; error: any };
 
@@ -83,7 +83,7 @@ export const progressService = {
 
       let result;
       const now = new Date().toISOString();
-      
+
       if (existingProgress) {
         // Update existing progress
         result = await supabase
@@ -151,11 +151,11 @@ export const progressService = {
         .from('lessons')
         .select('id')
         .eq('course_id', courseId);
-      
+
       if (lessonsError) throw lessonsError;
-      
+
       const lessonIds = courseLessons?.map(lesson => lesson.id) || [];
-      
+
       // Then count completed lessons
       const { count: completedCount, error: progressError } = await supabase
         .from('lesson_progress')
@@ -197,16 +197,16 @@ export const progressService = {
       const certificateNumber = `CERT-${Date.now()}-${userId.substring(0, 6)}`;
       const verificationCode = `VC-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
       const now = new Date().toISOString();
-      
+
       // Get course details for the certificate
       const { data: course, error: courseError } = await supabase
         .from('courses')
         .select('title, duration_hours')
         .eq('id', courseId)
         .single();
-      
+
       if (courseError) throw courseError;
-      
+
       // Create certificate with all required fields
       const certificateData = {
         user_id: userId,
@@ -226,7 +226,7 @@ export const progressService = {
         enrollment_id: '', // This should be set to the actual enrollment ID if available
         instructor_name: 'PANA Academy Instructor' // Default value, should be replaced with actual instructor
       } satisfies Omit<Certificate, 'id'>;
-      
+
       const { data: certificate, error: certError } = await supabase
         .from('certificates')
         .insert(certificateData)
@@ -248,9 +248,9 @@ export const progressService = {
       return { data: certificate as unknown as Certificate, error: null };
     } catch (error) {
       console.error('Error issuing certificate:', error);
-      return { 
-        data: null, 
-        error: error instanceof Error ? error : new Error('Failed to issue certificate') 
+      return {
+        data: null,
+        error: error instanceof Error ? error : new Error('Failed to issue certificate')
       };
     }
   },
@@ -277,14 +277,14 @@ export const progressService = {
         ip_address: params.ipAddress || '',
         created_at: new Date().toISOString()
       };
-      
+
       console.log('Activity logged:', activity);
       return { data: activity, error: null };
     } catch (error) {
       console.error('Error logging activity:', error);
-      return { 
-        data: null, 
-        error: error instanceof Error ? error : new Error('Failed to log activity') 
+      return {
+        data: null,
+        error: error instanceof Error ? error : new Error('Failed to log activity')
       };
     }
   },
@@ -306,18 +306,20 @@ export const progressService = {
       const { data: progress, error: progressError } = await supabase
         .from('lesson_progress')
         .select('*')
-        .eq('user_id', userId)
-        .in('lesson_id', lessonIds) as { data: Array<{
-          id: string;
-          user_id: string;
-          lesson_id: string;
-          completed: boolean;
-          completed_at: string | null;
-          time_spent_minutes: number;
-          created_at: string;
-          updated_at?: string;
-          last_accessed?: string;
-        }> | null; error: any };
+        .eq('student_id', userId)
+        .in('lesson_id', lessonIds) as {
+          data: Array<{
+            id: string;
+            user_id: string;
+            lesson_id: string;
+            completed: boolean;
+            completed_at: string | null;
+            time_spent_minutes: number;
+            created_at: string;
+            updated_at?: string;
+            last_accessed?: string;
+          }> | null; error: any
+        };
 
       if (progressError) throw progressError;
       const progressList = progress || [];
@@ -325,8 +327,8 @@ export const progressService = {
       // Calculate progress
       const completedLessons = progressList.filter(p => p.completed).length;
       const totalLessons = lessonIds.length;
-      const progressPercentage = totalLessons > 0 
-        ? Math.round((completedLessons / totalLessons) * 100) 
+      const progressPercentage = totalLessons > 0
+        ? Math.round((completedLessons / totalLessons) * 100)
         : 0;
 
       // Calculate total time spent
@@ -337,12 +339,12 @@ export const progressService = {
       // Get last accessed time using last updated or created time
       const lastAccessed = progressList.length > 0
         ? new Date(Math.max(...progressList
-            .map(p => {
-              const updated = p.updated_at ? new Date(p.updated_at).getTime() : 0;
-              const created = p.created_at ? new Date(p.created_at).getTime() : 0;
-              return Math.max(updated, created);
-            })
-          )).toISOString()
+          .map(p => {
+            const updated = p.updated_at ? new Date(p.updated_at).getTime() : 0;
+            const created = p.created_at ? new Date(p.created_at).getTime() : 0;
+            return Math.max(updated, created);
+          })
+        )).toISOString()
         : null;
 
       return {
@@ -358,9 +360,9 @@ export const progressService = {
       };
     } catch (error) {
       console.error('Error getting course progress:', error);
-      return { 
-        data: null, 
-        error: error instanceof Error ? error : new Error('Failed to get course progress') 
+      return {
+        data: null,
+        error: error instanceof Error ? error : new Error('Failed to get course progress')
       };
     }
   },
@@ -379,12 +381,12 @@ export const progressService = {
       if (error) {
         throw error;
       }
-      
+
       // Return empty array if no activities found
       if (!activities) {
         return { data: [], error: null };
       }
-      
+
       // Ensure all required fields are present
       const validatedActivities = activities.map((activity: any) => ({
         id: activity.id || `activity-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -396,7 +398,7 @@ export const progressService = {
         ip_address: activity.ip_address || '',
         created_at: activity.created_at || new Date().toISOString()
       }));
-      
+
       return { data: validatedActivities, error: null };
     } catch (error) {
       console.error('Error fetching user activity:', error);
@@ -404,7 +406,7 @@ export const progressService = {
     }
   },
 
-// ...
+  // ...
   // Sync progress from offline storage
   async syncProgressFromOffline(
     offlineProgress: Array<{

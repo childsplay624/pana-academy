@@ -1,9 +1,10 @@
 import { supabase } from '@/integrations/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
-import type { 
-  Payment, 
-  PaymentProvider, 
-  InsertPayment 
+import type {
+  Payment,
+  PaymentProvider,
+  PaymentStatus,
+  InsertPayment
 } from '@/types/database.types';
 
 // Re-export types for backward compatibility
@@ -102,7 +103,7 @@ const initializeFlutterwavePayment = async (
 ): Promise<PaymentResponse> => {
   try {
     const tx_ref = `PANA-${uuidv4()}`;
-    
+
     // Flutterwave requires loading their script first
     await loadFlutterwaveScript();
 
@@ -124,7 +125,7 @@ const initializeFlutterwavePayment = async (
           description: `Payment for course: ${metadata.courseId}`,
           logo: `${API_BASE_URL}/logo.png`
         },
-        callback: function(response: any) {
+        callback: function (response: any) {
           if (response.status === 'successful') {
             resolve({
               success: true,
@@ -138,7 +139,7 @@ const initializeFlutterwavePayment = async (
             });
           }
         },
-        onclose: function() {
+        onclose: function () {
           resolve({
             success: false,
             message: 'Payment window closed'
@@ -229,6 +230,60 @@ const verifyFlutterwavePayment = async (transactionId: string): Promise<boolean>
 };
 
 /**
+ * Manual Payment Initialization
+ */
+const initializeManualPayment = (
+  amount: number,
+  userId: string,
+  courseId: string
+): PaymentResponse => {
+  const reference = `MAN-${uuidv4().slice(0, 8).toUpperCase()}`;
+  return {
+    success: true,
+    reference,
+    message: 'Manual payment initiated. Please upload your receipt.'
+  };
+};
+
+/**
+ * Upload Payment Receipt
+ */
+export const uploadReceipt = async (
+  userId: string,
+  courseId: string,
+  reference: string,
+  file: File
+): Promise<{ success: boolean; url?: string; error?: any }> => {
+  try {
+    const fileExt = file.name.split('.').pop();
+    const filePath = `${userId}/${courseId}/${reference}.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('payment-receipts')
+      .upload(filePath, file, { upsert: true });
+
+    if (uploadError) throw uploadError;
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('payment-receipts')
+      .getPublicUrl(filePath);
+
+    // Update payment record with receipt URL
+    const { error: updateError } = await (supabase as any)
+      .from('payments')
+      .update({ receipt_url: publicUrl })
+      .eq('reference', reference);
+
+    if (updateError) throw updateError;
+
+    return { success: true, url: publicUrl };
+  } catch (error) {
+    console.error('Error uploading receipt:', error);
+    return { success: false, error };
+  }
+};
+
+/**
  * Main Payment Initialization Function
  */
 export const initializePayment = async (
@@ -249,6 +304,8 @@ export const initializePayment = async (
       return await initializePaystackPayment(amount, email, metadata, callbackUrl);
     } else if (provider === 'flutterwave') {
       return await initializeFlutterwavePayment(amount, email, metadata, callbackUrl);
+    } else if (provider === 'manual') {
+      return initializeManualPayment(amount, metadata.userId, metadata.courseId);
     } else {
       throw new Error('Unsupported payment provider');
     }
@@ -312,9 +369,9 @@ export const handlePaymentSuccess = async (
     // Update payment status
     const { error } = await (supabase as any)
       .from('payments')
-      .update({ 
-        status: 'completed', 
-        updated_at: new Date().toISOString() 
+      .update({
+        status: 'completed',
+        updated_at: new Date().toISOString()
       })
       .eq('reference', reference);
 
@@ -325,7 +382,6 @@ export const handlePaymentSuccess = async (
       .from('enrollments')
       .insert([
         {
-          user_id: userId,
           course_id: courseId,
           student_id: userId,
           enrolled_at: new Date().toISOString(),
@@ -340,5 +396,151 @@ export const handlePaymentSuccess = async (
   } catch (error) {
     console.error('Error handling payment success:', error);
     return { success: false, error };
+  }
+};
+
+/**
+ * Check if user has completed payment for a course
+ */
+export const checkPaymentStatus = async (
+  userId: string,
+  courseId: string
+): Promise<boolean> => {
+  try {
+    const { data, error } = await (supabase as any)
+      .from('payments')
+      .select('id, status')
+      .eq('user_id', userId)
+      .eq('course_id', courseId)
+      .eq('status', 'completed')
+      .limit(1);
+
+    if (error) {
+      console.error('Error checking payment status:', error);
+      return false;
+    }
+
+    return data && data.length > 0;
+  } catch (error) {
+    console.error('Payment check error:', error);
+    return false;
+  }
+};
+
+/**
+ * Get all manual payments for admin review
+ */
+export const getAllManualPayments = async (status?: PaymentStatus): Promise<Payment[]> => {
+  try {
+    console.log('Fetching manual payments, filter status:', status);
+
+    let query = (supabase as any)
+      .from('payments')
+      .select(`
+        *,
+        profiles:user_id(full_name, email),
+        courses(title)
+      `)
+      .eq('provider', 'manual');
+
+    if (status) {
+      query = query.eq('status', status);
+    }
+
+    const { data, error } = await query.order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Database error in getAllManualPayments:', error);
+      throw error;
+    }
+
+    console.log('Successfully fetched manual payments, count:', data?.length || 0);
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching manual payments:', error);
+    return [];
+  }
+};
+
+/**
+ * Approve a manual payment and enroll the student
+ */
+export const approvePayment = async (paymentId: string): Promise<{ success: boolean; error?: any }> => {
+  try {
+    // 1. Get payment details
+    const { data: payment, error: fetchError } = await (supabase as any)
+      .from('payments')
+      .select('*')
+      .eq('id', paymentId)
+      .single();
+
+    if (fetchError) throw fetchError;
+
+    // 2. Handle successful payment (update status and enroll)
+    const result = await handlePaymentSuccess(
+      payment.user_id,
+      payment.course_id,
+      payment.reference,
+      'manual'
+    );
+
+    return result;
+  } catch (error) {
+    console.error('Error approving payment:', error);
+    return { success: false, error };
+  }
+};
+
+/**
+ * Reject a manual payment
+ */
+export const rejectPayment = async (paymentId: string, reason?: string): Promise<{ success: boolean; error?: any }> => {
+  try {
+    const { error } = await (supabase as any)
+      .from('payments')
+      .update({
+        status: 'failed',
+        metadata: { rejection_reason: reason },
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', paymentId);
+
+    if (error) throw error;
+    return { success: true };
+  } catch (error) {
+    console.error('Error rejecting payment:', error);
+    return { success: false, error };
+  }
+};
+
+/**
+ * Get payment details for a course enrollment
+ */
+export const getPaymentForCourse = async (
+  userId: string,
+  courseId: string
+): Promise<Payment | null> => {
+  try {
+    const { data, error } = await (supabase as any)
+      .from('payments')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('course_id', courseId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // No payment found
+        return null;
+      }
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error getting payment:', error);
+    return null;
   }
 };

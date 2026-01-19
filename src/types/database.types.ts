@@ -1,6 +1,6 @@
 // Type definitions for the payments table
-export type PaymentStatus = 'pending' | 'completed' | 'failed';
-export type PaymentProvider = 'paystack' | 'flutterwave';
+export type PaymentStatus = 'pending' | 'completed' | 'failed' | 'refunded';
+export type PaymentProvider = 'paystack' | 'flutterwave' | 'manual';
 
 // Base types for the database tables
 
@@ -12,6 +12,7 @@ export interface Payment {
   provider: PaymentProvider;
   reference: string;
   status: PaymentStatus;
+  receipt_url?: string | null;
   metadata: Record<string, unknown> | null;
   created_at: string;
   updated_at: string;

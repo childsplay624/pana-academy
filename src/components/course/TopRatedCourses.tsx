@@ -2,113 +2,109 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { fetchAllCourses } from '@/services/courseService';
-import { Course } from '@/types/course.types';
+import { Course, CourseType } from '@/types/course.types';
 import { Link } from 'react-router-dom';
 import { Star, Clock, Users, BookOpen } from 'lucide-react';
 
 // Extend Course type with additional properties needed for display
-interface DisplayCourse extends Omit<Course, 'modules'> {
+interface DisplayCourse extends Course {
   category: string;
   duration: number;
   students_enrolled: number;
-  learning_outcomes: string[];
-  modules: any[];
-  // Add any other required properties from Course that might be missing
-  is_published: boolean;
-  course_type: string;
-  is_free: boolean;
-  total_lessons?: number;
-  total_duration_seconds?: number;
 }
 
 // Sample course data for when no courses are available in the database
 const sampleCourses: DisplayCourse[] = [
   {
     id: 'sample-1',
-    title: 'Advanced Data Analysis',
-    description: 'Master data analysis techniques with real-world applications',
-    category: 'Data Science',
+    title: 'HSE Management in Oil & Gas Operations',
+    description: 'Comprehensive health, safety, and environmental management practices for petroleum industry professionals',
+    category: 'safety',
     level: 'intermediate',
-    price: 99.99,
+    price: 249.99,
     is_published: true,
     instructor_id: 'sample-instructor-1',
-    course_type: 'self_paced',
+    course_type: 'online' as CourseType,
     is_free: false,
-    total_lessons: 12,
-    total_duration_seconds: 28800, // 8 hours
-    rating: 4.8,
-    students_count: 1245,
-    students_enrolled: 1245,
-    duration: 8,
-    thumbnail_url: '/img/course-data.jpg',
+    total_lessons: 16,
+    total_duration_seconds: 36000, // 10 hours
+    rating: 4.9,
+    students_count: 432,
+    students_enrolled: 432,
+    duration: 10,
+    thumbnail_url: '/img/course-safety.jpg',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
+    learning_outcomes: ['Risk assessment', 'Safety protocols', 'Emergency response', 'Regulatory compliance'],
     modules: []
   },
   {
     id: 'sample-2',
-    title: 'Web Development Bootcamp',
-    description: 'Learn full-stack web development from scratch',
-    category: 'Web Development',
-    level: 'beginner',
-    price: 149.99,
+    title: 'Flow Control Systems & Valve Technology',
+    description: 'Master flow control principles, valve selection, and optimization for oil and gas facilities',
+    category: 'flow_control',
+    level: 'advanced',
+    price: 299.99,
     is_published: true,
     instructor_id: 'sample-instructor-2',
-    course_type: 'self_paced',
+    course_type: 'hybrid' as CourseType,
     is_free: false,
-    total_lessons: 24,
-    total_duration_seconds: 43200, // 12 hours
-    rating: 4.7,
-    students_count: 2893,
-    students_enrolled: 2893,
-    duration: 12,
-    thumbnail_url: '/img/course-webdev.jpg',
+    total_lessons: 20,
+    total_duration_seconds: 50400, // 14 hours
+    rating: 4.8,
+    students_count: 287,
+    students_enrolled: 287,
+    duration: 14,
+    thumbnail_url: '/img/course-flow.jpg',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
+    learning_outcomes: ['Valve types and applications', 'Control systems', 'Process optimization', 'Troubleshooting'],
     modules: []
   },
   {
     id: 'sample-3',
-    title: 'Digital Marketing Fundamentals',
-    description: 'Essential digital marketing strategies for business growth',
-    category: 'Marketing',
+    title: 'Sustainability Practices in the Energy Sector',
+    description: 'Environmental stewardship and sustainable operations for modern oil and gas companies',
+    category: 'sustainability',
     level: 'beginner',
-    price: 79.99,
+    price: 149.99,
     is_published: true,
     instructor_id: 'sample-instructor-3',
-    course_type: 'self_paced',
-    is_free: true,
-    total_lessons: 8,
-    total_duration_seconds: 21600, // 6 hours
-    rating: 4.6,
-    students_count: 1872,
-    students_enrolled: 1872,
-    duration: 6,
-    thumbnail_url: '/img/course-marketing.jpg',
+    course_type: 'online' as CourseType,
+    is_free: false,
+    total_lessons: 10,
+    total_duration_seconds: 25200, // 7 hours
+    rating: 4.7,
+    students_count: 568,
+    students_enrolled: 568,
+    duration: 7,
+    thumbnail_url: '/img/course-sustainability.jpg',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
+    learning_outcomes: ['Carbon footprint reduction', 'Waste management', 'Green technologies', 'ESG reporting'],
     modules: []
   },
   {
     id: 'sample-4',
-    title: 'Project Management Professional',
-    description: 'Master project management methodologies and tools',
-    category: 'Business',
-    level: 'advanced',
+    title: 'Leadership & Team Management for Engineers',
+    description: 'Essential soft skills and leadership competencies for technical professionals in the oil and gas industry',
+    category: 'soft_skills',
+    level: 'intermediate',
     price: 199.99,
     is_published: true,
     instructor_id: 'sample-instructor-4',
-    course_type: 'live',
+    course_type: 'online' as CourseType,
     is_free: false,
-    total_lessons: 20,
-    total_duration_seconds: 36000, // 10 hours
+    total_lessons: 12,
+    total_duration_seconds: 28800, // 8 hours
     rating: 4.9,
-    students_count: 956,
-    students_enrolled: 956,
-    duration: 10,
-    thumbnail_url: '/img/course-pm.jpg',
+    students_count: 723,
+    students_enrolled: 723,
+    duration: 8,
+    thumbnail_url: '/img/course-leadership.jpg',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
+    learning_outcomes: ['Team leadership', 'Communication skills', 'Conflict resolution', 'Project coordination'],
     modules: []
   }
 ];
@@ -123,7 +119,7 @@ export function TopRatedCourses() {
       try {
         setIsLoading(true);
         const allCourses = await fetchAllCourses();
-        
+
         // If no courses in database, use sample data
         if (allCourses.length === 0) {
           setCourses(sampleCourses);
@@ -133,30 +129,19 @@ export function TopRatedCourses() {
         // Shuffle and pick first 4 courses
         const shuffled = [...allCourses].sort(() => 0.5 - Math.random());
         const selectedCourses = shuffled.slice(0, 5);
-        
+
         // Add some default values for display
         const coursesWithDefaults = selectedCourses.map(course => ({
           ...course,
-          // Required DisplayCourse properties
-          category: course.category || 'General',
+          // Required DisplayCourse properties (only display-specific additions)
+          category: 'General',
           students_enrolled: course.students_count || 0,
-          duration: course.duration_hours || 8,
-          learning_outcomes: course.learning_outcomes || [],
-          modules: course.modules || [],
-          is_published: course.is_published ?? true,
-          course_type: course.course_type || 'self_paced',
-          is_free: course.is_free ?? false,
-          total_lessons: course.total_lessons || 0,
-          total_duration_seconds: course.total_duration_seconds || 0,
-          // Other defaults
-          students_count: course.students_count || 0,
-          rating: course.rating || 4.5,
+          duration: (course as any).total_duration_seconds ? Math.round((course as any).total_duration_seconds / 3600) : 8,
+          // Fix defaults for optional properties  
           thumbnail_url: course.thumbnail_url || `/img/course-${Math.floor(Math.random() * 4) + 1}.jpg`,
-          // Ensure all required Course properties are included
-          created_at: course.created_at || new Date().toISOString(),
-          updated_at: course.updated_at || new Date().toISOString()
-        } as DisplayCourse));
-        
+          rating: course.rating || 4.5,
+        } as unknown as DisplayCourse));
+
         setCourses(coursesWithDefaults);
       } catch (err) {
         console.error('Error loading courses:', err);
@@ -205,7 +190,7 @@ export function TopRatedCourses() {
         <div className="text-center mb-8">
           <h3 className="text-2xl font-bold text-gray-900 mb-2">Top Rated Courses</h3>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Explore our most popular courses based on student ratings and feedback.
+            Explore our trending courses and competences/skill-based programs shaping today’s workforce.
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
@@ -215,8 +200,8 @@ export function TopRatedCourses() {
                 <div className="relative">
                   <div className="w-full h-48 bg-gradient-to-r from-blue-50 to-blue-100 flex items-center justify-center">
                     {course.thumbnail_url ? (
-                      <img 
-                        src={course.thumbnail_url} 
+                      <img
+                        src={course.thumbnail_url}
                         alt={course.title}
                         className="w-full h-full object-cover"
                       />
@@ -225,7 +210,7 @@ export function TopRatedCourses() {
                     )}
                   </div>
                   <div className="absolute top-3 right-3 bg-white/90 px-3 py-1 rounded-full text-sm font-medium text-gray-800 flex items-center shadow-sm">
-                    <Star className="h-4 w-4 text-yellow-500 mr-1 fill-yellow-500" />
+                    <Star className="h-4 w-4 text-red-500 mr-1 fill-red-500" />
                     {course.rating?.toFixed(1) || '4.5'}
                   </div>
                 </div>

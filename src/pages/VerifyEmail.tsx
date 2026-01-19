@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, CheckCircle } from 'lucide-react';
+import { AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 
 export function VerifyEmail() {
   const [searchParams] = useSearchParams();
@@ -22,36 +22,22 @@ export function VerifyEmail() {
       }
 
       try {
-        // In a real app, you would verify the token and mark the email as verified
-        // This is a simplified example that just updates the user's metadata
-        const { data: { user }, error: userError } = await supabase.auth.getUser(token);
-        
-        if (userError || !user) {
-          throw new Error(userError?.message || 'Invalid or expired verification link');
-        }
+        // Call the secure Edge Function to verify the email
+        const { data, error: functionError } = await supabase.functions.invoke('verify-user-email', {
+          body: { userId: token }
+        });
 
-        // Update user's email_verified status in the database
-        const { error: updateError } = await supabase.auth.admin.updateUserById(
-          user.id,
-          { 
-            user_metadata: { 
-              ...user.user_metadata,
-              email_verified: true 
-            } 
-          }
-        );
-
-        if (updateError) {
-          throw updateError;
+        if (functionError || !data?.success) {
+          throw new Error(functionError?.message || data?.error || 'Verification failed');
         }
 
         setStatus('success');
-        
+
         // Redirect to login after a short delay
         setTimeout(() => {
-          navigate('/login?verified=true');
+          navigate('/auth?verified=true');
         }, 3000);
-        
+
       } catch (err: any) {
         console.error('Email verification error:', err);
         setStatus('error');
@@ -66,19 +52,20 @@ export function VerifyEmail() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold">
-            {status === 'verifying' ? 'Verifying Email...' : 
-             status === 'success' ? 'Email Verified!' : 'Verification Failed'}
+          <CardTitle className="text-2xl font-bold flex items-center justify-center gap-2">
+            {status === 'verifying' && <Loader2 className="h-6 w-6 animate-spin text-pana-gold" />}
+            {status === 'verifying' ? 'Verifying Email...' :
+              status === 'success' ? 'Email Verified!' : 'Verification Failed'}
           </CardTitle>
           <CardDescription>
-            {status === 'verifying' 
+            {status === 'verifying'
               ? 'Please wait while we verify your email address.'
-              : status === 'success' 
+              : status === 'success'
                 ? 'Your email has been successfully verified. Redirecting to login...'
                 : 'We encountered an issue verifying your email.'}
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent>
           {status === 'error' && (
             <Alert variant="destructive">
@@ -89,21 +76,21 @@ export function VerifyEmail() {
               </AlertDescription>
             </Alert>
           )}
-          
+
           {status === 'success' && (
-            <Alert>
+            <Alert className="bg-green-50 border-green-200">
               <CheckCircle className="h-4 w-4 text-green-500" />
-              <AlertTitle>Success!</AlertTitle>
-              <AlertDescription>
+              <AlertTitle className="text-green-800">Success!</AlertTitle>
+              <AlertDescription className="text-green-700">
                 Your email has been verified. You'll be redirected to the login page shortly.
               </AlertDescription>
             </Alert>
           )}
-          
+
           <div className="mt-6">
-            <Button 
-              onClick={() => navigate('/login')}
-              className="w-full bg-pana-gold hover:bg-pana-gold/90"
+            <Button
+              onClick={() => navigate('/auth')}
+              className="w-full bg-red-600 hover:bg-red-700"
             >
               Back to Login
             </Button>

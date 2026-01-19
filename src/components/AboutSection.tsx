@@ -38,9 +38,9 @@ const AboutSection = () => {
         <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
           {/* Left Column - Image */}
           <div className="relative">
-            <img 
-              src={trainingImage} 
-              alt="Professional Training at PANA Academy" 
+            <img
+              src={trainingImage}
+              alt="Professional Training at PANA Academy"
               className="rounded-2xl shadow-lg w-full h-[40rem] object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-pana-navy/20 to-transparent rounded-2xl"></div>
@@ -50,47 +50,43 @@ const AboutSection = () => {
           <div className="space-y-8">
             <div>
               <h3 className="text-2xl font-bold text-pana-navy mb-4">Our Mission</h3>
-              <p className="text-foreground leading-relaxed">
+              <p className="text-black leading-relaxed">
                 To empower individuals and organizations with the knowledge, skills, and capabilities needed to excel in today's dynamic business environment. We bridge the gap between theoretical knowledge and practical application through innovative training methodologies.
               </p>
             </div>
-
+            <p className="text-black leading-relaxed">
+              To holistically develop and upskill Oil and Gas Industry workforce by providing training opportunities that facilitate the cultivation of real-world practical competences/skills directly applicable to relevant job roles in the industry.
+            </p>
             <div>
               <h3 className="text-2xl font-bold text-pana-navy mb-4">Our Vision</h3>
-              <p className="text-foreground leading-relaxed">
-                To be the leading academy for professional development across Africa, recognized globally for excellence in training, consulting, and research that transforms careers and organizations.
+              <p className="text-black leading-relaxed">
+                To be Africa’s leading Competency Hub for the Oil and Gas Industry.
               </p>
-              
+            </div>
+            <div>
+              <h3 className="text-2xl font-bold text-pana-navy mb-4">Purpose</h3>
+              <p className="text-black leading-relaxed">
+                To drive competency development to create a pool of relevant workforce for the oil and gas industry.
+              </p>
             </div>
 
             {/* Highlights */}
             <div className="grid grid-cols-1 gap-4">
-              {highlights.map((highlight, index) => (
-                <div key={index} className="flex items-start space-x-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-pana-gold/10 rounded-lg flex items-center justify-center">
-                    <highlight.icon className="w-6 h-6 text-pana-gold" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-pana-navy">{highlight.title}</h4>
-                    <p className="text-muted-foreground">{highlight.description}</p>
-                  </div>
-                </div>
-              ))}
               <div className="mt-8">
                 <Link to="/courses">
-                  <Button 
+                  <Button
                     variant="default"
                     size="lg"
                     className="bg-red-600 hover:bg-red-700 transition-colors duration-200 text-white"
                   >
-                    Learn more about our programs
+                    Our programs
                     <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
               </div>
             </div>
           </div>
-        </div>               
+        </div>
       </div>
     </section>
   );

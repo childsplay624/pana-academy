@@ -18,6 +18,7 @@ interface Course {
   instructor_name?: string;
   enrollment_id?: string;
   course_id?: string;
+  status?: string;  // ✅ Add enrollment status
 }
 
 interface Stats {
@@ -55,7 +56,7 @@ export function useStudentData() {
         setError(null);
 
         console.log('Fetching student data for user:', user.id);
-        
+
         // Fetch enrolled courses with instructor details
         const { data: enrollmentsData, error: enrollmentsError } = await supabase
           .from('enrollments')
@@ -64,6 +65,7 @@ export function useStudentData() {
             course_id,
             progress_percentage,
             enrolled_at,
+            status,
             courses (
               id,
               title,
@@ -76,7 +78,7 @@ export function useStudentData() {
               )
             )
           `)
-.eq('student_id', user.id)
+          .eq('student_id', user.id)
           .in('status', ['enrolled', 'completed']);
 
         if (enrollmentsError) {
@@ -102,14 +104,22 @@ export function useStudentData() {
             timeSpent: Math.floor(Math.random() * 180) + 30, // Mock time spent for now
             category: enrollment.courses?.category || 'General',
             totalHours: enrollment.courses?.duration_hours || 0,
-            image: enrollment.courses?.thumbnail_url
+            image: enrollment.courses?.thumbnail_url,
+            status: enrollment.status  // ✅ Include enrollment status
           }));
 
         console.log('Transformed enrolled courses:', transformedEnrolledCourses);
 
+        // 🐛 DEBUG: Log enrollment statuses
+        console.log('📊 ENROLLMENT STATUSES:', transformedEnrolledCourses.map(c => ({
+          title: c.title,
+          status: c.status,
+          progress: c.progress
+        })));
+
         // Fetch recommended courses (published courses not enrolled in)
         const enrolledCourseIds = transformedEnrolledCourses.map(course => course.course_id).filter(Boolean);
-        
+
         let recommendedQuery = supabase
           .from('courses')
           .select(`
@@ -158,18 +168,48 @@ export function useStudentData() {
 
         setEnrolledCourses(transformedEnrolledCourses);
         setRecommendedCourses(transformedRecommendedCourses);
-        
+
+        // Fetch actual certificates from certificates table
+        const { data: certificatesData, error: certificatesError } = await supabase
+          .from('certificates')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('is_valid', true);  // ✅ Using is_valid instead of status
+
+        if (certificatesError) {
+          console.error('Certificates error:', certificatesError);
+          // Don't throw, just log - we can still show other data
+        }
+
+        const certificateCount = certificatesData?.length || 0;
+
         // Calculate stats
         const enrolledCount = transformedEnrolledCourses.length;
-        const totalProgress = enrolledCount > 0 
+        const totalProgress = enrolledCount > 0
           ? Math.round(transformedEnrolledCourses.reduce((acc, course) => acc + course.progress, 0) / enrolledCount)
           : 0;
         const totalTimeSpent = transformedEnrolledCourses.reduce((acc, course) => acc + course.timeSpent, 0);
-        const completedCourses = transformedEnrolledCourses.filter(course => course.progress === 100).length;
+        const completedCourses = transformedEnrolledCourses.filter(course => {
+          const statusMatch = course.status?.toLowerCase() === 'completed';
+          const progressMatch = course.progress >= 100;
+          return statusMatch || progressMatch;
+        }).length;
+
+        // 🐛 DEBUG: Log completion calculation
+        console.log('✅ COMPLETED COUNT:', {
+          total: transformedEnrolledCourses.length,
+          completed: completedCourses,
+          breakdown: transformedEnrolledCourses.map(c => ({
+            title: c.title,
+            status: c.status,
+            progress: c.progress,
+            isCompleted: c.status?.toLowerCase() === 'completed' || c.progress >= 100
+          }))
+        });
 
         setStats({
           enrolledCourses: enrolledCount,
-          certificates: completedCourses,
+          certificates: certificateCount, // ✅ Using actual certificate count from database
           totalProgress,
           totalTimeSpent,
           weeklyGoalProgress: 75,
@@ -180,7 +220,7 @@ export function useStudentData() {
       } catch (err) {
         console.error('Error fetching student data:', err);
         console.error('Error details:', err);
-        
+
         // Set empty data instead of leaving it undefined
         setEnrolledCourses([]);
         setRecommendedCourses([]);
@@ -193,7 +233,7 @@ export function useStudentData() {
           completedCourses: 0,
           streakDays: 0
         });
-        
+
         setError(err instanceof Error ? err.message : 'Failed to fetch data');
       } finally {
         setIsLoading(false);

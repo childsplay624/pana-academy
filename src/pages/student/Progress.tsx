@@ -16,7 +16,7 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { 
+import {
   AlertCircle,
   BarChart3,
   BookOpen,
@@ -37,14 +37,14 @@ import { ScheduleDialog } from '@/components/schedule/ScheduleDialog';
 export default function ProgressPage() {
   const { user } = useAuth();
   const { isLoading, enrolledCourses, stats } = useStudentData();
-  const { 
-    loading: gamificationLoading, 
-    userGamification, 
-    userBadges, 
-    allBadges, 
-    pointsHistory, 
+  const {
+    loading: gamificationLoading,
+    userGamification,
+    userBadges,
+    allBadges,
+    pointsHistory,
     leaderboard,
-    getLevelProgress 
+    getLevelProgress
   } = useGamification();
   const [selectedPeriod, setSelectedPeriod] = useState('week');
   const [goals, setGoals] = useState({
@@ -81,7 +81,7 @@ export default function ProgressPage() {
     try {
       setIsLoadingGoals(true);
       setError(null);
-      
+
       // Load goals
       const goalsData = await goalsApi.getOrCreateGoals();
       setGoals({
@@ -89,7 +89,7 @@ export default function ProgressPage() {
         targetCoursesCompleted: goalsData.target_courses_completed,
         targetWeeklyStreak: goalsData.target_weekly_streak,
       });
-      
+
       // Load progress
       const stats = await goalsApi.getStudyStatistics();
       setProgress({
@@ -97,7 +97,7 @@ export default function ProgressPage() {
         completedCourses: stats.completedCourses,
         currentStreak: stats.currentStreak,
       });
-      
+
       return true; // Indicate success
     } catch (error) {
       console.error('Error loading goals and progress:', error);
@@ -141,9 +141,9 @@ export default function ProgressPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               onClick={refreshProgress}
               disabled={isLoadingGoals}
             >
@@ -223,9 +223,9 @@ export default function ProgressPage() {
                   <span>Weekly Goal</span>
                   <span>{Math.round((progress.weeklyStudyHours / goals.weeklyStudyHours) * 100)}%</span>
                 </div>
-                <Progress 
-                  value={Math.min((progress.weeklyStudyHours / goals.weeklyStudyHours) * 100, 100)} 
-                  className="h-2" 
+                <Progress
+                  value={Math.min((progress.weeklyStudyHours / goals.weeklyStudyHours) * 100, 100)}
+                  className="h-2"
                 />
               </div>
             </CardContent>
@@ -247,9 +247,9 @@ export default function ProgressPage() {
                   <span>Target Completed</span>
                   <span>{Math.round((progress.completedCourses / goals.targetCoursesCompleted) * 100)}%</span>
                 </div>
-                <Progress 
-                  value={Math.min((progress.completedCourses / goals.targetCoursesCompleted) * 100, 100)} 
-                  className="h-2" 
+                <Progress
+                  value={Math.min((progress.completedCourses / goals.targetCoursesCompleted) * 100, 100)}
+                  className="h-2"
                 />
               </div>
             </CardContent>
@@ -271,9 +271,9 @@ export default function ProgressPage() {
                   <span>Weekly Goal</span>
                   <span>{Math.round((progress.currentStreak / goals.targetWeeklyStreak) * 100)}%</span>
                 </div>
-                <Progress 
-                  value={Math.min((progress.currentStreak / goals.targetWeeklyStreak) * 100, 100)} 
-                  className="h-2" 
+                <Progress
+                  value={Math.min((progress.currentStreak / goals.targetWeeklyStreak) * 100, 100)}
+                  className="h-2"
                 />
               </div>
             </CardContent>
@@ -285,7 +285,7 @@ export default function ProgressPage() {
           <Card className="lg:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Zap className="h-5 w-5 text-yellow-500" />
+                <Zap className="h-5 w-5 text-red-500" />
                 Your Level & Progress
               </CardTitle>
             </CardHeader>
@@ -308,15 +308,15 @@ export default function ProgressPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Trophy className="h-5 w-5 text-yellow-500" />
+                <Trophy className="h-5 w-5 text-red-500" />
                 Recent Badges
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <BadgeDisplay 
-                userBadges={userBadges} 
-                allBadges={allBadges} 
-                compact={true} 
+              <BadgeDisplay
+                userBadges={userBadges}
+                allBadges={allBadges}
+                compact={true}
               />
             </CardContent>
           </Card>
@@ -332,7 +332,7 @@ export default function ProgressPage() {
                   <p className="text-2xl font-bold">{userGamification?.total_points.toLocaleString() || 0}</p>
                   <p className="text-xs text-muted-foreground mt-1">Level {userGamification?.level || 1}</p>
                 </div>
-                <Zap className="h-8 w-8 text-yellow-500" />
+                <Zap className="h-8 w-8 text-red-500" />
               </div>
             </CardContent>
           </Card>
@@ -371,7 +371,7 @@ export default function ProgressPage() {
                   <p className="text-2xl font-bold">{userBadges.length}</p>
                   <p className="text-xs text-muted-foreground mt-1">Out of {allBadges.length} total</p>
                 </div>
-                <Trophy className="h-8 w-8 text-yellow-500" />
+                <Trophy className="h-8 w-8 text-red-500" />
               </div>
             </CardContent>
           </Card>
@@ -407,13 +407,13 @@ export default function ProgressPage() {
                 <CardDescription>Progress across all enrolled courses</CardDescription>
               </CardHeader>
               <CardContent className="h-[300px]">
-                <CourseProgressChart 
+                <CourseProgressChart
                   data={enrolledCourses.map(course => ({
                     name: course.title,
                     value: course.progress,
                     color: '#0088FE'
-                  }))} 
-                  isLoading={isLoading} 
+                  }))}
+                  isLoading={isLoading}
                 />
               </CardContent>
             </Card>
@@ -470,21 +470,21 @@ export default function ProgressPage() {
                 <CardDescription>Unlock achievements by completing courses and challenges</CardDescription>
               </CardHeader>
               <CardContent>
-                <BadgeDisplay 
-                  userBadges={userBadges} 
-                  allBadges={allBadges} 
-                  compact={false} 
+                <BadgeDisplay
+                  userBadges={userBadges}
+                  allBadges={allBadges}
+                  compact={false}
                 />
               </CardContent>
             </Card>
           </div>
 
           <div className="space-y-6">
-            <Leaderboard 
-              leaderboard={leaderboard} 
-              currentUserId={user?.id} 
+            <Leaderboard
+              leaderboard={leaderboard}
+              currentUserId={user?.id}
             />
-            
+
             <PointsHistory history={pointsHistory} />
           </div>
         </div>
@@ -502,8 +502,8 @@ export default function ProgressPage() {
                   <div key={course.id} className="flex items-center gap-4 p-4 border rounded-lg">
                     <div className="flex-shrink-0">
                       {course.thumbnail ? (
-                        <img 
-                          src={course.thumbnail} 
+                        <img
+                          src={course.thumbnail}
                           alt={course.title}
                           className="w-12 h-12 rounded-lg object-cover"
                         />
@@ -513,7 +513,7 @@ export default function ProgressPage() {
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-medium truncate">{course.title}</h4>
@@ -526,7 +526,7 @@ export default function ProgressPage() {
                         <span>{course.totalHours} hours total</span>
                       </div>
                     </div>
-                    
+
                     <Button size="sm">
                       <BarChart3 className="h-4 w-4 mr-2" />
                       View Details

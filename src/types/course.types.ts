@@ -21,7 +21,30 @@ export interface Module {
   updated_at: string;
 }
 
-export type CourseType = 'self_paced' | 'live';
+export type CourseType = 'online' | 'onsite' | 'hybrid';
+
+export interface VenueInfo {
+  name: string;
+  address: string;
+  city: string;
+  country: string;
+  capacity?: number;
+  mapUrl?: string;
+}
+
+export interface OnSiteSession {
+  date: string; // ISO date string
+  startTime: string; // HH:mm format
+  endTime: string; // HH:mm format
+  sessionTitle: string;
+}
+
+export interface CourseLogistics {
+  requiresMaterials: boolean;
+  materialsList?: string[];
+  parkingInfo?: string;
+  accommodationInfo?: string;
+}
 
 export interface Course {
   id: string;
@@ -34,17 +57,35 @@ export interface Course {
   category_id?: string;
   level?: 'beginner' | 'intermediate' | 'advanced';
   course_type: CourseType;
-  start_date?: string; // ISO date string
+  start_date?: string; // ISO date string - course/event starts
+  end_date?: string;   // ISO date string - course/event ends (for multi-day)
   is_free: boolean;
+
+  // Online course fields
   total_lessons?: number;
   total_duration_seconds?: number;
+  modules: Module[];
+  learning_outcomes?: string[];
+  requirements?: string[];
+
+  // On-site course fields
+  venue_name?: string;
+  venue_address?: string;
+  venue_city?: string;
+  venue_country?: string;
+  venue_capacity?: number;
+  venue_map_url?: string;
+  onsite_schedule?: OnSiteSession[];
+  requires_materials?: boolean;
+  materials_list?: string[];
+  parking_info?: string;
+  accommodation_info?: string;
+
+  // Metadata
   students_count?: number;
   rating?: number;
   created_at: string;
   updated_at: string;
-  modules: Module[];
-  learning_outcomes?: string[];
-  requirements?: string[];
 }
 
 export interface CourseProgress {

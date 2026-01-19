@@ -3,10 +3,26 @@ import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Search, Filter, ArrowRight } from 'lucide-react';
 import CoursesSection from '@/components/CoursesSection';
 import type { Course } from '@/services/courseService';
 import { fetchAllCourses } from '@/services/courseService';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 const PublicCoursesPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -16,10 +32,14 @@ const PublicCoursesPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState('All');
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const coursesPerPage = 9;
+
   useEffect(() => {
     // Scroll to top when component mounts
     window.scrollTo(0, 0);
-    
+
     // Fetch all courses
     const loadCourses = async () => {
       try {
@@ -36,6 +56,11 @@ const PublicCoursesPage = () => {
     loadCourses();
   }, []);
 
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filteredCourses]);
+
   // Handle search input change
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value.toLowerCase();
@@ -49,30 +74,96 @@ const PublicCoursesPage = () => {
     filterCourses(searchQuery, filter);
   };
 
+  // Helper function to normalize category strings for comparison
+  const normalizeCategory = (category: string): string => {
+    return category
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '_')  // Replace spaces, dashes, special chars with underscore
+      .replace(/_courses$/i, '')     // Remove "_courses" suffix if present
+      .replace(/^_+|_+$/g, '');      // Remove leading/trailing underscores
+  };
+
   // Filter courses based on search query and active filter
   const filterCourses = (query: string, filter: string) => {
     let results = [...allCourses];
-    
+
     // Apply search query filter
     if (query) {
       results = results.filter(
-        course => 
+        course =>
           course.title.toLowerCase().includes(query) ||
           course.description.toLowerCase().includes(query) ||
           course.instructor?.toLowerCase().includes(query) ||
           course.category?.toLowerCase().includes(query)
       );
     }
-    
-    // Apply category filter
+
+    // Apply category filter with normalization
     if (filter !== 'All') {
-      results = results.filter(course => 
-        course.category?.toLowerCase() === filter.toLowerCase() ||
-        course.level?.toLowerCase() === filter.toLowerCase()
-      );
+      const normalizedFilter = normalizeCategory(filter);
+      results = results.filter(course => {
+        if (course.category) {
+          const normalizedCategory = normalizeCategory(course.category);
+          if (normalizedCategory === normalizedFilter) return true;
+        }
+        if (course.level) {
+          const normalizedLevel = normalizeCategory(course.level);
+          if (normalizedLevel === normalizedFilter) return true;
+        }
+        return false;
+      });
     }
-    
+
     setFilteredCourses(results);
+  };
+
+  // Calculate pagination
+  const indexOfLastCourse = currentPage * coursesPerPage;
+  const indexOfFirstCourse = indexOfLastCourse - coursesPerPage;
+  const currentCourses = filteredCourses.slice(indexOfFirstCourse, indexOfLastCourse);
+  const totalPages = Math.ceil(filteredCourses.length / coursesPerPage);
+
+  // Generate page numbers to display
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    const maxPagesToShow = 5;
+
+    if (totalPages <= maxPagesToShow) {
+      // Show all pages if total is small
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Always show first page
+      pages.push(1);
+
+      if (currentPage > 3) {
+        pages.push('ellipsis-start');
+      }
+
+      // Show pages around current page
+      const startPage = Math.max(2, currentPage - 1);
+      const endPage = Math.min(totalPages - 1, currentPage + 1);
+
+      for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
+      }
+
+      if (currentPage < totalPages - 2) {
+        pages.push('ellipsis-end');
+      }
+
+      // Always show last page
+      pages.push(totalPages);
+    }
+
+    return pages;
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -86,37 +177,42 @@ const PublicCoursesPage = () => {
             Explore Our Courses
           </h1>
           <p className="text-xl text-gray-200 max-w-3xl mx-auto mb-10">
-            Discover professional development programs designed to advance your career
+            Explore our Training Solutions designed to advance your career and organization
           </p>
-          
-          <div className="max-w-2xl mx-auto relative">
-            <div className="relative">
-              <Input
-                type="text"
-                value={searchQuery}
-                onChange={handleSearch}
-                placeholder="Search courses..."
-                className="pl-10 pr-4 py-6 text-base bg-white/10 border-0 text-white placeholder-gray-300 focus-visible:ring-2 focus-visible:ring-white/50"
-              />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-300 w-5 h-5" />
-            </div>
-          </div>
 
-          {/* Filter Chips */}
-          <div className="flex flex-wrap justify-center gap-3 mt-8">
-            {['All', 'Leadership', 'Digital', 'Energy', 'Beginner', 'Intermediate', 'Advanced'].map((tag) => (
-              <button
-                key={tag}
-                onClick={() => handleFilterClick(tag)}
-                className={`px-4 py-2 text-sm font-medium rounded-full transition-colors duration-200 ${
-                  activeFilter === tag 
-                    ? 'bg-white text-pana-navy' 
-                    : 'bg-white/10 hover:bg-white/20 text-white'
-                }`}
-              >
-                {tag}
-              </button>
-            ))}
+          <div className="max-w-2xl mx-auto">
+            <div className="flex gap-3">
+              {/* Search Input */}
+              <div className="relative flex-1">
+                <Input
+                  type="text"
+                  value={searchQuery}
+                  onChange={handleSearch}
+                  placeholder="Search courses..."
+                  className="pl-10 pr-4 py-6 text-base bg-white/10 border-0 text-white placeholder-gray-300 focus-visible:ring-2 focus-visible:ring-white/50"
+                />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-300 w-5 h-5" />
+              </div>
+
+              {/* Category Dropdown */}
+              <Select value={activeFilter} onValueChange={handleFilterClick}>
+                <SelectTrigger className="w-[220px] py-6 bg-white/10 border-0 text-white focus:ring-2 focus:ring-white/50">
+                  <Filter className="w-4 h-4 mr-2" />
+                  <SelectValue placeholder="All Categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All Categories</SelectItem>
+                  <SelectItem value="soft_skills">Soft Skills</SelectItem>
+                  <SelectItem value="safety_courses">Safety Courses</SelectItem>
+                  <SelectItem value="sustainability_courses">Sustainability Courses</SelectItem>
+                  <SelectItem value="general_technical_courses">General Technical Courses</SelectItem>
+                  <SelectItem value="flow_drives_courses">Flow Drives Courses</SelectItem>
+                  <SelectItem value="flow_control_courses">Flow Control Courses</SelectItem>
+                  <SelectItem value="flow_measurement_courses">Flow Measurement Courses</SelectItem>
+                  <SelectItem value="instrumentation_automation">Instrumentation/Automation and Process Control</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
       </div>
@@ -128,12 +224,70 @@ const PublicCoursesPage = () => {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pana-blue"></div>
           </div>
         ) : (
-          <CoursesSection 
-            showAll={true} 
-            courses={filteredCourses}
-            loading={isLoading}
-            error={error}
-          />
+          <>
+            <CoursesSection
+              showAll={true}
+              courses={currentCourses}
+              loading={isLoading}
+              error={error}
+            />
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage > 1) handlePageChange(currentPage - 1);
+                        }}
+                        className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+
+                    {getPageNumbers().map((page, index) => (
+                      <PaginationItem key={`${page}-${index}`}>
+                        {typeof page === 'number' ? (
+                          <PaginationLink
+                            href="#"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handlePageChange(page);
+                            }}
+                            isActive={currentPage === page}
+                            className="cursor-pointer"
+                          >
+                            {page}
+                          </PaginationLink>
+                        ) : (
+                          <PaginationEllipsis />
+                        )}
+                      </PaginationItem>
+                    ))}
+
+                    <PaginationItem>
+                      <PaginationNext
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage < totalPages) handlePageChange(currentPage + 1);
+                        }}
+                        className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+
+                {/* Results info */}
+                <div className="text-center mt-6 text-sm text-gray-600">
+                  Showing {indexOfFirstCourse + 1} - {Math.min(indexOfLastCourse, filteredCourses.length)} of {filteredCourses.length} courses
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -144,8 +298,8 @@ const PublicCoursesPage = () => {
           <p className="text-xl text-gray-600 mb-8">
             Join thousands of professionals who have already transformed their careers with our courses
           </p>
-          <Button 
-            size="lg" 
+          <Button
+            size="lg"
             className="bg-pana-navy hover:bg-pana-navy/90 text-white px-8 py-6 text-lg"
           >
             Browse All Courses
@@ -159,3 +313,4 @@ const PublicCoursesPage = () => {
 };
 
 export default PublicCoursesPage;
+

@@ -48,11 +48,7 @@ interface Certificate {
   [key: string]: any; // Allow any other properties
 }
 
-// Mock auth context
-const useAuth = () => ({
-  user: { id: '' },
-  isAuthenticated: false
-});
+import { useAuth } from './useAuth';
 
 export const useCourseProgress = (courseId?: string) => {
   const { user } = useAuth();
@@ -112,7 +108,7 @@ export const useCourseProgress = (courseId?: string) => {
             // Clear synced progress
             setOfflineProgress([]);
             localStorage.removeItem('offlineProgress');
-            
+
             // Refresh progress
             if (courseId) {
               await loadProgress(courseId);
@@ -132,15 +128,15 @@ export const useCourseProgress = (courseId?: string) => {
   // Load progress for a specific course
   const loadProgress = useCallback(async (courseId: string) => {
     if (!user?.id) return;
-    
+
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const { data: progressData, error } = await progressService.getCourseProgress(user.id, courseId);
-      
+
       if (error) throw error;
-      
+
       if (progressData) {
         setProgress({
           percentage: progressData.progress || 0,
@@ -151,7 +147,7 @@ export const useCourseProgress = (courseId?: string) => {
           details: progressData.details || []
         });
       }
-      
+
       // Check for certificate - Implement this part based on your certificate service
       // try {
       //   const { data: certificates, error: certError } = await certificateService.getUserCertificates(user.id);
@@ -202,46 +198,46 @@ export const useCourseProgress = (courseId?: string) => {
           ...prev.filter(p => !(p.lessonId === lessonId && p.courseId === courseId)),
           { ...progressData, timestamp: new Date().toISOString() }
         ]);
-        
+
         // Update local state optimistically
         setProgress(prev => {
           if (!prev) return null;
-          
-          const existing = prev.details.find(p => 
+
+          const existing = prev.details.find(p =>
             p.lesson_id === lessonId && p.course_id === courseId
           );
-          
+
           const updatedDetails = existing
-            ? prev.details.map(p => 
-                p.lesson_id === lessonId && p.course_id === courseId
-                  ? { 
-                      ...p, 
-                      completed: completed ?? p.completed,
-                      time_spent_seconds: (p.time_spent_seconds || 0) + timeSpentSeconds,
-                      last_accessed_at: new Date().toISOString(),
-                    }
-                  : p
-              )
-            : [
-                ...prev.details,
-                {
-                  id: `offline-${Date.now()}`,
-                  user_id: user.id,
-                  course_id: courseId,
-                  module_id: moduleId,
-                  lesson_id: lessonId,
-                  completed: completed || false,
-                  progress_percentage: completed ? 100 : 0,
-                  time_spent_seconds: timeSpentSeconds,
+            ? prev.details.map(p =>
+              p.lesson_id === lessonId && p.course_id === courseId
+                ? {
+                  ...p,
+                  completed: completed ?? p.completed,
+                  time_spent_seconds: (p.time_spent_seconds || 0) + timeSpentSeconds,
                   last_accessed_at: new Date().toISOString(),
-                  created_at: new Date().toISOString(),
-                  updated_at: new Date().toISOString(),
-                } as any
-              ];
-          
+                }
+                : p
+            )
+            : [
+              ...prev.details,
+              {
+                id: `offline-${Date.now()}`,
+                user_id: user.id,
+                course_id: courseId,
+                module_id: moduleId,
+                lesson_id: lessonId,
+                completed: completed || false,
+                progress_percentage: completed ? 100 : 0,
+                time_spent_seconds: timeSpentSeconds,
+                last_accessed_at: new Date().toISOString(),
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              } as any
+            ];
+
           const completedLessons = updatedDetails.filter(p => p.completed).length;
           const totalLessons = updatedDetails.length;
-          
+
           return {
             ...prev,
             percentage: totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0,
@@ -252,7 +248,7 @@ export const useCourseProgress = (courseId?: string) => {
             details: updatedDetails,
           };
         });
-        
+
         return { success: true, offline: true };
       }
 
@@ -264,28 +260,28 @@ export const useCourseProgress = (courseId?: string) => {
         completed,
         timeSpentMinutes: Math.ceil(timeSpentSeconds / 60) // Convert seconds to minutes
       });
-      
+
       if (error) throw error;
-      
+
       // Update local state
       if (data) {
         setProgress(prev => {
           if (!prev) return null;
-          
-          const existingIndex = prev.details.findIndex(p => 
+
+          const existingIndex = prev.details.findIndex(p =>
             p.lesson_id === lessonId && p.course_id === courseId
           );
-          
+
           const updatedDetails = [...prev.details];
           if (existingIndex >= 0) {
             updatedDetails[existingIndex] = data;
           } else {
             updatedDetails.push(data);
           }
-          
+
           const completedLessons = updatedDetails.filter(p => p.completed).length;
           const totalLessons = updatedDetails.length;
-          
+
           return {
             ...prev,
             percentage: totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0,
@@ -297,7 +293,7 @@ export const useCourseProgress = (courseId?: string) => {
           };
         });
       }
-      
+
       return { success: true, data };
     } catch (error) {
       console.error('Error tracking progress:', error);
@@ -306,13 +302,13 @@ export const useCourseProgress = (courseId?: string) => {
         description: 'Failed to save progress. Your progress will be saved locally and synced later.',
         variant: 'destructive',
       });
-      
+
       // Fallback to offline mode
       setOfflineProgress(prev => [
         ...prev.filter(p => !(p.lessonId === lessonId && p.courseId === courseId)),
         { ...progressData, timestamp: new Date().toISOString() }
       ]);
-      
+
       return { success: false, error: error as Error, offline: true };
     }
   }, [user?.id, isOnline, toast]);
@@ -333,7 +329,7 @@ export const useCourseProgress = (courseId?: string) => {
   // Get certificate for a course
   const getCertificate = useCallback(async (courseId: string) => {
     if (!user?.id) return null;
-    
+
     try {
       const { data, error } = await supabase
         .from('certificates')
@@ -342,15 +338,15 @@ export const useCourseProgress = (courseId?: string) => {
         .eq('course_id', courseId)
         .order('issued_at', { ascending: false })
         .limit(1);
-      
+
       if (error) throw error;
-      
+
       const certData = data?.[0] as Record<string, any>; // Use type assertion to handle dynamic properties
       if (!certData) {
         setCertificate(null);
         return null;
       }
-      
+
       // Map the data to match the Certificate interface
       const issuedDate = certData.issued_at || certData.issued_date || new Date().toISOString();
       const completionDate = certData.completion_date || issuedDate;
@@ -380,7 +376,7 @@ export const useCourseProgress = (courseId?: string) => {
         updated_at: certData.updated_at,
         metadata: certData.metadata || {}
       };
-      
+
       setCertificate(cert);
       return cert;
     } catch (error) {
@@ -397,18 +393,18 @@ export const useCourseProgress = (courseId?: string) => {
   // Generate certificate (if eligible)
   const generateCertificate = useCallback(async (courseId: string) => {
     if (!user?.id) return { success: false, error: new Error('User not authenticated') };
-    
+
     try {
       const { completed, certificate: cert } = await progressService.checkCourseCompletion(user.id, courseId);
-      
+
       if (completed && cert) {
         setCertificate(cert);
         return { success: true, certificate: cert };
       }
-      
-      return { 
-        success: false, 
-        error: new Error(completed ? 'Certificate generation failed' : 'Course not completed') 
+
+      return {
+        success: false,
+        error: new Error(completed ? 'Certificate generation failed' : 'Course not completed')
       };
     } catch (error) {
       console.error('Error generating certificate:', error);
@@ -424,7 +420,7 @@ export const useCourseProgress = (courseId?: string) => {
     error,
     isOnline,
     offlineProgressCount: offlineProgress.length,
-    
+
     // Actions
     loadProgress,
     trackProgress,

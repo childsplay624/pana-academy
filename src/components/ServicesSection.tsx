@@ -1,12 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { 
-  GraduationCap, 
-  Users, 
-  Search, 
-  Zap, 
-  Settings, 
-  TrendingUp, 
+import {
+  GraduationCap,
+  Users,
+  Search,
+  Zap,
+  Settings,
+  TrendingUp,
   ArrowRight,
   BookOpen,
   Target,
@@ -64,7 +64,7 @@ const ServicesSection = () => {
     },
     {
       icon: Target,
-      title: "Targeted Solutions", 
+      title: "Targeted Solutions",
       description: "Customized training for specific industry needs"
     },
     {
@@ -84,9 +84,9 @@ const ServicesSection = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-pana-navy mb-4">Our Services</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-pana-navy mb-4">Our Solutions and Services</h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Comprehensive solutions designed to transform careers and organizations through excellence in training, consulting, and research.
+            Comprehensive solutions and services designed to transform careers and organizations through high-quality training, expert consulting, and industry-driven research.
           </p>
         </div>
 
@@ -103,7 +103,7 @@ const ServicesSection = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 <p className="text-muted-foreground">{service.description}</p>
-                
+
                 <div className="space-y-3">
                   {service.categories.map((category, catIndex) => (
                     <div key={catIndex} className="border-l-2 border-pana-gold/30 pl-4">
@@ -142,22 +142,22 @@ const ServicesSection = () => {
 
         {/* CTA Section */}
         <div className="text-center mt-16">
-          <h3 className="text-2xl font-bold text-black mb-4">Ready to Transform Your Organization?</h3>
+          <h3 className="text-2xl font-bold text-black mb-4">Ready to Transform Your Career and/or Organization?</h3>
           <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Get in touch with our experts to discuss how PANA Academy can help you achieve your training and development goals.
+            Get in touch with us to discuss how PANA Academy can help you achieve your training, performance improvement, and research and development goals.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="/contact">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="bg-black text-white hover:bg-red-600 transition-colors"
               >
                 Schedule Consultation
               </Button>
             </a>
-            <a href="/training-calendar" download>
-              <Button 
-                variant="outline" 
+            <a href="/training-calendar.pdf" download>
+              <Button
+                variant="outline"
                 size="lg"
                 className="border-black text-black hover:bg-red-600 hover:border-red-600 hover:text-white transition-colors"
               >

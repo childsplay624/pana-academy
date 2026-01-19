@@ -9,13 +9,13 @@ const ContactSection = () => {
     {
       city: "Abuja (Headquarters)",
       address: "Plot 123, Central Business District, Abuja, Nigeria",
-      phone: "+234 809 123 4567",
+      phone: "+234 702 600 0119",
       email: "abuja@panaacademy.com",
       hours: "Mon - Fri: 8:00 AM - 6:00 PM"
     },
     {
       city: "Port Harcourt",
-      address: "15 Trans Amadi Industrial Layout, Port Harcourt, Nigeria", 
+      address: "15 Trans Amadi Industrial Layout, Port Harcourt, Nigeria",
       phone: "+234 808 765 4321",
       email: "phc@panaacademy.com",
       hours: "Mon - Fri: 8:00 AM - 6:00 PM"
@@ -27,7 +27,7 @@ const ContactSection = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <h2 className="text-3.6xl md:text-4.8xl font-bold text-pana-navy mb-4">Get in Touch</h2>
+          <h2 className="text-3.6xl md:text-4.8xl font-bold text-pana-navy mb-4">Contact Us</h2>
           <p className="text-2xl text-muted-foreground max-w-3xl mx-auto">
             Ready to transform your career or organization? Contact us to discuss your training and development needs.
           </p>
@@ -82,8 +82,8 @@ const ContactSection = () => {
                   <label htmlFor="interest" className="block text-base font-medium text-foreground mb-2">
                     Area of Interest
                   </label>
-                  <select 
-                    id="interest" 
+                  <select
+                    id="interest"
                     className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                   >
                     <option value="">Select an area of interest</option>
@@ -99,15 +99,15 @@ const ContactSection = () => {
                   <label htmlFor="message" className="block text-base font-medium text-foreground mb-2">
                     Message *
                   </label>
-                  <Textarea 
-                    id="message" 
+                  <Textarea
+                    id="message"
                     placeholder="Tell us about your requirements, questions, or how we can help you..."
                     rows={6}
-                    required 
+                    required
                   />
                 </div>
 
-                <Button 
+                <Button
                   className="w-full bg-black text-white hover:bg-red-600 transition-colors"
                 >
                   <Send className="w-4 h-4 mr-2" />
@@ -156,11 +156,11 @@ const ContactSection = () => {
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
                     <Phone className="w-4 h-4 text-pana-gold" />
-                    <p className="text-base">+234 809 123 4567</p>
+                    <p className="text-base">+234 702 600 0119</p>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Mail className="w-4 h-4 text-pana-gold" />
-                    <p className="text-base">info@panaacademy.com</p>
+                    <p className="text-base">info@pana-academy.com</p>
                   </div>
                 </div>
                 <Button className="w-full mt-4 bg-red-600 text-white hover:bg-white hover:text-red-600 transition-colors">
@@ -170,7 +170,7 @@ const ContactSection = () => {
             </Card>
 
             {/* Social Media */}
-           
+
           </div>
         </div>
 

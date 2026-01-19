@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Users, 
-  BookOpen, 
-  Shield, 
-  GraduationCap, 
+import {
+  Users,
+  BookOpen,
+  Shield,
+  GraduationCap,
   User,
   Eye,
   Clock,
@@ -16,7 +16,9 @@ import {
   Settings,
   BarChart3,
   UserPlus,
-  FileText
+  FileText,
+  ImageIcon,
+  CreditCard
 } from 'lucide-react';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { supabase } from '@/integrations/supabase/client';
@@ -57,7 +59,7 @@ export default function AdminDashboard() {
   const fetchDashboardStats = async () => {
     try {
       setLoading(true);
-      
+
       // Fetch users data
       const { data: users, error: usersError } = await supabase
         .from('profiles')
@@ -173,16 +175,16 @@ export default function AdminDashboard() {
             <p className="text-muted-foreground">Manage your platform and monitor activity</p>
           </div>
           <div className="flex items-center gap-3">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => navigate('/dashboard/analytics')}
               className="flex items-center gap-2"
             >
               <BarChart3 className="h-4 w-4" />
               Analytics
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => navigate('/dashboard/settings')}
               className="flex items-center gap-2"
             >
@@ -239,7 +241,7 @@ export default function AdminDashboard() {
               </div>
 
               {/* Action Button */}
-              <Button 
+              <Button
                 onClick={() => navigate('/dashboard/users')}
                 className="w-full flex items-center justify-center gap-2"
               >
@@ -270,7 +272,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="text-center p-3 rounded-lg border">
                   <div className="flex items-center justify-center mb-2">
-                    <Clock className="h-5 w-5 text-yellow-500" />
+                    <Clock className="h-5 w-5 text-red-500" />
                   </div>
                   <div className="text-2xl font-bold">{stats.courses.pendingReview}</div>
                   <div className="text-sm text-muted-foreground">Pending Review</div>
@@ -294,7 +296,7 @@ export default function AdminDashboard() {
               </div>
 
               {/* Action Button */}
-              <Button 
+              <Button
                 onClick={() => navigate('/dashboard/courses')}
                 className="w-full flex items-center justify-center gap-2"
               >
@@ -345,32 +347,48 @@ export default function AdminDashboard() {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => navigate('/dashboard/users')}
             className="h-20 flex flex-col items-center justify-center gap-2"
           >
             <UserPlus className="h-6 w-6" />
             <span>Add User</span>
           </Button>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => navigate('/dashboard/courses')}
             className="h-20 flex flex-col items-center justify-center gap-2"
           >
             <Eye className="h-6 w-6" />
             <span>Review Courses</span>
           </Button>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => navigate('/dashboard/analytics')}
             className="h-20 flex flex-col items-center justify-center gap-2"
           >
             <BarChart3 className="h-6 w-6" />
             <span>View Analytics</span>
           </Button>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
+            onClick={() => navigate('/dashboard/images')}
+            className="h-20 flex flex-col items-center justify-center gap-2"
+          >
+            <ImageIcon className="h-6 w-6" />
+            <span>Manage Images</span>
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => navigate('/dashboard/payments')}
+            className="h-20 flex flex-col items-center justify-center gap-2"
+          >
+            <CreditCard className="h-6 w-6 text-pana-gold" />
+            <span>Manage Payments</span>
+          </Button>
+          <Button
+            variant="outline"
             onClick={() => navigate('/dashboard/settings')}
             className="h-20 flex flex-col items-center justify-center gap-2"
           >

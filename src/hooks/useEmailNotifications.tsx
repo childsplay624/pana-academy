@@ -1,50 +1,74 @@
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/hooks/use-toast';
 
 export const useEmailNotifications = () => {
-  const sendEnrollmentConfirmation = async (courseId: string, studentId: string) => {
+  const sendEnrollmentConfirmation = async (courseTitle: string, userName: string, userEmail: string) => {
     try {
-      const { error } = await supabase.functions.invoke('send-enrollment-confirmation-email', {
-        body: { courseId, studentId }
+      const { error } = await supabase.functions.invoke('send-transactional-email', {
+        body: {
+          to: userEmail,
+          type: 'enrollment',
+          payload: { courseTitle, userName }
+        }
       });
-      
+
       if (error) throw error;
     } catch (error) {
       console.error('Failed to send enrollment confirmation email:', error);
-      // Don't throw error to prevent enrollment failure
     }
   };
 
-  const sendCertificateNotification = async (certificateId: string, userId: string) => {
+  const sendCertificateNotification = async (courseTitle: string, userName: string, userEmail: string) => {
     try {
-      const { error } = await supabase.functions.invoke('send-certificate-email', {
-        body: { certificateId, userId }
+      const { error } = await supabase.functions.invoke('send-transactional-email', {
+        body: {
+          to: userEmail,
+          type: 'certificate',
+          payload: { courseTitle, userName }
+        }
       });
-      
+
       if (error) throw error;
     } catch (error) {
       console.error('Failed to send certificate notification email:', error);
     }
   };
 
-  const sendAssignmentGradedNotification = async (submissionId: string, score: number, feedback?: string) => {
+  const sendAssignmentGradedNotification = async (assignmentTitle: string, score: number, userName: string, userEmail: string, feedback?: string) => {
     try {
-      const { error } = await supabase.functions.invoke('send-assignment-graded-email', {
-        body: { submissionId, score, feedback }
+      const { error } = await supabase.functions.invoke('send-transactional-email', {
+        body: {
+          to: userEmail,
+          type: 'grading',
+          payload: { assignmentTitle, score, userName, feedback }
+        }
       });
-      
+
       if (error) throw error;
     } catch (error) {
       console.error('Failed to send assignment graded email:', error);
     }
   };
 
-  const sendSessionReminder = async (courseId: string, reminderType: '24h' | '1h' | '15m') => {
+  const sendSessionReminder = async (userEmail: string, courseTitle: string, reminderType: '24h' | '1h' | '15m') => {
     try {
-      const { error } = await supabase.functions.invoke('send-session-reminder-email', {
-        body: { courseId, reminderType }
+      const { error } = await supabase.functions.invoke('send-transactional-email', {
+        body: {
+          to: userEmail,
+          type: 'custom',
+          subject: `Reminder: Upcoming Session for ${courseTitle}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2>Session Reminder</h2>
+              <p>Your session for <strong>${courseTitle}</strong> starts in ${reminderType}.</p>
+              <p>Please log in to your dashboard to join the session.</p>
+              <a href="${window.location.origin}/dashboard" style="display: inline-block; padding: 10px 20px; background-color: #ba000e; color: white; text-decoration: none; border-radius: 4px; margin-top: 20px;">
+                Go to Dashboard
+              </a>
+            </div>
+          `
+        }
       });
-      
+
       if (error) throw error;
     } catch (error) {
       console.error('Failed to send session reminder email:', error);

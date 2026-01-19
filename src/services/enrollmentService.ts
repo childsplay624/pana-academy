@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { checkPaymentStatus } from './paymentService';
 
 export type EnrollmentStatus = 'enrolled' | 'completed' | 'dropped' | 'suspended';
 
@@ -23,7 +24,7 @@ export interface Enrollment extends DatabaseEnrollment {
 export const enrollInCourse = async (courseId: string): Promise<{ data: Enrollment | null; error: Error | null }> => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (!user) {
       throw new Error('User must be logged in to enroll in a course');
     }
@@ -42,6 +43,30 @@ export const enrollInCourse = async (courseId: string): Promise<{ data: Enrollme
 
     if (checkError && checkError.code !== 'PGRST116') { // PGRST116 is the code for no rows returned
       throw checkError;
+    }
+
+    // Check if course requires payment
+    const { data: course } = await supabase
+      .from('courses')
+      .select('price, is_free, title')
+      .eq('id', courseId)
+      .single();
+
+    if (!course) {
+      throw new Error('Course not found');
+    }
+
+    // If course is paid, verify payment exists
+    if (!course.is_free && course.price > 0) {
+      const hasPayment = await checkPaymentStatus(user.id, courseId);
+
+      if (!hasPayment) {
+        // Return special error code for UI to handle
+        return {
+          data: null,
+          error: new Error('PAYMENT_REQUIRED')
+        };
+      }
     }
 
     // Create new enrollment with only the database fields
@@ -63,19 +88,19 @@ export const enrollInCourse = async (courseId: string): Promise<{ data: Enrollme
 
     if (error) throw error;
 
-    return { 
+    return {
       data: {
         ...data,
         completed_lessons: [],
         last_accessed_at: data.enrolled_at
-      }, 
-      error: null 
+      },
+      error: null
     };
   } catch (error) {
     console.error('Error enrolling in course:', error);
-    return { 
-      data: null, 
-      error: error instanceof Error ? error : new Error('Failed to enroll in course') 
+    return {
+      data: null,
+      error: error instanceof Error ? error : new Error('Failed to enroll in course')
     };
   }
 };
@@ -83,7 +108,7 @@ export const enrollInCourse = async (courseId: string): Promise<{ data: Enrollme
 export const checkEnrollment = async (courseId: string): Promise<{ isEnrolled: boolean; enrollment: Enrollment | null }> => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (!user) {
       return { isEnrolled: false, enrollment: null };
     }
@@ -110,9 +135,9 @@ export const checkEnrollment = async (courseId: string): Promise<{ isEnrolled: b
       last_accessed_at: data.enrolled_at // Use enrolled_at as default for last_accessed_at
     };
 
-    return { 
-      isEnrolled: true, 
-      enrollment 
+    return {
+      isEnrolled: true,
+      enrollment
     };
   } catch (error) {
     console.error('Error checking enrollment:', error);

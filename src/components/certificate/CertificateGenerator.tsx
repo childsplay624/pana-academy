@@ -7,9 +7,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { 
-  Award, 
-  Save, 
+import {
+  Award,
+  Save,
   Eye,
   Download,
   Send,
@@ -27,11 +27,11 @@ interface CertificateGeneratorProps {
   onCertificateCreated?: (certificateId: string) => void;
 }
 
-export function CertificateGenerator({ 
-  enrollmentId, 
-  courseId, 
+export function CertificateGenerator({
+  enrollmentId,
+  courseId,
   studentId,
-  onCertificateCreated 
+  onCertificateCreated
 }: CertificateGeneratorProps) {
   const [formData, setFormData] = useState({
     courseId: courseId || '',
@@ -235,7 +235,7 @@ export function CertificateGenerator({
 
           {/* Actions */}
           <div className="flex gap-2">
-            <Button 
+            <Button
               onClick={generateCertificate}
               disabled={isLoading}
               className="flex items-center gap-2"
@@ -243,7 +243,7 @@ export function CertificateGenerator({
               <Save className="h-4 w-4" />
               {isLoading ? 'Generating...' : 'Generate Certificate'}
             </Button>
-            <Button 
+            <Button
               variant="outline"
               onClick={previewCertificate}
               className="flex items-center gap-2"
@@ -264,8 +264,8 @@ export function CertificateGenerator({
                 <Eye className="h-5 w-5" />
                 Certificate Preview
               </CardTitle>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
                 onClick={() => setPreviewMode(false)}
               >
@@ -278,13 +278,13 @@ export function CertificateGenerator({
             <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 p-8 rounded-lg border-2 border-dashed border-primary/30">
               <div className="text-center space-y-6">
                 <div className="flex justify-center">
-                  <Award className="h-16 w-16 text-yellow-500" />
+                  <Award className="h-16 w-16 text-red-500" />
                 </div>
-                
+
                 <h1 className="text-3xl font-bold text-primary">
                   CERTIFICATE OF COMPLETION
                 </h1>
-                
+
                 <div className="space-y-4">
                   <p className="text-lg">This is to certify that</p>
                   <div className="border-b-2 border-primary/30 pb-2 max-w-md mx-auto">

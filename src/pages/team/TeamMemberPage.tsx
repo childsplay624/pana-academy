@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import { useSiteImage } from "@/hooks/useSiteImage";
 
 const teamMembers = [
   {
@@ -21,7 +21,8 @@ const teamMembers = [
       "Recognized as African Continental Top Talent at General Electric (GE)",
       "Extensive business portfolio across multiple industries including power, water technology, and IT"
     ],
-    image: "/team/daere-akobo.png"
+    image: "/team/daere-akobo.png",
+    imageKey: "team_daere_akobo"
   },
   {
     id: "iyenemi-akobo",
@@ -36,7 +37,8 @@ const teamMembers = [
       "Expertise in corporate governance and business administration",
       "Key role in implementing corporate governance requirements"
     ],
-    image: "/team/iyenemi-akobo.png"
+    image: "/team/iyenemi-akobo.png",
+    imageKey: "team_iyenemi_akobo"
   },
   {
     id: "callista-azogu",
@@ -51,7 +53,8 @@ const teamMembers = [
       "Fellow of the Institute of Chartered Accountants of Nigeria",
       "Recipient of PETAN Chairman's Outstanding Achievement Recognition Award"
     ],
-    image: "/team/callista-azogu.jpg"
+    image: "/team/callista-azogu.png",
+    imageKey: "team_callista_azogu"
   },
   {
     id: "ifeyinwa-achumba",
@@ -68,7 +71,8 @@ const teamMembers = [
       "Active participant in Oil & Gas National Occupational Standards (NOS) development",
       "Member of the Sector Working Group (SWG) on Education for NCDMB"
     ],
-    image: "/team/Ifeyinwa-Eucharia.jpg"
+    image: "/team/Ifeyinwa-Eucharia.jpg",
+    imageKey: "team_ifeyinwa_achumba"
   },
   {
     id: "kennedy-dike",
@@ -83,23 +87,22 @@ const teamMembers = [
       "Fellow, Institute of Strategic Management Nigeria",
       "Extensive experience in HR, corporate governance, and business sustainability"
     ],
-    image: "/team/kennedy-dike.jpg"
+    image: "/team/kennedy-dike.jpg",
+    imageKey: "team_kennedy_dike"
   }
 ];
 
 export default function TeamMemberPage() {
   const { memberId } = useParams<{ memberId: string }>();
-  const [member, setMember] = useState<any>(null);
-  const [isMounted, setIsMounted] = useState(false);
+  const member = teamMembers.find(m => m.id === memberId);
+  const { imageUrl } = useSiteImage(member?.imageKey || '', member?.image);
 
+  // Use a simple layout effect or regular effect to scroll top when member changes
   useEffect(() => {
-    setIsMounted(true);
-    const foundMember = teamMembers.find(m => m.id === memberId);
-    setMember(foundMember);
+    window.scrollTo(0, 0);
   }, [memberId]);
 
-  if (!isMounted) return null;
-  if (!member) return <div>Team member not found</div>;
+  if (!member) return <div className="min-h-screen flex items-center justify-center">Team member not found</div>;
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -108,9 +111,9 @@ export default function TeamMemberPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back button outside the box */}
           <div className="mb-6">
-            <Button 
-              asChild 
-              variant="ghost" 
+            <Button
+              asChild
+              variant="ghost"
               className="hover:bg-red-50"
             >
               <Link to="/team" className="flex items-center text-red-600">
@@ -119,7 +122,7 @@ export default function TeamMemberPage() {
               </Link>
             </Button>
           </div>
-          
+
           {/* Main content box */}
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
             <Card className="overflow-hidden group border-0 shadow-none">
@@ -127,9 +130,9 @@ export default function TeamMemberPage() {
               <div className="relative h-80 w-full overflow-hidden">
                 {/* Large header image */}
                 <div className="absolute inset-0">
-                  {member.image ? (
-                    <img 
-                      src={member.image} 
+                  {imageUrl ? (
+                    <img
+                      src={imageUrl}
                       alt={member.name}
                       className="w-full h-full object-cover object-top"
                     />
@@ -141,16 +144,16 @@ export default function TeamMemberPage() {
                     </div>
                   )}
                 </div>
-                
+
                 {/* Gradient overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                
+
                 {/* Profile image */}
                 <div className="absolute -bottom-16 left-8 z-10">
                   <div className="h-40 w-40 rounded-full overflow-hidden border-4 border-white shadow-2xl bg-white">
-                    {member.image ? (
-                      <img 
-                        src={member.image} 
+                    {imageUrl ? (
+                      <img
+                        src={imageUrl}
                         alt={member.name}
                         className="w-full h-full object-cover"
                       />

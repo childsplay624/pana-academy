@@ -1,23 +1,33 @@
-import { Resend } from 'resend';
+import { supabase } from "@/integrations/supabase/client";
 
-const resend = new Resend(import.meta.env.VITE_RESEND_API_KEY);
+type EmailPayload = {
+  [key: string]: any;
+};
 
 type EmailOptions = {
   to: string | string[];
-  subject: string;
-  html: string;
-  from?: string;
-  replyTo?: string;
+  type?: 'welcome' | 'enrollment' | 'certificate' | 'grading' | 'reminder' | 'custom';
+  payload?: EmailPayload;
+  subject?: string;
+  html?: string;
 };
 
 export const sendEmail = async (options: EmailOptions) => {
   try {
-    const { data, error } = await resend.emails.send({
-      from: options.from || 'PANA Academy <noreply@panaacademy.com>',
-      to: options.to,
-      subject: options.subject,
-      html: options.html,
-      replyTo: options.replyTo,
+    // Add appUrl to payload if not present
+    const payload = {
+      ...options.payload,
+      appUrl: import.meta.env.VITE_APP_URL || window.location.origin
+    };
+
+    const { data, error } = await supabase.functions.invoke('send-transactional-email', {
+      body: {
+        to: options.to,
+        type: options.type,
+        payload,
+        subject: options.subject,
+        html: options.html
+      }
     });
 
     if (error) {
@@ -32,41 +42,25 @@ export const sendEmail = async (options: EmailOptions) => {
   }
 };
 
-// Email templates
+// Frontend templates are now placeholders, preferably handled by the Edge Function
+// But we keep this object structure for backward compatibility with existing calls
 export const emailTemplates = {
   welcome: (name: string) => ({
-    subject: 'Welcome to PANA Academy!',
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h1>Welcome to PANA Academy, ${name}!</h1>
-        <p>Thank you for joining our learning community. We're excited to have you on board.</p>
-        <p>Start exploring our courses and enhance your skills today!</p>
-        <a href="${import.meta.env.VITE_APP_URL}" style="display: inline-block; padding: 10px 20px; background-color: #ba000e; color: white; text-decoration: none; border-radius: 4px; margin-top: 20px;">
-          Get Started
-        </a>
-        <p style="margin-top: 30px; font-size: 12px; color: #666;">
-          If you didn't create an account, please ignore this email.
-        </p>
-      </div>
-    `,
+    type: 'welcome' as const,
+    payload: { name },
+    subject: 'Welcome to PANA Academy!', // Fallback
+    html: '', // Handled by Edge Function
   }),
-  
+
   courseEnrollment: (courseTitle: string, userName: string) => ({
-    subject: `You're enrolled in ${courseTitle}`,
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h1>Welcome to ${courseTitle}, ${userName}!</h1>
-        <p>You've successfully enrolled in the course. We're excited to have you in the class!</p>
-        <p>Course: <strong>${courseTitle}</strong></p>
-        <p>Start your learning journey now by accessing the course materials.</p>
-        <a href="${import.meta.env.VITE_APP_URL}/my-courses" style="display: inline-block; padding: 10px 20px; background-color: #ba000e; color: white; text-decoration: none; border-radius: 4px; margin-top: 20px;">
-          Go to My Courses
-        </a>
-      </div>
-    `,
+    type: 'enrollment' as const,
+    payload: { courseTitle, userName },
+    subject: `You're enrolled in ${courseTitle}`, // Fallback
+    html: '', // Handled by Edge Function
   }),
-  
+
   passwordReset: (userName: string, resetLink: string) => ({
+    type: 'custom' as const,
     subject: 'Password Reset Request',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">

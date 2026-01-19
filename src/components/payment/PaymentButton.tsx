@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Loader2, CreditCard } from 'lucide-react';
-import { initializePayment } from '@/services/paymentService';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { enrollInCourse } from '@/services/enrollmentService';
+import { useNavigate } from 'react-router-dom';
 
 interface PaymentButtonProps {
   courseId: string;
@@ -20,48 +21,59 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
 }) => {
   const { user } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [selectedProvider, setSelectedProvider] = useState<'paystack' | 'flutterwave'>('paystack');
   const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const handlePayment = async () => {
+  const handleEnroll = async () => {
     if (!user) {
       toast({
         title: 'Authentication Required',
-        description: 'Please sign in to make a payment',
+        description: 'Please sign in to enroll',
         variant: 'destructive',
       });
+      navigate('/auth');
       return;
     }
 
     setIsProcessing(true);
-    
-    try {
-      const callbackUrl = `${window.location.origin}/payment/callback?courseId=${courseId}`;
-      
-      const response = await initializePayment(
-        selectedProvider,
-        amount,
-        user.email!,
-        {
-          courseId,
-          userId: user.id,
-          fullName: user.user_metadata?.full_name || '',
-          email: user.email!
-        },
-        callbackUrl
-      );
 
-      if (response.success && response.paymentLink) {
-        // Redirect to payment provider
-        window.location.href = response.paymentLink;
+    try {
+      // Check if course is free
+      const isFree = amount === 0;
+
+      if (isFree) {
+        // Free course - enroll directly
+        const { data, error } = await enrollInCourse(courseId);
+
+        if (error) {
+          throw error;
+        }
+
+        toast({
+          title: 'Success!',
+          description: 'You have been enrolled in the course',
+        });
+
+        // Redirect to learning page
+        setTimeout(() => {
+          navigate(`/course/${courseId}/learn`);
+        }, 1000);
       } else {
-        throw new Error(response.message || 'Failed to initialize payment');
+        // Paid course - redirect to payment page
+        toast({
+          title: 'Redirecting to Payment',
+          description: `Please complete payment to enroll in this course`,
+        });
+
+        setTimeout(() => {
+          navigate(`/payment/${courseId}`);
+        }, 1500);
       }
     } catch (error) {
-      console.error('Payment error:', error);
+      console.error('Enrollment error:', error);
       toast({
-        title: 'Payment Error',
-        description: error instanceof Error ? error.message : 'Failed to process payment',
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to process enrollment',
         variant: 'destructive',
       });
     } finally {
@@ -69,46 +81,36 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
     }
   };
 
+  const isFree = amount === 0;
+
   return (
     <div className={`space-y-4 ${className}`}>
-      <div className="flex space-x-4">
-        <Button
-          variant={selectedProvider === 'paystack' ? 'default' : 'outline'}
-          onClick={() => setSelectedProvider('paystack')}
-          className="flex-1 bg-black text-white hover:bg-black/90 hover:text-white"
-        >
-          Pay with Paystack
-        </Button>
-        <Button
-          variant={selectedProvider === 'flutterwave' ? 'default' : 'outline'}
-          onClick={() => setSelectedProvider('flutterwave')}
-          className="flex-1 bg-black text-white hover:bg-black/90 hover:text-white"
-        >
-          Pay with Flutterwave
-        </Button>
-      </div>
-      
       <Button
-        onClick={handlePayment}
+        onClick={handleEnroll}
         disabled={isProcessing}
-        className="w-full bg-black hover:bg-black/90 text-white hover:text-white"
+        className="w-full bg-pana-gold hover:bg-pana-gold/90 text-white hover:text-white"
+        size="lg"
       >
         {isProcessing ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             Processing...
           </>
+        ) : isFree ? (
+          'Enroll Now - Free'
         ) : (
           <>
             <CreditCard className="mr-2 h-4 w-4" />
-            Pay ₦{amount.toLocaleString()} for {courseTitle}
+            Enroll Now - ₦{amount.toLocaleString()}
           </>
         )}
       </Button>
-      
-      <p className="text-xs text-muted-foreground text-center">
-        Secure payment processed by {selectedProvider === 'paystack' ? 'Paystack' : 'Flutterwave'}
-      </p>
+
+      {!isFree && (
+        <p className="text-xs text-muted-foreground text-center">
+          🔒 Secure payment • You'll be redirected to complete payment
+        </p>
+      )}
     </div>
   );
 };

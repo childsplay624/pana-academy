@@ -5,22 +5,24 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
-import { 
-  Loader2, 
-  ArrowLeft, 
-  CheckCircle, 
-  BookOpen, 
-  FileText, 
-  Clock, 
-  Smartphone, 
-  Award, 
-  User, 
-  BarChart, 
+import {
+  Loader2,
+  ArrowLeft,
+  CheckCircle,
+  BookOpen,
+  FileText,
+  Clock,
+  Smartphone,
+  Award,
+  User,
+  BarChart,
   Lock,
   Users,
-  AlertCircle
+  AlertCircle,
+  Calendar,
+  DollarSign
 } from 'lucide-react';
-import { fetchCourseById, type Course } from '@/services/courseService';
+import { fetchCourseById, formatCourseDate, isStartingSoon, type Course } from '@/services/courseService';
 import { ModuleManager } from '@/components/course-management/ModuleManager';
 import { useAuth } from '@/hooks/useAuth';
 import { checkEnrollment } from '@/services/enrollmentService';
@@ -93,22 +95,7 @@ const CourseDetails: React.FC = () => {
     loadCourse();
   }, [id, user]);
 
-  useEffect(() => {
-    const checkUserEnrollment = async () => {
-      if (user && id && !isInstructor) {
-        try {
-          const { isEnrolled } = await checkEnrollment(id);
-          setIsEnrolled(isEnrolled);
-        } catch (error) {
-          console.error('Error checking enrollment:', error);
-        }
-      } else if (!user) {
-        // Reset enrollment state for non-logged in users
-        setIsEnrolled(false);
-      }
-    };
-    checkUserEnrollment();
-  }, [user, id, isInstructor]);
+
 
   if (loading) {
     return (
@@ -169,9 +156,9 @@ const CourseDetails: React.FC = () => {
       <main className="flex-1 w-full">
         <div className="w-full bg-gradient-to-r from-red-700 to-red-500 text-white py-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
-            <Button 
-              variant="ghost" 
-              className="text-white hover:bg-white/10 mb-6" 
+            <Button
+              variant="ghost"
+              className="text-white hover:bg-white/10 mb-6"
               onClick={() => navigate(-1)}
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -186,9 +173,57 @@ const CourseDetails: React.FC = () => {
                   <Badge variant="outline" className="bg-white/10 border-white/20 text-white">
                     {course.level}
                   </Badge>
+                  {course.course_type && (
+                    <Badge
+                      variant="outline"
+                      className={course.course_type === 'live'
+                        ? 'bg-blue-500/20 border-blue-300 text-white'
+                        : 'bg-purple-500/20 border-purple-300 text-white'
+                      }
+                    >
+                      {course.course_type === 'live' ? '📅 Live Course' : '⏱️ Self-Paced'}
+                    </Badge>
+                  )}
+                  {course.course_type === 'live' && course.start_date && isStartingSoon(course.start_date) && (
+                    <Badge variant="outline" className="bg-red-500/30 border-red-300 text-white animate-pulse">
+                      🔥 Starting Soon
+                    </Badge>
+                  )}
                 </div>
                 <h1 className="text-3xl md:text-4xl font-bold mb-4">{course.title}</h1>
-                <p className="text-lg text-pana-gray-100 mb-6">{course.description}</p>
+                <p className="text-lg text-pana-gray-100 mb-4">{course.description}</p>
+
+                {/* Price Display */}
+                <div className="mb-4">
+                  <div className="text-3xl font-bold text-white">
+                    {course.is_free || course.price === 0 ? (
+                      <span className="text-green-300">Free</span>
+                    ) : (
+                      <span>₦{course.price.toLocaleString()}</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Course Dates for Live Courses */}
+                {course.course_type === 'live' && course.start_date && (
+                  <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-4 mb-6">
+                    <div className="flex items-start gap-3">
+                      <Calendar className="h-5 w-5 text-white mt-0.5" />
+                      <div>
+                        <p className="font-semibold text-white mb-1">Course Schedule</p>
+                        <p className="text-sm text-white/90">
+                          <span className="font-medium">Starts:</span> {formatCourseDate(course.start_date)}
+                          {course.end_date && (
+                            <>
+                              <br />
+                              <span className="font-medium">Ends:</span> {formatCourseDate(course.end_date)}
+                            </>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <div className="flex items-center space-x-4 mb-6">
                   <div className="flex items-center">
                     <User className="h-5 w-5 mr-2" />
@@ -222,8 +257,8 @@ const CourseDetails: React.FC = () => {
                 )}
               </div>
               {user && isInstructor ? (
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="mt-4"
                   onClick={() => navigate(`/instructor/courses/${id}/edit`)}
                 >
@@ -238,7 +273,7 @@ const CourseDetails: React.FC = () => {
                   />
                 )
               ) : (
-                <Button 
+                <Button
                   className="mt-4"
                   onClick={() => navigate('/auth', { state: { from: window.location.pathname } })}
                 >
@@ -255,133 +290,117 @@ const CourseDetails: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Left Column */}
               <div className="lg:col-span-2 space-y-8">
-                {/* Course Description */}
+                {/* What You'll Learn */}
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-2xl font-bold">Course Description</CardTitle>
+                    <CardTitle className="text-2xl font-bold">What You'll Learn</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-700 leading-relaxed">
-                      {course.description}
-                    </p>
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {course.learning_outcomes?.length > 0 ? (
+                        course.learning_outcomes.map((outcome, index) => (
+                          <li key={index} className="flex items-start">
+                            <CheckCircle className="h-5 w-5 text-pana-green mr-3 mt-0.5 flex-shrink-0" />
+                            <span>{outcome}</span>
+                          </li>
+                        ))
+                      ) : (
+                        <p className="text-gray-500">No learning outcomes provided.</p>
+                      )}
+                    </ul>
                   </CardContent>
                 </Card>
 
-              {/* What You'll Learn */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-2xl font-bold">What You'll Learn</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {course.learning_outcomes?.length > 0 ? (
-                      course.learning_outcomes.map((outcome, index) => (
-                        <li key={index} className="flex items-start">
-                          <CheckCircle className="h-5 w-5 text-pana-green mr-3 mt-0.5 flex-shrink-0" />
-                          <span>{outcome}</span>
-                        </li>
-                      ))
+                {/* Course Content */}
+                <Card className="mt-8">
+                  <CardHeader>
+                    <div className="flex justify-between items-center">
+                      <CardTitle className="text-2xl font-bold">Course Content</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    {isInstructor && id ? (
+                      <ModuleManager courseId={id} canEdit={true} />
                     ) : (
-                      <p className="text-gray-500">No learning outcomes provided.</p>
-                    )}
-                  </ul>
-                </CardContent>
-              </Card>
-
-              {/* Course Content */}
-              <Card className="mt-8">
-                <CardHeader>
-                  <div className="flex justify-between items-center">
-                    <CardTitle className="text-2xl font-bold">Course Content</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  {isInstructor && id ? (
-                    <ModuleManager courseId={id} canEdit={true} />
-                  ) : (
-                    <div className="space-y-4">
-                      {course.modules?.length > 0 ? (
-                        course.modules.map((module) => (
-                          <div key={module.id} className="border rounded-lg overflow-hidden">
-                            <div className="p-4 hover:bg-gray-50">
-                              <div className="flex items-center">
-                                <div className="bg-pana-blue/10 p-2 rounded-full mr-3">
-                                  <BookOpen className="h-4 w-4 text-pana-blue" />
-                                </div>
-                                <div className="flex-grow">
-                                  <h3 className="font-medium">{module.title}</h3>
-                                  <p className="text-sm text-gray-500">{module.duration}</p>
+                      <div className="space-y-4">
+                        {course.modules?.length > 0 ? (
+                          course.modules.map((module) => (
+                            <div key={module.id} className="border rounded-lg overflow-hidden">
+                              <div className="p-4 hover:bg-gray-50">
+                                <div className="flex items-center">
+                                  <div className="bg-pana-blue/10 p-2 rounded-full mr-3">
+                                    <BookOpen className="h-4 w-4 text-pana-blue" />
+                                  </div>
+                                  <div className="flex-grow">
+                                    <h3 className="font-medium">{module.title}</h3>
+                                    <p className="text-sm text-gray-500">{module.duration}</p>
+                                  </div>
                                 </div>
                               </div>
                             </div>
+                          ))
+                        ) : (
+                          <div className="text-center py-8">
+                            <BookOpen className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                            <p className="text-gray-500">No course content available yet.</p>
                           </div>
-                        ))
-                      ) : (
-                        <div className="text-center py-8">
-                          <BookOpen className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                          <p className="text-gray-500">No course content available yet.</p>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
+                        )}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
 
-            {/* Right Column */}
-            <div className="space-y-6">
-              {/* Course Features */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl font-bold">This Course Includes</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center">
-                    <BookOpen className="h-5 w-5 text-pana-blue mr-3" />
-                    <span>8 hours on-demand video</span>
-                  </div>
-                  <div className="flex items-center">
-                    <FileText className="h-5 w-5 text-pana-blue mr-3" />
-                    <span>12 downloadable resources</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Clock className="h-5 w-5 text-pana-blue mr-3" />
-                    <span>Full lifetime access</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Smartphone className="h-5 w-5 text-pana-blue mr-3" />
-                    <span>Access on mobile and TV</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Award className="h-5 w-5 text-pana-blue mr-3" />
-                    <span>Certificate of completion</span>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Instructor */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl font-bold">Instructor</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center space-x-4">
-                    <div className="h-16 w-16 rounded-full bg-pana-blue/10 flex items-center justify-center">
-                      <User className="h-8 w-8 text-pana-blue" />
+              {/* Right Column */}
+              <div className="space-y-6">
+                {/* Course Features */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-xl font-bold">This Course Includes</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center">
+                      <BookOpen className="h-5 w-5 text-pana-blue mr-3" />
+                      <span>8 hours on-demand video</span>
                     </div>
-                    <div>
-                      <h4 className="font-semibold">{course.instructor}</h4>
-                      <p className="text-sm text-gray-500">Senior Project Manager</p>
-                      <div className="flex items-center mt-1">
-                        <BarChart className="h-4 w-4 text-amber-400 mr-1" />
-                        <span className="text-sm">4.7 Instructor Rating</span>
+                    <div className="flex items-center">
+                      <FileText className="h-5 w-5 text-pana-blue mr-3" />
+                      <span>12 downloadable resources</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Clock className="h-5 w-5 text-pana-blue mr-3" />
+                      <span>Full lifetime access</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Smartphone className="h-5 w-5 text-pana-blue mr-3" />
+                      <span>Access on mobile and TV</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Award className="h-5 w-5 text-pana-blue mr-3" />
+                      <span>Certificate of completion</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Instructor */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-xl font-bold">Instructor</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center space-x-4">
+                      <div className="h-16 w-16 rounded-full bg-pana-blue/10 flex items-center justify-center">
+                        <User className="h-8 w-8 text-pana-blue" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold">{instructorName}</h4>
+                        <p className="text-sm text-gray-500">Course Instructor</p>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
-          </div>
           </div>
         </div>
       </main>

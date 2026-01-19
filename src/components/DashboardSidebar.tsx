@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { 
-  LayoutDashboard, 
-  BookOpen, 
-  Users, 
-  Settings, 
-  Award, 
+import {
+  LayoutDashboard,
+  BookOpen,
+  Users,
+  Settings,
+  Award,
   TrendingUp,
   User,
   Calendar,
@@ -13,6 +13,7 @@ import {
   HelpCircle,
   LogOut,
   CreditCard,
+  ImageIcon,
   MessageSquareText
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -39,7 +40,7 @@ export function DashboardSidebar() {
   const collapsed = !open;
 
   const isActive = (path: string) => currentPath === path || currentPath.startsWith(path);
-  
+
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
     isActive ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium" : "hover:bg-sidebar-accent/50";
 
@@ -54,6 +55,8 @@ export function DashboardSidebar() {
         ...baseItems,
         { title: "User Management", url: "/dashboard/users", icon: Users },
         { title: "Course Management", url: "/dashboard/courses", icon: BookOpen },
+        { title: "Manage Payments", url: "/dashboard/payments", icon: CreditCard },
+        { title: "Manage Images", url: "/dashboard/images", icon: ImageIcon },
         { title: "Testimonials", url: "/dashboard/testimonials", icon: MessageSquareText },
         { title: "Analytics", url: "/dashboard/analytics", icon: TrendingUp },
         { title: "Settings", url: "/dashboard/settings", icon: Settings },
@@ -102,7 +105,7 @@ export function DashboardSidebar() {
               </div>
             </div>
           )}
-          
+
           {collapsed && (
             <div className="flex justify-center">
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
@@ -117,18 +120,18 @@ export function DashboardSidebar() {
           <SidebarGroupLabel className="text-sidebar-foreground/70">
             {!collapsed && "Navigation"}
           </SidebarGroupLabel>
-          
+
           <SidebarGroupContent>
             <SidebarMenu>
               {navigationItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <NavLink 
-                    to={item.url} 
+                  <NavLink
+                    to={item.url}
                     end={item.url === "/dashboard"}
                     className={({ isActive }) => `
                       flex items-center gap-3 px-3 py-2 rounded-md transition-colors
-                      ${isActive 
-                        ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium' 
+                      ${isActive
+                        ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium'
                         : 'hover:bg-sidebar-accent/50 text-sidebar-foreground'
                       }
                       ${collapsed ? 'justify-center px-2' : ''}
@@ -160,10 +163,10 @@ export function DashboardSidebar() {
                   </p>
                 </div>
               </div>
-              
-              <Button 
-                variant="outline" 
-                size="sm" 
+
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={signOut}
                 className="w-full justify-start"
               >
@@ -172,7 +175,7 @@ export function DashboardSidebar() {
               </Button>
             </div>
           )}
-          
+
           {collapsed && (
             <div className="flex flex-col items-center space-y-2">
               <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">

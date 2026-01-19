@@ -6,13 +6,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/components/ui/use-toast';
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  CheckCircle, 
-  BookOpen, 
-  Clock, 
-  Award, 
+import {
+  ChevronLeft,
+  ChevronRight,
+  CheckCircle,
+  BookOpen,
+  Clock,
+  Award,
   Loader2,
   AlertCircle,
   RefreshCw,
@@ -56,7 +56,7 @@ export function CoursePlayer() {
     moduleId?: string;
     lessonId?: string;
   }>();
-  
+
   if (!courseId) {
     return <div>Course ID is required</div>;
   }
@@ -67,7 +67,7 @@ export function CoursePlayer() {
   const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   const {
     progress,
     loadProgress,
@@ -83,11 +83,11 @@ export function CoursePlayer() {
       try {
         setIsLoading(true);
         const courseData = await fetchCourseById(courseId);
-        
+
         if (!courseData) {
           throw new Error('Course not found');
         }
-        
+
         // Convert the course data to our local type
         const mappedCourse: Course = {
           ...courseData,
@@ -107,22 +107,22 @@ export function CoursePlayer() {
           }))
         };
         setCourse(mappedCourse);
-        
+
         // Find the initial module and lesson
-        const selectedModule = initialModuleId 
+        const selectedModule = initialModuleId
           ? mappedCourse.modules.find(m => String(m.id) === initialModuleId)
           : mappedCourse.modules[0];
-          
+
         const selectedLesson = initialLessonId && selectedModule
           ? selectedModule.lessons.find(l => String(l.id) === initialLessonId)
           : selectedModule?.lessons[0];
-        
+
         setCurrentModule(selectedModule || null);
         setCurrentLesson(selectedLesson || null);
-        
+
         // Load progress data
         await loadProgress(courseId);
-        
+
       } catch (err) {
         console.error('Error loading course:', err);
         setError('Failed to load course. Please try again later.');
@@ -130,10 +130,10 @@ export function CoursePlayer() {
         setIsLoading(false);
       }
     };
-    
+
     loadCourse();
   }, [courseId, initialModuleId, initialLessonId]);
-  
+
   // Handle lesson selection
   const isLessonCompleted = (moduleId: string | number, lessonId: string | number) => {
     const moduleIdStr = String(moduleId);
@@ -146,13 +146,13 @@ export function CoursePlayer() {
   const handleSelectLesson = (module: Module, lesson: Lesson) => {
     setCurrentModule(module);
     setCurrentLesson(lesson);
-    
+
     // Ensure both module and lesson IDs are strings for the URL
     const moduleId = String(module.id);
     const lessonId = String(lesson.id);
-    
+
     navigate(`/course/${courseId}/learn/${moduleId}/${lessonId}`);
-    
+
     // Track that the user viewed this lesson
     trackProgress({
       courseId,
@@ -162,7 +162,7 @@ export function CoursePlayer() {
       timeSpentSeconds: 0,
     });
   };
-  
+
   // Track lesson progress when it changes
   useEffect(() => {
     if (!currentLesson || !currentModule) return;
@@ -185,10 +185,10 @@ export function CoursePlayer() {
   // Navigate to next/previous lesson
   const navigateLesson = (direction: 'prev' | 'next') => {
     if (!course || !currentModule || !currentLesson) return;
-    
+
     const currentModuleIndex = course.modules.findIndex(m => String(m.id) === String(currentModule.id));
     const currentLessonIndex = currentModule.lessons.findIndex(l => String(l.id) === String(currentLesson.id));
-    
+
     if (direction === 'next') {
       // Try next lesson in current module
       if (currentLessonIndex < (currentModule.lessons?.length ?? 0) - 1) {
@@ -198,7 +198,7 @@ export function CoursePlayer() {
           return;
         }
       }
-      
+
       // Try first lesson in next module
       if (currentModuleIndex < (course.modules?.length ?? 0) - 1) {
         const nextModule = course.modules[currentModuleIndex + 1];
@@ -208,13 +208,13 @@ export function CoursePlayer() {
           return;
         }
       }
-      
+
       // Reached the end of the course
       toast({
         title: 'Course Completed!',
         description: 'Congratulations on completing the course!',
       });
-      
+
     } else { // prev
       // Try previous lesson in current module
       if (currentLessonIndex > 0) {
@@ -224,7 +224,7 @@ export function CoursePlayer() {
           return;
         }
       }
-      
+
       // Try last lesson in previous module
       if (currentModuleIndex > 0) {
         const prevModule = course.modules?.[currentModuleIndex - 1];
@@ -236,47 +236,47 @@ export function CoursePlayer() {
       }
     }
   };
-  
+
   // Handle lesson completion
   const handleLessonComplete = () => {
     if (!currentModule || !currentLesson) return;
-    
+
     // The LessonProgress component already handles tracking completion
     // This is just for any additional actions after completion
-    
+
     // Auto-navigate to next lesson after a short delay
     setTimeout(() => {
       navigateLesson('next');
     }, 1500);
   };
-  
+
   // Calculate course progress percentage
   const calculateCourseProgress = () => {
     if (!course?.modules || !progress) return 0;
-    
+
     const totalLessons = course.modules.reduce(
       (total, module) => total + (module.lessons?.length || 0), 0
     );
-    
+
     if (totalLessons === 0) return 0;
-    
+
     const completedLessons = progress.details?.filter(p => p.completed).length || 0;
     return Math.round((completedLessons / totalLessons) * 100);
   };
-  
+
   // Format duration in seconds to HH:MM:SS
   const formatDuration = (seconds: number) => {
     const hrs = Math.floor(seconds / 3600);
     const mins = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
-    
+
     if (hrs > 0) {
       return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     } else {
       return `${mins}:${secs.toString().padStart(2, '0')}`;
     }
   };
-  
+
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center h-64 space-y-4">
@@ -286,7 +286,7 @@ export function CoursePlayer() {
       </div>
     );
   }
-  
+
   if (error) {
     return (
       <div className="p-6 max-w-md mx-auto text-center">
@@ -295,8 +295,8 @@ export function CoursePlayer() {
         </div>
         <h3 className="text-lg font-medium text-foreground mb-2">Error loading course</h3>
         <p className="text-sm text-muted-foreground mb-4">{error}</p>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           onClick={() => window.location.reload()}
           className="mt-2"
         >
@@ -306,19 +306,19 @@ export function CoursePlayer() {
       </div>
     );
   }
-  
+
   if (!course || !currentModule || !currentLesson) {
     return (
       <div className="p-6 max-w-md mx-auto text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100 mb-4">
-          <AlertCircle className="h-6 w-6 text-yellow-600" />
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mb-4">
+          <AlertCircle className="h-6 w-6 text-red-600" />
         </div>
         <h3 className="text-lg font-medium text-foreground mb-2">Content Not Found</h3>
         <p className="text-sm text-muted-foreground mb-4">
           The requested course content could not be loaded. Please check the URL or try again later.
         </p>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           onClick={() => navigate('/courses')}
           className="mt-2"
         >
@@ -328,9 +328,9 @@ export function CoursePlayer() {
       </div>
     );
   }
-  
+
   const courseProgress = calculateCourseProgress();
-  
+
   return (
     <div className="flex flex-col lg:flex-row h-[calc(100vh-4rem)] bg-background">
       {/* Sidebar */}
@@ -343,21 +343,21 @@ export function CoursePlayer() {
               <span className="text-sm font-medium">{courseProgress}%</span>
             </div>
             <Progress value={courseProgress} className="h-2" />
-            
+
             {offlineProgressCount > 0 && (
               <div className="text-xs text-amber-600 flex items-center">
                 <span className="mr-1">•</span>
                 {offlineProgressCount} {offlineProgressCount === 1 ? 'update' : 'updates'} pending sync
               </div>
             )}
-            
+
             {!isOnline && (
               <div className="text-xs text-amber-600 flex items-center">
                 <span className="mr-1">•</span>
                 Offline mode - progress will sync when online
               </div>
             )}
-            
+
             {certificate && (
               <Button variant="outline" size="sm" className="w-full mt-2">
                 <Award className="w-4 h-4 mr-2" />
@@ -366,7 +366,7 @@ export function CoursePlayer() {
             )}
           </div>
         </div>
-        
+
         <ScrollArea className="flex-1">
           <div className="p-2">
             {course.modules?.map((module) => (
@@ -380,16 +380,15 @@ export function CoursePlayer() {
                     const isCompleted = progress?.details?.some(
                       p => p.lesson_id === lesson.id && p.completed
                     );
-                    
+
                     return (
                       <button
                         key={lesson.id}
                         onClick={() => handleSelectLesson(module, lesson)}
-                        className={`w-full text-left px-3 py-2 rounded-md text-sm flex items-center ${
-                          isCurrent 
-                            ? 'bg-primary/10 text-primary font-medium' 
+                        className={`w-full text-left px-3 py-2 rounded-md text-sm flex items-center ${isCurrent
+                            ? 'bg-primary/10 text-primary font-medium'
                             : 'hover:bg-muted/50'
-                        }`}
+                          }`}
                       >
                         {isCompleted ? (
                           <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
@@ -411,7 +410,7 @@ export function CoursePlayer() {
           </div>
         </ScrollArea>
       </div>
-      
+
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Video/Lesson Content */}
@@ -419,9 +418,9 @@ export function CoursePlayer() {
           <div className="max-w-4xl mx-auto">
             <div className="aspect-video bg-black rounded-lg mb-4 flex items-center justify-center">
               {currentLesson.video_url ? (
-                <video 
-                  src={currentLesson.video_url} 
-                  controls 
+                <video
+                  src={currentLesson.video_url}
+                  controls
                   className="w-full h-full"
                 />
               ) : (
@@ -431,7 +430,7 @@ export function CoursePlayer() {
                 </div>
               )}
             </div>
-            
+
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h1 className="text-2xl font-bold">{currentLesson.title}</h1>
@@ -439,18 +438,18 @@ export function CoursePlayer() {
                   {currentModule.title} • Lesson {currentLesson.order_in_module}
                 </p>
               </div>
-              
+
               <div className="flex space-x-2">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => navigateLesson('prev')}
                   disabled={!currentModule || !currentLesson}
                 >
                   <ChevronLeft className="w-4 h-4 mr-1" /> Previous
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => navigateLesson('next')}
                   disabled={!currentModule || !currentLesson}
@@ -459,7 +458,7 @@ export function CoursePlayer() {
                 </Button>
               </div>
             </div>
-            
+
             <Card className="mb-6">
               <CardContent className="p-6">
                 <div className="prose max-w-none">
@@ -471,7 +470,7 @@ export function CoursePlayer() {
                 </div>
               </CardContent>
             </Card>
-            
+
             {/* Progress Tracking */}
             <LessonProgress
               courseId={courseId}

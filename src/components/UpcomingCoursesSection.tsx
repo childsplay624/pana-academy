@@ -2,11 +2,25 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Clock, Users, ArrowRight, Loader2, BookOpen } from 'lucide-react';
+import { Clock, Users, ArrowRight, Loader2, BookOpen, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { Link } from 'react-router-dom';
-import { fetchAllCourses, Course as CourseType } from '@/services/courseService';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
+  fetchUpcomingCourses,
+  Course as CourseType,
+  formatCourseDate,
+  isStartingSoon
+} from '@/services/courseService';
 import { enrollInCourse } from '@/services/enrollmentService';
 
 type CourseCategory = 'technology' | 'business' | 'design' | 'marketing' | 'health' | 'language' | 'personal_development' | 'academic' | 'oil_and_gas' | 'renewable_energy' | 'engineering' | 'safety' | 'leadership';
@@ -26,7 +40,7 @@ const CourseCard = ({ course, onEnroll, isEnrolling }: CourseCardProps) => {
       'design': 'bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-400',
       'marketing': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
       'health': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
-      'language': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+      'language': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
       'personal_development': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400',
       'academic': 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400',
       'oil_and_gas': 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
@@ -56,8 +70,8 @@ const CourseCard = ({ course, onEnroll, isEnrolling }: CourseCardProps) => {
     <Link to={`/courses/${course.id}`} key={course.id} className="block h-full">
       <Card className="h-full flex flex-col hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
         {course.thumbnail_url && (
-          <img 
-            src={course.thumbnail_url} 
+          <img
+            src={course.thumbnail_url}
             alt={course.title}
             className="h-48 w-full object-cover rounded-t-lg"
           />
@@ -75,28 +89,39 @@ const CourseCard = ({ course, onEnroll, isEnrolling }: CourseCardProps) => {
         </CardHeader>
         <CardContent className="flex-grow">
           <p className="text-gray-600 mb-4 line-clamp-3">{course.description}</p>
-          <div className="flex items-center justify-between text-sm text-gray-500 mt-auto">
-            <div className="flex items-center">
-              <Clock className="h-4 w-4 mr-1" />
-              <span>{course.duration_hours} hours</span>
+
+          {/* Course dates if available */}
+          {course.start_date && (
+            <div className="mb-4 p-3 bg-blue-50 rounded-md border border-blue-100">
+              <div className="flex items-center gap-2 text-sm">
+                <Calendar className="h-4 w-4 text-blue-600" />
+                <div>
+                  <div className="font-medium text-blue-900">
+                    Starts: {formatCourseDate(course.start_date)}
+                  </div>
+                  {course.end_date && (
+                    <div className="text-xs text-blue-700 mt-0.5">
+                      Ends: {formatCourseDate(course.end_date)}
+                    </div>
+                  )}
+                </div>
+              </div>
+              {isStartingSoon(course.start_date) && (
+                <div className="mt-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                  🔥 Starting Soon
+                </div>
+              )}
             </div>
-            <div className="flex items-center">
-              <BookOpen className="h-4 w-4 mr-1" />
-              <span>{course.modules?.length || 0} lessons</span>
-            </div>
-            <div className="flex items-center">
-              <Users className="h-4 w-4 mr-1" />
-              <span>{course.students_count?.toLocaleString() || '0'}</span>
-            </div>
-          </div>
+          )}
+
         </CardContent>
         <CardFooter>
           <div className="w-full flex justify-between items-center">
             <div className="text-sm font-medium">
               {course.price ? `₦${course.price.toLocaleString()}` : 'Free'}
             </div>
-            <Button 
-              variant="link" 
+            <Button
+              variant="ghost"
               className="p-0"
               onClick={(e) => {
                 e.preventDefault();
@@ -108,11 +133,11 @@ const CourseCard = ({ course, onEnroll, isEnrolling }: CourseCardProps) => {
                 {isEnrolling ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Enrolling...
+                    Loading...
                   </>
                 ) : (
                   <>
-                    Enroll Now
+                    View Course Details
                     <ArrowRight className="ml-1 h-4 w-4" />
                   </>
                 )}
@@ -129,23 +154,25 @@ export default function UpcomingCoursesSection() {
   const [courses, setCourses] = useState<CourseType[]>([]);
   const [loading, setLoading] = useState(true);
   const [enrollingId, setEnrollingId] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const coursesPerPage = 6;
   const { user } = useAuth();
   const { toast } = useToast();
 
   useEffect(() => {
-    fetchUpcomingCourses();
+    loadUpcomingCourses();
   }, []);
 
-  const fetchUpcomingCourses = async () => {
+  const loadUpcomingCourses = async () => {
     try {
       setLoading(true);
-      const data = await fetchAllCourses();
+      const data = await fetchUpcomingCourses();
       setCourses(data);
     } catch (error) {
-      console.error('Error fetching courses:', error);
+      console.error('Error fetching upcoming courses:', error);
       toast({
         title: "Error",
-        description: "Failed to load courses. Please try again later.",
+        description: "Failed to load upcoming courses. Please try again later.",
         variant: "destructive",
       });
     } finally {
@@ -154,33 +181,8 @@ export default function UpcomingCoursesSection() {
   };
 
   const handleEnroll = async (courseId: string) => {
-    if (!user) {
-      window.location.href = '/auth';
-      return;
-    }
-
-    setEnrollingId(courseId);
-    try {
-      const { data: enrollment, error } = await enrollInCourse(courseId);
-      
-      if (error) {
-        throw error;
-      }
-
-      toast({
-        title: "Success",
-        description: "You have been enrolled in the course!",
-      });
-    } catch (error) {
-      console.error('Enrollment error:', error);
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to enroll in the course. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setEnrollingId(null);
-    }
+    // Navigate to course details page where user can view course and enroll
+    window.location.href = `/course/${courseId}`;
   };
 
   if (loading) {
@@ -192,7 +194,7 @@ export default function UpcomingCoursesSection() {
               Upcoming Courses
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Discover our latest professional development programs
+              Discover our upcoming training solutions for this period
             </p>
           </div>
 
@@ -247,16 +249,76 @@ export default function UpcomingCoursesSection() {
             <p className="text-muted-foreground">No upcoming courses available at the moment.</p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {courses.slice(0, 6).map((course) => (
-              <CourseCard
-                key={course.id}
-                course={course}
-                onEnroll={handleEnroll}
-                isEnrolling={enrollingId === course.id}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {courses
+                .slice((currentPage - 1) * coursesPerPage, currentPage * coursesPerPage)
+                .map((course) => (
+                  <CourseCard
+                    key={course.id}
+                    course={course}
+                    onEnroll={handleEnroll}
+                    isEnrolling={enrollingId === course.id}
+                  />
+                ))}
+            </div>
+
+            {/* Pagination Controls */}
+            {courses.length > coursesPerPage && (
+              <div className="mt-12">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage > 1) {
+                            setCurrentPage(currentPage - 1);
+                          }
+                        }}
+                        className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+
+                    {Array.from({ length: Math.ceil(courses.length / coursesPerPage) }, (_, i) => i + 1).map((page) => (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setCurrentPage(page);
+                          }}
+                          isActive={currentPage === page}
+                          className="cursor-pointer"
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+
+                    <PaginationItem>
+                      <PaginationNext
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage < Math.ceil(courses.length / coursesPerPage)) {
+                            setCurrentPage(currentPage + 1);
+                          }
+                        }}
+                        className={currentPage === Math.ceil(courses.length / coursesPerPage) ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+
+                {/* Results info */}
+                <div className="text-center mt-6 text-sm text-gray-600">
+                  Showing {((currentPage - 1) * coursesPerPage) + 1} - {Math.min(currentPage * coursesPerPage, courses.length)} of {courses.length} courses
+                </div>
+              </div>
+            )}
+          </>
         )}
 
         <div className="mt-12 text-center">

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Clock, Users, ArrowRight, Loader2, BookOpen } from "lucide-react";
+import { Clock, Users, ArrowRight, Loader2, BookOpen, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
-import { fetchAllCourses } from "@/services/courseService";
+import { fetchAllCourses, formatCourseDate } from "@/services/courseService";
 import type { Course } from "@/services/courseService";
 
 interface CoursesSectionProps {
@@ -13,11 +13,11 @@ interface CoursesSectionProps {
   error?: string | null;
 }
 
-const CoursesSection = ({ 
-  showAll = false, 
-  courses = [], 
-  loading = false, 
-  error = null 
+const CoursesSection = ({
+  showAll = false,
+  courses = [],
+  loading = false,
+  error = null
 }: CoursesSectionProps) => {
   const displayCourses = showAll ? courses : courses.slice(0, 4);
 
@@ -33,7 +33,7 @@ const CoursesSection = ({
           </div>
         )}
 
-{loading ? (
+        {loading ? (
           <div className="flex justify-center items-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-pana-blue" />
           </div>
@@ -44,11 +44,11 @@ const CoursesSection = ({
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {displayCourses.map((course) => (
-              <Link to={`/courses/${course.id}`} key={course.id} className="block h-full">
+              <Link to={`/course/${course.id}`} key={course.id} className="block h-full">
                 <Card className="h-full flex flex-col hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                   {course.thumbnail_url ? (
-                    <img 
-                      src={course.thumbnail_url} 
+                    <img
+                      src={course.thumbnail_url}
                       alt={course.title}
                       className="h-48 w-full object-cover rounded-t-lg"
                     />
@@ -68,20 +68,15 @@ const CoursesSection = ({
                   </CardHeader>
                   <CardContent className="flex-grow">
                     <p className="text-gray-600 mb-4 line-clamp-3">{course.description}</p>
-                    <div className="flex items-center justify-between text-sm text-gray-500 mt-auto">
-                      <div className="flex items-center">
-                        <Clock className="h-4 w-4 mr-1" />
-                        <span>{course.duration_hours} hours</span>
+
+                    {/* Start Date */}
+                    {course.start_date && (
+                      <div className="flex items-center text-sm text-gray-600 mb-3 bg-blue-50 px-3 py-2 rounded-md">
+                        <Calendar className="h-4 w-4 mr-2 text-blue-600" />
+                        <span className="font-medium">Starts: {formatCourseDate(course.start_date)}</span>
                       </div>
-                      <div className="flex items-center">
-                        <BookOpen className="h-4 w-4 mr-1" />
-                        <span>{course.modules?.length || 0} lessons</span>
-                      </div>
-                      <div className="flex items-center">
-                        <Users className="h-4 w-4 mr-1" />
-                        <span>{course.students_count?.toLocaleString() || '0'}</span>
-                      </div>
-                    </div>
+                    )}
+
                   </CardContent>
                   <CardFooter>
                     <div className="w-full flex justify-between items-center">

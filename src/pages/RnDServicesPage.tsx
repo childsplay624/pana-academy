@@ -1,27 +1,40 @@
 import { Helmet } from "react-helmet-async";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import { ArrowRight, Zap, CheckCircle, Target, TrendingUp, Lightbulb, BarChart2, Users, Globe, FlaskConical, Rocket, Code2, BookOpen } from "lucide-react";
+import { ArrowRight, Zap, CheckCircle, Target, TrendingUp, Lightbulb, Users, Globe, Rocket, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSiteImage } from "@/hooks/useSiteImage";
 
 const RnDServicesPage = () => {
+  // Fetch header image from centralized system
+  const { imageUrl: headerImage } = useSiteImage('header_rnd', '/img/rnd.jpg');
+
   return (
     <>
       <Helmet>
         <title>R&D Services | PANA Academy - Innovation & Research Solutions</title>
-        <meta name="description" content="Transform your ideas into market-ready solutions with PANA Academy's R&D-as-a-Service. We provide comprehensive research, innovation, and development services." />
+        <meta name="description" content="Transform your ideas into market-ready solutions with PANA Academy's Research and Development (R&D). We provide comprehensive research, innovation, and development services." />
         <meta name="keywords" content="R&D as a service, research and development, innovation solutions, prototype development, PANA Academy R&D" />
       </Helmet>
-      
+
       <div className="min-h-screen bg-gradient-subtle">
         <Navigation />
-        
+
         <main>
           {/* Hero Section with Visual Impact */}
-          <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-cover bg-center" style={{ backgroundImage: 'url(/img/rnd.jpg)' }}>
+          <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
+            {/* Background Image */}
+            <div className="absolute inset-0">
+              <img
+                src={headerImage}
+                alt="Research & Development"
+                className="w-full h-full object-cover object-center"
+                loading="eager"
+              />
+            </div>
             {/* Black overlay */}
             <div className="absolute inset-0 bg-black/60"></div>
-            
+
             {/* Subtle animated elements */}
             <div className="absolute inset-0 opacity-10">
               <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-pana-gold/30 rounded-full blur-3xl animate-pulse"></div>
@@ -42,25 +55,19 @@ const RnDServicesPage = () => {
                   <span>Innovation & Research Solutions</span>
                   <ArrowRight className="w-4 h-4" />
                 </div>
-                
+
                 <h1 className="text-6xl md:text-8xl font-bold mb-6 leading-tight">
                   <span className="text-white">Research</span>
                   <span className="block text-red-600">
                     & Development
                   </span>
                 </h1>
-                
+
                 <p className="text-xl md:text-2xl text-gray-200 max-w-4xl mx-auto">
                   Transform your ideas into market-ready solutions with our comprehensive R&D services.
                 </p>
-                
+
                 <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
-                  <a href="/contact" className="no-underline">
-                    <Button className="bg-pana-gold hover:bg-pana-gold/90 text-pana-navy px-8 py-6 text-lg font-semibold group">
-                      Start Your Project
-                      <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-                    </Button>
-                  </a>
                   <a href="#rnd-services" className="no-underline">
                     <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white/10 px-8 py-6 text-lg group">
                       Learn More
@@ -77,44 +84,36 @@ const RnDServicesPage = () => {
             <div className="max-w-7xl mx-auto px-6 lg:px-8">
               <div className="grid md:grid-cols-2 gap-12 items-center">
                 <div>
-                  <h2 className="text-3xl font-bold text-pana-navy mb-6">R&D-as-a-Service</h2>
+                  <h2 className="text-3xl font-bold text-pana-navy mb-6">Research and Development (R&D)</h2>
                   <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                    At PANA Academy, we don't just undertake R&D, we render R&D-as-a-Service. Our R&D-as-a-Service empowers businesses, startups, and institutions to transform ideas into market-ready solutions. We route concept validation through to prototype development, and we provide the tools, talent pipeline, and technical expertise.
+                    At PANA Academy, we don't just undertake R&D, we render Research and Development (R&D). Our Research and Development (R&D) empowers businesses, startups, and institutions to transform ideas into market-ready solutions. We route concept validation through to prototype development, and we provide the tools, talent pipeline, and technical expertise.
                   </p>
-                  
-                  <div className="space-y-6">
-                    <div className="flex items-start">
-                      <div className="flex-shrink-0 h-6 w-6 text-pana-gold mr-4 mt-1">
-                        <FlaskConical className="h-6 w-6" />
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-semibold text-gray-800">Multidisciplinary Research</h3>
-                        <p className="text-gray-600">Validate ideas fast through expert-led feasibility studies and market analysis.</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start">
-                      <div className="flex-shrink-0 h-6 w-6 text-pana-gold mr-4 mt-1">
-                        <Code2 className="h-6 w-6" />
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-semibold text-gray-800">Technology Innovation</h3>
-                        <p className="text-gray-600">We use cutting-edge tools and agile development methods to output prototypes and pilot models.</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start">
-                      <div className="flex-shrink-0 h-6 w-6 text-pana-gold mr-4 mt-1">
-                        <BarChart2 className="h-6 w-6" />
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-semibold text-gray-800">Policy & Systems Analysis</h3>
-                        <p className="text-gray-600">Data-driven insights and interdisciplinary collaboration for impactful decisions.</p>
-                      </div>
-                    </div>
+
+                  <div className="space-y-4">
+                    <p className="text-gray-800 font-semibold text-lg">To highlight the following R&D Services areas:</p>
+                    <ul className="space-y-3">
+                      {[
+                        "Applied research: Workforce Performance and Project Readiness Analysis.",
+                        "Intervention Impact Analysis",
+                        "Competence/Skill Gap Evaluation.",
+                        "R&D Company Institutionalization",
+                        "Policy Impact Analysis",
+                        "Technology Innovation and Prototyping",
+                        "Innovation Strategy Development and Analysis",
+                        "Products and Process Innovation Planning",
+                        "Feasibility and Prove of Concept (POC) Studies",
+                        "R&D Roadmap Development",
+                        "R&D Portfolio Management"
+                      ].map((item, index) => (
+                        <li key={index} className="flex items-start">
+                          <span className="flex-shrink-0 h-1.5 w-1.5 rounded-full bg-pana-gold mt-2.5 mr-3"></span>
+                          <span className="text-gray-700">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
-                
+
                 <div className="bg-gray-50 p-8 rounded-xl border border-gray-100 shadow-sm">
                   <div className="space-y-6">
                     <div className="p-6 bg-pana-navy/5 rounded-lg">
@@ -128,7 +127,7 @@ const RnDServicesPage = () => {
                         We leverage industry members and global strategic partnerships to accelerate innovation and development.
                       </p>
                     </div>
-                    
+
                     <div className="p-6 bg-pana-navy/5 rounded-lg">
                       <div className="flex items-center gap-4 mb-4">
                         <div className="p-3 bg-pana-gold/10 rounded-full">
@@ -140,7 +139,7 @@ const RnDServicesPage = () => {
                         Access to top-tier talent and experts in various fields to support your R&D initiatives.
                       </p>
                     </div>
-                    
+
                     <div className="p-6 bg-pana-navy/5 rounded-lg">
                       <div className="flex items-center gap-4 mb-4">
                         <div className="p-3 bg-pana-gold/10 rounded-full">
@@ -157,7 +156,7 @@ const RnDServicesPage = () => {
               </div>
             </div>
           </section>
-          
+
           {/* CTA Section */}
           <section className="bg-gray-50 text-pana-navy py-20">
             <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
@@ -182,7 +181,7 @@ const RnDServicesPage = () => {
             </div>
           </section>
         </main>
-        
+
         <Footer />
       </div>
     </>

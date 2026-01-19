@@ -1,16 +1,18 @@
-import { Mail, Phone, MapPin, ArrowRight, Instagram, Linkedin, Facebook } from "lucide-react";
+import { Mail, Phone, MapPin, ArrowRight, Instagram, Linkedin, Facebook, Twitter, Youtube } from "lucide-react";
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   const footerLinks = {
     company: [
-      { name: "About Us", href: "/#about" },
-      { name: "Our Mission", href: "/#mission" },
+      { name: "About Us", href: "/about" },
       { name: "Leadership Team", href: "/team" },
+      { name: "Certificate Verification", href: "/verify-certificate" },
       { name: "Careers", href: "/careers" }
     ],
     services: [
@@ -27,6 +29,7 @@ const Footer = () => {
     ],
     support: [
       { name: "Contact Us", href: "/contact" },
+      { name: "Certificate Verification", href: "/verify-certificate" },
       { name: "FAQ", href: "/faq" },
       { name: "Support Center", href: "/support" },
       { name: "Privacy Policy", href: "/privacy-policy" }
@@ -63,29 +66,17 @@ const Footer = () => {
               <div className="space-y-3">
                 <div className="flex items-center space-x-3">
                   <Phone className="w-4 h-4 text-pana-gold" />
-                  <span className="text-sm">+234 809 123 4567</span>
+                  <span className="text-sm">+234 702 600 0119</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Mail className="w-4 h-4 text-pana-gold" />
-                  <span className="text-sm">info@panaacademy.com</span>
+                  <span className="text-sm">info@pana-academy.com</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <MapPin className="w-4 h-4 text-pana-gold" />
                   <span className="text-sm">Abuja & Port Harcourt</span>
                 </div>
-                <div className="pt-4">
-                  <div className="flex space-x-4">
-                    <a href="https://www.instagram.com/pana_academy/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-pana-gold transition-colors">
-                      <Instagram className="h-5 w-5" />
-                    </a>
-                    <a href="https://www.linkedin.com/company/pana-academy/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-pana-gold transition-colors">
-                      <Linkedin className="h-5 w-5" />
-                    </a>
-                    <a href="https://www.facebook.com/profile.php?id=61555861660075" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-pana-gold transition-colors">
-                      <Facebook className="h-5 w-5" />
-                    </a>
-                  </div>
-                </div>
+
               </div>
             </div>
 
@@ -142,22 +133,22 @@ const Footer = () => {
                 </p>
               </div>
               <div id="mc_embed_signup" className="w-full">
-                <form 
-                  action="https://pana-academy.us5.list-manage.com/subscribe/post?u=c3b793e3a53abf91535915fb2&amp;id=6cd696a57a&amp;f_id=00de32e0f0" 
-                  method="post" 
-                  id="mc-embedded-subscribe-form" 
-                  name="mc-embedded-subscribe-form" 
-                  className="validate flex space-x-3" 
+                <form
+                  action="https://pana-academy.us5.list-manage.com/subscribe/post?u=c3b793e3a53abf91535915fb2&amp;id=6cd696a57a&amp;f_id=00de32e0f0"
+                  method="post"
+                  id="mc-embedded-subscribe-form"
+                  name="mc-embedded-subscribe-form"
+                  className="validate flex space-x-3"
                   target="_blank"
                   noValidate
                 >
                   <div className="mc-field-group flex-grow">
-                    <input 
-                      type="email" 
-                      name="EMAIL" 
-                      className="required email w-full px-3 py-2 bg-white/10 border border-gray-600 text-white placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-pana-gold" 
-                      id="mce-EMAIL" 
-                      required 
+                    <input
+                      type="email"
+                      name="EMAIL"
+                      className="required email w-full px-3 py-2 bg-white/10 border border-gray-600 text-white placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-pana-gold"
+                      id="mce-EMAIL"
+                      required
                       placeholder="Enter your email address"
                     />
                     <div id="mce-responses" className="hidden">
@@ -165,21 +156,21 @@ const Footer = () => {
                       <div className="response hidden" id="mce-success-response"></div>
                     </div>
                     <div aria-hidden="true" style={{ position: 'absolute', left: '-5000px' }}>
-                      <input type="text" name="b_c3b793e3a53abf91535915fb2_6cd696a57a" tabIndex={-1} value="" />
+                      <input type="text" name="b_c3b793e3a53abf91535915fb2_6cd696a57a" tabIndex={-1} value="" readOnly />
                     </div>
                   </div>
-                  <Button 
-                    type="submit" 
-                    name="subscribe" 
-                    id="mc-embedded-subscribe" 
+                  <Button
+                    type="submit"
+                    name="subscribe"
+                    id="mc-embedded-subscribe"
                     className="bg-red-600 hover:bg-red-700"
                   >
                     Subscribe
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </form>
-                <script 
-                  src="//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js" 
+                <script
+                  src="//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js"
                   type="text/javascript"
                   dangerouslySetInnerHTML={{
                     __html: `
@@ -217,7 +208,7 @@ const Footer = () => {
             <div className="text-sm text-gray-400">
               © {currentYear} PANA Academy. Designed by WCC Studios. All rights reserved.
             </div>
-            
+
             <div className="flex items-center space-x-6">
               <a href="#privacy" className="text-sm text-gray-400 hover:text-white transition-colors">
                 Privacy Policy
@@ -232,15 +223,42 @@ const Footer = () => {
 
             {/* Social Media */}
             <div className="flex space-x-4">
-              {['LinkedIn', 'Twitter', 'Facebook', 'Instagram'].map((social, index) => (
-                <a 
-                  key={index}
-                  href="#" 
-                  className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-xs font-bold hover:bg-pana-gold hover:text-pana-navy transition-colors duration-200"
-                >
-                  {social.slice(0, 2)}
-                </a>
-              ))}
+              <a
+                href="https://www.linkedin.com/company/pana-academy/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-pana-gold hover:text-pana-navy transition-colors duration-200"
+                aria-label="LinkedIn"
+              >
+                <Linkedin className="w-4 h-4" />
+              </a>
+              <a
+                href="https://twitter.com/panaacademy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-pana-gold hover:text-pana-navy transition-colors duration-200"
+                aria-label="Twitter"
+              >
+                <Twitter className="w-4 h-4" />
+              </a>
+              <a
+                href="https://www.facebook.com/profile.php?id=61555861660075"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-pana-gold hover:text-pana-navy transition-colors duration-200"
+                aria-label="Facebook"
+              >
+                <Facebook className="w-4 h-4" />
+              </a>
+              <a
+                href="https://www.instagram.com/pana_academy/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-pana-gold hover:text-pana-navy transition-colors duration-200"
+                aria-label="Instagram"
+              >
+                <Instagram className="w-4 h-4" />
+              </a>
             </div>
           </div>
         </div>

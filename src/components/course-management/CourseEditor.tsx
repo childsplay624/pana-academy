@@ -12,10 +12,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
 import { ModuleManager } from './ModuleManager';
 import { DashboardLayout } from '@/components/DashboardLayout';
-import { 
-  ArrowLeft, 
-  Save, 
-  Eye, 
+import {
+  ArrowLeft,
+  Save,
+  Eye,
   Trash2,
   Plus,
   Settings
@@ -28,12 +28,28 @@ interface Course {
   status: 'draft' | 'published' | 'archived' | 'review';
   price: number;
   duration_hours: number;
-  category: 'technology' | 'business' | 'design' | 'marketing' | 'health' | 'language' | 'personal_development' | 'academic';
+  category: 'soft_skills' | 'safety_courses' | 'sustainability_courses' | 'general_technical_courses' | 'flow_drives_courses' | 'flow_control_courses' | 'flow_measurement_courses' | 'instrumentation_automation';
   thumbnail_url: string | null;
   level: string | null;
   requirements: string[] | null;
   learning_outcomes: string[] | null;
   instructor_id: string;
+  start_date?: string | null;
+  end_date?: string | null;
+  course_type?: 'online' | 'onsite' | 'hybrid';
+
+  // Onsite fields
+  venue_name?: string | null;
+  venue_address?: string | null;
+  venue_city?: string | null;
+  venue_country?: string | null;
+  venue_capacity?: number | null;
+  venue_map_url?: string | null;
+  onsite_schedule?: any;
+  requires_materials?: boolean | null;
+  materials_list?: string[] | null;
+  parking_info?: string | null;
+  accommodation_info?: string | null;
 }
 
 export function CourseEditor() {
@@ -41,12 +57,12 @@ export function CourseEditor() {
   const navigate = useNavigate();
   const { user, profile } = useAuth();
   const { toast } = useToast();
-  
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [course, setCourse] = useState<Course | null>(null);
   const [activeTab, setActiveTab] = useState('details');
-  
+
   useEffect(() => {
     if (courseId) {
       fetchCourse();
@@ -55,7 +71,7 @@ export function CourseEditor() {
 
   const fetchCourse = async () => {
     if (!courseId) return;
-    
+
     try {
       setLoading(true);
       const { data, error } = await supabase
@@ -80,7 +96,7 @@ export function CourseEditor() {
 
   const saveCourse = async () => {
     if (!course || !courseId) return;
-    
+
     try {
       setSaving(true);
       const { error } = await supabase
@@ -94,7 +110,9 @@ export function CourseEditor() {
           level: course.level,
           requirements: course.requirements,
           learning_outcomes: course.learning_outcomes,
-          thumbnail_url: course.thumbnail_url
+          thumbnail_url: course.thumbnail_url,
+          start_date: course.start_date || null,
+          end_date: course.end_date || null
         })
         .eq('id', courseId);
 
@@ -118,7 +136,7 @@ export function CourseEditor() {
 
   const updateCourseStatus = async (newStatus: Course['status']) => {
     if (!courseId) return;
-    
+
     try {
       const { error } = await supabase
         .from('courses')
@@ -128,7 +146,7 @@ export function CourseEditor() {
       if (error) throw error;
 
       setCourse(prev => prev ? { ...prev, status: newStatus } : null);
-      
+
       toast({
         title: "Success",
         description: `Course ${newStatus === 'published' ? 'published' : 'updated'} successfully`,
@@ -145,7 +163,7 @@ export function CourseEditor() {
 
   const deleteCourse = async () => {
     if (!courseId || !course) return;
-    
+
     if (confirm('Are you sure you want to delete this course? This will also delete all related modules, lessons, and enrollment records. This action cannot be undone.')) {
       try {
         // First, delete related data in a transaction
@@ -196,7 +214,7 @@ export function CourseEditor() {
           title: "Success",
           description: "Course and all related content deleted successfully",
         });
-        
+
         navigate('/dashboard/courses');
       } catch (error) {
         console.error('Error deleting course:', error);
@@ -303,7 +321,7 @@ export function CourseEditor() {
                     <Save className="h-4 w-4 mr-2" />
                     {saving ? 'Saving...' : 'Save'}
                   </Button>
-                  
+
                   {course.status === 'draft' && (
                     <Button
                       size="sm"
@@ -312,7 +330,7 @@ export function CourseEditor() {
                       Publish Course
                     </Button>
                   )}
-                  
+
                   {course.status === 'published' && (
                     <Button
                       variant="outline"
@@ -322,7 +340,7 @@ export function CourseEditor() {
                       Unpublish
                     </Button>
                   )}
-                  
+
                   <Button
                     variant="destructive"
                     size="sm"
@@ -359,158 +377,297 @@ export function CourseEditor() {
           </div>
         </div>
 
-      <div className="container mx-auto px-4 py-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="details">Course Details</TabsTrigger>
-            <TabsTrigger value="content">Content & Modules</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
-          </TabsList>
+        <div className="container mx-auto px-4 py-8">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="details">Course Details</TabsTrigger>
+              <TabsTrigger value="content">Content & Modules</TabsTrigger>
+              <TabsTrigger value="settings">Settings</TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="details" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Basic Information</CardTitle>
-                <CardDescription>
-                  Update the basic course information and description
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <TabsContent value="details" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Basic Information</CardTitle>
+                  <CardDescription>
+                    Update the basic course information and description
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Course Title</label>
+                      <Input
+                        value={course.title}
+                        onChange={(e) => setCourse(prev => prev ? { ...prev, title: e.target.value } : null)}
+                        disabled={!canEdit}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Category</label>
+                      <Select
+                        value={course.category}
+                        onValueChange={(value: Course['category']) => setCourse(prev => prev ? { ...prev, category: value } : null)}
+                        disabled={!canEdit}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="soft_skills">Soft Skills</SelectItem>
+                          <SelectItem value="safety_courses">Safety Courses</SelectItem>
+                          <SelectItem value="sustainability_courses">Sustainability Courses</SelectItem>
+                          <SelectItem value="general_technical_courses">General Technical Courses</SelectItem>
+                          <SelectItem value="flow_drives_courses">Flow Drives Courses</SelectItem>
+                          <SelectItem value="flow_control_courses">Flow Control Courses</SelectItem>
+                          <SelectItem value="flow_measurement_courses">Flow Measurement Courses</SelectItem>
+                          <SelectItem value="instrumentation_automation">Instrumentation/Automation and Process Control</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Course Type</label>
+                      <Select
+                        value={course.course_type || 'online'}
+                        onValueChange={(value: 'online' | 'onsite' | 'hybrid') => setCourse(prev => prev ? { ...prev, course_type: value } : null)}
+                        disabled={!canEdit}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="online">💻 Online Course</SelectItem>
+                          <SelectItem value="onsite">🏢 On-Site Course</SelectItem>
+                          <SelectItem value="hybrid">🔄 Hybrid Course</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Course Title</label>
-                    <Input
-                      value={course.title}
-                      onChange={(e) => setCourse(prev => prev ? { ...prev, title: e.target.value } : null)}
+                    <label className="text-sm font-medium">Description</label>
+                    <Textarea
+                      value={course.description || ''}
+                      onChange={(e) => setCourse(prev => prev ? { ...prev, description: e.target.value } : null)}
+                      rows={4}
                       disabled={!canEdit}
                     />
                   </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Price (₦)</label>
+                      <Input
+                        type="number"
+                        value={course.price}
+                        onChange={(e) => setCourse(prev => prev ? { ...prev, price: Number(e.target.value) } : null)}
+                        disabled={!canEdit}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Duration (hours)</label>
+                      <Input
+                        type="number"
+                        value={course.duration_hours}
+                        onChange={(e) => setCourse(prev => prev ? { ...prev, duration_hours: Number(e.target.value) } : null)}
+                        disabled={!canEdit}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Level</label>
+                      <Select
+                        value={course.level || 'beginner'}
+                        onValueChange={(value) => setCourse(prev => prev ? { ...prev, level: value } : null)}
+                        disabled={!canEdit}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="beginner">Beginner</SelectItem>
+                          <SelectItem value="intermediate">Intermediate</SelectItem>
+                          <SelectItem value="advanced">Advanced</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Start Date & Time *</label>
+                      <Input
+                        type="datetime-local"
+                        value={course.start_date ? new Date(course.start_date).toISOString().slice(0, 16) : ''}
+                        onChange={(e) => setCourse(prev => prev ? { ...prev, start_date: e.target.value } : null)}
+                        disabled={!canEdit}
+                        required
+                      />
+                      <p className="text-xs text-gray-500">When does the course start?</p>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">End Date & Time *</label>
+                      <Input
+                        type="datetime-local"
+                        value={course.end_date ? new Date(course.end_date).toISOString().slice(0, 16) : ''}
+                        onChange={(e) => setCourse(prev => prev ? { ...prev, end_date: e.target.value } : null)}
+                        disabled={!canEdit}
+                        required
+                        min={course.start_date ? new Date(course.start_date).toISOString().slice(0, 16) : undefined}
+                      />
+                      <p className="text-xs text-gray-500">When does the course finish?</p>
+                    </div>
+                  </div>
+
+                  {/* On-Site Course Fields */}
+                  {(course.course_type === 'onsite' || course.course_type === 'hybrid') && (
+                    <>
+                      <div className="pt-6 border-t">
+                        <h3 className="text-lg font-semibold mb-4">🏢 Venue Information</h3>
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <label className="text-sm font-medium">Venue Name *</label>
+                              <Input
+                                value={course.venue_name || ''}
+                                onChange={(e) => setCourse(prev => prev ? { ...prev, venue_name: e.target.value } : null)}
+                                placeholder="e.g., PANA Training Center"
+                                disabled={!canEdit}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-sm font-medium">Capacity</label>
+                              <Input
+                                type="number"
+                                value={course.venue_capacity || ''}
+                                onChange={(e) => setCourse(prev => prev ? { ...prev, venue_capacity: Number(e.target.value) } : null)}
+                                placeholder="Max students"
+                                disabled={!canEdit}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">Address *</label>
+                            <Input
+                              value={course.venue_address || ''}
+                              onChange={(e) => setCourse(prev => prev ? { ...prev, venue_address: e.target.value } : null)}
+                              placeholder="Street address"
+                              disabled={!canEdit}
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <label className="text-sm font-medium">City *</label>
+                              <Input
+                                value={course.venue_city || ''}
+                                onChange={(e) => setCourse(prev => prev ? { ...prev, venue_city: e.target.value } : null)}
+                                placeholder="e.g., Lagos"
+                                disabled={!canEdit}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-sm font-medium">Country *</label>
+                              <Input
+                                value={course.venue_country || ''}
+                                onChange={(e) => setCourse(prev => prev ? { ...prev, venue_country: e.target.value } : null)}
+                                placeholder="e.g., Nigeria"
+                                disabled={!canEdit}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">Google Maps URL</label>
+                            <Input
+                              value={course.venue_map_url || ''}
+                              onChange={(e) => setCourse(prev => prev ? { ...prev, venue_map_url: e.target.value } : null)}
+                              placeholder="https://maps.google.com/..."
+                              disabled={!canEdit}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="pt-6 border-t">
+                        <h3 className="text-lg font-semibold mb-4">📦 Logistics</h3>
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">Parking Information</label>
+                            <Textarea
+                              value={course.parking_info || ''}
+                              onChange={(e) => setCourse(prev => prev ? { ...prev, parking_info: e.target.value } : null)}
+                              placeholder="Parking details for attendees..."
+                              rows={2}
+                              disabled={!canEdit}
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">Accommodation Suggestions</label>
+                            <Textarea
+                              value={course.accommodation_info || ''}
+                              onChange={(e) => setCourse(prev => prev ? { ...prev, accommodation_info: e.target.value } : null)}
+                              placeholder="Nearby hotels or accommodation options..."
+                              rows={2}
+                              disabled={!canEdit}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="content" className="space-y-6">
+              <ModuleManager courseId={courseId!} canEdit={canEdit} />
+            </TabsContent>
+
+            <TabsContent value="settings" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Course Settings</CardTitle>
+                  <CardDescription>
+                    Manage course visibility, enrollment, and other settings
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Category</label>
+                    <label className="text-sm font-medium">Course Status</label>
                     <Select
-                      value={course.category}
-                      onValueChange={(value: Course['category']) => setCourse(prev => prev ? { ...prev, category: value } : null)}
+                      value={course.status}
+                      onValueChange={(value: Course['status']) => updateCourseStatus(value)}
                       disabled={!canEdit}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="w-48">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="technology">Technology</SelectItem>
-                        <SelectItem value="business">Business</SelectItem>
-                        <SelectItem value="design">Design</SelectItem>
-                        <SelectItem value="marketing">Marketing</SelectItem>
-                        <SelectItem value="health">Health</SelectItem>
-                        <SelectItem value="language">Language</SelectItem>
-                        <SelectItem value="personal_development">Personal Development</SelectItem>
-                        <SelectItem value="academic">Academic</SelectItem>
+                        <SelectItem value="draft">Draft</SelectItem>
+                        <SelectItem value="review">Under Review</SelectItem>
+                        <SelectItem value="published">Published</SelectItem>
+                        <SelectItem value="archived">Archived</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Description</label>
-                  <Textarea
-                    value={course.description || ''}
-                    onChange={(e) => setCourse(prev => prev ? { ...prev, description: e.target.value } : null)}
-                    rows={4}
-                    disabled={!canEdit}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Price (₦)</label>
+                    <label className="text-sm font-medium">Thumbnail URL</label>
                     <Input
-                      type="text"
-                      value={course.price}
-                      onChange={(e) => {
-                        const value = e.target.value.replace(/[^0-9]/g, '');
-                        setCourse(prev => prev ? { ...prev, price: Number(value) || 0 } : null);
-                      }}
-                      disabled={!canEdit}
-                      placeholder="0"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Duration (hours)</label>
-                    <Input
-                      type="number"
-                      value={course.duration_hours}
-                      onChange={(e) => setCourse(prev => prev ? { ...prev, duration_hours: Number(e.target.value) } : null)}
+                      value={course.thumbnail_url || ''}
+                      onChange={(e) => setCourse(prev => prev ? { ...prev, thumbnail_url: e.target.value } : null)}
+                      placeholder="https://example.com/image.jpg"
                       disabled={!canEdit}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Level</label>
-                    <Select
-                      value={course.level || ''}
-                      onValueChange={(value) => setCourse(prev => prev ? { ...prev, level: value } : null)}
-                      disabled={!canEdit}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select level" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="beginner">Beginner</SelectItem>
-                        <SelectItem value="intermediate">Intermediate</SelectItem>
-                        <SelectItem value="advanced">Advanced</SelectItem>
-                        <SelectItem value="all_levels">All Levels</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="content" className="space-y-6">
-            <ModuleManager courseId={courseId!} canEdit={canEdit} />
-          </TabsContent>
-
-          <TabsContent value="settings" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Course Settings</CardTitle>
-                <CardDescription>
-                  Manage course visibility, enrollment, and other settings
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Course Status</label>
-                  <Select
-                    value={course.status}
-                    onValueChange={(value: Course['status']) => updateCourseStatus(value)}
-                    disabled={!canEdit}
-                  >
-                    <SelectTrigger className="w-48">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="draft">Draft</SelectItem>
-                      <SelectItem value="review">Under Review</SelectItem>
-                      <SelectItem value="published">Published</SelectItem>
-                      <SelectItem value="archived">Archived</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Thumbnail URL</label>
-                  <Input
-                    value={course.thumbnail_url || ''}
-                    onChange={(e) => setCourse(prev => prev ? { ...prev, thumbnail_url: e.target.value } : null)}
-                    placeholder="https://example.com/image.jpg"
-                    disabled={!canEdit}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     </DashboardLayout>
   );

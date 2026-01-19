@@ -1,11 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { 
-  BookOpen, 
-  Trophy, 
-  FileText, 
-  CheckCircle, 
+import {
+  BookOpen,
+  Trophy,
+  FileText,
+  CheckCircle,
   Plus,
   Minus,
   Clock
@@ -33,7 +33,7 @@ export function PointsHistory({ history }: PointsHistoryProps) {
       case 'assignment_submitted':
         return <FileText className="h-4 w-4 text-purple-500" />;
       case 'badge_earned':
-        return <Trophy className="h-4 w-4 text-yellow-500" />;
+        return <Trophy className="h-4 w-4 text-red-500" />;
       default:
         return <Plus className="h-4 w-4 text-gray-500" />;
     }
@@ -48,14 +48,14 @@ export function PointsHistory({ history }: PointsHistoryProps) {
       case 'assignment_submitted':
         return 'text-purple-600';
       case 'badge_earned':
-        return 'text-yellow-600';
+        return 'text-red-600';
       default:
         return 'text-gray-600';
     }
   };
 
   const formatActionType = (actionType: string) => {
-    return actionType.split('_').map(word => 
+    return actionType.split('_').map(word =>
       word.charAt(0).toUpperCase() + word.slice(1)
     ).join(' ');
   };
@@ -64,7 +64,7 @@ export function PointsHistory({ history }: PointsHistoryProps) {
     const date = new Date(dateString);
     const now = new Date();
     const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
-    
+
     if (diffInHours < 24) {
       return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     } else if (diffInHours < 168) { // 7 days
@@ -93,13 +93,13 @@ export function PointsHistory({ history }: PointsHistoryProps) {
                 <div className="flex-shrink-0">
                   {getActionIcon(entry.action_type)}
                 </div>
-                
+
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <p className="text-sm font-medium truncate">
                       {entry.description || formatActionType(entry.action_type)}
                     </p>
-                    <Badge 
+                    <Badge
                       variant={entry.points > 0 ? "default" : "destructive"}
                       className="text-xs"
                     >
@@ -110,7 +110,7 @@ export function PointsHistory({ history }: PointsHistoryProps) {
                     {formatDate(entry.created_at)}
                   </p>
                 </div>
-                
+
                 <div className="flex-shrink-0">
                   {entry.points > 0 ? (
                     <Plus className="h-4 w-4 text-green-500" />
@@ -120,7 +120,7 @@ export function PointsHistory({ history }: PointsHistoryProps) {
                 </div>
               </div>
             ))}
-            
+
             {history.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
                 <Clock className="h-12 w-12 mx-auto mb-2 opacity-50" />

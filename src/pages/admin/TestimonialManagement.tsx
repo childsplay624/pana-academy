@@ -34,7 +34,7 @@ const TestimonialManagementContent = () => {
   const [loading, setLoading] = useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingTestimonial, setEditingTestimonial] = useState<Testimonial | null>(null);
-  
+
   type FormData = {
     name: string;
     position: string;
@@ -80,7 +80,7 @@ const TestimonialManagementContent = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const handleSaveTestimonial = async () => {
         if (!formData.name || !formData.content) {
@@ -351,11 +351,10 @@ const TestimonialManagementContent = () => {
                       className="p-1"
                     >
                       <Star
-                        className={`w-5 h-5 ${
-                          star <= formData.rating
-                            ? 'text-yellow-400 fill-yellow-400'
-                            : 'text-gray-300'
-                        }`}
+                        className={`w-5 h-5 ${star <= formData.rating
+                          ? 'text-red-400 fill-red-400'
+                          : 'text-gray-300'
+                          }`}
                       />
                     </button>
                   ))}
@@ -475,9 +474,9 @@ const TestimonialManagement = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">Testimonials</h2>
+            <h2 className="text-2xl font-bold tracking-tight"></h2>
             <p className="text-muted-foreground">
-              Manage and moderate user testimonials
+
             </p>
           </div>
         </div>

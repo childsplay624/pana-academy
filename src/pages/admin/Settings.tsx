@@ -13,12 +13,12 @@ import { Separator } from '@/components/ui/separator';
 import { LogoUpload } from '@/components/LogoUpload';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { 
-  Settings2, 
-  Globe, 
-  Shield, 
-  Bell, 
-  Mail, 
+import {
+  Settings2,
+  Globe,
+  Shield,
+  Bell,
+  Mail,
   Database,
   CreditCard,
   Users,
@@ -93,7 +93,7 @@ export default function Settings() {
   const handleSave = async (category: string) => {
     try {
       setSaving(true);
-      
+
       // Get settings for this category
       const categorySettings = Object.entries(settings).filter(([key]) => {
         switch (category) {
@@ -104,7 +104,7 @@ export default function Settings() {
           case 'Notifications':
             return ['email_notifications', 'course_completion_alerts', 'payment_notifications', 'system_maintenance_alerts', 'admin_email'].includes(key);
           case 'Payment':
-            return ['paystack_enabled', 'flutterwave_enabled', 'default_currency', 'platform_fee', 'paystack_public_key', 'paystack_secret_key', 'flutterwave_public_key', 'flutterwave_secret_key'].includes(key);
+            return ['paystack_enabled', 'flutterwave_enabled', 'default_currency', 'platform_fee', 'paystack_public_key', 'paystack_secret_key', 'flutterwave_public_key', 'flutterwave_secret_key', 'bank_details'].includes(key);
           case 'Courses':
             return ['course_auto_approval', 'enable_course_reviews', 'certificate_generation', 'max_enrollment', 'certificate_validity', 'zoom_api_key', 'zoom_api_secret'].includes(key);
           case 'Appearance':
@@ -199,33 +199,33 @@ export default function Settings() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="platform-name">Platform Name</Label>
-                    <Input 
-                      id="platform-name" 
-                      value={settings.platform_name || ''} 
+                    <Input
+                      id="platform-name"
+                      value={settings.platform_name || ''}
                       onChange={(e) => updateSetting('platform_name', e.target.value)}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="platform-url">Platform URL</Label>
-                    <Input 
-                      id="platform-url" 
-                      value={settings.platform_url || ''} 
+                    <Input
+                      id="platform-url"
+                      value={settings.platform_url || ''}
                       onChange={(e) => updateSetting('platform_url', e.target.value)}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="support-email">Support Email</Label>
-                    <Input 
-                      id="support-email" 
-                      type="email" 
-                      value={settings.support_email || ''} 
+                    <Input
+                      id="support-email"
+                      type="email"
+                      value={settings.support_email || ''}
                       onChange={(e) => updateSetting('support_email', e.target.value)}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="default-language">Default Language</Label>
-                    <Select 
-                      value={settings.default_language || 'en'} 
+                    <Select
+                      value={settings.default_language || 'en'}
                       onValueChange={(value) => updateSetting('default_language', value)}
                     >
                       <SelectTrigger>
@@ -241,8 +241,8 @@ export default function Settings() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="platform-description">Platform Description</Label>
-                  <Textarea 
-                    id="platform-description" 
+                  <Textarea
+                    id="platform-description"
                     placeholder="Brief description of your learning platform..."
                     className="resize-none"
                     rows={3}
@@ -376,9 +376,9 @@ export default function Settings() {
                   Payment Gateways
                 </CardTitle>
                 <CardDescription>
-                  Configure and test your payment gateway integrations. 
-                  <a 
-                    href="#" 
+                  Configure and test your payment gateway integrations.
+                  <a
+                    href="#"
                     className="text-primary hover:underline ml-1"
                     onClick={(e) => {
                       e.preventDefault();
@@ -390,254 +390,305 @@ export default function Settings() {
                   </a>
                 </CardDescription>
               </CardHeader>
-               <CardContent className="space-y-8">
-                 {/* Paystack Section */}
-                 <div className="space-y-4 p-4 border rounded-lg bg-muted/10">
-                   <div className="flex items-center justify-between">
-                     <div>
-                       <div className="flex items-center gap-2">
-                         <img src="/logos/paystack.png" alt="Paystack" className="h-6 w-auto" />
-                         <Label className="text-base">Paystack Integration</Label>
-                       </div>
-                       <p className="text-sm text-muted-foreground">
-                         Securely process payments with Paystack
-                         <a 
-                           href="https://paystack.com/docs" 
-                           target="_blank" 
-                           rel="noopener noreferrer"
-                           className="text-primary hover:underline ml-1 text-xs"
-                         >
-                           (Get API Keys)
-                         </a>
-                       </p>
-                     </div>
-                     <div className="flex items-center gap-4">
-                       <Button 
-                         variant="outline" 
-                         size="sm"
-                         onClick={async () => {
-                           if (!settings.paystack_public_key || !settings.paystack_secret_key) {
-                             toast({
-                               title: "Error",
-                               description: "Please enter both public and secret keys",
-                               variant: "destructive",
-                             });
-                             return;
-                           }
-                           setSaving(true);
-                           try {
-                             // Simulate API test
-                             await new Promise(resolve => setTimeout(resolve, 1000));
-                             toast({
-                               title: "Success",
-                               description: "Successfully connected to Paystack",
-                             });
-                           } catch (error) {
-                             toast({
-                               title: "Connection Failed",
-                               description: "Could not connect to Paystack. Please check your API keys.",
-                               variant: "destructive",
-                             });
-                           } finally {
-                             setSaving(false);
-                           }
-                         }}
-                         disabled={!settings.paystack_enabled || saving}
-                       >
-                         {saving ? (
-                           <>
-                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                             Testing...
-                           </>
-                         ) : 'Test Connection'}
-                       </Button>
-                       <Switch 
-                         checked={settings.paystack_enabled || false}
-                         onCheckedChange={(checked) => updateSetting('paystack_enabled', checked)}
-                         disabled={saving}
-                       />
-                     </div>
-                   </div>
-                   
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                     <div className="space-y-2">
-                       <div className="flex items-center justify-between">
-                         <Label htmlFor="paystack-public-key">Public Key</Label>
-                         <span className="text-xs text-muted-foreground">
-                           {settings.paystack_public_key?.startsWith('pk_test_') ? 'Test Mode' : 
+              <CardContent className="space-y-8">
+                {/* Paystack Section */}
+                <div className="space-y-4 p-4 border rounded-lg bg-muted/10">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <img src="/logos/paystack.png" alt="Paystack" className="h-6 w-auto" />
+                        <Label className="text-base">Paystack Integration</Label>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Securely process payments with Paystack
+                        <a
+                          href="https://paystack.com/docs"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary hover:underline ml-1 text-xs"
+                        >
+                          (Get API Keys)
+                        </a>
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={async () => {
+                          if (!settings.paystack_public_key || !settings.paystack_secret_key) {
+                            toast({
+                              title: "Error",
+                              description: "Please enter both public and secret keys",
+                              variant: "destructive",
+                            });
+                            return;
+                          }
+                          setSaving(true);
+                          try {
+                            // Simulate API test
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+                            toast({
+                              title: "Success",
+                              description: "Successfully connected to Paystack",
+                            });
+                          } catch (error) {
+                            toast({
+                              title: "Connection Failed",
+                              description: "Could not connect to Paystack. Please check your API keys.",
+                              variant: "destructive",
+                            });
+                          } finally {
+                            setSaving(false);
+                          }
+                        }}
+                        disabled={!settings.paystack_enabled || saving}
+                      >
+                        {saving ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Testing...
+                          </>
+                        ) : 'Test Connection'}
+                      </Button>
+                      <Switch
+                        checked={settings.paystack_enabled || false}
+                        onCheckedChange={(checked) => updateSetting('paystack_enabled', checked)}
+                        disabled={saving}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="paystack-public-key">Public Key</Label>
+                        <span className="text-xs text-muted-foreground">
+                          {settings.paystack_public_key?.startsWith('pk_test_') ? 'Test Mode' :
                             settings.paystack_public_key?.startsWith('pk_live_') ? 'Live Mode' : ''}
-                         </span>
-                       </div>
-                       <Input 
-                         id="paystack-public-key" 
-                         placeholder="pk_test_..."
-                         value={settings.paystack_public_key || ''} 
-                         onChange={(e) => {
-                           const value = e.target.value.trim();
-                           updateSetting('paystack_public_key', value);
-                         }}
-                         disabled={!settings.paystack_enabled || saving}
-                         className={!settings.paystack_public_key?.startsWith('pk_') && settings.paystack_public_key ? 'border-red-500' : ''}
-                       />
-                       {settings.paystack_public_key && !settings.paystack_public_key.startsWith('pk_') && (
-                         <p className="text-xs text-red-500">Invalid Paystack public key format</p>
-                       )}
-                     </div>
-                     
-                     <div className="space-y-2">
-                       <Label htmlFor="paystack-secret-key">Secret Key</Label>
-                       <div className="relative">
-                         <Input 
-                           id="paystack-secret-key" 
-                           type={showPaystackSecret ? 'text' : 'password'}
-                           placeholder="sk_test_..."
-                           value={settings.paystack_secret_key || ''} 
-                           onChange={(e) => {
-                             const value = e.target.value.trim();
-                             updateSetting('paystack_secret_key', value);
-                           }}
-                           disabled={!settings.paystack_enabled || saving}
-                           className={!settings.paystack_secret_key?.startsWith('sk_') && settings.paystack_secret_key ? 'border-red-500' : ''}
-                         />
-                         <button 
-                           type="button" 
-                           className="absolute right-2 top-2.5 text-muted-foreground hover:text-foreground"
-                           onClick={() => setShowPaystackSecret(!showPaystackSecret)}
-                         >
-                           {showPaystackSecret ? 'Hide' : 'Show'}
-                         </button>
-                       </div>
-                       {settings.paystack_secret_key && !settings.paystack_secret_key.startsWith('sk_') && (
-                         <p className="text-xs text-red-500">Invalid Paystack secret key format</p>
-                       )}
-                     </div>
-                   </div>
-                 </div>
-                 {/* Flutterwave Section */}
-                 <div className="space-y-4 p-4 border rounded-lg bg-muted/10">
-                   <div className="flex items-center justify-between">
-                     <div>
-                       <div className="flex items-center gap-2">
-                         <img src="/logos/flutterwave.svg" alt="Flutterwave" className="h-6 w-auto" />
-                         <Label className="text-base">Flutterwave Integration</Label>
-                       </div>
-                       <p className="text-sm text-muted-foreground">
-                         Accept payments with Flutterwave
-                         <a 
-                           href="https://developer.flutterwave.com/docs" 
-                           target="_blank" 
-                           rel="noopener noreferrer"
-                           className="text-primary hover:underline ml-1 text-xs"
-                         >
-                           (Get API Keys)
-                         </a>
-                       </p>
-                     </div>
-                     <div className="flex items-center gap-4">
-                       <Button 
-                         variant="outline" 
-                         size="sm"
-                         onClick={async () => {
-                           if (!settings.flutterwave_public_key || !settings.flutterwave_secret_key) {
-                             toast({
-                               title: "Error",
-                               description: "Please enter both public and secret keys",
-                               variant: "destructive",
-                             });
-                             return;
-                           }
-                           setSaving(true);
-                           try {
-                             // Simulate API test
-                             await new Promise(resolve => setTimeout(resolve, 1000));
-                             toast({
-                               title: "Success",
-                               description: "Successfully connected to Flutterwave",
-                             });
-                           } catch (error) {
-                             toast({
-                               title: "Connection Failed",
-                               description: "Could not connect to Flutterwave. Please check your API keys.",
-                               variant: "destructive",
-                             });
-                           } finally {
-                             setSaving(false);
-                           }
-                         }}
-                         disabled={!settings.flutterwave_enabled || saving}
-                       >
-                         {saving ? (
-                           <>
-                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                             Testing...
-                           </>
-                         ) : 'Test Connection'}
-                       </Button>
-                       <Switch 
-                         checked={settings.flutterwave_enabled || false}
-                         onCheckedChange={(checked) => updateSetting('flutterwave_enabled', checked)}
-                         disabled={saving}
-                       />
-                     </div>
-                   </div>
-                   
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                     <div className="space-y-2">
-                       <div className="flex items-center justify-between">
-                         <Label htmlFor="flutterwave-public-key">Public Key</Label>
-                         <span className="text-xs text-muted-foreground">
-                           {settings.flutterwave_public_key?.includes('_TEST_') ? 'Test Mode' : 
+                        </span>
+                      </div>
+                      <Input
+                        id="paystack-public-key"
+                        placeholder="pk_test_..."
+                        value={settings.paystack_public_key || ''}
+                        onChange={(e) => {
+                          const value = e.target.value.trim();
+                          updateSetting('paystack_public_key', value);
+                        }}
+                        disabled={!settings.paystack_enabled || saving}
+                        className={!settings.paystack_public_key?.startsWith('pk_') && settings.paystack_public_key ? 'border-red-500' : ''}
+                      />
+                      {settings.paystack_public_key && !settings.paystack_public_key.startsWith('pk_') && (
+                        <p className="text-xs text-red-500">Invalid Paystack public key format</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="paystack-secret-key">Secret Key</Label>
+                      <div className="relative">
+                        <Input
+                          id="paystack-secret-key"
+                          type={showPaystackSecret ? 'text' : 'password'}
+                          placeholder="sk_test_..."
+                          value={settings.paystack_secret_key || ''}
+                          onChange={(e) => {
+                            const value = e.target.value.trim();
+                            updateSetting('paystack_secret_key', value);
+                          }}
+                          disabled={!settings.paystack_enabled || saving}
+                          className={!settings.paystack_secret_key?.startsWith('sk_') && settings.paystack_secret_key ? 'border-red-500' : ''}
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-2 top-2.5 text-muted-foreground hover:text-foreground"
+                          onClick={() => setShowPaystackSecret(!showPaystackSecret)}
+                        >
+                          {showPaystackSecret ? 'Hide' : 'Show'}
+                        </button>
+                      </div>
+                      {settings.paystack_secret_key && !settings.paystack_secret_key.startsWith('sk_') && (
+                        <p className="text-xs text-red-500">Invalid Paystack secret key format</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                {/* Flutterwave Section */}
+                <div className="space-y-4 p-4 border rounded-lg bg-muted/10">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <img src="/logos/flutterwave.svg" alt="Flutterwave" className="h-6 w-auto" />
+                        <Label className="text-base">Flutterwave Integration</Label>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Accept payments with Flutterwave
+                        <a
+                          href="https://developer.flutterwave.com/docs"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary hover:underline ml-1 text-xs"
+                        >
+                          (Get API Keys)
+                        </a>
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={async () => {
+                          if (!settings.flutterwave_public_key || !settings.flutterwave_secret_key) {
+                            toast({
+                              title: "Error",
+                              description: "Please enter both public and secret keys",
+                              variant: "destructive",
+                            });
+                            return;
+                          }
+                          setSaving(true);
+                          try {
+                            // Simulate API test
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+                            toast({
+                              title: "Success",
+                              description: "Successfully connected to Flutterwave",
+                            });
+                          } catch (error) {
+                            toast({
+                              title: "Connection Failed",
+                              description: "Could not connect to Flutterwave. Please check your API keys.",
+                              variant: "destructive",
+                            });
+                          } finally {
+                            setSaving(false);
+                          }
+                        }}
+                        disabled={!settings.flutterwave_enabled || saving}
+                      >
+                        {saving ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Testing...
+                          </>
+                        ) : 'Test Connection'}
+                      </Button>
+                      <Switch
+                        checked={settings.flutterwave_enabled || false}
+                        onCheckedChange={(checked) => updateSetting('flutterwave_enabled', checked)}
+                        disabled={saving}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="flutterwave-public-key">Public Key</Label>
+                        <span className="text-xs text-muted-foreground">
+                          {settings.flutterwave_public_key?.includes('_TEST_') ? 'Test Mode' :
                             settings.flutterwave_public_key?.includes('_LIVE_') ? 'Live Mode' : ''}
-                         </span>
-                       </div>
-                       <Input 
-                         id="flutterwave-public-key" 
-                         placeholder="FLWPUBK_TEST-..."
-                         value={settings.flutterwave_public_key || ''} 
-                         onChange={(e) => {
-                           const value = e.target.value.trim();
-                           updateSetting('flutterwave_public_key', value);
-                         }}
-                         disabled={!settings.flutterwave_enabled || saving}
-                         className={!settings.flutterwave_public_key?.startsWith('FLWPUBK_') && settings.flutterwave_public_key ? 'border-red-500' : ''}
-                       />
-                       {settings.flutterwave_public_key && !settings.flutterwave_public_key.startsWith('FLWPUBK_') && (
-                         <p className="text-xs text-red-500">Invalid Flutterwave public key format</p>
-                       )}
-                     </div>
-                     
-                     <div className="space-y-2">
-                       <Label htmlFor="flutterwave-secret-key">Secret Key</Label>
-                       <div className="relative">
-                         <Input 
-                           id="flutterwave-secret-key" 
-                           type={showFlutterwaveSecret ? 'text' : 'password'}
-                           placeholder="FLWSECK_TEST-..."
-                           value={settings.flutterwave_secret_key || ''} 
-                           onChange={(e) => {
-                             const value = e.target.value.trim();
-                             updateSetting('flutterwave_secret_key', value);
-                           }}
-                           disabled={!settings.flutterwave_enabled || saving}
-                           className={!settings.flutterwave_secret_key?.startsWith('FLWSECK_') && settings.flutterwave_secret_key ? 'border-red-500' : ''}
-                         />
-                         <button 
-                           type="button" 
-                           className="absolute right-2 top-2.5 text-muted-foreground hover:text-foreground"
-                           onClick={() => setShowFlutterwaveSecret(!showFlutterwaveSecret)}
-                         >
-                           {showFlutterwaveSecret ? 'Hide' : 'Show'}
-                         </button>
-                       </div>
-                       {settings.flutterwave_secret_key && !settings.flutterwave_secret_key.startsWith('FLWSECK_') && (
-                         <p className="text-xs text-red-500">Invalid Flutterwave secret key format</p>
-                       )}
-                     </div>
-                   </div>
-                 </div>
-                 <div className="flex justify-end pt-4">
-                  <Button 
-                    onClick={() => handleSave('PaymentGateways')} 
+                        </span>
+                      </div>
+                      <Input
+                        id="flutterwave-public-key"
+                        placeholder="FLWPUBK_TEST-..."
+                        value={settings.flutterwave_public_key || ''}
+                        onChange={(e) => {
+                          const value = e.target.value.trim();
+                          updateSetting('flutterwave_public_key', value);
+                        }}
+                        disabled={!settings.flutterwave_enabled || saving}
+                        className={!settings.flutterwave_public_key?.startsWith('FLWPUBK_') && settings.flutterwave_public_key ? 'border-red-500' : ''}
+                      />
+                      {settings.flutterwave_public_key && !settings.flutterwave_public_key.startsWith('FLWPUBK_') && (
+                        <p className="text-xs text-red-500">Invalid Flutterwave public key format</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="flutterwave-secret-key">Secret Key</Label>
+                      <div className="relative">
+                        <Input
+                          id="flutterwave-secret-key"
+                          type={showFlutterwaveSecret ? 'text' : 'password'}
+                          placeholder="FLWSECK_TEST-..."
+                          value={settings.flutterwave_secret_key || ''}
+                          onChange={(e) => {
+                            const value = e.target.value.trim();
+                            updateSetting('flutterwave_secret_key', value);
+                          }}
+                          disabled={!settings.flutterwave_enabled || saving}
+                          className={!settings.flutterwave_secret_key?.startsWith('FLWSECK_') && settings.flutterwave_secret_key ? 'border-red-500' : ''}
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-2 top-2.5 text-muted-foreground hover:text-foreground"
+                          onClick={() => setShowFlutterwaveSecret(!showFlutterwaveSecret)}
+                        >
+                          {showFlutterwaveSecret ? 'Hide' : 'Show'}
+                        </button>
+                      </div>
+                      {settings.flutterwave_secret_key && !settings.flutterwave_secret_key.startsWith('FLWSECK_') && (
+                        <p className="text-xs text-red-500">Invalid Flutterwave secret key format</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                {/* Manual Bank Transfer Section */}
+                <div className="space-y-4 p-4 border rounded-lg bg-muted/10">
+                  <div>
+                    <div className="flex items-center gap-2 text-pana-navy">
+                      <Database className="h-6 w-6" />
+                      <Label className="text-base font-semibold">Manual Bank Transfer</Label>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Configure bank details for students who prefer manual transfers.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="bank-name">Bank Name</Label>
+                      <Input
+                        id="bank-name"
+                        value={settings.bank_details?.bank_name || ''}
+                        onChange={(e) => updateSetting('bank_details', {
+                          ...(settings.bank_details || {}),
+                          bank_name: e.target.value
+                        })}
+                        placeholder="e.g. Zenith Bank"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="account-name">Account Name</Label>
+                      <Input
+                        id="account-name"
+                        value={settings.bank_details?.account_name || ''}
+                        onChange={(e) => updateSetting('bank_details', {
+                          ...(settings.bank_details || {}),
+                          account_name: e.target.value
+                        })}
+                        placeholder="e.g. PANA ACADEMY LTD"
+                      />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="account-number">Account Number</Label>
+                      <Input
+                        id="account-number"
+                        value={settings.bank_details?.account_number || ''}
+                        onChange={(e) => updateSetting('bank_details', {
+                          ...(settings.bank_details || {}),
+                          account_number: e.target.value
+                        })}
+                        placeholder="e.g. 1234567890"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="flex justify-end pt-4">
+                  <Button
+                    onClick={() => handleSave('Payment')}
                     disabled={saving}
                     className="w-full sm:w-auto"
                   >
@@ -656,7 +707,7 @@ export default function Settings() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card className="mt-6">
               <CardHeader>
                 <CardTitle>Payment Settings</CardTitle>
@@ -666,8 +717,8 @@ export default function Settings() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="default-currency">Default Currency</Label>
-                    <Select 
-                      value={settings.default_currency || 'NGN'} 
+                    <Select
+                      value={settings.default_currency || 'NGN'}
                       onValueChange={(value) => updateSetting('default_currency', value)}
                     >
                       <SelectTrigger>
@@ -682,20 +733,20 @@ export default function Settings() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="platform-fee">Platform Fee (%)</Label>
-                    <Input 
-                      id="platform-fee" 
-                      type="number" 
-                      step="0.1" 
+                    <Input
+                      id="platform-fee"
+                      type="number"
+                      step="0.1"
                       min="0"
                       max="100"
-                      value={settings.platform_fee || 10} 
+                      value={settings.platform_fee || 10}
                       onChange={(e) => updateSetting('platform_fee', parseFloat(e.target.value) || 0)}
                     />
                   </div>
                 </div>
                 <div className="flex justify-end pt-2">
-                  <Button 
-                    onClick={() => handleSave('Payment')} 
+                  <Button
+                    onClick={() => handleSave('Payment')}
                     disabled={saving}
                     className="w-full sm:w-auto"
                   >
@@ -757,21 +808,21 @@ export default function Settings() {
                   <div className="grid grid-cols-1 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="zoom-api-key">Zoom API Key</Label>
-                      <Input 
-                        id="zoom-api-key" 
+                      <Input
+                        id="zoom-api-key"
                         type="password"
                         placeholder="Enter your Zoom API Key"
-                        value={settings.zoom_api_key || ''} 
+                        value={settings.zoom_api_key || ''}
                         onChange={(e) => updateSetting('zoom_api_key', e.target.value)}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="zoom-api-secret">Zoom API Secret</Label>
-                      <Input 
-                        id="zoom-api-secret" 
+                      <Input
+                        id="zoom-api-secret"
                         type="password"
                         placeholder="Enter your Zoom API Secret"
-                        value={settings.zoom_api_secret || ''} 
+                        value={settings.zoom_api_secret || ''}
                         onChange={(e) => updateSetting('zoom_api_secret', e.target.value)}
                       />
                     </div>
@@ -781,19 +832,19 @@ export default function Settings() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="max-enrollment">Max Enrollment per Course</Label>
-                    <Input 
-                      id="max-enrollment" 
-                      type="number" 
-                      value={settings.max_enrollment || 1000} 
+                    <Input
+                      id="max-enrollment"
+                      type="number"
+                      value={settings.max_enrollment || 1000}
                       onChange={(e) => updateSetting('max_enrollment', parseInt(e.target.value))}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="certificate-validity">Certificate Validity (years)</Label>
-                    <Input 
-                      id="certificate-validity" 
-                      type="number" 
-                      value={settings.certificate_validity || 5} 
+                    <Input
+                      id="certificate-validity"
+                      type="number"
+                      value={settings.certificate_validity || 5}
                       onChange={(e) => updateSetting('certificate_validity', parseInt(e.target.value))}
                     />
                   </div>
@@ -816,78 +867,78 @@ export default function Settings() {
                 </CardTitle>
                 <CardDescription>Customize the platform's look and feel</CardDescription>
               </CardHeader>
-               <CardContent className="space-y-6">
-                 <div className="space-y-4">
-                   <div className="space-y-2">
-                     <Label htmlFor="primary-color">Primary Color</Label>
-                     <div className="flex items-center gap-4">
-                       <Input 
-                         id="primary-color" 
-                         type="color" 
-                         value={settings.primary_color || '#0ea5e9'} 
-                         onChange={(e) => updateSetting('primary_color', e.target.value)}
-                         className="w-20 h-10" 
-                       />
-                       <Input 
-                         value={settings.primary_color || '#0ea5e9'} 
-                         onChange={(e) => updateSetting('primary_color', e.target.value)}
-                         className="flex-1" 
-                       />
-                     </div>
-                   </div>
-                   <div className="space-y-2">
-                     <Label htmlFor="secondary-color">Secondary Color</Label>
-                     <div className="flex items-center gap-4">
-                       <Input 
-                         id="secondary-color" 
-                         type="color" 
-                         value={settings.secondary_color || '#64748b'} 
-                         onChange={(e) => updateSetting('secondary_color', e.target.value)}
-                         className="w-20 h-10" 
-                       />
-                       <Input 
-                         value={settings.secondary_color || '#64748b'} 
-                         onChange={(e) => updateSetting('secondary_color', e.target.value)}
-                         className="flex-1" 
-                       />
-                     </div>
-                   </div>
-                 </div>
-                 <Separator />
-                 <div className="space-y-4">
-                   <div className="flex items-center justify-between">
-                     <div>
-                       <Label className="text-base">Dark Mode Support</Label>
-                       <p className="text-sm text-muted-foreground">Enable dark mode theme option</p>
-                     </div>
-                     <Switch 
-                       checked={settings.dark_mode_support || false}
-                       onCheckedChange={(checked) => updateSetting('dark_mode_support', checked)}
-                     />
-                   </div>
-                   <LogoUpload
-                     label="Frontend Logo"
-                     description="Logo displayed on the main website and student dashboard"
-                     value={settings.logo_url || ''}
-                     onChange={(url) => updateSetting('logo_url', url)}
-                     placeholder="https://example.com/logo.png"
-                   />
-                   <LogoUpload
-                     label="Admin/Backend Logo"
-                     description="Logo displayed in admin dashboard and backend interfaces"
-                     value={settings.backend_logo_url || ''}
-                     onChange={(url) => updateSetting('backend_logo_url', url)}
-                     placeholder="https://example.com/admin-logo.png"
-                   />
-                   <LogoUpload
-                     label="Favicon"
-                     description="Small icon displayed in browser tabs (PNG/JPG format only)"
-                     value={settings.favicon_url || ''}
-                     onChange={(url) => updateSetting('favicon_url', url)}
-                     placeholder="https://example.com/favicon.png"
-                   />
-                 </div>
-                 <Button onClick={() => handleSave('Appearance')} disabled={saving}>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="primary-color">Primary Color</Label>
+                    <div className="flex items-center gap-4">
+                      <Input
+                        id="primary-color"
+                        type="color"
+                        value={settings.primary_color || '#0ea5e9'}
+                        onChange={(e) => updateSetting('primary_color', e.target.value)}
+                        className="w-20 h-10"
+                      />
+                      <Input
+                        value={settings.primary_color || '#0ea5e9'}
+                        onChange={(e) => updateSetting('primary_color', e.target.value)}
+                        className="flex-1"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="secondary-color">Secondary Color</Label>
+                    <div className="flex items-center gap-4">
+                      <Input
+                        id="secondary-color"
+                        type="color"
+                        value={settings.secondary_color || '#64748b'}
+                        onChange={(e) => updateSetting('secondary_color', e.target.value)}
+                        className="w-20 h-10"
+                      />
+                      <Input
+                        value={settings.secondary_color || '#64748b'}
+                        onChange={(e) => updateSetting('secondary_color', e.target.value)}
+                        className="flex-1"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <Separator />
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-base">Dark Mode Support</Label>
+                      <p className="text-sm text-muted-foreground">Enable dark mode theme option</p>
+                    </div>
+                    <Switch
+                      checked={settings.dark_mode_support || false}
+                      onCheckedChange={(checked) => updateSetting('dark_mode_support', checked)}
+                    />
+                  </div>
+                  <LogoUpload
+                    label="Frontend Logo"
+                    description="Logo displayed on the main website and student dashboard"
+                    value={settings.logo_url || ''}
+                    onChange={(url) => updateSetting('logo_url', url)}
+                    placeholder="https://example.com/logo.png"
+                  />
+                  <LogoUpload
+                    label="Admin/Backend Logo"
+                    description="Logo displayed in admin dashboard and backend interfaces"
+                    value={settings.backend_logo_url || ''}
+                    onChange={(url) => updateSetting('backend_logo_url', url)}
+                    placeholder="https://example.com/admin-logo.png"
+                  />
+                  <LogoUpload
+                    label="Favicon"
+                    description="Small icon displayed in browser tabs (PNG/JPG format only)"
+                    value={settings.favicon_url || ''}
+                    onChange={(url) => updateSetting('favicon_url', url)}
+                    placeholder="https://example.com/favicon.png"
+                  />
+                </div>
+                <Button onClick={() => handleSave('Appearance')} disabled={saving}>
                   <Save className="w-4 h-4 mr-2" />
                   {loading ? 'Saving...' : 'Save Changes'}
                 </Button>

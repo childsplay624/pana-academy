@@ -2,8 +2,13 @@ import { Helmet } from "react-helmet-async";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { BookOpen, Monitor, Users, Award, ArrowRight, CheckCircle, Zap, Globe, Target, TrendingUp } from "lucide-react";
+import { useSiteImage } from "@/hooks/useSiteImage";
+import trainingHero from "@/assets/hero-training.jpg";
 
 const TrainingDelivery = () => {
+  // Fetch header image from centralized system
+  const { imageUrl: headerImage } = useSiteImage('header_training', trainingHero);
+
   return (
     <>
       <Helmet>
@@ -11,16 +16,25 @@ const TrainingDelivery = () => {
         <meta name="description" content="Discover PANA Academy's comprehensive training delivery methods, modern technology platforms, and international standard learning environments designed for maximum impact." />
         <meta name="keywords" content="training delivery, learning management system, virtual classroom, training methods, PANA Academy" />
       </Helmet>
-      
+
       <div className="min-h-screen bg-gradient-subtle">
         <Navigation />
-        
+
         <main>
           {/* Hero Section with Visual Impact */}
-          <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-cover bg-center" style={{ backgroundImage: 'url(/src/assets/hero-training.jpg)' }}>
+          <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
+            {/* Background Image */}
+            <div className="absolute inset-0">
+              <img
+                src={headerImage}
+                alt="Training Delivery"
+                className="w-full h-full object-cover object-center"
+                loading="eager"
+              />
+            </div>
             {/* Black overlay */}
             <div className="absolute inset-0 bg-black/60"></div>
-            
+
             {/* Subtle animated elements */}
             <div className="absolute inset-0 opacity-10">
               <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-pana-gold/30 rounded-full blur-3xl animate-pulse"></div>
@@ -38,21 +52,19 @@ const TrainingDelivery = () => {
               <div className="space-y-8 animate-fade-in">
                 <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full text-white/90 text-sm font-medium border border-white/20">
                   <Zap className="w-5 h-5 text-pana-gold" />
-                  <span className="text-red-500">World-Class Training Excellence</span>
+                  <span className="text-red-500">PANA Academy</span>
                   <ArrowRight className="w-4 h-4" />
                 </div>
-                
+
                 <h1 className="text-6xl md:text-8xl font-bold mb-6 leading-tight">
                   <span className="text-red-500">Training</span>
-                  <span className="block bg-gradient-to-r from-pana-gold to-yellow-300 bg-clip-text text-transparent">
+                  <span className="block bg-gradient-to-r from-pana-gold to-red-300 bg-clip-text text-transparent">
                     <span className="text-red-500">Delivery</span>
                   </span>
                 </h1>
-                
+
                 <p className="text-xl md:text-2xl text-white/80 max-w-4xl mx-auto leading-relaxed">
-                  Revolutionary methods and cutting-edge approaches designed to 
-                  <span className="text-pana-gold font-semibold"> maximize learning impact</span> and drive 
-                  <span className="text-pana-gold font-semibold"> organizational transformation</span>
+                  Innovative training delivery methods, strategies, and approaches designed to maximize learning impact and drive career and organizational transformation
                 </p>
 
                 {/* Stats Bar */}
@@ -66,8 +78,8 @@ const TrainingDelivery = () => {
                     <div className="text-white/70 text-sm">Success Rate</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-pana-gold">50+</div>
-                    <div className="text-white/70 text-sm">Global Partners</div>
+                    <div className="text-3xl font-bold text-pana-gold">20+</div>
+                    <div className="text-white/70 text-sm">Direct and Indirect Global Partners</div>
                   </div>
                 </div>
               </div>
@@ -94,10 +106,10 @@ const TrainingDelivery = () => {
                     Transforming Learning Through Innovation
                   </h2>
                 </div>
-                
+
                 <div className="prose prose-lg max-w-none text-center">
                   <p className="text-xl text-muted-foreground leading-relaxed">
-                    At PANA Academy, training delivery refers to the sophisticated methods and cutting-edge approaches we use to present learning content and facilitate competency development. We meticulously design our training delivery methods to maximize impact, effectiveness, and measurable outcomes for enhanced employee performance and sustainable organizational success.
+                    At PANA Academy, training delivery refers to the innovative methods, strategies, and approaches we use to present learning content, hands-on practical sessions to facilitate competency cultivation. We meticulously design our training delivery methods to maximize impact, effectiveness, and measurable outcomes for enhanced performance and sustainable career and organizational success.
                   </p>
                 </div>
 
@@ -110,15 +122,15 @@ const TrainingDelivery = () => {
                     <h3 className="text-lg font-semibold text-foreground mb-2">Global Standards</h3>
                     <p className="text-muted-foreground text-sm">International best practices and certifications</p>
                   </div>
-                  
+
                   <div className="text-center group">
-                    <div className="w-16 h-16 bg-gradient-to-br from-pana-gold to-yellow-400 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-16 h-16 bg-gradient-to-br from-pana-gold to-red-400 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                       <TrendingUp className="w-8 h-8 text-white" />
                     </div>
                     <h3 className="text-lg font-semibold text-foreground mb-2">Proven Results</h3>
                     <p className="text-muted-foreground text-sm">Measurable impact on performance metrics</p>
                   </div>
-                  
+
                   <div className="text-center group">
                     <div className="w-16 h-16 bg-gradient-to-br from-pana-navy to-pana-blue rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                       <Zap className="w-8 h-8 text-white" />
@@ -149,10 +161,10 @@ const TrainingDelivery = () => {
                   <div className="bg-white dark:bg-card rounded-3xl shadow-xl p-10 h-full transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-gray-100 dark:border-gray-800 overflow-hidden">
                     {/* Background Pattern */}
                     <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-pana-gold/10 to-transparent rounded-bl-3xl"></div>
-                    
+
                     <div className="relative">
                       <div className="flex items-start gap-6 mb-8">
-                        <div className="w-20 h-20 bg-gradient-to-br from-pana-gold to-yellow-400 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <div className="w-20 h-20 bg-gradient-to-br from-pana-gold to-red-400 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                           <BookOpen className="w-10 h-10 text-white" />
                         </div>
                         <div>
@@ -163,7 +175,7 @@ const TrainingDelivery = () => {
                           <h3 className="text-2xl md:text-3xl font-bold text-foreground">Training Methods</h3>
                         </div>
                       </div>
-                      
+
                       <p className="text-muted-foreground leading-relaxed mb-6 text-lg">
                         Our comprehensive training methods are meticulously designed to accommodate diverse learning styles and professional requirements, employing a sophisticated blend of traditional and innovative approaches.
                       </p>
@@ -190,7 +202,7 @@ const TrainingDelivery = () => {
                 <article className="group relative">
                   <div className="bg-white dark:bg-card rounded-3xl shadow-xl p-10 h-full transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-gray-100 dark:border-gray-800 overflow-hidden">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-pana-blue/10 to-transparent rounded-bl-3xl"></div>
-                    
+
                     <div className="relative">
                       <div className="flex items-start gap-6 mb-8">
                         <div className="w-20 h-20 bg-gradient-to-br from-pana-blue to-pana-navy rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
@@ -204,7 +216,7 @@ const TrainingDelivery = () => {
                           <h3 className="text-2xl md:text-3xl font-bold text-foreground">Training Approach</h3>
                         </div>
                       </div>
-                      
+
                       <p className="text-muted-foreground leading-relaxed mb-6 text-lg">
                         We adopt a revolutionary learner-centered approach that emphasizes practical application, interactive engagement, and continuous assessment to ensure immediate real-world application.
                       </p>
@@ -231,7 +243,7 @@ const TrainingDelivery = () => {
                 <article className="group relative">
                   <div className="bg-white dark:bg-card rounded-3xl shadow-xl p-10 h-full transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-gray-100 dark:border-gray-800 overflow-hidden">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-pana-navy/10 to-transparent rounded-bl-3xl"></div>
-                    
+
                     <div className="relative">
                       <div className="flex items-start gap-6 mb-8">
                         <div className="w-20 h-20 bg-gradient-to-br from-pana-navy to-slate-800 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
@@ -245,7 +257,7 @@ const TrainingDelivery = () => {
                           <h3 className="text-2xl md:text-3xl font-bold text-foreground">Technology & Platforms</h3>
                         </div>
                       </div>
-                      
+
                       <p className="text-muted-foreground leading-relaxed mb-6 text-lg">
                         Advanced digital ecosystem featuring cutting-edge Learning Management Systems, immersive virtual classrooms, and mobile-first applications for flexible, accessible learning experiences.
                       </p>
@@ -272,7 +284,7 @@ const TrainingDelivery = () => {
                 <article className="group relative">
                   <div className="bg-white dark:bg-card rounded-3xl shadow-xl p-10 h-full transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-gray-100 dark:border-gray-800 overflow-hidden">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-pana-gold/10 to-transparent rounded-bl-3xl"></div>
-                    
+
                     <div className="relative">
                       <div className="flex items-start gap-6 mb-8">
                         <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
@@ -286,7 +298,7 @@ const TrainingDelivery = () => {
                           <h3 className="text-2xl md:text-3xl font-bold text-foreground">Learning Environment</h3>
                         </div>
                       </div>
-                      
+
                       <p className="text-muted-foreground leading-relaxed mb-6 text-lg">
                         World-class physical and virtual learning environments engineered to international standards, featuring optimal ergonomics, climate control, and flexible configurations for enhanced engagement.
                       </p>
@@ -321,53 +333,39 @@ const TrainingDelivery = () => {
                 <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gray-400/20 rounded-full blur-3xl animate-pulse animation-delay-2000"></div>
               </div>
             </div>
-            
+
             <div className="relative max-w-6xl mx-auto px-6 lg:px-8 text-center">
               <div className="space-y-8">
                 <div className="inline-flex items-center gap-3 bg-white dark:bg-gray-800 px-6 py-3 rounded-full text-gray-800 dark:text-gray-200 font-medium border border-gray-200 dark:border-gray-700 shadow-sm">
                   <Zap className="w-5 h-5 text-pana-gold" />
-                  Transform Your Organization Today
+                  Start Your Career and Organizational Transformation Today
                 </div>
-                
+
                 <h3 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white leading-tight">
                   Ready to Experience
-                  <span className="block bg-gradient-to-r from-pana-gold to-yellow-300 bg-clip-text text-transparent">
+                  <span className="block bg-gradient-to-r from-pana-gold to-red-300 bg-clip-text text-transparent">
                     <span className="text-red-500 dark:text-red-400">Training Excellence?</span>
                   </span>
                 </h3>
-                
+
                 <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-                  Join over 10,000 professionals who have transformed their careers through our revolutionary training delivery methods and achieved measurable success.
+                  Join over 200 professionals who have transformed their careers through our innovative training delivery methods and achieved measurable success.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                  <a 
-                    href="/auth?mode=signup" 
+                  <a
+                    href="/auth?mode=signup"
                     className="inline-flex items-center gap-3 px-10 py-5 bg-pana-gold text-pana-navy font-semibold rounded-2xl hover:bg-pana-gold/90 transition-all duration-300 shadow-md"
                   >
                     Get Started Today
                   </a>
-                 
-                  <a 
-                    href="/courses" 
+
+                  <a
+                    href="/courses"
                     className="inline-flex items-center gap-3 px-10 py-5 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 font-semibold rounded-2xl border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300 shadow-sm"
                   >
-                    Explore Courses
+                    Explore Our Courses
                   </a>
-                </div>
-
-                {/* Trust Indicators */}
-                <div className="bg-white dark:bg-gray-800 -mx-6 px-6 py-12 border-t border-gray-200 dark:border-gray-700 mt-12">
-                  <div className="max-w-7xl mx-auto">
-                    <p className="text-gray-500 dark:text-gray-400 text-sm mb-6 text-center">Trusted by leading organizations worldwide</p>
-                    <div className="flex flex-wrap justify-center items-center gap-6 md:gap-8">
-                      <div className="text-gray-700 dark:text-gray-200 font-semibold">Fortune 500</div>
-                      <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 hidden md:block"></div>
-                      <div className="text-gray-700 dark:text-gray-200 font-semibold">ISO Certified</div>
-                      <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 hidden md:block"></div>
-                      <div className="text-gray-700 dark:text-gray-200 font-semibold">Global Partners</div>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>

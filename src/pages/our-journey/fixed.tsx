@@ -10,11 +10,11 @@ export default function OurJourney() {
         <div className="absolute inset-0 bg-black/50"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-3xl">
-            <Link 
-              to="#about" 
+            <Link
+              to="/about"
               onClick={(e) => {
                 e.preventDefault();
-                window.location.href = '/#about';
+                window.location.href = '/about';
               }}
               className="inline-flex items-center text-blue-300 hover:text-white mb-6 transition-colors"
             >
@@ -22,7 +22,7 @@ export default function OurJourney() {
               Back to About
             </Link>
             <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-              Our <span className="text-yellow-400">Journey</span> So Far
+              Our <span className="text-red-400">Journey</span> So Far
             </h1>
             <p className="text-lg md:text-xl text-blue-100 max-w-3xl">
               From vision to impact: Charting PANA Academy's path in transforming the energy sector through competency development.
@@ -36,13 +36,13 @@ export default function OurJourney() {
         {/* Floating Cards Section */}
         <div className="relative mb-24">
           {/* Background Decorative Elements */}
-          <div className="absolute -top-20 -right-20 w-64 h-64 bg-yellow-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+          <div className="absolute -top-20 -right-20 w-64 h-64 bg-red-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
           <div className="absolute -bottom-20 left-20 w-64 h-64 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-          
+
           {/* Main Content Grid */}
           <div className="relative grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Vision Card */}
-            <motion.div 
+            <motion.div
               className="bg-white p-8 rounded-2xl shadow-xl border-l-4 border-blue-600 transform transition-all hover:scale-105"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -57,22 +57,21 @@ export default function OurJourney() {
             </motion.div>
 
             {/* Growth Card */}
-            <motion.div 
-              className="bg-white p-8 rounded-2xl shadow-xl border-l-4 border-yellow-500 transform transition-all hover:scale-105"
+            <motion.div
+              className="bg-white p-8 rounded-2xl shadow-xl border-l-4 border-red-500 transform transition-all hover:scale-105"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
               whileHover={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' }}
             >
-              <div className="w-12 h-1 bg-yellow-500 mb-6"></div>
+              <div className="w-12 h-1 bg-red-500 mb-6"></div>
               <h3 className="text-xl font-bold text-gray-900 mb-4">Our Growth</h3>
               <p className="text-gray-600">
-                PANA Academy has become a trusted training provider for the oil and gas industry. Our training programmes encompass craftsmanship, technician, specialist, professional, engineering, and digital courses designed for school leavers, undergraduates, graduates, and professionals. We leverage our team of certified facilitators, industry experts, subject mater experts, and strategic partnerships to develop a workforce pipeline equipped with role-specific skills.
-              </p>
+                PANA Academy has become a trusted training provider for the energy sector, particularly the oil and gas industry. Our training programmes encompass Soft Skills, Safety, Sustainability, Technical (Flow Drive; Flow Control; Flow Measurement; Instrumentation; Process Automation and Control Courses ), Digital Literacy/Skills; Digitization and Digitalization Courses, among others. </p>
             </motion.div>
 
             {/* Impact Card */}
-            <motion.div 
+            <motion.div
               className="bg-white p-8 rounded-2xl shadow-xl border-l-4 border-red-600 transform transition-all hover:scale-105"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -93,12 +92,12 @@ export default function OurJourney() {
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
               {[
-                { number: '1000+', label: 'Trained Professionals' },
+                { number: '200+', label: 'Trained Professionals' },
                 { number: '50+', label: 'Industry Experts' },
-                { number: '20+', label: 'Training Programs' },
-                { number: '10+', label: 'Years of Excellence' }
+                { number: '100+', label: 'Training Programs' },
+                { number: '4+', label: 'Years of Excellence' }
               ].map((stat, index) => (
-                <motion.div 
+                <motion.div
                   key={index}
                   className="p-6"
                   initial={{ opacity: 0, y: 20 }}
@@ -106,7 +105,7 @@ export default function OurJourney() {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   viewport={{ once: true }}
                 >
-                  <div className="text-3xl md:text-4xl font-bold text-yellow-400 mb-2">{stat.number}</div>
+                  <div className="text-3xl md:text-4xl font-bold text-red-400 mb-2">{stat.number}</div>
                   <div className="text-blue-100">{stat.label}</div>
                 </motion.div>
               ))}
@@ -138,14 +137,14 @@ export default function OurJourney() {
                 description: 'Creating measurable, positive change in the lives of our trainees and the industries they serve.'
               }
             ].map((value, index) => (
-              <motion.div 
+              <motion.div
                 key={index}
                 className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 text-center"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                whileHover={{ 
+                whileHover={{
                   y: -10,
                   boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
                 }}
@@ -168,9 +167,9 @@ export default function OurJourney() {
               viewport={{ once: true }}
               className="relative"
             >
-              <div className="absolute -top-10 -right-10 w-40 h-40 bg-yellow-100 rounded-full opacity-30 -z-10"></div>
+              <div className="absolute -top-10 -right-10 w-40 h-40 bg-red-100 rounded-full opacity-30 -z-10"></div>
               <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-100 rounded-full opacity-30 -z-10"></div>
-              
+
               <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
                 Join Our Growing Community of Professionals
               </h2>
@@ -178,17 +177,17 @@ export default function OurJourney() {
                 Be part of our mission to transform the energy sector through competency development and professional excellence.
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Link 
-                  to="/courses" 
-                  className="bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-200 inline-block text-center"
+                <Link
+                  to="/courses"
+                  className="bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-200 inline-block text-center"
                 >
                   Explore Our Programs
                 </Link>
-                <Link 
-                  to="/contact" 
+                <Link
+                  to="/contact"
                   className="bg-white hover:bg-gray-50 text-gray-800 font-medium py-3 px-8 border-2 border-gray-200 rounded-lg transition-colors duration-200 inline-block text-center"
                 >
-                  Get In Touch
+                  Contact Us
                 </Link>
               </div>
             </motion.div>

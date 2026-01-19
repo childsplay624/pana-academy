@@ -23,7 +23,7 @@ const TestimonialsSection = () => {
         .order('display_order', { ascending: true }) as any);
 
       if (error) throw error;
-      
+
       setTestimonials(data || []);
     } catch (error) {
       console.error('Error fetching testimonials:', error);
@@ -53,8 +53,8 @@ const TestimonialsSection = () => {
   if (loading) {
     return (
       <section id="testimonials" className="py-20 relative bg-cover bg-center" style={{ backgroundImage: 'url(/src/assets/hero-training.jpg)' }}>
-      {/* Black overlay */}
-      <div className="absolute inset-0 bg-black/70 z-0"></div>
+        {/* Black overlay */}
+        <div className="absolute inset-0 bg-black/70 z-0"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-pana-gold mx-auto"></div>
@@ -68,11 +68,11 @@ const TestimonialsSection = () => {
   if (testimonials.length === 0) {
     return (
       <section id="testimonials" className="py-20 relative bg-cover bg-center" style={{ backgroundImage: 'url(/src/assets/hero-training.jpg)' }}>
-      {/* Black overlay */}
-      <div className="absolute inset-0 bg-black/70 z-0"></div>
+        {/* Black overlay */}
+        <div className="absolute inset-0 bg-black/70 z-0"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">What Our Clients Say</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Our Client's Feedback</h2>
             <p className="text-xl text-gray-200">No testimonials available at the moment.</p>
           </div>
         </div>
@@ -89,9 +89,9 @@ const TestimonialsSection = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">What Our Clients Say</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Our Client's Feedback</h2>
           <p className="text-xl text-gray-200 max-w-3xl mx-auto">
-            Hear from industry leaders who have transformed their organizations through PANA Academy's programs.
+            Hear from our clients who have transformed their careers and improved their organizational performance through PANA Academy’s Solutions and Services
           </p>
         </div>
 
@@ -102,7 +102,7 @@ const TestimonialsSection = () => {
               <div className="flex items-start space-x-6">
                 {/* Quote Icon */}
                 <Quote className="w-12 h-12 text-pana-gold flex-shrink-0 mt-2" />
-                
+
                 {/* Testimonial Content */}
                 <div className="flex-1">
                   <div className="flex items-center space-x-1 mb-4">
@@ -110,11 +110,11 @@ const TestimonialsSection = () => {
                       <Star key={i} className="w-5 h-5 fill-pana-gold text-pana-gold" />
                     ))}
                   </div>
-                  
+
                   <blockquote className="text-lg md:text-xl text-white leading-relaxed mb-6">
                     "{currentTestimonial.content}"
                   </blockquote>
-                  
+
                   <div className="flex items-center space-x-4">
                     <div className="w-12 h-12 bg-pana-gold rounded-full flex items-center justify-center text-pana-navy font-bold">
                       {currentTestimonial.image_initials || currentTestimonial.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
@@ -155,9 +155,8 @@ const TestimonialsSection = () => {
             <button
               key={index}
               onClick={() => setCurrentIndex(index)}
-              className={`w-3 h-3 rounded-full transition-colors duration-300 ${
-                index === currentIndex ? 'bg-pana-gold' : 'bg-white/30'
-              }`}
+              className={`w-3 h-3 rounded-full transition-colors duration-300 ${index === currentIndex ? 'bg-pana-gold' : 'bg-white/30'
+                }`}
             />
           ))}
         </div>
@@ -176,8 +175,8 @@ const TestimonialsSection = () => {
             ].map((company, index) => (
               <div key={index} className="flex justify-center p-2">
                 <div className="bg-white/5 hover:bg-white/10 rounded-lg p-4 w-full h-24 flex items-center justify-center transition-all duration-300">
-                  <img 
-                    src={company.logo} 
+                  <img
+                    src={company.logo}
                     alt={company.name}
                     className="max-h-12 max-w-full object-contain opacity-100 hover:opacity-100 transition-opacity"
                   />
@@ -191,9 +190,10 @@ const TestimonialsSection = () => {
         <div className="text-center mt-16">
           <h3 className="text-2xl font-bold text-white mb-4">Join Our Success Stories</h3>
           <p className="text-gray-200 mb-8 max-w-2xl mx-auto">
-            Ready to transform your organization? Let's discuss how PANA Academy can help you achieve your goals.
+            Ready to Transform Your Career and/or Organization?</p>
+          <p className="text-gray-200 mb-8 max-w-2xl mx-auto"> Get in touch with us to discuss how PANA Academy can help you achieve your training, performance improvement, and research and development goals.
           </p>
-          <Button 
+          <Button
             size="lg"
             className="bg-red-600 text-white hover:bg-white hover:text-red-600 transition-colors"
           >

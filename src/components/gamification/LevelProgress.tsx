@@ -17,7 +17,7 @@ export function LevelProgress({ level, experience, progressData }: LevelProgress
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Trophy className="h-5 w-5 text-yellow-500" />
+          <Trophy className="h-5 w-5 text-red-500" />
           <span className="font-semibold">Level {level}</span>
         </div>
         <Badge variant="secondary" className="flex items-center gap-1">
@@ -25,7 +25,7 @@ export function LevelProgress({ level, experience, progressData }: LevelProgress
           {experience.toLocaleString()} XP
         </Badge>
       </div>
-      
+
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm">
           <span>Progress to Level {level + 1}</span>
