@@ -23,8 +23,12 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { useSiteImage } from '@/hooks/useSiteImage';
 
 const PublicCoursesPage = () => {
+  // Fetch header image from centralized system
+  const { imageUrl: headerImage } = useSiteImage('header_training');
+  
   const [searchQuery, setSearchQuery] = useState('');
   const [allCourses, setAllCourses] = useState<Course[]>([]);
   const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
@@ -170,48 +174,61 @@ const PublicCoursesPage = () => {
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       {/* Hero Section with Background Image */}
-      <div className="relative bg-cover bg-center py-28" style={{ backgroundImage: 'url(/src/assets/hero-training.jpg)' }}>
-        <div className="absolute inset-0 bg-black/70 bg-blend-multiply"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">
-            Explore Our Courses
-          </h1>
-          <p className="text-xl text-gray-200 max-w-3xl mx-auto mb-10">
-            Explore our Training Solutions designed to advance your career and organization
-          </p>
+      <div className="relative min-h-[500px] bg-cover bg-center">
+        {headerImage ? (
+          <img
+            src={headerImage}
+            alt="Training Programs"
+            className="absolute inset-0 w-full h-full object-cover z-0"
+          />
+        ) : (
+          <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-pana-navy to-pana-red z-0"></div>
+        )}
+        <div className="absolute inset-0 bg-black/70 bg-blend-multiply z-10"></div>
+        
+        {/* Search Form Overlay */}
+        <div className="relative z-20 flex flex-col justify-center min-h-[500px] px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto text-center">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">
+              Explore Our Courses
+            </h1>
+            <p className="text-xl text-gray-200 max-w-3xl mx-auto mb-10">
+              Explore our Training Solutions designed to advance your career and organization
+            </p>
 
-          <div className="max-w-2xl mx-auto">
-            <div className="flex gap-3">
-              {/* Search Input */}
-              <div className="relative flex-1">
-                <Input
-                  type="text"
-                  value={searchQuery}
-                  onChange={handleSearch}
-                  placeholder="Search courses..."
-                  className="pl-10 pr-4 py-6 text-base bg-white/10 border-0 text-white placeholder-gray-300 focus-visible:ring-2 focus-visible:ring-white/50"
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-300 w-5 h-5" />
+            <div className="max-w-2xl mx-auto">
+              <div className="flex gap-3">
+                {/* Search Input */}
+                <div className="relative flex-1">
+                  <Input
+                    type="text"
+                    value={searchQuery}
+                    onChange={handleSearch}
+                    placeholder="Search courses..."
+                    className="pl-10 pr-4 py-6 text-base bg-white/10 border-0 text-white placeholder-gray-300 focus-visible:ring-2 focus-visible:ring-white/50"
+                  />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-300 w-5 h-5" />
+                </div>
+
+                {/* Category Dropdown */}
+                <Select value={activeFilter} onValueChange={handleFilterClick}>
+                  <SelectTrigger className="w-[220px] py-6 bg-white/10 border-0 text-white focus:ring-2 focus:ring-white/50">
+                    <Filter className="w-4 h-4 mr-2" />
+                    <SelectValue placeholder="All Categories" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="All">All Categories</SelectItem>
+                    <SelectItem value="soft_skills">Soft Skills</SelectItem>
+                    <SelectItem value="safety_courses">Safety Courses</SelectItem>
+                    <SelectItem value="sustainability_courses">Sustainability Courses</SelectItem>
+                    <SelectItem value="general_technical_courses">General Technical Courses</SelectItem>
+                    <SelectItem value="flow_drives_courses">Flow Drives Courses</SelectItem>
+                    <SelectItem value="flow_control_courses">Flow Control Courses</SelectItem>
+                    <SelectItem value="flow_measurement_courses">Flow Measurement Courses</SelectItem>
+                    <SelectItem value="instrumentation_automation">Instrumentation/Automation and Process Control</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-
-              {/* Category Dropdown */}
-              <Select value={activeFilter} onValueChange={handleFilterClick}>
-                <SelectTrigger className="w-[220px] py-6 bg-white/10 border-0 text-white focus:ring-2 focus:ring-white/50">
-                  <Filter className="w-4 h-4 mr-2" />
-                  <SelectValue placeholder="All Categories" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="All">All Categories</SelectItem>
-                  <SelectItem value="soft_skills">Soft Skills</SelectItem>
-                  <SelectItem value="safety_courses">Safety Courses</SelectItem>
-                  <SelectItem value="sustainability_courses">Sustainability Courses</SelectItem>
-                  <SelectItem value="general_technical_courses">General Technical Courses</SelectItem>
-                  <SelectItem value="flow_drives_courses">Flow Drives Courses</SelectItem>
-                  <SelectItem value="flow_control_courses">Flow Control Courses</SelectItem>
-                  <SelectItem value="flow_measurement_courses">Flow Measurement Courses</SelectItem>
-                  <SelectItem value="instrumentation_automation">Instrumentation/Automation and Process Control</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
         </div>

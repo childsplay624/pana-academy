@@ -3,11 +3,10 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { BookOpen, Monitor, Users, Award, ArrowRight, CheckCircle, Zap, Globe, Target, TrendingUp } from "lucide-react";
 import { useSiteImage } from "@/hooks/useSiteImage";
-import trainingHero from "@/assets/hero-training.jpg";
 
 const TrainingDelivery = () => {
   // Fetch header image from centralized system
-  const { imageUrl: headerImage } = useSiteImage('header_training', trainingHero);
+  const { imageUrl: headerImage } = useSiteImage('header_training');
 
   return (
     <>
@@ -22,15 +21,28 @@ const TrainingDelivery = () => {
 
         <main>
           {/* Hero Section with Visual Impact */}
-          <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
+          <section className="relative pt-0 pb-20 md:pb-28 overflow-hidden mt-20">
             {/* Background Image */}
             <div className="absolute inset-0">
-              <img
-                src={headerImage}
-                alt="Training Delivery"
-                className="w-full h-full object-cover object-center"
-                loading="eager"
-              />
+              {headerImage ? (
+                <img
+                  src={headerImage}
+                  alt="Training Delivery"
+                  className="w-full h-full object-cover object-center"
+                  loading="eager"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-pana-navy via-pana-blue to-pana-red relative">
+                  {/* Animated gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-pana-navy/80 via-pana-blue/40 to-transparent"></div>
+                  {/* Decorative elements */}
+                  <div className="absolute inset-0">
+                    <div className="absolute top-10 left-10 w-32 h-32 bg-pana-gold/20 rounded-full blur-2xl animate-pulse"></div>
+                    <div className="absolute bottom-10 right-10 w-48 h-48 bg-white/10 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
+                    <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-pana-red/20 rounded-full blur-xl animate-pulse animation-delay-500"></div>
+                  </div>
+                </div>
+              )}
             </div>
             {/* Black overlay */}
             <div className="absolute inset-0 bg-black/60"></div>
@@ -48,7 +60,7 @@ const TrainingDelivery = () => {
               <div className="absolute bottom-32 left-1/3 w-8 h-8 bg-pana-blue/30 rounded-full animate-pulse"></div>
             </div>
 
-            <div className="relative max-w-7xl mx-auto px-6 lg:px-8 text-center z-10">
+            <div className="relative max-w-7xl mx-auto px-6 lg:px-8 text-center z-10 mt-16">
               <div className="space-y-8 animate-fade-in">
                 <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full text-white/90 text-sm font-medium border border-white/20">
                   <Zap className="w-5 h-5 text-pana-gold" />
@@ -116,7 +128,7 @@ const TrainingDelivery = () => {
                 {/* Key Benefits */}
                 <div className="grid md:grid-cols-3 gap-8 mt-12">
                   <div className="text-center group">
-                    <div className="w-16 h-16 bg-gradient-to-br from-pana-blue to-pana-navy rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-16 h-16 bg-gradient-to-br from-pana-blue to-pana-navy rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-102 transition-transform duration-300">
                       <Globe className="w-8 h-8 text-white" />
                     </div>
                     <h3 className="text-lg font-semibold text-foreground mb-2">Global Standards</h3>
@@ -124,7 +136,7 @@ const TrainingDelivery = () => {
                   </div>
 
                   <div className="text-center group">
-                    <div className="w-16 h-16 bg-gradient-to-br from-pana-gold to-red-400 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-16 h-16 bg-gradient-to-br from-pana-gold to-red-400 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-102 transition-transform duration-300">
                       <TrendingUp className="w-8 h-8 text-white" />
                     </div>
                     <h3 className="text-lg font-semibold text-foreground mb-2">Proven Results</h3>
@@ -132,7 +144,7 @@ const TrainingDelivery = () => {
                   </div>
 
                   <div className="text-center group">
-                    <div className="w-16 h-16 bg-gradient-to-br from-pana-navy to-pana-blue rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-16 h-16 bg-gradient-to-br from-pana-navy to-pana-blue rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-102 transition-transform duration-300">
                       <Zap className="w-8 h-8 text-white" />
                     </div>
                     <h3 className="text-lg font-semibold text-foreground mb-2">Innovation Focus</h3>
@@ -164,7 +176,7 @@ const TrainingDelivery = () => {
 
                     <div className="relative">
                       <div className="flex items-start gap-6 mb-8">
-                        <div className="w-20 h-20 bg-gradient-to-br from-pana-gold to-red-400 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <div className="w-20 h-20 bg-gradient-to-br from-pana-gold to-red-400 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-102 transition-transform duration-300">
                           <BookOpen className="w-10 h-10 text-white" />
                         </div>
                         <div>
@@ -205,7 +217,7 @@ const TrainingDelivery = () => {
 
                     <div className="relative">
                       <div className="flex items-start gap-6 mb-8">
-                        <div className="w-20 h-20 bg-gradient-to-br from-pana-blue to-pana-navy rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <div className="w-20 h-20 bg-gradient-to-br from-pana-blue to-pana-navy rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-102 transition-transform duration-300">
                           <Users className="w-10 h-10 text-white" />
                         </div>
                         <div>
@@ -246,7 +258,7 @@ const TrainingDelivery = () => {
 
                     <div className="relative">
                       <div className="flex items-start gap-6 mb-8">
-                        <div className="w-20 h-20 bg-gradient-to-br from-pana-navy to-slate-800 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <div className="w-20 h-20 bg-gradient-to-br from-pana-navy to-slate-800 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-102 transition-transform duration-300">
                           <Monitor className="w-10 h-10 text-white" />
                         </div>
                         <div>
@@ -287,7 +299,7 @@ const TrainingDelivery = () => {
 
                     <div className="relative">
                       <div className="flex items-start gap-6 mb-8">
-                        <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-102 transition-transform duration-300">
                           <Award className="w-10 h-10 text-white" />
                         </div>
                         <div>

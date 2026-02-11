@@ -35,10 +35,10 @@ const fallbackSlides = [
 
 const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const { images: heroImages, isLoading } = useSiteImages('hero');
+  const { images: heroImages, isLoading, error } = useSiteImages('hero');
 
   // Build slides from database or use fallbacks
-  const slides = heroImages.length > 0
+  const slides = heroImages.length > 0 && heroImages[0]?.url
     ? heroImages.map((img, index) => ({
       id: index + 1,
       backgroundImage: img.url,
@@ -48,6 +48,11 @@ const HeroSection = () => {
     }))
     : fallbackSlides;
 
+  // Handle error
+  if (error) {
+    console.error('Error loading hero images:', error);
+    // You can also display an error message to the user here
+  }
 
   // Auto-play
   useEffect(() => {
@@ -63,7 +68,7 @@ const HeroSection = () => {
   const current = slides[currentSlide];
 
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden">
+    <section className="relative h-[90vh] flex items-center overflow-hidden mt-20">
       {/* Background with smooth scroll */}
       <div className="absolute inset-0">
         <AnimatePresence mode="wait">
@@ -71,11 +76,11 @@ const HeroSection = () => {
             key={current.id}
             src={current.backgroundImage}
             alt={current.title}
-            initial={{ opacity: 0, scale: 1.05 }}
+            initial={{ opacity: 0, scale: 1.02 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
+            exit={{ opacity: 0, scale: 0.98 }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="w-full h-full object-cover absolute inset-0"
+            className="w-full h-full object-cover object-center absolute inset-0"
           />
         </AnimatePresence>
         <div className="absolute inset-0 bg-black/60"></div>
@@ -89,7 +94,7 @@ const HeroSection = () => {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 50 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 md:p-10 shadow-lg max-w-2xl ml-4 md:ml-10"
+          className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 md:p-8 shadow-lg max-w-xl ml-4 md:ml-10"
         >
           {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-red-600/20 backdrop-blur-sm px-4 py-2 rounded-full text-white text-sm font-medium border border-red-500/30 mb-4">

@@ -4,15 +4,15 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Users, Globe, BookOpen, ChevronRight, Award, Target, Heart, TrendingUp, Zap, ArrowRight } from "lucide-react";
-import trainingImage from "@/assets/pana.jpg";
+import { useSiteImage } from "@/hooks/useSiteImage";
 import ValuesSection from "@/components/ValuesSection";
 import ServicesSection from "@/components/ServicesSection";
-import { useSiteImage } from "@/hooks/useSiteImage";
+import heroTraining from "@/assets/hero-training.jpg";
 
 const AboutPage = () => {
     // Fetch images from centralized system
-    const { imageUrl: headerImage } = useSiteImage('header_about', trainingImage);
-    const { imageUrl: trainingImg } = useSiteImage('training_main', trainingImage);
+    const { imageUrl: headerImage } = useSiteImage('header_about');
+    const { imageUrl: trainingImg } = useSiteImage('training_main');
 
     const highlights = [
         {
@@ -69,15 +69,19 @@ const AboutPage = () => {
                 <Navigation />
 
                 {/* Hero Section with Visual Impact */}
-                <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
+                <section className="relative pt-0 pb-20 md:pb-28 overflow-hidden mt-20">
                     {/* Background Image */}
                     <div className="absolute inset-0">
-                        <img
-                            src={headerImage}
-                            alt="About PANA Academy"
-                            className="w-full h-full object-cover object-center"
-                            loading="eager"
-                        />
+                        {headerImage ? (
+                            <img
+                                src={headerImage}
+                                alt="About PANA Academy"
+                                className="w-full h-full object-cover object-center"
+                                loading="eager"
+                            />
+                        ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-pana-navy to-pana-gold"></div>
+                        )}
                     </div>
                     {/* Black overlay */}
                     <div className="absolute inset-0 bg-black/60"></div>
@@ -95,7 +99,7 @@ const AboutPage = () => {
                         <div className="absolute bottom-32 left-1/3 w-8 h-8 bg-red-600/30 rounded-full animate-pulse"></div>
                     </div>
 
-                    <div className="relative max-w-7xl mx-auto px-6 lg:px-8 text-center z-10">
+                    <div className="relative max-w-7xl mx-auto px-6 lg:px-8 text-center z-10 mt-16">
                         <div className="space-y-8 animate-fade-in">
                             <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full text-white/90 text-sm font-medium border border-white/20">
                                 <Zap className="w-5 h-5 text-pana-gold" />
@@ -138,12 +142,21 @@ const AboutPage = () => {
                         <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
                             {/* Left Column - Image */}
                             <div className="relative">
-                                <img
-                                    src={trainingImg}
-                                    alt="Professional Training at PANA Academy"
-                                    className="rounded-2xl shadow-lg w-full h-[40rem] object-cover object-center"
-                                    loading="lazy"
-                                />
+                                {trainingImg ? (
+                                    <img
+                                        src={trainingImg}
+                                        alt="Professional Training at PANA Academy"
+                                        className="rounded-2xl shadow-lg w-full h-[40rem] object-cover object-center"
+                                        loading="lazy"
+                                    />
+                                ) : (
+                                    <img
+                                        src={heroTraining}
+                                        alt="Professional Training at PANA Academy"
+                                        className="rounded-2xl shadow-lg w-full h-[40rem] object-cover object-center"
+                                        loading="lazy"
+                                    />
+                                )}
                                 <div className="absolute inset-0 bg-gradient-to-t from-pana-navy/20 to-transparent rounded-2xl"></div>
                             </div>
 

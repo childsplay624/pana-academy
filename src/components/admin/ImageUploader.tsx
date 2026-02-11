@@ -7,17 +7,19 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 
 interface ImageUploaderProps {
-    onUpload: (file: File, metadata: { alt_text?: string; description?: string }) => Promise<void>;
+    onUpload: (file: File, metadata: { alt_text?: string; description?: string; customKey?: string }) => Promise<void>;
     category: string;
     disabled?: boolean;
+    showCustomKey?: boolean;
 }
 
-export function ImageUploader({ onUpload, category, disabled }: ImageUploaderProps) {
+export function ImageUploader({ onUpload, category, disabled, showCustomKey = false }: ImageUploaderProps) {
     const { toast } = useToast();
     const [preview, setPreview] = useState<string | null>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [altText, setAltText] = useState('');
     const [description, setDescription] = useState('');
+    const [customKey, setCustomKey] = useState('');
     const [uploading, setUploading] = useState(false);
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -72,6 +74,7 @@ export function ImageUploader({ onUpload, category, disabled }: ImageUploaderPro
             await onUpload(selectedFile, {
                 alt_text: altText,
                 description: description,
+                customKey: showCustomKey ? customKey : undefined,
             });
 
             // Reset form
@@ -79,6 +82,7 @@ export function ImageUploader({ onUpload, category, disabled }: ImageUploaderPro
             setPreview(null);
             setAltText('');
             setDescription('');
+            setCustomKey('');
 
             toast({
                 title: 'Image uploaded',
@@ -101,6 +105,7 @@ export function ImageUploader({ onUpload, category, disabled }: ImageUploaderPro
         setPreview(null);
         setAltText('');
         setDescription('');
+        setCustomKey('');
     };
 
     return (
@@ -147,6 +152,22 @@ export function ImageUploader({ onUpload, category, disabled }: ImageUploaderPro
 
                     {/* Metadata */}
                     <div className="space-y-3">
+                        {showCustomKey && (
+                            <div className="space-y-2">
+                                <Label htmlFor="custom-key">Image Key *</Label>
+                                <Input
+                                    id="custom-key"
+                                    placeholder="e.g., header_training, header_about"
+                                    value={customKey}
+                                    onChange={(e) => setCustomKey(e.target.value)}
+                                    disabled={uploading}
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                    Use specific key for header images (e.g., header_training)
+                                </p>
+                            </div>
+                        )}
+
                         <div className="space-y-2">
                             <Label htmlFor="alt-text">Alt Text *</Label>
                             <Input
@@ -172,7 +193,7 @@ export function ImageUploader({ onUpload, category, disabled }: ImageUploaderPro
                         <div className="flex gap-3">
                             <Button
                                 onClick={handleUpload}
-                                disabled={!altText || uploading}
+                                disabled={!altText || (showCustomKey && !customKey) || uploading}
                                 className="flex-1"
                             >
                                 {uploading ? (

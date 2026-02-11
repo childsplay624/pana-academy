@@ -13,13 +13,15 @@ export function CourseLayout({ children }: CourseLayoutProps) {
         <AppSidebar />
         
         <div className="flex-1 flex flex-col">
-          <header className="h-14 border-b bg-background flex items-center px-4">
+          <header className="h-16 border-b bg-background flex items-center px-4 lg:px-6 shrink-0">
             <SidebarTrigger className="ml-2" />
           </header>
           
           {/* Main Content */}
-          <main className="flex-1">
-            {children}
+          <main className="flex-1 overflow-auto">
+            <div className="w-full">
+              {children}
+            </div>
           </main>
         </div>
       </div>

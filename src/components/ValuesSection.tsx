@@ -3,8 +3,8 @@ import { useSiteImage } from "@/hooks/useSiteImage";
 
 const ValuesSection = () => {
   // Fetch values images from centralized system
-  const { imageUrl: sandsImage } = useSiteImage('values_sands', '/values/sands.PNG');
-  const { imageUrl: maximsImage } = useSiteImage('values_maxims', '/values/maxims.jpg');
+  const { imageUrl: sandsImage } = useSiteImage('values_sands');
+  const { imageUrl: maximsImage } = useSiteImage('values_maxims');
 
   const values = [
     {
@@ -40,12 +40,23 @@ const ValuesSection = () => {
               >
                 <div className="w-full h-64 overflow-hidden relative group">
                   <div className="absolute inset-0 overflow-hidden">
-                    <img
-                      src={value.image}
-                      alt={value.title}
-                      className="w-full h-full object-contain p-4 transition-transform duration-500 ease-in-out transform group-hover:scale-110"
-                      loading="lazy"
-                    />
+                    {value.image ? (
+                      <img
+                        src={value.image}
+                        alt={value.title}
+                        className="w-full h-full object-contain p-4 transition-transform duration-500 ease-in-out transform group-hover:scale-110"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                        <div className="text-center text-gray-500">
+                          <div className="w-16 h-16 bg-gray-300 rounded-lg mx-auto mb-2 flex items-center justify-center">
+                            <span className="text-2xl font-bold">{value.title.charAt(0)}</span>
+                          </div>
+                          <p className="text-sm">{value.title}</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="p-6">

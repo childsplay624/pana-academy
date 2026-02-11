@@ -13,9 +13,11 @@ import {
     initializePayment,
     savePaymentRecord,
     uploadReceipt,
+    calculateTaxAmount,
     type PaymentProvider
 } from '@/services/paymentService';
 import { getBankDetails, type BankDetails } from '@/services/settingsService';
+import { supabase } from '@/integrations/supabase/client';
 
 export function PaymentPage() {
     const { courseId } = useParams<{ courseId: string }>();
@@ -29,6 +31,15 @@ export function PaymentPage() {
     const [provider, setProvider] = useState<PaymentProvider>('paystack');
     const [bankDetails, setBankDetails] = useState<BankDetails | null>(null);
     const [loadingBankDetails, setLoadingBankDetails] = useState(false);
+    const [paymentSettings, setPaymentSettings] = useState<{
+        paystack_enabled: boolean;
+        flutterwave_enabled: boolean;
+        manual_enabled: boolean;
+    }>({
+        paystack_enabled: true,
+        flutterwave_enabled: true,
+        manual_enabled: true
+    });
 
     useEffect(() => {
         if (!user) {
@@ -46,7 +57,45 @@ export function PaymentPage() {
         }
 
         loadBankInformation();
+        loadPaymentSettings();
     }, [courseId, user]);
+
+    const loadPaymentSettings = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('platform_settings')
+                .select('key, value')
+                .in('key', ['paystack_enabled', 'flutterwave_enabled', 'manual_enabled']);
+
+            if (error) throw error;
+
+            const settings: any = {};
+            data.forEach(item => {
+                try {
+                    settings[item.key] = typeof item.value === 'string' ? JSON.parse(item.value) : item.value;
+                } catch {
+                    settings[item.key] = item.value;
+                }
+            });
+
+            setPaymentSettings({
+                paystack_enabled: settings.paystack_enabled !== false,
+                flutterwave_enabled: settings.flutterwave_enabled !== false,
+                manual_enabled: settings.manual_enabled !== false
+            });
+
+            // Set default provider to first available payment method
+            if (settings.paystack_enabled !== false) {
+                setProvider('paystack');
+            } else if (settings.flutterwave_enabled !== false) {
+                setProvider('flutterwave');
+            } else if (settings.manual_enabled !== false) {
+                setProvider('manual');
+            }
+        } catch (error) {
+            console.error('Error loading payment settings:', error);
+        }
+    };
 
     const loadBankInformation = async () => {
         setLoadingBankDetails(true);
@@ -99,6 +148,20 @@ export function PaymentPage() {
 
     const [receiptFile, setReceiptFile] = useState<File | null>(null);
     const [uploadingReceipt, setUploadingReceipt] = useState(false);
+    const [taxCalculation, setTaxCalculation] = useState<{
+        finalAmount: number;
+        taxAmount: number;
+        platformFee: number;
+    } | null>(null);
+
+    // Calculate tax when course loads
+    useEffect(() => {
+        if (course && courseId) {
+            calculateTaxAmount(courseId, course.price).then(calculation => {
+                setTaxCalculation(calculation);
+            });
+        }
+    }, [course, courseId]);
 
     const handlePayment = async () => {
         if (!user || !course || !courseId) return;
@@ -116,10 +179,13 @@ export function PaymentPage() {
         setProcessing(true);
 
         try {
-            // Initialize payment with selected provider
+            // Calculate tax and get final amount
+            const { finalAmount, taxAmount, platformFee } = await calculateTaxAmount(courseId, course.price);
+            
+            // Initialize payment with selected provider using final amount
             const response = await initializePayment(
                 provider,
-                course.price,
+                finalAmount,
                 user.email || '',
                 {
                     courseId,
@@ -139,7 +205,7 @@ export function PaymentPage() {
                 const saveResult = await savePaymentRecord(
                     user.id,
                     courseId,
-                    course.price,
+                    course.price, // Keep original amount for record
                     provider,
                     response.reference,
                     'pending'
@@ -264,11 +330,43 @@ export function PaymentPage() {
                                     />
                                 )}
                             </div>
-                            <div className="mt-6 pt-4 border-t border-blue-200 flex justify-between items-center">
-                                <span className="text-gray-700 font-medium">Total Amount:</span>
-                                <span className="text-3xl font-bold text-pana-navy">
-                                    ₦{course.price.toLocaleString()}
-                                </span>
+                            <div className="mt-6 pt-4 border-t border-blue-200">
+                                <div className="space-y-2">
+                                    {taxCalculation && (
+                                        <>
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-gray-600">Course Price:</span>
+                                                <span className="font-medium">₦{course.price.toLocaleString()}</span>
+                                            </div>
+                                            {taxCalculation.taxAmount > 0 && (
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-gray-600">Tax:</span>
+                                                    <span className="font-medium">₦{taxCalculation.taxAmount.toLocaleString()}</span>
+                                                </div>
+                                            )}
+                                            {taxCalculation.platformFee > 0 && (
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-gray-600">Platform Fee:</span>
+                                                    <span className="font-medium">₦{taxCalculation.platformFee.toLocaleString()}</span>
+                                                </div>
+                                            )}
+                                            <div className="flex justify-between items-center pt-2 border-t border-blue-200">
+                                                <span className="text-gray-700 font-medium">Total Amount:</span>
+                                                <span className="text-3xl font-bold text-pana-navy">
+                                                    ₦{taxCalculation.finalAmount.toLocaleString()}
+                                                </span>
+                                            </div>
+                                        </>
+                                    )}
+                                    {!taxCalculation && (
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-700 font-medium">Total Amount:</span>
+                                            <span className="text-3xl font-bold text-pana-navy">
+                                                ₦{course.price.toLocaleString()}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -276,34 +374,47 @@ export function PaymentPage() {
                         <div className="space-y-3">
                             <Label className="text-base font-semibold">Select Payment Method</Label>
                             <RadioGroup value={provider} onValueChange={(v) => setProvider(v as PaymentProvider)}>
-                                <div className="flex items-center space-x-3 border rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors">
-                                    <RadioGroupItem value="paystack" id="paystack" />
-                                    <Label htmlFor="paystack" className="flex-1 cursor-pointer">
-                                        <div>
-                                            <p className="font-medium">Paystack</p>
-                                            <p className="text-sm text-gray-500">Card, Bank Transfer, USSD</p>
-                                        </div>
-                                    </Label>
-                                </div>
-                                <div className="flex items-center space-x-3 border rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors">
-                                    <RadioGroupItem value="flutterwave" id="flutterwave" />
-                                    <Label htmlFor="flutterwave" className="flex-1 cursor-pointer">
-                                        <div>
-                                            <p className="font-medium">Flutterwave</p>
-                                            <p className="text-sm text-gray-500">Card, Bank Transfer, Mobile Money</p>
-                                        </div>
-                                    </Label>
-                                </div>
-                                <div className="flex items-center space-x-3 border rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors">
-                                    <RadioGroupItem value="manual" id="manual" />
-                                    <Label htmlFor="manual" className="flex-1 cursor-pointer">
-                                        <div>
-                                            <p className="font-medium">Manual Bank Transfer</p>
-                                            <p className="text-sm text-gray-500">Upload payment receipt for verification</p>
-                                        </div>
-                                    </Label>
-                                </div>
+                                {paymentSettings.paystack_enabled && (
+                                    <div className="flex items-center space-x-3 border rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors">
+                                        <RadioGroupItem value="paystack" id="paystack" />
+                                        <Label htmlFor="paystack" className="flex-1 cursor-pointer">
+                                            <div>
+                                                <p className="font-medium">Paystack</p>
+                                                <p className="text-sm text-gray-500">Card, Bank Transfer, USSD</p>
+                                            </div>
+                                        </Label>
+                                    </div>
+                                )}
+                                {paymentSettings.flutterwave_enabled && (
+                                    <div className="flex items-center space-x-3 border rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors">
+                                        <RadioGroupItem value="flutterwave" id="flutterwave" />
+                                        <Label htmlFor="flutterwave" className="flex-1 cursor-pointer">
+                                            <div>
+                                                <p className="font-medium">Flutterwave</p>
+                                                <p className="text-sm text-gray-500">Card, Bank Transfer, Mobile Money</p>
+                                            </div>
+                                        </Label>
+                                    </div>
+                                )}
+                                {paymentSettings.manual_enabled && (
+                                    <div className="flex items-center space-x-3 border rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition-colors">
+                                        <RadioGroupItem value="manual" id="manual" />
+                                        <Label htmlFor="manual" className="flex-1 cursor-pointer">
+                                            <div>
+                                                <p className="font-medium">Manual Bank Transfer</p>
+                                                <p className="text-sm text-gray-500">Upload payment receipt for verification</p>
+                                            </div>
+                                        </Label>
+                                    </div>
+                                )}
                             </RadioGroup>
+                            
+                            {!paymentSettings.paystack_enabled && !paymentSettings.flutterwave_enabled && !paymentSettings.manual_enabled && (
+                                <div className="text-center py-8 border rounded-lg bg-red-50">
+                                    <p className="text-red-600 font-medium">No payment methods are currently available</p>
+                                    <p className="text-sm text-red-500 mt-1">Please contact support or try again later</p>
+                                </div>
+                            )}
                         </div>
 
                         {/* Manual Payment Instructions */}
@@ -377,7 +488,7 @@ export function PaymentPage() {
                             ) : (
                                 <>
                                     <CreditCard className="mr-2 h-5 w-5" />
-                                    {provider === 'manual' ? 'Submit Payment' : `Pay ₦${course?.price.toLocaleString()}`}
+                                    {provider === 'manual' ? 'Submit Payment' : `Pay ₦${taxCalculation?.finalAmount.toLocaleString() || course?.price.toLocaleString()}`}
                                 </>
                             )}
                         </Button>

@@ -12,12 +12,16 @@ export default {
 	theme: {
 		container: {
 			center: true,
-			padding: '2rem',
+			padding: 'clamp(1rem, 5vw, 2rem)',
 			screens: {
 				'2xl': '1400px'
 			}
 		},
 		extend: {
+			scale: {
+				'102': '1.02',
+				'98': '0.98',
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',

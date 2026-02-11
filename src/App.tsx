@@ -24,6 +24,7 @@ import Certificates from "./pages/student/Certificates";
 import Progress from "./pages/student/Progress";
 import Assignments from "./pages/student/Assignments";
 import Help from "./pages/student/Help";
+import Profile from "./pages/student/Profile";
 import CourseLearning from "./pages/CourseLearning";
 import PublicCoursesPage from "./pages/PublicCoursesPage";
 import CoursesPage from "./pages/CoursesPage";
@@ -32,6 +33,7 @@ import { CoursePlayer } from "./components/course/CoursePlayer";
 import { CourseEditor } from "./components/course-management/CourseEditor";
 import NewCourse from "./pages/admin/NewCourse";
 import PaymentManagement from "./pages/admin/PaymentManagement";
+import InvoicesPage from "./pages/admin/InvoicesPage";
 import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/NotFound";
 import VerifyCertificate from "./pages/VerifyCertificate";
@@ -43,6 +45,7 @@ import TeamMemberPage from "./pages/team/TeamMemberPage";
 import TrainingDeliveryPage from "./pages/TrainingDeliveryPage";
 import TestimonialManagement from "./pages/admin/TestimonialManagement";
 import ImageManagement from "./pages/admin/ImageManagement";
+import SupportTickets from "./pages/admin/SupportTickets";
 import ConsultingServicesPage from "./pages/ConsultingServicesPage";
 import RnDServicesPage from "./pages/RnDServicesPage";
 import ContactPage from "./pages/ContactPage";
@@ -169,6 +172,14 @@ const App = () => (
                     }
                   />
                   <Route
+                    path="/dashboard/invoices"
+                    element={
+                      <ProtectedRoute allowedRoles={['admin']}>
+                        <InvoicesPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
                     path="/course/:courseId"
                     element={
                       <ProtectedRoute allowedRoles={['student', 'instructor', 'admin']}>
@@ -209,6 +220,14 @@ const App = () => (
                     }
                   />
                   <Route
+                    path="/dashboard/support-tickets"
+                    element={
+                      <ProtectedRoute allowedRoles={['admin']}>
+                        <SupportTickets />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
                     path="/dashboard/certificates"
                     element={
                       <ProtectedRoute allowedRoles={['student']}>
@@ -229,6 +248,14 @@ const App = () => (
                     element={
                       <ProtectedRoute allowedRoles={['student']}>
                         <Assignments />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/student/profile"
+                    element={
+                      <ProtectedRoute allowedRoles={['student']}>
+                        <Profile />
                       </ProtectedRoute>
                     }
                   />

@@ -65,15 +65,15 @@ const Footer = () => {
               </p>
               <div className="space-y-3">
                 <div className="flex items-center space-x-3">
-                  <Phone className="w-4 h-4 text-pana-gold" />
+                  <Phone className="w-[clamp(0.75rem,1.5vw,1rem)] h-[clamp(0.75rem,1.5vw,1rem)] text-pana-gold" />
                   <span className="text-sm">+234 702 600 0119</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Mail className="w-4 h-4 text-pana-gold" />
+                  <Mail className="w-[clamp(0.75rem,1.5vw,1rem)] h-[clamp(0.75rem,1.5vw,1rem)] text-pana-gold" />
                   <span className="text-sm">info@pana-academy.com</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <MapPin className="w-4 h-4 text-pana-gold" />
+                  <MapPin className="w-[clamp(0.75rem,1.5vw,1rem)] h-[clamp(0.75rem,1.5vw,1rem)] text-pana-gold" />
                   <span className="text-sm">Abuja & Port Harcourt</span>
                 </div>
 
@@ -81,7 +81,7 @@ const Footer = () => {
             </div>
 
             {/* Quick Links */}
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-8 lg:col-span-3">
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-8 lg:col-span-3">
               <div>
                 <h4 className="font-semibold text-lg mb-4 text-pana-gold">Company</h4>
                 <ul className="space-y-3">
@@ -166,7 +166,7 @@ const Footer = () => {
                     className="bg-red-600 hover:bg-red-700"
                   >
                     Subscribe
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                    <ArrowRight className="w-[clamp(0.875rem,1.75vw,1.25rem)] h-[clamp(0.875rem,1.75vw,1.25rem)] ml-2" />
                   </Button>
                 </form>
                 <script
@@ -211,13 +211,13 @@ const Footer = () => {
 
             <div className="flex items-center space-x-6">
               <a href="#privacy" className="text-sm text-gray-400 hover:text-white transition-colors">
-                Privacy Policy
+                
               </a>
               <a href="#terms" className="text-sm text-gray-400 hover:text-white transition-colors">
-                Terms of Service
+                
               </a>
               <a href="#cookies" className="text-sm text-gray-400 hover:text-white transition-colors">
-                Cookie Policy
+                
               </a>
             </div>
 
@@ -227,37 +227,37 @@ const Footer = () => {
                 href="https://www.linkedin.com/company/pana-academy/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-pana-gold hover:text-pana-navy transition-colors duration-200"
+                className="w-[clamp(1.5rem,3vw,2rem)] h-[clamp(1.5rem,3vw,2rem)] bg-white/10 rounded-full flex items-center justify-center hover:bg-pana-gold hover:text-pana-navy transition-colors duration-200"
                 aria-label="LinkedIn"
               >
-                <Linkedin className="w-4 h-4" />
+                <Linkedin className="w-[clamp(0.875rem,1.75vw,1.25rem)] h-[clamp(0.875rem,1.75vw,1.25rem)]" />
               </a>
               <a
                 href="https://twitter.com/panaacademy"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-pana-gold hover:text-pana-navy transition-colors duration-200"
+                className="w-[clamp(1.5rem,3vw,2rem)] h-[clamp(1.5rem,3vw,2rem)] bg-white/10 rounded-full flex items-center justify-center hover:bg-pana-gold hover:text-pana-navy transition-colors duration-200"
                 aria-label="Twitter"
               >
-                <Twitter className="w-4 h-4" />
+                <Twitter className="w-[clamp(0.875rem,1.75vw,1.25rem)] h-[clamp(0.875rem,1.75vw,1.25rem)]" />
               </a>
               <a
                 href="https://www.facebook.com/profile.php?id=61555861660075"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-pana-gold hover:text-pana-navy transition-colors duration-200"
+                className="w-[clamp(1.5rem,3vw,2rem)] h-[clamp(1.5rem,3vw,2rem)] bg-white/10 rounded-full flex items-center justify-center hover:bg-pana-gold hover:text-pana-navy transition-colors duration-200"
                 aria-label="Facebook"
               >
-                <Facebook className="w-4 h-4" />
+                <Facebook className="w-[clamp(0.875rem,1.75vw,1.25rem)] h-[clamp(0.875rem,1.75vw,1.25rem)]" />
               </a>
               <a
                 href="https://www.instagram.com/pana_academy/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-pana-gold hover:text-pana-navy transition-colors duration-200"
+                className="w-[clamp(1.5rem,3vw,2rem)] h-[clamp(1.5rem,3vw,2rem)] bg-white/10 rounded-full flex items-center justify-center hover:bg-pana-gold hover:text-pana-navy transition-colors duration-200"
                 aria-label="Instagram"
               >
-                <Instagram className="w-4 h-4" />
+                <Instagram className="w-[clamp(0.875rem,1.75vw,1.25rem)] h-[clamp(0.875rem,1.75vw,1.25rem)]" />
               </a>
             </div>
           </div>

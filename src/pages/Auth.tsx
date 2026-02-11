@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { Lock, Mail, User, Eye, EyeOff, Github, Linkedin } from 'lucide-react';
 import { signInWithLinkedIn } from '@/lib/auth-utils';
+import { useSiteImage } from '@/hooks/useSiteImage';
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -21,6 +22,10 @@ export default function Auth() {
   const { signIn, signUp, signInWithProvider, user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Fetch background image from database
+  const { imageUrl: bgImage } = useSiteImage('auth_background');
+  const { imageUrl: logoImage } = useSiteImage('logo_pana_why');
 
   // Redirect if already authenticated
   if (user) {
@@ -91,24 +96,42 @@ export default function Auth() {
       {/* Left Side - Background with Image Overlay */}
       <div 
         className="w-full md:w-1/2 relative text-white p-8 md:p-12 flex flex-col min-h-screen"
-        style={{
-          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("/values/log.jpg")',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'flex-end',
-          paddingBottom: '4rem'
-        }}
       >
-        <div className="relative z-10 mb-12">
-          <div className="mb-8">
-            <img 
-              src="/panawhy.png" 
-              alt="PANA Academy" 
-              className="h-20 w-auto brightness-125 drop-shadow-lg" 
+        <div className="absolute inset-0">
+          {bgImage ? (
+            <img
+              src={bgImage}
+              alt="Authentication Background"
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                console.error('Background image failed to load:', bgImage);
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.nextElementSibling?.classList.remove('hidden');
+              }}
             />
+          ) : null}
+          <div className={`w-full h-full bg-gradient-to-br from-pana-navy to-pana-red ${bgImage ? 'hidden' : ''}`}></div>
+          <div className="absolute inset-0 bg-black/70"></div>
+        </div>
+        <div className="relative z-10 flex flex-col justify-end h-full pb-12">
+          <div className="mb-8">
+            <div className="relative">
+              {logoImage ? (
+                <img
+                  src={logoImage}
+                  alt="PANA Academy"
+                  className="h-20 w-auto brightness-125 drop-shadow-lg"
+                  onError={(e) => {
+                    console.error('Logo image failed to load:', logoImage);
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.parentElement?.querySelector('.fallback-logo')?.classList.remove('hidden');
+                  }}
+                />
+              ) : null}
+              <div className={`fallback-logo h-20 w-auto bg-red-600 rounded-lg flex items-center justify-center ${logoImage ? 'hidden' : ''}`}>
+                <span className="text-white font-bold text-xl">PANA</span>
+              </div>
+            </div>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold mb-4">
             {isLogin ? 'Welcome back!' : 'Join us today'}
@@ -126,7 +149,7 @@ export default function Auth() {
       </div>
 
       {/* Right Side - Form */}
-      <div className="w-full md:w-1/2 p-8 md:p-12 flex items-center justify-center">
+      <div className="w-full md:w-1/2 p-8 md:p-12 flex items-center justify-center min-h-screen">
         <Card className="w-full max-w-md border-0 shadow-none md:shadow-md">
           <CardHeader className="text-center space-y-1">
             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">

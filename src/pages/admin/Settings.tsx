@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { LogoUpload } from '@/components/LogoUpload';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Settings2,
@@ -25,7 +26,8 @@ import {
   BookOpen,
   Palette,
   Save,
-  Loader2
+  Loader2,
+  User
 } from 'lucide-react';
 
 interface PlatformSettings {
@@ -34,11 +36,14 @@ interface PlatformSettings {
 
 export default function Settings() {
   const { toast } = useToast();
+  const { profile, user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<PlatformSettings>({});
   const [showPaystackSecret, setShowPaystackSecret] = useState(false);
   const [showFlutterwaveSecret, setShowFlutterwaveSecret] = useState(false);
+  const [fullName, setFullName] = useState(profile?.full_name || '');
+  const [profileSaving, setProfileSaving] = useState(false);
 
   const fetchSettings = async () => {
     try {
@@ -90,6 +95,43 @@ export default function Settings() {
     setSettings(prev => ({ ...prev, [key]: value }));
   };
 
+  const updateProfile = async () => {
+    if (!profile || !user) return;
+    
+    try {
+      setProfileSaving(true);
+      
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          full_name: fullName,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Profile Updated",
+        description: "Your name has been updated successfully.",
+      });
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update profile",
+        variant: "destructive"
+      });
+    } finally {
+      setProfileSaving(false);
+    }
+  };
+
+  // Update fullName when profile changes
+  useEffect(() => {
+    setFullName(profile?.full_name || '');
+  }, [profile]);
+
   const handleSave = async (category: string) => {
     try {
       setSaving(true);
@@ -104,7 +146,7 @@ export default function Settings() {
           case 'Notifications':
             return ['email_notifications', 'course_completion_alerts', 'payment_notifications', 'system_maintenance_alerts', 'admin_email'].includes(key);
           case 'Payment':
-            return ['paystack_enabled', 'flutterwave_enabled', 'default_currency', 'platform_fee', 'paystack_public_key', 'paystack_secret_key', 'flutterwave_public_key', 'flutterwave_secret_key', 'bank_details'].includes(key);
+            return ['paystack_enabled', 'flutterwave_enabled', 'default_currency', 'platform_fee', 'paystack_public_key', 'paystack_secret_key', 'flutterwave_public_key', 'flutterwave_secret_key', 'bank_details', 'tax_enabled', 'tax_rate', 'tax_type', 'tax_name', 'tax_number'].includes(key);
           case 'Courses':
             return ['course_auto_approval', 'enable_course_reviews', 'certificate_generation', 'max_enrollment', 'certificate_validity', 'zoom_api_key', 'zoom_api_secret'].includes(key);
           case 'Appearance':
@@ -161,29 +203,99 @@ export default function Settings() {
           <p className="text-muted-foreground">Manage platform configuration and preferences</p>
         </div>
 
-        <Tabs defaultValue="general" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="general">
-              <Globe className="w-4 h-4 mr-2" />
-              General
+        <Tabs defaultValue="profile" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-1 h-auto p-1 mb-6 bg-muted/50 rounded-lg border">
+            <TabsTrigger value="profile" className="flex items-center justify-center text-xs sm:text-sm h-10 px-2 sm:px-3">
+              <User className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Profile</span>
+              <span className="sm:hidden">P</span>
             </TabsTrigger>
-            <TabsTrigger value="security">
-              <Shield className="w-4 h-4 mr-2" />
-              Security
+            <TabsTrigger value="general" className="flex items-center justify-center text-xs sm:text-sm h-10 px-2 sm:px-3">
+              <Globe className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">General</span>
+              <span className="sm:hidden">G</span>
             </TabsTrigger>
-            <TabsTrigger value="payment-gateways">
-              <CreditCard className="w-4 h-4 mr-2" />
-              Payment Gateways
+            <TabsTrigger value="security" className="flex items-center justify-center text-xs sm:text-sm h-10 px-2 sm:px-3">
+              <Shield className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Security</span>
+              <span className="sm:hidden">S</span>
             </TabsTrigger>
-            <TabsTrigger value="notifications">
-              <Bell className="w-4 h-4 mr-2" />
-              Notifications
+            <TabsTrigger value="payment-gateways" className="flex items-center justify-center text-xs sm:text-sm h-10 px-2 sm:px-3">
+              <CreditCard className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Payment</span>
+              <span className="sm:hidden">P</span>
             </TabsTrigger>
-            <TabsTrigger value="courses">
-              <BookOpen className="w-4 h-4 mr-2" />
-              Courses
+            <TabsTrigger value="notifications" className="flex items-center justify-center text-xs sm:text-sm h-10 px-2 sm:px-3">
+              <Bell className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Notifications</span>
+              <span className="sm:hidden">N</span>
+            </TabsTrigger>
+            <TabsTrigger value="courses" className="flex items-center justify-center text-xs sm:text-sm h-10 px-2 sm:px-3">
+              <BookOpen className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Courses</span>
+              <span className="sm:hidden">C</span>
             </TabsTrigger>
           </TabsList>
+
+          {/* Profile Settings */}
+          <TabsContent value="profile">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <User className="w-5 h-5" />
+                  Profile Settings
+                </CardTitle>
+                <CardDescription>Manage your personal information and account details</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="full-name">Full Name</Label>
+                    <Input
+                      id="full-name"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      placeholder="Enter your full name"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email Address</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={user?.email || ''}
+                      disabled
+                      className="bg-muted/50"
+                    />
+                    <p className="text-xs text-muted-foreground">Email cannot be changed here. Contact support if needed.</p>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="role">Account Role</Label>
+                  <Input
+                    id="role"
+                    value={profile?.role || 'admin'}
+                    disabled
+                    className="bg-muted/50"
+                  />
+                  <p className="text-xs text-muted-foreground">Role is assigned by system administrators.</p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="created-date">Account Created</Label>
+                  <Input
+                    id="created-date"
+                    value={profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : 'Unknown'}
+                    disabled
+                    className="bg-muted/50"
+                  />
+                </div>
+                <Button onClick={updateProfile} disabled={profileSaving}>
+                  <Save className="w-4 h-4 mr-2" />
+                  {profileSaving ? 'Saving...' : 'Update Profile'}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           {/* General Settings */}
           <TabsContent value="general">
@@ -637,54 +749,63 @@ export default function Settings() {
                 </div>
                 {/* Manual Bank Transfer Section */}
                 <div className="space-y-4 p-4 border rounded-lg bg-muted/10">
-                  <div>
-                    <div className="flex items-center gap-2 text-pana-navy">
-                      <Database className="h-6 w-6" />
-                      <Label className="text-base font-semibold">Manual Bank Transfer</Label>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="flex items-center gap-2 text-pana-navy">
+                        <Database className="h-6 w-6" />
+                        <Label className="text-base font-semibold">Manual Bank Transfer</Label>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Configure bank details for students who prefer manual transfers.
+                      </p>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Configure bank details for students who prefer manual transfers.
-                    </p>
+                    <Switch
+                      checked={settings.manual_enabled !== false}
+                      onCheckedChange={(checked) => updateSetting('manual_enabled', checked)}
+                      disabled={saving}
+                    />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="bank-name">Bank Name</Label>
-                      <Input
-                        id="bank-name"
-                        value={settings.bank_details?.bank_name || ''}
-                        onChange={(e) => updateSetting('bank_details', {
-                          ...(settings.bank_details || {}),
-                          bank_name: e.target.value
-                        })}
-                        placeholder="e.g. Zenith Bank"
-                      />
+                  {settings.manual_enabled !== false && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="bank-name">Bank Name</Label>
+                        <Input
+                          id="bank-name"
+                          value={settings.bank_details?.bank_name || ''}
+                          onChange={(e) => updateSetting('bank_details', {
+                            ...(settings.bank_details || {}),
+                            bank_name: e.target.value
+                          })}
+                          placeholder="e.g. Zenith Bank"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="account-name">Account Name</Label>
+                        <Input
+                          id="account-name"
+                          value={settings.bank_details?.account_name || ''}
+                          onChange={(e) => updateSetting('bank_details', {
+                            ...(settings.bank_details || {}),
+                            account_name: e.target.value
+                          })}
+                          placeholder="e.g. PANA ACADEMY LTD"
+                        />
+                      </div>
+                      <div className="space-y-2 md:col-span-2">
+                        <Label htmlFor="account-number">Account Number</Label>
+                        <Input
+                          id="account-number"
+                          value={settings.bank_details?.account_number || ''}
+                          onChange={(e) => updateSetting('bank_details', {
+                            ...(settings.bank_details || {}),
+                            account_number: e.target.value
+                          })}
+                          placeholder="e.g. 1234567890"
+                        />
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="account-name">Account Name</Label>
-                      <Input
-                        id="account-name"
-                        value={settings.bank_details?.account_name || ''}
-                        onChange={(e) => updateSetting('bank_details', {
-                          ...(settings.bank_details || {}),
-                          account_name: e.target.value
-                        })}
-                        placeholder="e.g. PANA ACADEMY LTD"
-                      />
-                    </div>
-                    <div className="space-y-2 md:col-span-2">
-                      <Label htmlFor="account-number">Account Number</Label>
-                      <Input
-                        id="account-number"
-                        value={settings.bank_details?.account_number || ''}
-                        onChange={(e) => updateSetting('bank_details', {
-                          ...(settings.bank_details || {}),
-                          account_number: e.target.value
-                        })}
-                        placeholder="e.g. 1234567890"
-                      />
-                    </div>
-                  </div>
+                  )}
                 </div>
                 <div className="flex justify-end pt-4">
                   <Button
@@ -714,6 +835,88 @@ export default function Settings() {
                 <CardDescription>Configure default payment settings and fees</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
+                {/* Tax Settings */}
+                <div className="space-y-4 p-4 border rounded-lg bg-muted/10">
+                  <div>
+                    <h4 className="text-lg font-medium text-pana-navy mb-4">Tax Configuration</h4>
+                    <p className="text-sm text-muted-foreground">Configure tax settings for all course pricing</p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-base">Enable Tax</Label>
+                        <p className="text-sm text-muted-foreground">Apply tax to all course prices</p>
+                      </div>
+                      <Switch
+                        checked={settings.tax_enabled || false}
+                        onCheckedChange={(checked) => updateSetting('tax_enabled', checked)}
+                        disabled={saving}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="tax-rate">Tax Rate (%)</Label>
+                      <Input
+                        id="tax-rate"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        max="100"
+                        value={settings.tax_rate || 7.5}
+                        onChange={(e) => updateSetting('tax_rate', parseFloat(e.target.value) || 0)}
+                        disabled={!settings.tax_enabled || saving}
+                        className={!settings.tax_enabled ? 'bg-muted/50' : ''}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="tax-type">Tax Type</Label>
+                      <Select
+                        value={settings.tax_type || 'percentage'}
+                        onValueChange={(value) => updateSetting('tax_type', value)}
+                        disabled={!settings.tax_enabled || saving}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="percentage">Percentage (%)</SelectItem>
+                          <SelectItem value="fixed">Fixed Amount</SelectItem>
+                          <SelectItem value="vat">VAT</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="tax-name">Tax Name</Label>
+                      <Input
+                        id="tax-name"
+                        value={settings.tax_name || ''}
+                        onChange={(e) => updateSetting('tax_name', e.target.value)}
+                        disabled={!settings.tax_enabled || saving}
+                        placeholder="e.g. Value Added Tax (VAT)"
+                        className={!settings.tax_enabled ? 'bg-muted/50' : ''}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="tax-number">Tax Number</Label>
+                      <Input
+                        id="tax-number"
+                        value={settings.tax_number || ''}
+                        onChange={(e) => updateSetting('tax_number', e.target.value)}
+                        disabled={!settings.tax_enabled || saving}
+                        placeholder="e.g. VAT123456789"
+                        className={!settings.tax_enabled ? 'bg-muted/50' : ''}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Platform Fee Section */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="default-currency">Default Currency</Label>

@@ -7,7 +7,7 @@ import { useSiteImage } from "@/hooks/useSiteImage";
 
 const CareersPage = () => {
     // Fetch header image from centralized system
-    const { imageUrl: headerImage } = useSiteImage('header_careers', '/img/careers-header.jpg');
+    const { imageUrl: headerImage } = useSiteImage('header_careers');
 
     const values = [
         {
@@ -39,18 +39,22 @@ const CareersPage = () => {
 
                 <main>
                     {/* Hero Section */}
-                    <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
+                    <section className="relative pt-0 pb-20 md:pb-28 overflow-hidden mt-20">
                         <div className="absolute inset-0">
-                            <img
-                                src={headerImage}
-                                alt="Careers at PANA Academy"
-                                className="w-full h-full object-cover object-center"
-                                loading="eager"
-                            />
+                            {headerImage ? (
+                                <img
+                                    src={headerImage}
+                                    alt="Careers at PANA Academy"
+                                    className="w-full h-full object-cover object-center"
+                                    loading="eager"
+                                />
+                            ) : (
+                                <div className="w-full h-full bg-gradient-to-br from-pana-gold to-pana-red"></div>
+                            )}
                         </div>
                         <div className="absolute inset-0 bg-black/60"></div>
 
-                        <div className="relative max-w-7xl mx-auto px-6 lg:px-8 text-center z-10">
+                        <div className="relative max-w-7xl mx-auto px-6 lg:px-8 text-center z-10 mt-16">
                             <div className="space-y-8 animate-fade-in">
                                 <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full text-white/90 text-sm font-medium border border-white/20">
                                     <Briefcase className="w-5 h-5 text-pana-gold" />

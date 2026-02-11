@@ -10,7 +10,7 @@ import {
   BookOpen, Award, Calendar, Clock, TrendingUp,
   AlertCircle, Info, Target, CheckCircle, ChevronRight,
   Plus, Trophy, RefreshCw, FileText, Video, FileCode,
-  AlertTriangle, Download, Play, Code, Settings,
+  AlertTriangle, Download, Play, Code, Settings, User,
   BarChart3, Flame, Activity, FileType, Eye, CalendarDays, X,
   Search, Filter
 } from 'lucide-react';
@@ -29,6 +29,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { EmptyState } from '@/components/dashboard/EmptyState';
 import { DeadlinesWidget } from '@/components/dashboard/DeadlinesWidget';
+import { ProfileEdit } from '@/components/student/ProfileEdit';
 
 // Define interfaces for our data models
 interface UserProfile {
@@ -151,6 +152,7 @@ type CourseFilter = 'all' | 'in_progress' | 'completed' | 'not_started';
 export default function StudentDashboard() {
   const [goalsDialogOpen, setGoalsDialogOpen] = useState(false);
   const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
+  const [profileDialogOpen, setProfileDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [courseFilter, setCourseFilter] = useState<CourseFilter>('all');
   const { profile, signOut } = useAuth();
@@ -359,221 +361,260 @@ export default function StudentDashboard() {
             </div>
 
             {/* Quick Actions */}
-            <div className="mb-8">
-              <h2 className="text-xl font-bold tracking-tight mb-4">Quick Actions</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-                <ContinueLearning
-                  enrolledCourses={enrolledCourses}
-                  isLoading={isLoading}
-                />
-                <Button variant="outline" className="h-20 flex flex-col gap-2" size="sm" asChild>
-                  <Link to="/dashboard/courses">
-                    <Plus className="h-5 w-5" />
-                    <span className="text-xs">New Course</span>
-                  </Link>
-                </Button>
-                {stats.certificates > 0 ? (
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle className="text-xl font-bold tracking-tight">Quick Actions</CardTitle>
+                <CardDescription>Access frequently used features and tools</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                  <ContinueLearning
+                    enrolledCourses={enrolledCourses}
+                    isLoading={isLoading}
+                  />
+                  <Dialog open={profileDialogOpen} onOpenChange={setProfileDialogOpen}>
+                    <Button
+                      variant="outline"
+                      className="h-20 flex flex-col gap-2"
+                      size="sm"
+                      type="button"
+                      onClick={() => setProfileDialogOpen(true)}
+                    >
+                      <User className="h-5 w-5" />
+                      <span className="text-xs">Edit Profile</span>
+                    </Button>
+                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle>Edit Profile</DialogTitle>
+                      </DialogHeader>
+                      <div className="p-4">
+                        <ProfileEdit />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                   <Button variant="outline" className="h-20 flex flex-col gap-2" size="sm" asChild>
-                    <Link to="/dashboard/certificates">
-                      <Award className="h-5 w-5" />
-                      <span className="text-xs">My Certificates</span>
+                    <Link to="/dashboard/courses">
+                      <Plus className="h-5 w-5" />
+                      <span className="text-xs">New Course</span>
                     </Link>
                   </Button>
-                ) : (
-                  <Button
-                    variant="outline"
-                    className="h-20 flex flex-col gap-2 opacity-50 cursor-not-allowed"
-                    size="sm"
-                    disabled
-                  >
-                    <Award className="h-5 w-5" />
-                    <span className="text-xs">No Certificates</span>
-                  </Button>
-                )}
-                <Dialog open={scheduleDialogOpen} onOpenChange={setScheduleDialogOpen}>
-                  <Button
-                    variant="outline"
-                    className="h-20 flex flex-col gap-2"
-                    size="sm"
-                    type="button"
-                    onClick={() => setScheduleDialogOpen(true)}
-                  >
-                    <CalendarDays className="h-5 w-5" />
-                    <span className="text-xs">Study Schedule</span>
-                  </Button>
-                  <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle>Study Schedule</DialogTitle>
-                    </DialogHeader>
-                    <div className="p-4">
-                      <StudySchedule />
-                    </div>
-                  </DialogContent>
-                </Dialog>
+                  {stats.certificates > 0 ? (
+                    <Button variant="outline" className="h-20 flex flex-col gap-2" size="sm" asChild>
+                      <Link to="/dashboard/certificates">
+                        <Award className="h-5 w-5" />
+                        <span className="text-xs">My Certificates</span>
+                      </Link>
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      className="h-20 flex flex-col gap-2 opacity-50 cursor-not-allowed"
+                      size="sm"
+                      disabled
+                    >
+                      <Award className="h-5 w-5" />
+                      <span className="text-xs">No Certificates</span>
+                    </Button>
+                  )}
+                  <Dialog open={scheduleDialogOpen} onOpenChange={setScheduleDialogOpen}>
+                    <Button
+                      variant="outline"
+                      className="h-20 flex flex-col gap-2"
+                      size="sm"
+                      type="button"
+                      onClick={() => setScheduleDialogOpen(true)}
+                    >
+                      <CalendarDays className="h-5 w-5" />
+                      <span className="text-xs">Study Schedule</span>
+                    </Button>
+                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle>Study Schedule</DialogTitle>
+                      </DialogHeader>
+                      <div className="p-4">
+                        <StudySchedule />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
 
-                <Dialog open={goalsDialogOpen} onOpenChange={setGoalsDialogOpen}>
-                  <Button
-                    variant="outline"
-                    className="h-20 flex flex-col gap-2"
-                    size="sm"
-                    type="button"
-                    onClick={() => setGoalsDialogOpen(true)}
-                  >
-                    <Target className="h-5 w-5" />
-                    <span className="text-xs">Set Goals</span>
+                  <Dialog open={goalsDialogOpen} onOpenChange={setGoalsDialogOpen}>
+                    <Button
+                      variant="outline"
+                      className="h-20 flex flex-col gap-2"
+                      size="sm"
+                      type="button"
+                      onClick={() => setGoalsDialogOpen(true)}
+                    >
+                      <Target className="h-5 w-5" />
+                      <span className="text-xs">Set Goals</span>
+                    </Button>
+                    <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle>Set Learning Goals</DialogTitle>
+                      </DialogHeader>
+                      <div className="p-4">
+                        <SetGoals />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                  <Button variant="outline" className="h-20 flex flex-col gap-2" size="sm" asChild>
+                    <Link to="/dashboard/progress">
+                      <BarChart3 className="h-5 w-5" />
+                      <span className="text-xs">Progress Report</span>
+                    </Link>
                   </Button>
-                  <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle>Set Learning Goals</DialogTitle>
-                    </DialogHeader>
-                    <div className="p-4">
-                      <SetGoals />
-                    </div>
-                  </DialogContent>
-                </Dialog>
-                <Button variant="outline" className="h-20 flex flex-col gap-2" size="sm" asChild>
-                  <Link to="/dashboard/progress">
-                    <BarChart3 className="h-5 w-5" />
-                    <span className="text-xs">Progress Report</span>
-                  </Link>
-                </Button>
-              </div>
-            </div>
+                  <Button variant="outline" className="h-20 flex flex-col gap-2" size="sm" asChild>
+                    <Link to="/student/profile">
+                      <Settings className="h-5 w-5" />
+                      <span className="text-xs">Profile Page</span>
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* My Courses Section with Search & Filter */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-2xl font-bold tracking-tight">My Courses</h2>
-                  <p className="text-muted-foreground text-sm">
-                    {isLoading ? (
-                      <Skeleton className="h-4 w-64 inline-block" />
-                    ) : (
-                      `Managing ${enrolledCourses.length} ${enrolledCourses.length === 1 ? 'course' : 'courses'}`
-                    )}
-                  </p>
+            <Card className="mb-8">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-2xl font-bold tracking-tight">My Courses</CardTitle>
+                    <CardDescription className="text-sm">
+                      {isLoading ? (
+                        <Skeleton className="h-4 w-64 inline-block" />
+                      ) : (
+                        `Managing ${enrolledCourses.length} ${enrolledCourses.length === 1 ? 'course' : 'courses'}`
+                      )}
+                    </CardDescription>
+                  </div>
                 </div>
-              </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Search and Filter Bar */}
+                <div className="space-y-4">
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    {/* Search Input */}
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search your courses..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
 
-              {/* Search and Filter Bar */}
-              <div className="mb-6 space-y-4">
-                <div className="flex flex-col sm:flex-row gap-4">
-                  {/* Search Input */}
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search your courses..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
-                    />
+                    {/* Filter Dropdown */}
+                    <Select value={courseFilter} onValueChange={(value) => setCourseFilter(value as CourseFilter)}>
+                      <SelectTrigger className="w-full sm:w-[200px]">
+                        <Filter className="mr-2 h-4 w-4" />
+                        <SelectValue placeholder="Filter courses" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Courses ({enrolledCourses.length})</SelectItem>
+                        <SelectItem value="in_progress">
+                          In Progress ({enrolledCourses.filter(c => c.progress > 0 && c.progress < 100).length})
+                        </SelectItem>
+                        <SelectItem value="completed">
+                          Completed ({enrolledCourses.filter(c => c.progress === 100).length})
+                        </SelectItem>
+                        <SelectItem value="not_started">
+                          Not Started ({enrolledCourses.filter(c => c.progress === 0).length})
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    {/* Clear Filters */}
+                    {(searchQuery || courseFilter !== 'all') && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setSearchQuery('');
+                          setCourseFilter('all');
+                        }}
+                        className="flex-shrink-0"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
 
-                  {/* Filter Dropdown */}
-                  <Select value={courseFilter} onValueChange={(value) => setCourseFilter(value as CourseFilter)}>
-                    <SelectTrigger className="w-full sm:w-[200px]">
-                      <Filter className="mr-2 h-4 w-4" />
-                      <SelectValue placeholder="Filter courses" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Courses ({enrolledCourses.length})</SelectItem>
-                      <SelectItem value="in_progress">
-                        In Progress ({enrolledCourses.filter(c => c.progress > 0 && c.progress < 100).length})
-                      </SelectItem>
-                      <SelectItem value="completed">
-                        Completed ({enrolledCourses.filter(c => c.progress === 100).length})
-                      </SelectItem>
-                      <SelectItem value="not_started">
-                        Not Started ({enrolledCourses.filter(c => c.progress === 0).length})
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  {/* Clear Filters */}
-                  {(searchQuery || courseFilter !== 'all') && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => {
-                        setSearchQuery('');
-                        setCourseFilter('all');
-                      }}
-                      className="flex-shrink-0"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
+                  {/* Results count */}
+                  {!isLoading && (
+                    <p className="text-sm text-muted-foreground">
+                      Showing {filteredCourses.length} of {enrolledCourses.length} courses
+                    </p>
                   )}
                 </div>
 
-                {/* Results count */}
-                {!isLoading && (
-                  <p className="text-sm text-muted-foreground">
-                    Showing {filteredCourses.length} of {enrolledCourses.length} courses
-                  </p>
-                )}
-              </div>
-
-              {/* Course Display */}
-              {isLoading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="space-y-3">
-                      <Skeleton className="h-40 w-full rounded-lg" />
-                      <Skeleton className="h-4 w-3/4" />
-                      <Skeleton className="h-4 w-1/2" />
-                    </div>
-                  ))}
-                </div>
-              ) : filteredCourses.length === 0 ? (
-                searchQuery || courseFilter !== 'all' ? (
-                  <EmptyState
-                    icon={Search}
-                    title="No courses found"
-                    description={`No courses match your current filters. Try adjusting your search or filter settings.`}
-                    action={{
-                      label: "Clear Filters",
-                      onClick: () => {
-                        setSearchQuery('');
-                        setCourseFilter('all');
-                      }
-                    }}
-                  />
-                ) : (
-                  <EmptyState
-                    icon={BookOpen}
-                    title="Start your learning journey"
-                    description="You haven't enrolled in any courses yet. Browse our course catalog to find courses that match your interests and career goals."
-                    action={{
-                      label: "Browse Courses",
-                      onClick: () => window.location.href = '/courses'
-                    }}
-                  />
-                )
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredCourses.map((course) => (
-                    <CourseCard
-                      key={course.id}
-                      id={course.id}
-                      title={course.title}
-                      instructor={course.instructor}
-                      progress={course.progress}
-                      thumbnail={course.thumbnail || course.image}
-                      lastAccessed={course.lastAccessed}
-                      className="h-full"
+                {/* Course Display */}
+                {isLoading ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="space-y-3">
+                        <Skeleton className="h-40 w-full rounded-lg" />
+                        <Skeleton className="h-4 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                      </div>
+                    ))}
+                  </div>
+                ) : filteredCourses.length === 0 ? (
+                  searchQuery || courseFilter !== 'all' ? (
+                    <EmptyState
+                      icon={Search}
+                      title="No courses found"
+                      description={`No courses match your current filters. Try adjusting your search or filter settings.`}
+                      action={{
+                        label: "Clear Filters",
+                        onClick: () => {
+                          setSearchQuery('');
+                          setCourseFilter('all');
+                        }
+                      }}
                     />
-                  ))}
-                </div>
-              )}
-            </div>
+                  ) : (
+                    <EmptyState
+                      icon={BookOpen}
+                      title="Start your learning journey"
+                      description="You haven't enrolled in any courses yet. Browse our course catalog to find courses that match your interests and career goals."
+                      action={{
+                        label: "Browse Courses",
+                        onClick: () => window.location.href = '/courses'
+                      }}
+                    />
+                  )
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredCourses.map((course) => (
+                      <CourseCard
+                        key={course.id}
+                        id={course.id}
+                        title={course.title}
+                        instructor={course.instructor}
+                        progress={course.progress}
+                        thumbnail={course.thumbnail || course.image}
+                        lastAccessed={course.lastAccessed}
+                        className="h-full"
+                      />
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
 
             {/* Deadlines Widget */}
-            <div className="mb-8">
-              <DeadlinesWidget />
-            </div>
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">Upcoming Deadlines</CardTitle>
+                <CardDescription>Track your assignment and project due dates</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <DeadlinesWidget />
+              </CardContent>
+            </Card>
 
             {/* Learning Resources */}
-
 
             {/* Study Goals and Weekly Streak */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
@@ -635,106 +676,104 @@ export default function StudentDashboard() {
             </div>
 
             {/* Recent Activity */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-xl font-bold tracking-tight">Recent Activity</h2>
-
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="ghost" size="sm" className="text-primary">
-                    <Calendar className="h-4 w-4 mr-1" />
-                    View Calendar
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    <RefreshCw className="h-4 w-4 mr-1" />
-                    Refresh
-                  </Button>
-                </div>
-              </div>
-
-              <Card>
-                <CardHeader>
-
-                  <CardDescription>Your latest learning activities and achievements</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-start gap-3 p-3 border rounded-lg">
-                    <Activity className="h-5 w-5 text-blue-500 mt-0.5" />
-                    <div className="flex-1">
-                      <p className="text-sm font-medium">Activity information</p>
-                      <p className="text-sm text-muted-foreground">You're making progress in Introduction to Programming</p>
-                      <p className="text-xs text-muted-foreground mt-1">45% complete • Last accessed 2 days ago</p>
-                    </div>
+            <Card className="mb-8">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-xl font-bold tracking-tight">Recent Activity</CardTitle>
+                    <CardDescription>Your latest learning activities and achievements</CardDescription>
                   </div>
-
-                  <div className="flex items-start gap-3 p-3 border rounded-lg">
-                    <Activity className="h-5 w-5 text-green-500 mt-0.5" />
-                    <div className="flex-1">
-                      <p className="text-sm font-medium">Activity information</p>
-                      <p className="text-sm text-muted-foreground">You're making progress in Web Development Fundamentals</p>
-                      <p className="text-xs text-muted-foreground mt-1">15% complete • Last accessed 1 week ago</p>
-                    </div>
+                  <div className="flex gap-2">
+                    <Button variant="ghost" size="sm" className="text-primary">
+                      <Calendar className="h-4 w-4 mr-1" />
+                      View Calendar
+                    </Button>
+                    <Button variant="ghost" size="sm">
+                      <RefreshCw className="h-4 w-4 mr-1" />
+                      Refresh
+                    </Button>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-start gap-3 p-3 border rounded-lg">
+                  <Activity className="h-5 w-5 text-blue-500 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">Activity information</p>
+                    <p className="text-sm text-muted-foreground">You're making progress in Introduction to Programming</p>
+                    <p className="text-xs text-muted-foreground mt-1">45% complete • Last accessed 2 days ago</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 border rounded-lg">
+                  <Activity className="h-5 w-5 text-green-500 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">Activity information</p>
+                    <p className="text-sm text-muted-foreground">You're making progress in Web Development Fundamentals</p>
+                    <p className="text-xs text-muted-foreground mt-1">15% complete • Last accessed 1 week ago</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Recommended Courses */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-2xl font-bold tracking-tight">Recommended For You</h2>
-                  <p className="text-muted-foreground text-sm">
-                    {isLoading ? (
-                      <Skeleton className="h-4 w-64 inline-block" />
-                    ) : (
-                      'Courses we think you\'ll love based on your interests'
-                    )}
-                  </p>
+            <Card className="mb-8">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-2xl font-bold tracking-tight">Recommended For You</CardTitle>
+                    <CardDescription className="text-sm">
+                      {isLoading ? (
+                        <Skeleton className="h-4 w-64 inline-block" />
+                      ) : (
+                        'Courses we think you\'ll love based on your interests'
+                      )}
+                    </CardDescription>
+                  </div>
+                  <Button variant="ghost" size="sm" className="text-primary">
+                    View All <ChevronRight className="ml-1 h-4 w-4" />
+                  </Button>
                 </div>
-                <Button variant="ghost" size="sm" className="text-primary">
-                  View All <ChevronRight className="ml-1 h-4 w-4" />
-                </Button>
-              </div>
-
-              {isLoading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="space-y-3">
-                      <Skeleton className="h-40 w-full rounded-lg" />
-                      <Skeleton className="h-4 w-3/4" />
-                      <Skeleton className="h-4 w-1/2" />
-                    </div>
-                  ))}
-                </div>
-              ) : recommendedCourses.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {recommendedCourses.slice(0, 4).map((course) => (
-                    <CourseCard
-                      key={course.id}
-                      id={course.id}
-                      title={course.title}
-                      instructor={course.instructor}
-                      progress={course.progress}
-                      thumbnail={course.thumbnail || course.image}
-                      lastAccessed={course.lastAccessed}
-                      className="h-full"
-                    />
-                  ))}
-                </div>
-              ) : (
-                <EmptyState
-                  icon={BookOpen}
-                  title="No recommendations yet"
-                  description="Complete some courses or update your interests to get personalized recommendations."
-                  action={{
-                    label: "Update Interests",
-                    onClick: () => window.location.href = '/dashboard/settings'
-                  }}
-                />
-              )}
-            </div>
+              </CardHeader>
+              <CardContent>
+                {isLoading ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div key={i} className="space-y-3">
+                        <Skeleton className="h-40 w-full rounded-lg" />
+                        <Skeleton className="h-4 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                      </div>
+                    ))}
+                  </div>
+                ) : recommendedCourses.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {recommendedCourses.slice(0, 4).map((course) => (
+                      <CourseCard
+                        key={course.id}
+                        id={course.id}
+                        title={course.title}
+                        instructor={course.instructor}
+                        progress={course.progress}
+                        thumbnail={course.thumbnail || course.image}
+                        lastAccessed={course.lastAccessed}
+                        className="h-full"
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <EmptyState
+                    icon={BookOpen}
+                    title="No recommendations yet"
+                    description="Complete some courses or update your interests to get personalized recommendations."
+                    action={{
+                      label: "Update Interests",
+                      onClick: () => window.location.href = '/dashboard/settings'
+                    }}
+                  />
+                )}
+              </CardContent>
+            </Card>
           </TooltipProvider>
         </div>
       </DashboardLayout>

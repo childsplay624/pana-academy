@@ -11,7 +11,6 @@ import { useSiteImage } from "@/hooks/useSiteImage";
 type TeamMember = {
   name: string;
   title: string;
-  image?: string;
   imageKey: string;
   description: string;
   id: string;
@@ -26,7 +25,6 @@ const teamMembers: TeamMember[] = [
     title: "Chairman and Group CEO",
     subtitle: "PANA Holdings",
     description: "Visionary entrepreneur and business leader with over 25 years of experience across multiple industries including oil & gas, power, and technology.",
-    image: "/team/daere-akobo.png",
     imageKey: "team_daere_akobo",
     category: 'board'
   },
@@ -36,7 +34,6 @@ const teamMembers: TeamMember[] = [
     title: "Executive Director",
     subtitle: "Global Business Services",
     description: "Seasoned business administrator with international training and expertise in corporate governance and business administration.",
-    image: "/team/iyenemi-akobo.png",
     imageKey: "team_iyenemi_akobo",
     category: 'board'
   },
@@ -46,7 +43,6 @@ const teamMembers: TeamMember[] = [
     title: "Board Member",
     subtitle: "Former Deputy Managing Director, NAOC",
     description: "Accomplished executive with extensive experience in the oil and gas industry, specializing in finance, HR, and corporate governance.",
-    image: "/team/callista-azogu.png",
     imageKey: "team_callista_azogu",
     category: 'board'
   },
@@ -56,7 +52,6 @@ const teamMembers: TeamMember[] = [
     title: "Advisory Board Member",
     subtitle: "PANA Academy",
     description: "Seasoned HR practitioner with vast experience in Oil & Gas, Manufacturing, and Corporate Governance.",
-    image: "/team/kennedy-dike.jpg",
     imageKey: "team_kennedy_dike",
     category: 'advisory'
   },
@@ -66,15 +61,28 @@ const teamMembers: TeamMember[] = [
     title: "Advisory Board Member",
     subtitle: "MNCS, MNSE, COREN Reg, CPN Reg, MIEEE, FFTF Fellow",
     description: "Experienced academic and industry professional with expertise in STEM education and industry-academia partnerships.",
-    image: "/team/Ifeyinwa-Eucharia.jpg",
-    imageKey: "team_ifeyinwa_achumba",
+    imageKey: "team_1770694003203",
     category: 'advisory'
   }
 ];
 
+// Separate board and advisory members
+const boardMembers = teamMembers.filter(member => member.category === 'board');
+const advisoryMembers = teamMembers.filter(member => member.category === 'advisory');
+
 // Team member card component
 const TeamMemberCard = ({ member, index }: { member: TeamMember; index: number }) => {
-  const { imageUrl } = useSiteImage(member.imageKey, member.image);
+  const { imageUrl, isLoading, error } = useSiteImage(member.imageKey);
+
+  // Debug logging for Dr. Ifeyinwa Achumba
+  if (member.imageKey === 'team_1770694003203') {
+    console.log('Dr. Ifeyinwa Achumba image debug:', {
+      imageKey: member.imageKey,
+      imageUrl,
+      isLoading,
+      error
+    });
+  }
 
   const initials = member.name
     .split(' ')
@@ -98,7 +106,7 @@ const TeamMemberCard = ({ member, index }: { member: TeamMember; index: number }
             <img
               src={imageUrl}
               alt={member.name}
-              className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+              className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-102"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.style.display = 'none';
@@ -158,14 +166,14 @@ const TeamPage = () => {
   const advisoryMembers = teamMembers.filter(m => m.category === 'advisory');
 
   const stats = [
-    { icon: Users, value: "100+", label: "Years Combined Experience" },
-    { icon: Briefcase, value: "10+", label: "Business Verticals" },
-    { icon: Globe, value: "Global", label: "Industry Reach" },
-    { icon: Award, value: "5", label: "Leadership Experts" }
+    { icon: Users, value: "200+", label: "trained professionals" },
+    { icon: Briefcase, value: "50+", label: "Industry Experts" },
+    { icon: Globe, value: "20+", label: "Training programs" },
+    { icon: Award, value: "4+", label: "Years of Excellence" }
   ];
 
   // Fetch team header image from centralized system
-  const { imageUrl: headerImageUrl } = useSiteImage('header_team', '/img/team-header.jpg');
+  const { imageUrl: headerImageUrl } = useSiteImage('header_team');
 
   return (
     <>
@@ -179,17 +187,21 @@ const TeamPage = () => {
 
         <main className="flex-1">
           {/* Hero Section */}
-          <section className="relative w-full h-[500px] md:h-[600px] overflow-hidden">
+          <section className="relative w-full h-[500px] md:h-[600px] overflow-hidden mt-20">
             <div className="absolute inset-0">
-              <img
-                src={headerImageUrl}
-                alt="Our Leadership Team"
-                className="w-full h-full object-cover"
-              />
+              {headerImageUrl ? (
+                <img
+                  src={headerImageUrl}
+                  alt="Our Leadership Team"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-pana-navy to-pana-red"></div>
+              )}
               <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/70" />
             </div>
 
-            <div className="relative h-full flex items-center justify-center px-4">
+            <div className="relative h-full flex items-center justify-center px-4 mt-16">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}

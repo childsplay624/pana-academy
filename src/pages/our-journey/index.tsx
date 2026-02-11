@@ -8,43 +8,55 @@ import Footer from '../../components/Footer';
 
 export default function OurJourney() {
   // Fetch header image from centralized system
-  const { imageUrl: headerImage } = useSiteImage('header_team', '/img/team-header.jpg');
+  const { imageUrl: headerImage } = useSiteImage('header_team');
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navigation />
       <main className="flex-grow">
         {/* Hero Section with Header Image */}
-        <section className="relative w-full h-96 md:h-[500px] overflow-hidden">
+        <section className="relative w-full h-96 md:h-[500px] overflow-hidden mt-20">
           <div className="absolute inset-0">
-            <img
-              src={headerImage}
-              alt="Our Journey"
-              className="w-full h-full object-cover object-center"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-red-900/80 to-gray-900/80 flex items-center justify-center">
-              <div className="text-center px-4">
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
-                  Our Journey of Excellence
-                </h1>
-                <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto">
-                  Discover the story of PANA Academy and our commitment to transforming the energy sector through world-class training and development.
-                </p>
-                <div className="mt-8 flex flex-wrap justify-center gap-4">
-                  <a
-                    href="#evolution-journey"
-                    className="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-200"
-                  >
-                    View Timeline
-                  </a>
-                  <Link
-                    to="/contact"
-                    className="bg-transparent hover:bg-white/20 text-white font-medium py-3 px-8 border-2 border-white/30 rounded-lg transition-colors duration-200"
-                  >
-                    Contact Us
-                  </Link>
-                </div>
+            {headerImage ? (
+              <img
+                src={headerImage}
+                alt="Our Journey"
+                className="w-full h-full object-cover object-center"
+                loading="eager"
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-pana-navy to-pana-gold"></div>
+            )}
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-r from-red-900/80 to-gray-900/80"></div>
+          
+          {/* Animated elements */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-pana-gold/30 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-white/20 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
+          </div>
+          
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center px-4 mt-16">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
+                Our Journey of Excellence
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto">
+                Discover the story of PANA Academy and our commitment to transforming the energy sector through world-class training and development.
+              </p>
+              <div className="mt-8 flex flex-wrap justify-center gap-4">
+                <a
+                  href="#evolution-journey"
+                  className="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-200"
+                >
+                  View Timeline
+                </a>
+                <Link
+                  to="/contact"
+                  className="bg-transparent hover:bg-white/20 text-white font-medium py-3 px-8 border-2 border-white/30 rounded-lg transition-colors duration-200"
+                >
+                  Contact Us
+                </Link>
               </div>
             </div>
           </div>
@@ -62,7 +74,7 @@ export default function OurJourney() {
             <div className="relative grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Vision Card */}
               <motion.div
-                className="bg-white p-8 rounded-2xl shadow-xl border-l-4 border-blue-600 transform transition-all hover:scale-105"
+                className="bg-white p-8 rounded-2xl shadow-xl border-l-4 border-blue-600 transform transition-all hover:scale-102"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
@@ -77,7 +89,7 @@ export default function OurJourney() {
 
               {/* Growth Card */}
               <motion.div
-                className="bg-white p-8 rounded-2xl shadow-xl border-l-4 border-red-500 transform transition-all hover:scale-105"
+                className="bg-white p-8 rounded-2xl shadow-xl border-l-4 border-red-500 transform transition-all hover:scale-102"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
@@ -92,7 +104,7 @@ export default function OurJourney() {
 
               {/* Impact Card */}
               <motion.div
-                className="bg-white p-8 rounded-2xl shadow-xl border-l-4 border-red-600 transform transition-all hover:scale-105"
+                className="bg-white p-8 rounded-2xl shadow-xl border-l-4 border-red-600 transform transition-all hover:scale-102"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
@@ -183,7 +195,7 @@ export default function OurJourney() {
                       <div className="hidden md:block md:w-1/2 pr-12">
                         <div className="relative">
                           <div className="absolute -right-12 top-1/2 transform -translate-y-1/2 w-6 h-6 rounded-full bg-red-600 border-4 border-white shadow-lg"></div>
-                          <div className="bg-white p-8 rounded-2xl shadow-xl transform transition-all duration-500 group-hover:scale-105">
+                          <div className="bg-white p-8 rounded-2xl shadow-xl transform transition-all duration-500 group-hover:scale-102">
                             <div className="text-red-600 text-5xl font-bold mb-2">2023</div>
                             <div className="h-1 w-16 bg-gradient-to-r from-red-400 to-red-200 mb-6"></div>
                             <p className="text-gray-700 text-lg leading-relaxed">
@@ -224,7 +236,7 @@ export default function OurJourney() {
                       <div className="md:w-1/2 pl-12">
                         <div className="relative">
                           <div className="absolute -left-12 top-1/2 transform -translate-y-1/2 w-6 h-6 rounded-full bg-red-600 border-4 border-white shadow-lg"></div>
-                          <div className="bg-white p-8 rounded-2xl shadow-xl transform transition-all duration-500 group-hover:scale-105">
+                          <div className="bg-white p-8 rounded-2xl shadow-xl transform transition-all duration-500 group-hover:scale-102">
                             <div className="text-red-600 text-5xl font-bold mb-2">2024</div>
                             <div className="h-1 w-16 bg-gradient-to-r from-red-400 to-red-200 mb-6"></div>
                             <ul className="space-y-4 text-gray-700">
@@ -276,7 +288,7 @@ export default function OurJourney() {
                       <div className="md:w-1/2 pr-12">
                         <div className="relative">
                           <div className="absolute -right-12 top-1/2 transform -translate-y-1/2 w-6 h-6 rounded-full bg-red-500 border-4 border-white shadow-lg"></div>
-                          <div className="bg-white p-8 rounded-2xl shadow-xl transform transition-all duration-500 group-hover:scale-105">
+                          <div className="bg-white p-8 rounded-2xl shadow-xl transform transition-all duration-500 group-hover:scale-102">
                             <div className="text-red-600 text-5xl font-bold mb-2">2025</div>
                             <div className="h-1 w-16 bg-gradient-to-r from-red-400 to-red-200 mb-6"></div>
                             <p className="text-gray-700 mb-4">

@@ -82,13 +82,18 @@ export default function Analytics() {
       // Fetch transactions
       const { data: transactions, error: transactionsError } = await supabase
         .from('transactions')
-        .select('id, amount, status, created_at, course_id')
+        .select('id, amount, status, created_at, course_id, metadata')
         .eq('status', 'completed');
 
       if (transactionsError) throw transactionsError;
 
-      // Calculate total revenue
-      const totalRevenue = transactions?.reduce((sum, txn) => sum + Number(txn.amount), 0) || 0;
+      // Calculate total revenue with tax consideration
+      const totalRevenue = transactions?.reduce((sum, txn) => {
+        const baseAmount = Number(txn.amount);
+        const taxAmount = txn.metadata?.tax_amount || 0;
+        const platformFee = txn.metadata?.platform_fee || 0;
+        return sum + baseAmount + taxAmount + platformFee;
+      }, 0) || 0;
 
       // Calculate recent revenue
       const recentTransactions = transactions?.filter(txn => 

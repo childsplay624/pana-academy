@@ -5,6 +5,13 @@ import { supabase } from '@/integrations/supabase/client';
 interface Profile {
   id: string;
   full_name: string | null;
+  avatar_url?: string | null;
+  bio?: string | null;
+  location?: string | null;
+  phone?: string | null;
+  website?: string | null;
+  education?: string | null;
+  work_experience?: string | null;
   role: 'student' | 'instructor' | 'admin';
   created_at: string;
   updated_at: string;
@@ -20,6 +27,7 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   signInWithProvider: (provider: 'google' | 'github') => Promise<{ error: any }>;
   resetPassword: (email: string) => Promise<{ error: any }>;
+  updateProfile: (updates: Partial<Profile>) => Promise<{ error: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -85,7 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const displayName = fullName || email;
     
     try {
-      // First create the user without sending Supabase's confirmation email
+      // First create user without sending Supabase's confirmation email
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -207,6 +215,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateProfile = async (updates: Partial<Profile>) => {
+    if (!user) return { error: new Error('No user logged in') };
+
+    try {
+      // Filter out undefined values to avoid database constraint issues
+      const filteredUpdates = Object.keys(updates).reduce((acc, key) => {
+        const value = updates[key as keyof Profile];
+        if (value !== undefined) {
+          acc[key] = value;
+        }
+        return acc;
+      }, {} as Partial<Profile>);
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          ...filteredUpdates,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      // Refresh profile data
+      await fetchUserProfile(user.id);
+
+      return { error: null };
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+      return { error };
+    }
+  };
+
   const value = {
     user,
     session,
@@ -217,6 +258,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signOut,
     signInWithProvider,
     resetPassword,
+    updateProfile,
   };
 
   return (

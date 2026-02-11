@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ChevronDown, Search, Bell, User } from "lucide-react";
+import { Menu, X, ChevronDown, Search, User } from "lucide-react";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Logo } from './Logo';
+import { NotificationBell } from '@/components/NotificationBell';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Navigation = () => {
@@ -322,15 +323,7 @@ const Navigation = () => {
             <div className="hidden md:flex items-center space-x-3">
               {user ? (
                 <>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="relative text-gray-600 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-500"
-                    aria-label="Notifications"
-                  >
-                    <Bell className="h-5 w-5" />
-                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-600 rounded-full" aria-hidden="true" />
-                  </Button>
+                  <NotificationBell />
                   <Link to="/dashboard">
                     <Button
                       variant="outline"

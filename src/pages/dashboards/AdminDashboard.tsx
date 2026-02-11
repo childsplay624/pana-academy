@@ -389,6 +389,14 @@ export default function AdminDashboard() {
           </Button>
           <Button
             variant="outline"
+            onClick={() => navigate('/dashboard/invoices')}
+            className="h-20 flex flex-col items-center justify-center gap-2"
+          >
+            <FileText className="h-6 w-6 text-green-600" />
+            <span>View Invoices</span>
+          </Button>
+          <Button
+            variant="outline"
             onClick={() => navigate('/dashboard/settings')}
             className="h-20 flex flex-col items-center justify-center gap-2"
           >

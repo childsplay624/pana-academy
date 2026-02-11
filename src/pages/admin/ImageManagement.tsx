@@ -25,13 +25,16 @@ export default function ImageManagement() {
         queryFn: getImageInsights,
     });
 
-    const handleUpload = async (file: File, metadata: { alt_text?: string; description?: string }) => {
+    const handleUpload = async (file: File, metadata: { alt_text?: string; description?: string; customKey?: string }) => {
         try {
             // Get next display order
             const maxOrder = images.reduce((max, img) => Math.max(max, img.display_order), 0);
 
+            // Use custom key if provided, otherwise generate default
+            const imageKey = metadata.customKey || `${activeTab}_${Date.now()}`;
+
             await uploadImage(file, {
-                key: `${activeTab}_${Date.now()}`,
+                key: imageKey,
                 category: activeTab,
                 alt_text: metadata.alt_text,
                 description: metadata.description,
@@ -241,10 +244,41 @@ export default function ImageManagement() {
 
                             {(['hero', 'team', 'logo', 'values', 'other'] as ImageCategory[]).map((category) => (
                                 <TabsContent key={category} value={category} className="space-y-6 mt-6">
+                                    {/* Header Image Instructions for Hero Category */}
+                                    {category === 'hero' && (
+                                        <Card className="border-blue-500/20 bg-blue-500/5">
+                                            <CardHeader>
+                                                <CardTitle className="flex items-center gap-2 text-blue-700 dark:text-blue-400">
+                                                    <ImageIcon className="w-5 h-5" />
+                                                    Header Images
+                                                </CardTitle>
+                                                <CardDescription>
+                                                    Upload header images for specific pages using custom keys
+                                                </CardDescription>
+                                            </CardHeader>
+                                            <CardContent className="space-y-3">
+                                                <div className="text-sm">
+                                                    <p className="font-medium mb-2">Required Header Images:</p>
+                                                    <ul className="space-y-1 text-muted-foreground">
+                                                        <li>• <code className="bg-muted px-1 rounded">header_training</code> - Training Delivery page</li>
+                                                        <li>• <code className="bg-muted px-1 rounded">header_about</code> - About page</li>
+                                                        <li>• <code className="bg-muted px-1 rounded">header_team</code> - Team page</li>
+                                                        <li>• <code className="bg-muted px-1 rounded">header_rnd</code> - R&D Services page</li>
+                                                        <li>• <code className="bg-muted px-1 rounded">header_consultancy</code> - Consulting Services page</li>
+                                                        <li>• <code className="bg-muted px-1 rounded">header_careers</code> - Careers page</li>
+                                                    </ul>
+                                                </div>
+                                                <p className="text-xs text-muted-foreground">
+                                                    Use the exact key name when uploading header images to ensure they appear on the correct pages.
+                                                </p>
+                                            </CardContent>
+                                        </Card>
+                                    )}
+
                                     {/* Upload Section */}
                                     <div>
                                         <h3 className="text-lg font-semibold mb-4">Upload New Image</h3>
-                                        <ImageUploader onUpload={handleUpload} category={category} />
+                                        <ImageUploader onUpload={handleUpload} category={category} showCustomKey={category === 'hero' || category === 'logo'} />
                                     </div>
 
                                     <Separator />

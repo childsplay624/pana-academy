@@ -6,6 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
+import { useSupportTickets } from '@/hooks/useSupportTickets';
 import { 
   HelpCircle, 
   Search, 
@@ -18,7 +21,9 @@ import {
   ExternalLink,
   Send,
   Clock,
-  CheckCircle
+  CheckCircle,
+  AlertCircle,
+  Loader2
 } from 'lucide-react';
 
 // Mock FAQ data
@@ -75,7 +80,16 @@ const supportTickets = [
 export default function Help() {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('faq');
-  const [newTicket, setNewTicket] = useState({ subject: '', message: '' });
+  const [newTicket, setNewTicket] = useState({ 
+    subject: '', 
+    message: '', 
+    priority: 'medium' as 'low' | 'medium' | 'high' | 'urgent',
+    category: 'general' 
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { toast } = useToast();
+  const { tickets, loading, error, createTicket } = useSupportTickets();
 
   const filteredFAQ = faqData.filter(faq =>
     faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -83,22 +97,94 @@ export default function Help() {
     faq.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleSubmitTicket = () => {
-    // Handle ticket submission
-    console.log('Submitting ticket:', newTicket);
-    setNewTicket({ subject: '', message: '' });
+  const handleSubmitTicket = async () => {
+    if (!newTicket.subject.trim() || !newTicket.message.trim()) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      const { error: createError } = await createTicket({
+        subject: newTicket.subject,
+        message: newTicket.message,
+        priority: newTicket.priority,
+        category: newTicket.category,
+      });
+
+      if (createError) throw createError;
+
+      toast({
+        title: "Ticket Submitted",
+        description: "Your support ticket has been submitted successfully. We'll get back to you soon!",
+      });
+
+      // Reset form
+      setNewTicket({ 
+        subject: '', 
+        message: '', 
+        priority: 'medium', 
+        category: 'general' 
+      });
+    } catch (err) {
+      console.error('Failed to submit ticket:', err);
+      toast({
+        title: "Error",
+        description: "Failed to submit ticket. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'open':
+        return <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" />Open</Badge>;
+      case 'in_progress':
+        return <Badge variant="default"><AlertCircle className="h-3 w-3 mr-1" />In Progress</Badge>;
+      case 'resolved':
+        return <Badge variant="default"><CheckCircle className="h-3 w-3 mr-1" />Resolved</Badge>;
+      case 'closed':
+        return <Badge variant="outline">Closed</Badge>;
+      default:
+        return <Badge variant="secondary">{status}</Badge>;
+    }
+  };
+
+  const getPriorityBadge = (priority: string) => {
+    switch (priority) {
+      case 'low':
+        return <Badge variant="outline" className="text-blue-600">Low</Badge>;
+      case 'medium':
+        return <Badge variant="outline" className="text-yellow-600">Medium</Badge>;
+      case 'high':
+        return <Badge variant="outline" className="text-orange-600">High</Badge>;
+      case 'urgent':
+        return <Badge variant="destructive">Urgent</Badge>;
+      default:
+        return <Badge variant="outline">{priority}</Badge>;
+    }
   };
 
   return (
     <DashboardLayout>
       <div className="p-6 md:p-8 w-full space-y-8">
         {/* Header */}
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold tracking-tight">Help Center</h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Find answers to common questions or get personalized support
-          </p>
-        </div>
+        <Card className="text-center">
+          <CardHeader>
+            <CardTitle className="text-4xl font-bold tracking-tight">Help Center</CardTitle>
+            <CardDescription className="text-xl max-w-2xl mx-auto">
+              Find answers to common questions or get personalized support
+            </CardDescription>
+          </CardHeader>
+        </Card>
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -136,56 +222,62 @@ export default function Help() {
         </div>
 
         {/* Search */}
-        <div className="w-full max-w-4xl mx-auto">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input
-              placeholder="Search for help articles, tutorials, or FAQs..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-12 h-12 text-base"
-            />
-          </div>
-        </div>
+        <Card>
+          <CardContent className="p-6">
+            <div className="w-full max-w-4xl mx-auto">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input
+                  placeholder="Search for help articles, tutorials, or FAQs..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-12 h-12 text-base"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* FAQ Section */}
           <div className="lg:col-span-2 space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
-              
-              {filteredFAQ.length > 0 ? (
-                <Accordion type="single" collapsible className="space-y-2">
-                  {filteredFAQ.map((faq) => (
-                    <AccordionItem key={faq.id} value={faq.id} className="border rounded-lg px-4">
-                      <AccordionTrigger className="text-left hover:no-underline">
-                        <div className="flex items-center gap-3">
-                          <HelpCircle className="h-5 w-5 text-blue-500 flex-shrink-0" />
-                          <span>{faq.question}</span>
-                          <Badge variant="outline" className="ml-auto">
-                            {faq.category}
-                          </Badge>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent className="pt-2 pb-4 text-muted-foreground">
-                        {faq.answer}
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
-              ) : (
-                <Card>
-                  <CardContent className="p-8 text-center">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold">Frequently Asked Questions</CardTitle>
+                <CardDescription>Find quick answers to common questions</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {filteredFAQ.length > 0 ? (
+                  <Accordion type="single" collapsible className="space-y-2">
+                    {filteredFAQ.map((faq) => (
+                      <AccordionItem key={faq.id} value={faq.id} className="border rounded-lg px-4">
+                        <AccordionTrigger className="text-left hover:no-underline">
+                          <div className="flex items-center gap-3">
+                            <HelpCircle className="h-5 w-5 text-blue-500 flex-shrink-0" />
+                            <span>{faq.question}</span>
+                            <Badge variant="outline" className="ml-auto">
+                              {faq.category}
+                            </Badge>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-2 pb-4 text-muted-foreground">
+                          {faq.answer}
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                ) : (
+                  <div className="text-center py-8">
                     <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                     <h3 className="text-lg font-semibold mb-2">No results found</h3>
                     <p className="text-muted-foreground">
                       Try different keywords or browse by category
                     </p>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
 
           {/* Sidebar */}
@@ -206,15 +298,58 @@ export default function Help() {
                     value={newTicket.subject}
                     onChange={(e) => setNewTicket(prev => ({ ...prev, subject: e.target.value }))}
                   />
+                  <Select
+                    value={newTicket.priority}
+                    onValueChange={(value) => setNewTicket(prev => ({ ...prev, priority: value as 'low' | 'medium' | 'high' | 'urgent' }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select priority" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Low Priority</SelectItem>
+                      <SelectItem value="medium">Medium Priority</SelectItem>
+                      <SelectItem value="high">High Priority</SelectItem>
+                      <SelectItem value="urgent">Urgent</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={newTicket.category}
+                    onValueChange={(value) => setNewTicket(prev => ({ ...prev, category: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="general">General</SelectItem>
+                      <SelectItem value="technical">Technical Issue</SelectItem>
+                      <SelectItem value="billing">Billing</SelectItem>
+                      <SelectItem value="account">Account</SelectItem>
+                      <SelectItem value="course">Course Related</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <Textarea
-                    placeholder="Describe your issue..."
+                    placeholder="Describe your issue in detail..."
                     value={newTicket.message}
                     onChange={(e) => setNewTicket(prev => ({ ...prev, message: e.target.value }))}
                     rows={4}
                   />
-                  <Button onClick={handleSubmitTicket} className="w-full">
-                    <Send className="h-4 w-4 mr-2" />
-                    Submit Ticket
+                  <Button 
+                    onClick={handleSubmitTicket} 
+                    className="w-full"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Submitting...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="h-4 w-4 mr-2" />
+                        Submit Ticket
+                      </>
+                    )}
                   </Button>
                 </div>
 
@@ -238,31 +373,47 @@ export default function Help() {
                 <CardDescription>Track your recent support requests</CardDescription>
               </CardHeader>
               <CardContent>
-                {supportTickets.length > 0 ? (
+                {loading ? (
+                  <div className="text-center py-4">
+                    <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground">Loading tickets...</p>
+                  </div>
+                ) : error ? (
+                  <div className="text-center py-4">
+                    <AlertCircle className="h-6 w-6 text-red-500 mx-auto mb-2" />
+                    <p className="text-sm text-red-600">Failed to load tickets</p>
+                  </div>
+                ) : tickets.length > 0 ? (
                   <div className="space-y-3">
-                    {supportTickets.map((ticket) => (
+                    {tickets.map((ticket) => (
                       <div key={ticket.id} className="p-3 border rounded-lg">
                         <div className="flex items-start justify-between mb-2">
                           <h4 className="font-medium text-sm">{ticket.subject}</h4>
-                          <Badge variant={ticket.status === 'resolved' ? 'default' : 'secondary'}>
-                            {ticket.status === 'resolved' ? (
-                              <CheckCircle className="h-3 w-3 mr-1" />
-                            ) : (
-                              <Clock className="h-3 w-3 mr-1" />
-                            )}
-                            {ticket.status}
-                          </Badge>
+                          <div className="flex items-center gap-2">
+                            {getStatusBadge(ticket.status)}
+                            {getPriorityBadge(ticket.priority)}
+                          </div>
                         </div>
-                        <p className="text-xs text-muted-foreground">
-                          Created: {new Date(ticket.created).toLocaleDateString()}
+                        <p className="text-xs text-muted-foreground mb-2">
+                          Created: {new Date(ticket.created_at).toLocaleDateString()} at {new Date(ticket.created_at).toLocaleTimeString()}
                         </p>
+                        {ticket.admin_response && (
+                          <div className="p-2 bg-blue-50 rounded border border-blue-200">
+                            <p className="text-sm font-medium text-blue-900 mb-1">Admin Response:</p>
+                            <p className="text-sm text-blue-800">{ticket.admin_response}</p>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground text-center py-4">
-                    No support tickets yet
-                  </p>
+                  <div className="text-center py-8">
+                    <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">No support tickets yet</h3>
+                    <p className="text-muted-foreground">
+                      Submit a ticket above to get help from our support team
+                    </p>
+                  </div>
                 )}
               </CardContent>
             </Card>

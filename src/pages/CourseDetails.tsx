@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { CourseLayout } from '@/components/CourseLayout';
 import { BookOpen, Clock, Users, Star, CheckCircle, PlayCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { calculateTaxAmount } from '@/services/paymentService';
 
 interface Course {
   id: string;
@@ -51,6 +52,11 @@ export default function CourseDetails() {
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [loading, setLoading] = useState(true);
   const [enrolling, setEnrolling] = useState(false);
+  const [taxCalculation, setTaxCalculation] = useState<{
+    finalAmount: number;
+    taxAmount: number;
+    platformFee: number;
+  } | null>(null);
 
   useEffect(() => {
     if (courseId) {
@@ -58,6 +64,14 @@ export default function CourseDetails() {
       checkEnrollment();
     }
   }, [courseId, user]);
+
+  useEffect(() => {
+    if (course && courseId) {
+      calculateTaxAmount(courseId, course.price).then(calculation => {
+        setTaxCalculation(calculation);
+      });
+    }
+  }, [course, courseId]);
 
   const fetchCourseDetails = async () => {
     try {
@@ -121,28 +135,32 @@ export default function CourseDetails() {
   const handleEnroll = async () => {
     if (!user || !course) return;
 
-    setEnrolling(true);
-    try {
-      const { error } = await supabase
-        .from('enrollments')
-        .insert({
-          student_id: user.id,
-          course_id: course.id,
-          status: 'enrolled'
-        });
+    if (course.price > 0) {
+      // Paid course - redirect to payment page
+      navigate(`/payment/${courseId}`);
+    } else {
+      // Free course - enroll directly
+      setEnrolling(true);
+      try {
+        const { error } = await supabase
+          .from('enrollments')
+          .insert({
+            student_id: user.id,
+            course_id: course.id,
+            status: 'enrolled'
+          });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      setIsEnrolled(true);
-      toast.success('Successfully enrolled in course!');
-      
-      // Navigate to course learning page
-      navigate(`/course/${courseId}`);
-    } catch (error) {
-      console.error('Enrollment error:', error);
-      toast.error('Failed to enroll in course');
-    } finally {
-      setEnrolling(false);
+        setIsEnrolled(true);
+        toast.success('Successfully enrolled in course!');
+        navigate(`/course/${courseId}`);
+      } catch (error) {
+        console.error('Enrollment error:', error);
+        toast.error('Failed to enroll in course');
+      } finally {
+        setEnrolling(false);
+      }
     }
   };
 
@@ -179,43 +197,44 @@ export default function CourseDetails() {
 
   return (
     <CourseLayout>
-      <div className="max-w-4xl mx-auto p-6 space-y-8">
+      <div className="w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8">
         {/* Course Header */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
+        <div className="space-y-4 lg:space-y-6">
+          <div className="flex flex-wrap items-center gap-2">
             <Badge variant="secondary">{course.category}</Badge>
             <Badge variant="outline">{course.level}</Badge>
           </div>
           
-          <h1 className="text-4xl font-bold">{course.title}</h1>
+          <div className="space-y-2">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight">{course.title}</h1>
+            <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed">{course.description}</p>
+          </div>
           
-          <p className="text-xl text-muted-foreground">{course.description}</p>
-          
-          <div className="flex items-center gap-6 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <Users className="w-4 h-4" />
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <Users className="w-4 h-4 flex-shrink-0" />
               <span>By {course.profiles?.full_name || 'Unknown Instructor'}</span>
             </div>
-            <div className="flex items-center gap-1">
-              <Clock className="w-4 h-4" />
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 flex-shrink-0" />
               <span>{course.duration_hours} hours</span>
             </div>
-            <div className="flex items-center gap-1">
-              <BookOpen className="w-4 h-4" />
+            <div className="flex items-center gap-2">
+              <BookOpen className="w-4 h-4 flex-shrink-0" />
               <span>{totalLessons} lessons</span>
             </div>
           </div>
 
           {/* Enrollment Actions */}
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2">
             {profile?.role === 'student' && (
               <>
                 {!isEnrolled ? (
-                  <Button onClick={handleEnroll} disabled={enrolling} size="lg">
-                    {enrolling ? 'Enrolling...' : course.price > 0 ? `Enroll - $${course.price}` : 'Enroll for Free'}
+                  <Button onClick={handleEnroll} disabled={enrolling} size="lg" className="w-full sm:w-auto">
+                    {enrolling ? 'Enrolling...' : course.price > 0 ? `Enroll - ₦${taxCalculation?.finalAmount.toLocaleString() || course.price.toLocaleString()}` : 'Enroll for Free'}
                   </Button>
                 ) : (
-                  <Button onClick={startCourse} size="lg">
+                  <Button onClick={startCourse} size="lg" className="w-full sm:w-auto">
                     <PlayCircle className="w-4 h-4 mr-2" />
                     Continue Learning
                   </Button>
@@ -223,7 +242,7 @@ export default function CourseDetails() {
               </>
             )}
             {(profile?.role === 'instructor' || profile?.role === 'admin') && (
-              <Button onClick={startCourse} size="lg" variant="outline">
+              <Button onClick={startCourse} size="lg" variant="outline" className="w-full sm:w-auto">
                 <PlayCircle className="w-4 h-4 mr-2" />
                 Preview Course
               </Button>
@@ -311,12 +330,37 @@ export default function CourseDetails() {
                 <CardTitle>Course Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Price:</span>
-                  <span className="font-semibold">
-                    {course.price > 0 ? `$${course.price}` : 'Free'}
-                  </span>
-                </div>
+                {taxCalculation && course.price > 0 ? (
+                  <>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Course Price:</span>
+                      <span className="font-semibold">₦{course.price.toLocaleString()}</span>
+                    </div>
+                    {taxCalculation.taxAmount > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Tax:</span>
+                        <span className="font-semibold">₦{taxCalculation.taxAmount.toLocaleString()}</span>
+                      </div>
+                    )}
+                    {taxCalculation.platformFee > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Platform Fee:</span>
+                        <span className="font-semibold">₦{taxCalculation.platformFee.toLocaleString()}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between pt-2 border-t">
+                      <span className="text-muted-foreground font-medium">Total Amount:</span>
+                      <span className="font-bold text-lg">₦{taxCalculation.finalAmount.toLocaleString()}</span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Price:</span>
+                    <span className="font-semibold">
+                      {course.price > 0 ? `₦${course.price.toLocaleString()}` : 'Free'}
+                    </span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Duration:</span>
                   <span>{course.duration_hours} hours</span>

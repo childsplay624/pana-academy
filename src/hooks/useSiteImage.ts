@@ -1,19 +1,39 @@
 import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { fetchImageByKey, fetchSiteImages, ImageCategory } from '@/services/imageService';
 
 /**
  * Hook to fetch a single image by key with caching
  */
-export function useSiteImage(key: string, fallbackUrl?: string) {
+export function useSiteImage(key: string) {
     const { data, isLoading, error } = useQuery({
         queryKey: ['site-image', key],
-        queryFn: () => fetchImageByKey(key),
+        queryFn: async () => {
+            console.log('Fetching image with key:', key);
+            const { data, error } = await supabase
+                .from('site_images')
+                .select('*')
+                .eq('key', key)
+                .eq('is_active', true)
+                .single();
+            
+            if (error) {
+                console.error('Supabase error:', error);
+                if (error.code === 'PGRST116') {
+                    return null;
+                }
+                throw error;
+            }
+            
+            console.log('Image data from Supabase:', data);
+            return data;
+        },
         staleTime: 5 * 60 * 1000, // Cache for 5 minutes
         enabled: !!key,
     });
 
     return {
-        imageUrl: data?.url || fallbackUrl || '/placeholder.svg',
+        imageUrl: data?.url,
         altText: data?.alt_text || '',
         image: data,
         isLoading,

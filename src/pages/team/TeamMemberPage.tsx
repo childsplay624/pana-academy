@@ -30,12 +30,12 @@ const teamMembers = [
     title: "Executive Director",
     subtitle: "Global Business Services",
     description: "Seasoned business administrator with international training and expertise in corporate governance and business administration.",
-    fullBio: "Mrs. Iyenemi Akobo has been the backbone of the entire organization since its inception. With a background in Business Administration and CLE training in various international institutions in London, Dubai, Switzerland and Harvard, she is an alumna of the prestigious IMD Business School. She is a central figure in the administration of the group and a valued contributor to the growth of the business structure. She has held and efficiently managed key positions enabling and spurring the growth vision of the Chairman. She is the Executive Director (ED) for the Global Business Services unit, additionally supervising HR, Commercial Services and part of the Accounting functions. She is also driving the implementation of all Corporate Governance requirements on the ground together with a dedicated team of professionals.",
+    fullBio: "Mrs. Iyenemi Akobo has been the backbone of the entire organization since its inception. With a background in Business Administration and CLE training in various international institutions in London, Dubai, Switzerland and Harvard, she is an alumna of the prestigious IMD Business School. She is a central figure in the administration of the group and a valued contributor to the growth of the business structure. She has held and efficiently managed key positions enabling and spurring the growth vision of the Chairman. She is the Executive Director (ED) for the Global Business Services unit, additionally supervising HR, Commercial Services and part of the Accounting functions. She became a director of the company in 2015 and rose to the position of Deputy Managing Director from 2018 to August 2022 (Retirement date). In addition, she held the position of General Manager Human Resources & Organization of the Company from 2015 to 2022. She is the first female to hold the position in the over 60 years of existence of the Company. She won the award of the first Nigerian Content Operator of the year for the Company and received the PETAN Chairman's Outstanding Achievement Recognition Award for Nigerian content in 2015. She was also a director of the Nigerian Agip Closed Pension Fund Ltd from 2015 to August 2022.",
     experience: [
-      "Extensive training in Business Administration and CLE from top international institutions",
-      "Alumna of IMD Business School",
-      "Expertise in corporate governance and business administration",
-      "Key role in implementing corporate governance requirements"
+      "Former Deputy Managing Director, Nigerian Agip Oil Company Limited (NAOC)",
+      "Over 25 years of experience in the oil and gas industry",
+      "Fellow of the Institute of Chartered Accountants of Nigeria",
+      "Recipient of PETAN Chairman's Outstanding Achievement Recognition Award"
     ],
     image: "/team/iyenemi-akobo.png",
     imageKey: "team_iyenemi_akobo"
@@ -95,7 +95,7 @@ const teamMembers = [
 export default function TeamMemberPage() {
   const { memberId } = useParams<{ memberId: string }>();
   const member = teamMembers.find(m => m.id === memberId);
-  const { imageUrl } = useSiteImage(member?.imageKey || '', member?.image);
+  const { imageUrl } = useSiteImage(member?.imageKey || '');
 
   // Use a simple layout effect or regular effect to scroll top when member changes
   useEffect(() => {

@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import Navigation from "@/components/Navigation";
 import HeroSection from "@/components/HeroSection";
 import UpcomingCoursesSection from "@/components/UpcomingCoursesSection";
@@ -130,9 +131,15 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen relative">
-      <Navigation />
-      <SocialMediaIcons />
+    <>
+      <Helmet>
+        <title>PANA Academy - Professional Training & Development</title>
+        <meta name="description" content="Transform your career with PANA Academy's world-class professional training programs. Expert-led courses in energy, digital transformation, leadership, and technical skills." />
+        <meta name="keywords" content="PANA Academy, professional training, career development, technical courses, leadership programs, energy sector training" />
+      </Helmet>
+      <div className="min-h-screen relative">
+        <Navigation />
+        <SocialMediaIcons />
       <HeroSection />
 
       {/* Stats Bar - Fixed overlap */}
@@ -331,6 +338,7 @@ const Index = () => {
       <TestimonialsSection />
       <Footer />
     </div>
+    </>
   );
 };
 

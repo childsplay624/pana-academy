@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { createAndSendInvoice } from './invoiceService';
 import { v4 as uuidv4 } from 'uuid';
 import type {
   Payment,
@@ -320,7 +321,70 @@ export const initializePayment = async (
 };
 
 /**
- * Save payment record to database
+ * Calculate tax for a course amount
+ */
+export const calculateTaxAmount = async (
+  courseId: string,
+  baseAmount: number
+): Promise<{ finalAmount: number; taxAmount: number; platformFee: number }> => {
+  try {
+    // Fetch tax settings from platform_settings
+    const { data: taxSettings, error: taxError } = await (supabase as any)
+      .from('platform_settings')
+      .select('key, value')
+      .in('key', ['tax_enabled', 'tax_rate', 'tax_type', 'tax_name', 'tax_number']);
+
+    if (taxError) throw taxError;
+
+    const settings: any = {};
+    taxSettings.forEach(item => {
+      try {
+        settings[item.key] = typeof item.value === 'string' ? JSON.parse(item.value) : item.value;
+      } catch {
+        settings[item.key] = item.value;
+      }
+    });
+
+    const taxEnabled = settings.tax_enabled !== false;
+    const taxRate = settings.tax_rate ? parseFloat(settings.tax_rate) : 0;
+    const taxType = settings.tax_type || 'percentage';
+    const taxName = settings.tax_name || 'VAT';
+
+    // Calculate final amount with tax
+    let finalAmount = baseAmount;
+    let taxAmount = 0;
+    let platformFee = 0;
+
+    if (taxEnabled) {
+      if (taxType === 'percentage') {
+        taxAmount = (baseAmount * taxRate) / 100;
+        finalAmount = baseAmount + taxAmount;
+      } else if (taxType === 'fixed') {
+        taxAmount = taxRate;
+        finalAmount = baseAmount + taxAmount;
+      }
+      
+      // Apply platform fee (if any)
+      const { data: platformFeeSettings } = await (supabase as any)
+        .from('platform_settings')
+        .select('value')
+        .eq('key', 'platform_fee')
+        .single();
+
+      const platformFeeRate = platformFeeSettings?.value ? parseFloat(platformFeeSettings.value) : 0;
+      platformFee = (finalAmount * platformFeeRate) / 100;
+      finalAmount = finalAmount + platformFee;
+    }
+
+    return { finalAmount, taxAmount, platformFee };
+  } catch (error) {
+    console.error('Error calculating tax:', error);
+    return { finalAmount: baseAmount, taxAmount: 0, platformFee: 0 };
+  }
+};
+
+/**
+ * Save payment record to database with tax calculation
  */
 export const savePaymentRecord = async (
   userId: string,
@@ -331,14 +395,23 @@ export const savePaymentRecord = async (
   status: 'pending' | 'completed' | 'failed'
 ) => {
   try {
+    // Calculate tax for the payment
+    const { finalAmount, taxAmount, platformFee } = await calculateTaxAmount(courseId, amount);
+
     const paymentData = {
       user_id: userId,
       course_id: courseId,
-      amount,
+      amount: finalAmount,
       provider,
       reference,
       status,
-      metadata: {},
+      metadata: {
+        original_amount: amount,
+        tax_amount: taxAmount,
+        platform_fee: platformFee,
+        tax_enabled: taxAmount > 0,
+        currency: 'NGN'
+      },
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
@@ -391,6 +464,19 @@ export const handlePaymentSuccess = async (
       ]);
 
     if (enrollError) throw enrollError;
+
+    // Generate and send invoice
+    try {
+      const invoiceResult = await createAndSendInvoice(userId, courseId, reference, provider);
+      if (invoiceResult.success) {
+        console.log(`Invoice generated and sent for payment ${reference}`);
+      } else {
+        console.error('Failed to generate invoice:', invoiceResult.error);
+      }
+    } catch (invoiceError) {
+      console.error('Error generating invoice:', invoiceError);
+      // Don't fail the payment process if invoice generation fails
+    }
 
     return { success: true };
   } catch (error) {

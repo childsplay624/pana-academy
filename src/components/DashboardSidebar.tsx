@@ -14,7 +14,8 @@ import {
   LogOut,
   CreditCard,
   ImageIcon,
-  MessageSquareText
+  MessageSquareText,
+  MessageSquare
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -55,6 +56,7 @@ export function DashboardSidebar() {
         ...baseItems,
         { title: "User Management", url: "/dashboard/users", icon: Users },
         { title: "Course Management", url: "/dashboard/courses", icon: BookOpen },
+        { title: "Support Tickets", url: "/dashboard/support-tickets", icon: MessageSquare },
         { title: "Manage Payments", url: "/dashboard/payments", icon: CreditCard },
         { title: "Manage Images", url: "/dashboard/images", icon: ImageIcon },
         { title: "Testimonials", url: "/dashboard/testimonials", icon: MessageSquareText },
@@ -79,6 +81,7 @@ export function DashboardSidebar() {
       { title: "My Courses", url: "/dashboard/courses", icon: BookOpen },
       { title: "Certificates", url: "/dashboard/certificates", icon: Award },
       { title: "Progress", url: "/dashboard/progress", icon: Calendar },
+      { title: "Profile", url: "/student/profile", icon: User },
       { title: "Assignments", url: "/dashboard/assignments", icon: FileText },
       { title: "Help", url: "/dashboard/help", icon: HelpCircle },
     ];

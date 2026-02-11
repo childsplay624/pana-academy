@@ -7,30 +7,32 @@ import { useSiteImage } from "@/hooks/useSiteImage";
 
 const ConsultingServicesPage = () => {
   // Fetch header image from centralized system
-  const { imageUrl: headerImage } = useSiteImage('header_consultancy', '/img/consultancy.jpg');
+  const { imageUrl: headerImage } = useSiteImage('header_consultancy');
 
   return (
     <>
       <Helmet>
-        <title>Consulting Services | PANA Academy - Strategic Business Solutions</title>
-        <meta name="description" content="Transform your organization with PANA Academy's expert consulting services. We provide strategic solutions to help businesses navigate complexity and drive growth." />
-        <meta name="keywords" content="business consulting, strategic planning, organizational development, PANA Academy consulting" />
+        <title>Consulting Services | PANA Academy</title>
+        <meta name="description" content="Professional consulting services for oil & gas, power, and technology industries. Expert guidance from seasoned industry professionals." />
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-subtle">
+      <div className="min-h-screen bg-gray-50 flex flex-col">
         <Navigation />
 
-        <main>
-          {/* Hero Section with Visual Impact */}
+        <main className="flex-grow">
+          {/* Page Header with Image */}
           <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
-            {/* Background Image */}
             <div className="absolute inset-0">
-              <img
-                src={headerImage}
-                alt="Consulting Services"
-                className="w-full h-full object-cover object-center"
-                loading="eager"
-              />
+              {headerImage ? (
+                <img
+                  src={headerImage}
+                  alt="Consulting Services"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-pana-navy to-pana-red"></div>
+              )}
+              <div className="absolute inset-0 bg-black/60"></div>
             </div>
             {/* Black overlay */}
             <div className="absolute inset-0 bg-black/60"></div>
@@ -48,7 +50,7 @@ const ConsultingServicesPage = () => {
               <div className="absolute bottom-32 left-1/3 w-8 h-8 bg-pana-blue/30 rounded-full animate-pulse"></div>
             </div>
 
-            <div className="relative max-w-7xl mx-auto px-6 lg:px-8 text-center z-10">
+            <div className="relative max-w-7xl mx-auto px-6 lg:px-8 text-center z-10 mt-16">
               <div className="space-y-8 animate-fade-in">
                 <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full text-white/90 text-sm font-medium border border-white/20">
                   <Zap className="w-5 h-5 text-pana-gold" />
