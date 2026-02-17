@@ -31,9 +31,11 @@ export default function MyCourses() {
               Track your learning progress and continue your studies
             </p>
           </div>
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            Browse Courses
+          <Button asChild>
+            <Link to="/courses">
+              <Plus className="h-4 w-4 mr-2" />
+              Browse Courses
+            </Link>
           </Button>
         </div>
 
@@ -198,9 +200,11 @@ export default function MyCourses() {
                 <p className="text-muted-foreground mb-6">
                   Start your learning journey by enrolling in your first course
                 </p>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Browse Courses
+                <Button asChild>
+                  <Link to="/courses">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Browse Courses
+                  </Link>
                 </Button>
               </CardContent>
             </Card>

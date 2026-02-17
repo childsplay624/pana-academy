@@ -174,7 +174,7 @@ const PublicCoursesPage = () => {
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       {/* Hero Section with Background Image */}
-      <div className="relative min-h-[500px] bg-cover bg-center">
+      <div className="relative min-h-[500px] bg-cover bg-center mt-20">
         {headerImage ? (
           <img
             src={headerImage}

@@ -58,6 +58,7 @@ export function DashboardSidebar() {
         { title: "Course Management", url: "/dashboard/courses", icon: BookOpen },
         { title: "Support Tickets", url: "/dashboard/support-tickets", icon: MessageSquare },
         { title: "Manage Payments", url: "/dashboard/payments", icon: CreditCard },
+        { title: "Invoices", url: "/dashboard/invoices", icon: FileText },
         { title: "Manage Images", url: "/dashboard/images", icon: ImageIcon },
         { title: "Testimonials", url: "/dashboard/testimonials", icon: MessageSquareText },
         { title: "Analytics", url: "/dashboard/analytics", icon: TrendingUp },

@@ -92,10 +92,10 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-white">
+    <div className="flex flex-col min-h-screen">
       {/* Left Side - Background with Image Overlay */}
       <div 
-        className="w-full md:w-1/2 relative text-white p-8 md:p-12 flex flex-col min-h-screen"
+        className="w-full md:w-1/2 relative text-white p-8 md:p-12 flex flex-col min-h-screen pt-20"
       >
         <div className="absolute inset-0">
           {bgImage ? (
