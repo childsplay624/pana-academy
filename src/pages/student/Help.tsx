@@ -9,11 +9,11 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useSupportTickets } from '@/hooks/useSupportTickets';
-import { 
-  HelpCircle, 
-  Search, 
-  MessageSquare, 
-  Book, 
+import {
+  HelpCircle,
+  Search,
+  MessageSquare,
+  Book,
   Video,
   FileText,
   Mail,
@@ -80,11 +80,11 @@ const supportTickets = [
 export default function Help() {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('faq');
-  const [newTicket, setNewTicket] = useState({ 
-    subject: '', 
-    message: '', 
+  const [newTicket, setNewTicket] = useState({
+    subject: '',
+    message: '',
     priority: 'medium' as 'low' | 'medium' | 'high' | 'urgent',
-    category: 'general' 
+    category: 'general'
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -108,7 +108,7 @@ export default function Help() {
     }
 
     setIsSubmitting(true);
-    
+
     try {
       const { error: createError } = await createTicket({
         subject: newTicket.subject,
@@ -125,11 +125,11 @@ export default function Help() {
       });
 
       // Reset form
-      setNewTicket({ 
-        subject: '', 
-        message: '', 
-        priority: 'medium', 
-        category: 'general' 
+      setNewTicket({
+        subject: '',
+        message: '',
+        priority: 'medium',
+        category: 'general'
       });
     } catch (err) {
       console.error('Failed to submit ticket:', err);
@@ -334,8 +334,8 @@ export default function Help() {
                     onChange={(e) => setNewTicket(prev => ({ ...prev, message: e.target.value }))}
                     rows={4}
                   />
-                  <Button 
-                    onClick={handleSubmitTicket} 
+                  <Button
+                    onClick={handleSubmitTicket}
                     className="w-full"
                     disabled={isSubmitting}
                   >
@@ -356,11 +356,11 @@ export default function Help() {
                 <div className="pt-4 border-t space-y-2">
                   <div className="flex items-center gap-2 text-sm">
                     <Mail className="h-4 w-4" />
-                    <span>support@panacademy.com</span>
+                    <span>support@pana-academy.com</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <Phone className="h-4 w-4" />
-                    <span>+1 (555) 123-4567</span>
+                    <span>+234 702 600 0119</span>
                   </div>
                 </div>
               </CardContent>

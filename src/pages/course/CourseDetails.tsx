@@ -20,7 +20,9 @@ import {
   Users,
   AlertCircle,
   Calendar,
-  DollarSign
+  DollarSign,
+  PlayCircle,
+  MapPin
 } from 'lucide-react';
 import { fetchCourseById, formatCourseDate, isStartingSoon, type Course } from '@/services/courseService';
 import { ModuleManager } from '@/components/course-management/ModuleManager';
@@ -28,6 +30,13 @@ import { useAuth } from '@/hooks/useAuth';
 import { checkEnrollment } from '@/services/enrollmentService';
 import { PaymentButton } from '@/components/payment/PaymentButton';
 import { useToast } from '@/components/ui/use-toast';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface Module {
   id: number;
@@ -39,6 +48,7 @@ const CourseDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEnrolled, setIsEnrolled] = useState(false);
@@ -176,15 +186,17 @@ const CourseDetails: React.FC = () => {
                   {course.course_type && (
                     <Badge
                       variant="outline"
-                      className={course.course_type === 'live'
-                        ? 'bg-blue-500/20 border-blue-300 text-white'
-                        : 'bg-purple-500/20 border-purple-300 text-white'
+                      className={course.course_type === 'online'
+                        ? 'bg-green-500/20 border-green-300 text-white'
+                        : course.course_type === 'onsite'
+                          ? 'bg-blue-500/20 border-blue-300 text-white'
+                          : 'bg-purple-500/20 border-purple-300 text-white'
                       }
                     >
-                      {course.course_type === 'live' ? '📅 Live Course' : '⏱️ Self-Paced'}
+                      {course.course_type === 'online' ? '💻 Online' : course.course_type === 'onsite' ? '🏢 On-Site' : '🌓 Hybrid'}
                     </Badge>
                   )}
-                  {course.course_type === 'live' && course.start_date && isStartingSoon(course.start_date) && (
+                  {(course.course_type === 'onsite' || course.course_type === 'hybrid') && course.start_date && isStartingSoon(course.start_date) && (
                     <Badge variant="outline" className="bg-red-500/30 border-red-300 text-white animate-pulse">
                       🔥 Starting Soon
                     </Badge>
@@ -204,8 +216,8 @@ const CourseDetails: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Course Dates for Live Courses */}
-                {course.course_type === 'live' && course.start_date && (
+                {/* Course Dates for Onsite/Hybrid Courses */}
+                {(course.course_type === 'onsite' || course.course_type === 'hybrid') && course.start_date && (
                   <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-4 mb-6">
                     <div className="flex items-start gap-3">
                       <Calendar className="h-5 w-5 text-white mt-0.5" />
@@ -281,6 +293,32 @@ const CourseDetails: React.FC = () => {
                 </Button>
               )}
             </div>
+
+            {/* Navigation Button for Enrolled Students */}
+            {user && !isInstructor && isEnrolled && (
+              <Button
+                className="mt-4"
+                onClick={() => {
+                  if (course.course_type === 'online') {
+                    navigate(`/course/${id}/learn`);
+                  } else {
+                    setIsScheduleDialogOpen(true);
+                  }
+                }}
+              >
+                {course.course_type === 'online' ? (
+                  <>
+                    <PlayCircle className="w-4 h-4 mr-2" />
+                    Continue Learning
+                  </>
+                ) : (
+                  <>
+                    <Calendar className="w-4 h-4 mr-2" />
+                    View My Schedule
+                  </>
+                )}
+              </Button>
+            )}
           </div>
         </div>
 
@@ -359,26 +397,39 @@ const CourseDetails: React.FC = () => {
                     <CardTitle className="text-xl font-bold">This Course Includes</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="flex items-center">
-                      <BookOpen className="h-5 w-5 text-pana-blue mr-3" />
-                      <span>8 hours on-demand video</span>
-                    </div>
-                    <div className="flex items-center">
-                      <FileText className="h-5 w-5 text-pana-blue mr-3" />
-                      <span>12 downloadable resources</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Clock className="h-5 w-5 text-pana-blue mr-3" />
-                      <span>Full lifetime access</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Smartphone className="h-5 w-5 text-pana-blue mr-3" />
-                      <span>Access on mobile and TV</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Award className="h-5 w-5 text-pana-blue mr-3" />
-                      <span>Certificate of completion</span>
-                    </div>
+                    {course.features && course.features.length > 0 ? (
+                      course.features.map((feature, index) => (
+                        <div key={index} className="flex items-center">
+                          <CheckCircle className="h-5 w-5 text-pana-blue mr-3" />
+                          <span>{feature}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <>
+                        <div className="flex items-center">
+                          <BookOpen className="h-5 w-5 text-pana-blue mr-3" />
+                          <span>{course.duration || `${course.duration_hours} hours`} on-demand content</span>
+                        </div>
+                        {course.resources_count > 0 && (
+                          <div className="flex items-center">
+                            <FileText className="h-5 w-5 text-pana-blue mr-3" />
+                            <span>{course.resources_count} downloadable resources</span>
+                          </div>
+                        )}
+                        <div className="flex items-center">
+                          <Clock className="h-5 w-5 text-pana-blue mr-3" />
+                          <span>Full lifetime access</span>
+                        </div>
+                        <div className="flex items-center">
+                          <Smartphone className="h-5 w-5 text-pana-blue mr-3" />
+                          <span>Access on mobile and TV</span>
+                        </div>
+                        <div className="flex items-center">
+                          <Award className="h-5 w-5 text-pana-blue mr-3" />
+                          <span>Certificate of completion</span>
+                        </div>
+                      </>
+                    )}
                   </CardContent>
                 </Card>
 
@@ -405,6 +456,86 @@ const CourseDetails: React.FC = () => {
         </div>
       </main>
       <Footer />
+
+      {/* Schedule Dialog */}
+      <Dialog open={isScheduleDialogOpen} onOpenChange={setIsScheduleDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold flex items-center">
+              <Calendar className="h-6 w-6 mr-2 text-red-600" />
+              My Schedule & Venue
+            </DialogTitle>
+            <DialogDescription>
+              Detailed information about your upcoming training.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-6 mt-4">
+            <div className={`grid grid-cols-1 ${course.course_type === 'online' ? '' : 'md:grid-cols-2'} gap-6`}>
+              {(course.course_type === 'onsite' || course.course_type === 'hybrid') && (
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-gray-900 flex items-center">
+                    <MapPin className="h-4 w-4 mr-2 text-red-600" />
+                    Location Details
+                  </h4>
+                  <div className="pl-6 space-y-1">
+                    <p className="font-medium text-gray-800">{course.venue_name || 'Venue to be announced'}</p>
+                    {(course.venue_address || course.venue_city || course.venue_country) && (
+                      <p className="text-gray-600">
+                        {[course.venue_address, course.venue_city, course.venue_country]
+                          .filter(Boolean)
+                          .join(', ')}
+                      </p>
+                    )}
+                    {course.venue_map_url && (
+                      <a
+                        href={course.venue_map_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-red-600 hover:underline text-sm font-medium flex items-center mt-2 font-semibold"
+                      >
+                        View on Google Maps
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
+              <div className="space-y-3">
+                <h4 className="font-semibold text-gray-900 flex items-center">
+                  <Clock className="h-4 w-4 mr-2 text-red-600" />
+                  Daily Schedule
+                </h4>
+                <div className="pl-6">
+                  {course.onsite_schedule ? (
+                    typeof course.onsite_schedule === 'string' ? (
+                      <p className="text-gray-600 whitespace-pre-wrap">{course.onsite_schedule}</p>
+                    ) : Array.isArray(course.onsite_schedule) ? (
+                      <div className="space-y-2">
+                        {course.onsite_schedule.map((session: any, idx: number) => (
+                          <div key={idx} className="text-sm">
+                            <span className="font-medium text-gray-800">{session.date || (idx + 1)}:</span>
+                            <p className="text-gray-600">{session.start_time} - {session.end_time}: {session.title}</p>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <pre className="text-xs text-gray-600 overflow-auto">{JSON.stringify(course.onsite_schedule, null, 2)}</pre>
+                    )
+                  ) : (
+                    <p className="text-gray-500 italic">Schedule details will be provided by the instructor.</p>
+                  )}
+                </div>
+              </div>
+            </div>
+            {course.course_type !== 'online' && (
+              <div className="p-4 bg-red-50 border border-red-100 rounded-lg">
+                <p className="text-sm text-gray-700">
+                  <span className="font-bold text-red-600">Important:</span> Please arrive at least 15 minutes before the daily session starts. Don't forget to bring your ID for verification at the venue entrance.
+                </p>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

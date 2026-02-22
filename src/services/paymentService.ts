@@ -42,40 +42,37 @@ const initializePaystackPayment = async (
 ): Promise<PaymentResponse> => {
   try {
     const reference = `PANA-${uuidv4()}`;
-    const amountInKobo = Math.round(amount * 100); // Convert to kobo (smallest currency unit)
+    const amountInKobo = Math.round(amount * 100);
 
-    const response = await fetch('https://api.paystack.co/transaction/initialize', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${PAYSTACK_PUBLIC_KEY}`
-      },
-      body: JSON.stringify({
-        email,
-        amount: amountInKobo,
-        reference,
-        callback_url: callbackUrl || `${API_BASE_URL}/payment/callback`,
-        metadata: {
-          custom_fields: [
-            {
-              display_name: 'Course ID',
-              variable_name: 'course_id',
-              value: metadata.courseId
-            },
-            {
-              display_name: 'User ID',
-              variable_name: 'user_id',
-              value: metadata.userId
-            }
-          ]
+    const { data, error } = await supabase.functions.invoke('handle-payment', {
+      body: {
+        action: 'initialize',
+        provider: 'paystack',
+        data: {
+          email,
+          amount: amountInKobo,
+          reference,
+          callback_url: callbackUrl || `${API_BASE_URL}/payment/callback`,
+          metadata: {
+            custom_fields: [
+              {
+                display_name: 'Course ID',
+                variable_name: 'course_id',
+                value: metadata.courseId
+              },
+              {
+                display_name: 'User ID',
+                variable_name: 'user_id',
+                value: metadata.userId
+              }
+            ]
+          }
         }
-      })
+      }
     });
 
-    const data = await response.json();
-
-    if (!data.status) {
-      throw new Error(data.message || 'Failed to initialize Paystack payment');
+    if (error || !data.status) {
+      throw new Error(data?.message || 'Failed to initialize Paystack payment');
     }
 
     return {
@@ -200,13 +197,15 @@ export const verifyPayment = async (reference: string, provider: PaymentProvider
 
 const verifyPaystackPayment = async (reference: string): Promise<boolean> => {
   try {
-    const response = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
-      headers: {
-        'Authorization': `Bearer ${PAYSTACK_PUBLIC_KEY}`
+    const { data, error } = await supabase.functions.invoke('handle-payment', {
+      body: {
+        action: 'verify',
+        provider: 'paystack',
+        data: { reference }
       }
     });
 
-    const data = await response.json();
+    if (error) throw error;
     return data.status && data.data.status === 'success';
   } catch (error) {
     console.error('Paystack verification error:', error);
@@ -216,13 +215,15 @@ const verifyPaystackPayment = async (reference: string): Promise<boolean> => {
 
 const verifyFlutterwavePayment = async (transactionId: string): Promise<boolean> => {
   try {
-    const response = await fetch(`https://api.flutterwave.com/v3/transactions/${transactionId}/verify`, {
-      headers: {
-        'Authorization': `Bearer ${FLUTTERWAVE_PUBLIC_KEY}`
+    const { data, error } = await supabase.functions.invoke('handle-payment', {
+      body: {
+        action: 'verify',
+        provider: 'flutterwave',
+        data: { transactionId }
       }
     });
 
-    const data = await response.json();
+    if (error) throw error;
     return data.status === 'success' && data.data.status === 'successful';
   } catch (error) {
     console.error('Flutterwave verification error:', error);
@@ -363,7 +364,7 @@ export const calculateTaxAmount = async (
         taxAmount = taxRate;
         finalAmount = baseAmount + taxAmount;
       }
-      
+
       // Apply platform fee (if any)
       const { data: platformFeeSettings } = await (supabase as any)
         .from('platform_settings')

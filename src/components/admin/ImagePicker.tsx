@@ -114,7 +114,10 @@ export function ImagePicker({ value, onSelect, category = 'other', label = 'Sele
                                     <TabsTrigger value="upload">Upload New</TabsTrigger>
                                 </TabsList>
 
-                                <TabsContent value="gallery" className="flex-1 flex flex-col pt-4 overflow-hidden">
+                                <TabsContent
+                                    value="gallery"
+                                    className="flex-1 flex flex-col pt-4 min-h-0 data-[state=active]:flex"
+                                >
                                     <div className="relative mb-4">
                                         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                                         <Input

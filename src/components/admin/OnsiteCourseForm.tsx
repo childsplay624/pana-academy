@@ -6,6 +6,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from '@/components/ui/select';
+import { supabase } from '@/integrations/supabase/client';
 import { ScheduleBuilder } from './ScheduleBuilder';
 import { ArrowLeft, MapPin, Calendar, Package, Info } from 'lucide-react';
 import { OnSiteSession } from '@/types/course.types';
@@ -43,6 +51,40 @@ export function OnsiteCourseForm({
     );
 
     const requiresMaterials = watch('requiresMaterials');
+
+    const [venues, setVenues] = React.useState<any[]>([]);
+    const [isLoadingVenues, setIsLoadingVenues] = React.useState(true);
+
+    React.useEffect(() => {
+        const fetchVenues = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from('venues')
+                    .select('*')
+                    .order('name');
+                if (error) throw error;
+                setVenues(data || []);
+            } catch (err) {
+                console.error('Error fetching venues:', err);
+            } finally {
+                setIsLoadingVenues(false);
+            }
+        };
+        fetchVenues();
+    }, []);
+
+    const handleVenueSelect = (venueId: string) => {
+        const selectedVenue = venues.find(v => v.id === venueId);
+        if (selectedVenue) {
+            setValue('venueId', selectedVenue.id);
+            setValue('venueName', selectedVenue.name);
+            setValue('venueAddress', selectedVenue.address || '');
+            setValue('venueCity', selectedVenue.city || '');
+            setValue('venueCountry', selectedVenue.country || 'Nigeria');
+            setValue('venueCapacity', selectedVenue.capacity || '');
+            setValue('venueMapUrl', selectedVenue.map_url || '');
+        }
+    };
 
     const handleFormSubmit = (data: any) => {
         // Validate venue information
@@ -83,15 +125,53 @@ export function OnsiteCourseForm({
             {/* Venue Information Section */}
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <MapPin className="h-5 w-5" />
-                        Venue Information
-                    </CardTitle>
-                    <CardDescription>
-                        Where will this course take place?
-                    </CardDescription>
+                    <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                            <CardTitle className="flex items-center gap-2">
+                                <MapPin className="h-5 w-5" />
+                                Venue Information
+                            </CardTitle>
+                            <CardDescription>
+                                Select a predefined venue or enter details manually
+                            </CardDescription>
+                        </div>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => window.open('/dashboard/venues', '_blank')}
+                        >
+                            Manage Venues
+                        </Button>
+                    </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                    {/* Venue Selection */}
+                    <div className="pb-4 border-b">
+                        <Label htmlFor="venueSelect" className="mb-2 block">Quick Select Venue</Label>
+                        <Select
+                            onValueChange={handleVenueSelect}
+                            defaultValue={initialData?.venueId}
+                        >
+                            <SelectTrigger id="venueSelect">
+                                <SelectValue placeholder={isLoadingVenues ? "Loading venues..." : "Select a saved venue"} />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {venues.map((venue) => (
+                                    <SelectItem key={venue.id} value={venue.id}>
+                                        {venue.name} ({venue.city})
+                                    </SelectItem>
+                                ))}
+                                {venues.length === 0 && !isLoadingVenues && (
+                                    <SelectItem value="none" disabled>No venues found</SelectItem>
+                                )}
+                            </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground mt-2">
+                            Selecting a venue will automatically fill the details below.
+                        </p>
+                    </div>
+
                     {/* Venue Name */}
                     <div className="space-y-2">
                         <Label htmlFor="venueName">Venue Name *</Label>

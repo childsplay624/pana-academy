@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 
-type CourseCategory = 'technology' | 'business' | 'design' | 'marketing' | 'health' | 'language' | 'personal_development' | 'academic';
+type CourseCategory = 'soft_skills' | 'safety' | 'sustainability' | 'general_technical' | 'flow_drives' | 'flow_control' | 'flow_measurement' | 'instrumentation_automation';
 
 export interface Module {
   id: number;
@@ -32,8 +32,18 @@ export interface Course {
   updated_at: string;
   start_date?: string;  // ISO date string
   end_date?: string;    // ISO date string
-  course_type?: 'self_paced' | 'live';  // Course delivery type
+  course_type?: 'online' | 'onsite' | 'hybrid';  // Course delivery type
   status?: 'draft' | 'review' | 'published' | 'archived';  // Course status
+  features?: string[];
+  requirements?: string[];
+  resources_count?: number;
+  venue_name?: string;
+  venue_address?: string;
+  venue_city?: string;
+  venue_country?: string;
+  venue_map_url?: string;
+  onsite_schedule?: any;
+  venue_id?: string;
 }
 
 interface DatabaseCourse {
@@ -54,6 +64,20 @@ interface DatabaseCourse {
   price?: number;
   thumbnail_url?: string;
   learning_outcomes?: string[];
+  requirements?: string[];
+  features?: string[];
+  resources_count?: number;
+  venue_name?: string;
+  venue_address?: string;
+  venue_city?: string;
+  venue_country?: string;
+  venue_map_url?: string;
+  onsite_schedule?: any;
+  course_type?: 'online' | 'onsite' | 'hybrid';
+  start_date?: string;
+  end_date?: string;
+  is_free?: boolean;
+  status?: 'draft' | 'review' | 'published' | 'archived';
   modules?: any[];
   created_at: string;
   updated_at: string;
@@ -95,6 +119,20 @@ export const fetchCourseById = async (id: string): Promise<Course | null> => {
       price: dbCourse.price || 0,
       thumbnail_url: dbCourse.thumbnail_url,
       learning_outcomes: dbCourse.learning_outcomes || [],
+      requirements: (dbCourse as any).requirements || [],
+      features: (dbCourse as any).features || [],
+      resources_count: (dbCourse as any).resources_count || 0,
+      venue_name: dbCourse.venue_name,
+      venue_address: dbCourse.venue_address,
+      venue_city: dbCourse.venue_city,
+      venue_country: dbCourse.venue_country,
+      venue_map_url: dbCourse.venue_map_url,
+      onsite_schedule: dbCourse.onsite_schedule,
+      course_type: dbCourse.course_type || 'online',
+      start_date: dbCourse.start_date,
+      end_date: dbCourse.end_date,
+      is_free: dbCourse.is_free || false,
+      status: dbCourse.status || 'published',
       modules: dbCourse.modules || [],
       created_at: dbCourse.created_at,
       updated_at: dbCourse.updated_at
@@ -146,7 +184,7 @@ export const fetchAllCourses = async (): Promise<Course[]> => {
         updated_at: dbCourse.updated_at,
         start_date: (dbCourse as any).start_date,
         end_date: (dbCourse as any).end_date,
-        course_type: (dbCourse as any).course_type || 'self_paced',
+        course_type: (dbCourse as any).course_type || 'online',
         is_free: (dbCourse as any).is_free,
         status: (dbCourse as any).status || 'published'
       };
@@ -208,7 +246,7 @@ export const fetchUpcomingCourses = async (): Promise<Course[]> => {
         updated_at: dbCourse.updated_at,
         start_date: (dbCourse as any).start_date,
         end_date: (dbCourse as any).end_date,
-        course_type: (dbCourse as any).course_type || 'self_paced',
+        course_type: (dbCourse as any).course_type || 'online',
         status: 'published' as const
       };
     });
@@ -232,7 +270,7 @@ export const fetchOngoingCourses = async (): Promise<Course[]> => {
         instructor:instructor_id (id, full_name, avatar_url)
       `)
       .eq('status', 'published')
-      .eq('course_type', 'live')
+      .in('course_type', ['onsite', 'hybrid'])
       .lte('start_date', now)               // Started
       .gte('end_date', now)                 // Not finished
       .not('start_date', 'is', null)
@@ -268,7 +306,7 @@ export const fetchOngoingCourses = async (): Promise<Course[]> => {
         updated_at: dbCourse.updated_at,
         start_date: (dbCourse as any).start_date,
         end_date: (dbCourse as any).end_date,
-        course_type: 'live' as const,
+        course_type: (dbCourse as any).course_type || 'onsite',
         status: 'published' as const
       };
     });
@@ -307,8 +345,8 @@ export const getCourseStatus = (course: Course): {
   label: string;
   color: string;
 } => {
-  // Self-paced courses are always available
-  if (course.course_type === 'self_paced' || !course.start_date) {
+  // Online courses are always available
+  if (course.course_type === 'online' || !course.start_date) {
     return { status: 'available', label: 'Enroll Anytime', color: 'green' };
   }
 
@@ -371,6 +409,7 @@ export const createCourse = async (courseData: any) => {
         materials_list: courseData.materialsList,
         parking_info: courseData.parkingInfo,
         accommodation_info: courseData.accommodationInfo,
+        venue_id: courseData.venueId,
       }])
       .select()
       .single();

@@ -28,7 +28,7 @@ interface Course {
   status: 'draft' | 'published' | 'archived' | 'review';
   price: number;
   duration_hours: number;
-  category: 'soft_skills' | 'safety_courses' | 'sustainability_courses' | 'general_technical_courses' | 'flow_drives_courses' | 'flow_control_courses' | 'flow_measurement_courses' | 'instrumentation_automation';
+  category: 'soft_skills' | 'safety' | 'sustainability' | 'general_technical' | 'flow_drives' | 'flow_control' | 'flow_measurement' | 'instrumentation_automation';
   thumbnail_url: string | null;
   level: string | null;
   requirements: string[] | null;
@@ -50,6 +50,50 @@ interface Course {
   materials_list?: string[] | null;
   parking_info?: string | null;
   accommodation_info?: string | null;
+  features?: string[] | null;
+  resources_count?: number | null;
+  venue_id?: string | null;
+}
+
+function QuickVenueSelect({ onSelect }: { onSelect: (venue: any) => void }) {
+  const [venues, setVenues] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchVenues() {
+      try {
+        const { data, error } = await supabase
+          .from('venues')
+          .select('*')
+          .order('name');
+        if (error) throw error;
+        setVenues(data || []);
+      } catch (err) {
+        console.error('Error fetching venues:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchVenues();
+  }, []);
+
+  return (
+    <Select onValueChange={(id) => {
+      const venue = venues.find(v => v.id === id);
+      if (venue) onSelect(venue);
+    }}>
+      <SelectTrigger>
+        <SelectValue placeholder={loading ? "Loading venues..." : "Select a venue"} />
+      </SelectTrigger>
+      <SelectContent>
+        {venues.map((v) => (
+          <SelectItem key={v.id} value={v.id}>
+            {v.name} ({v.city})
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
 }
 
 export function CourseEditor() {
@@ -112,7 +156,18 @@ export function CourseEditor() {
           learning_outcomes: course.learning_outcomes,
           thumbnail_url: course.thumbnail_url,
           start_date: course.start_date || null,
-          end_date: course.end_date || null
+          end_date: course.end_date || null,
+          course_type: course.course_type,
+          venue_name: course.venue_name,
+          venue_address: course.venue_address,
+          venue_city: course.venue_city,
+          venue_country: course.venue_country,
+          venue_capacity: course.venue_capacity,
+          venue_map_url: course.venue_map_url,
+          onsite_schedule: course.onsite_schedule,
+          venue_id: course.venue_id,
+          features: course.features,
+          resources_count: course.resources_count
         })
         .eq('id', courseId);
 
@@ -257,8 +312,8 @@ export function CourseEditor() {
   return (
     <DashboardLayout>
       <div className="bg-background">
-        {/* Navigation Bar */}
-        <nav className="border-b bg-card">
+        {/* Navigation Bar - Sticky so actions are always available */}
+        <nav className="sticky top-0 z-40 border-b bg-card/95 backdrop-blur-sm">
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between h-16">
               {/* Left side - Navigation */}
@@ -377,7 +432,7 @@ export function CourseEditor() {
           </div>
         </div>
 
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-4">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="details">Course Details</TabsTrigger>
@@ -415,13 +470,13 @@ export function CourseEditor() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="soft_skills">Soft Skills</SelectItem>
-                          <SelectItem value="safety_courses">Safety Courses</SelectItem>
-                          <SelectItem value="sustainability_courses">Sustainability Courses</SelectItem>
-                          <SelectItem value="general_technical_courses">General Technical Courses</SelectItem>
-                          <SelectItem value="flow_drives_courses">Flow Drives Courses</SelectItem>
-                          <SelectItem value="flow_control_courses">Flow Control Courses</SelectItem>
-                          <SelectItem value="flow_measurement_courses">Flow Measurement Courses</SelectItem>
-                          <SelectItem value="instrumentation_automation">Instrumentation/Automation and Process Control</SelectItem>
+                          <SelectItem value="safety">Safety</SelectItem>
+                          <SelectItem value="sustainability">Sustainability</SelectItem>
+                          <SelectItem value="general_technical">General Technical</SelectItem>
+                          <SelectItem value="flow_drives">Flow Drives</SelectItem>
+                          <SelectItem value="flow_control">Flow Control</SelectItem>
+                          <SelectItem value="flow_measurement">Flow Measurement</SelectItem>
+                          <SelectItem value="instrumentation_automation">Instrumentation & Automation</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -495,24 +550,22 @@ export function CourseEditor() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Start Date & Time *</label>
+                      <label className="text-sm font-medium">Start Date & Time</label>
                       <Input
                         type="datetime-local"
                         value={course.start_date ? new Date(course.start_date).toISOString().slice(0, 16) : ''}
                         onChange={(e) => setCourse(prev => prev ? { ...prev, start_date: e.target.value } : null)}
                         disabled={!canEdit}
-                        required
                       />
                       <p className="text-xs text-gray-500">When does the course start?</p>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">End Date & Time *</label>
+                      <label className="text-sm font-medium">End Date & Time</label>
                       <Input
                         type="datetime-local"
                         value={course.end_date ? new Date(course.end_date).toISOString().slice(0, 16) : ''}
                         onChange={(e) => setCourse(prev => prev ? { ...prev, end_date: e.target.value } : null)}
                         disabled={!canEdit}
-                        required
                         min={course.start_date ? new Date(course.start_date).toISOString().slice(0, 16) : undefined}
                       />
                       <p className="text-xs text-gray-500">When does the course finish?</p>
@@ -523,8 +576,40 @@ export function CourseEditor() {
                   {(course.course_type === 'onsite' || course.course_type === 'hybrid') && (
                     <>
                       <div className="pt-6 border-t">
-                        <h3 className="text-lg font-semibold mb-4">🏢 Venue Information</h3>
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-lg font-semibold">🏢 Venue Information</h3>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => window.open('/dashboard/venues', '_blank')}
+                          >
+                            Manage Venues
+                          </Button>
+                        </div>
+
                         <div className="space-y-4">
+                          {/* Venue Selection */}
+                          <div className="p-4 bg-muted/50 rounded-lg border mb-6">
+                            <label className="text-sm font-medium mb-2 block">Quick Select Venue</label>
+                            <QuickVenueSelect
+                              onSelect={(v) => {
+                                setCourse(prev => prev ? {
+                                  ...prev,
+                                  venue_id: v.id,
+                                  venue_name: v.name,
+                                  venue_address: v.address,
+                                  venue_city: v.city,
+                                  venue_country: v.country,
+                                  venue_capacity: v.capacity,
+                                  venue_map_url: v.map_url
+                                } : null);
+                              }}
+                            />
+                            <p className="text-xs text-muted-foreground mt-2">
+                              Selecting a saved venue will fill the details below. You can still make custom adjustments.
+                            </p>
+                          </div>
+
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                               <label className="text-sm font-medium">Venue Name *</label>
@@ -540,7 +625,7 @@ export function CourseEditor() {
                               <Input
                                 type="number"
                                 value={course.venue_capacity || ''}
-                                onChange={(e) => setCourse(prev => prev ? { ...prev, venue_capacity: Number(e.target.value) } : null)}
+                                onChange={(e) => setCourse(prev => prev ? { ...prev, venue_capacity: e.target.value ? Number(e.target.value) : null } : null)}
                                 placeholder="Max students"
                                 disabled={!canEdit}
                               />
@@ -570,7 +655,7 @@ export function CourseEditor() {
                             <div className="space-y-2">
                               <label className="text-sm font-medium">Country *</label>
                               <Input
-                                value={course.venue_country || ''}
+                                value={course.venue_country || 'Nigeria'}
                                 onChange={(e) => setCourse(prev => prev ? { ...prev, venue_country: e.target.value } : null)}
                                 placeholder="e.g., Nigeria"
                                 disabled={!canEdit}

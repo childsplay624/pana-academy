@@ -14,6 +14,7 @@ import { LogoUpload } from '@/components/LogoUpload';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import { ChangePassword } from '@/components/ChangePassword';
 import {
   Settings2,
   Globe,
@@ -97,13 +98,13 @@ export default function Settings() {
 
   const updateProfile = async () => {
     if (!profile || !user) return;
-    
+
     try {
       setProfileSaving(true);
-      
+
       const { error } = await supabase
         .from('profiles')
-        .update({ 
+        .update({
           full_name: fullName,
           updated_at: new Date().toISOString()
         })
@@ -295,6 +296,9 @@ export default function Settings() {
                 </Button>
               </CardContent>
             </Card>
+
+            {/* Change Password */}
+            <ChangePassword />
           </TabsContent>
 
           {/* General Settings */}
@@ -841,7 +845,7 @@ export default function Settings() {
                     <h4 className="text-lg font-medium text-pana-navy mb-4">Tax Configuration</h4>
                     <p className="text-sm text-muted-foreground">Configure tax settings for all course pricing</p>
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
@@ -854,7 +858,7 @@ export default function Settings() {
                         disabled={saving}
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="tax-rate">Tax Rate (%)</Label>
                       <Input
@@ -869,7 +873,7 @@ export default function Settings() {
                         className={!settings.tax_enabled ? 'bg-muted/50' : ''}
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="tax-type">Tax Type</Label>
                       <Select
@@ -888,7 +892,7 @@ export default function Settings() {
                       </Select>
                     </div>
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="tax-name">Tax Name</Label>
@@ -901,7 +905,7 @@ export default function Settings() {
                         className={!settings.tax_enabled ? 'bg-muted/50' : ''}
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="tax-number">Tax Number</Label>
                       <Input

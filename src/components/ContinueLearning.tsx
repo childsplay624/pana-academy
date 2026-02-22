@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { useNavigate } from 'react-router-dom';
 
 interface Course {
   id: string;
@@ -20,6 +21,7 @@ interface Course {
   instructor_name?: string;
   enrollment_id?: string;
   course_id?: string;
+  course_type?: 'online' | 'onsite' | 'hybrid';
 }
 
 interface ContinueLearningProps {
@@ -29,12 +31,19 @@ interface ContinueLearningProps {
 
 export function ContinueLearning({ enrolledCourses, isLoading = false }: ContinueLearningProps) {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
-  const handleContinueCourse = (courseId: string) => {
-    // Navigate to the course or lesson
-    console.log('Continue course:', courseId);
+  const handleContinueCourse = (course: Course) => {
+    // Navigate to the course or lesson based on type
+    console.log('Continue course:', course.id, course.course_type);
     setOpen(false);
-    // TODO: Implement navigation to course/lesson
+
+    if (course.course_type === 'online') {
+      navigate(`/course/${course.id}/learn`);
+    } else {
+      // For onsite or hybrid, navigate to the course details page
+      navigate(`/course/${course.id}`);
+    }
   };
 
   if (isLoading) {
@@ -78,11 +87,11 @@ export function ContinueLearning({ enrolledCourses, isLoading = false }: Continu
   if (enrolledCourses.length === 1) {
     const course = enrolledCourses[0];
     return (
-      <Button 
-        variant="outline" 
-        className="h-20 flex flex-col gap-2" 
+      <Button
+        variant="outline"
+        className="h-20 flex flex-col gap-2"
         size="sm"
-        onClick={() => handleContinueCourse(course.id)}
+        onClick={() => handleContinueCourse(course)}
       >
         <Play className="h-5 w-5" />
         <span className="text-xs">Continue Learning</span>
@@ -106,19 +115,19 @@ export function ContinueLearning({ enrolledCourses, isLoading = false }: Continu
             Choose a course to continue your learning journey
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-4">
           {enrolledCourses.map((course) => (
-            <Card 
-              key={course.id} 
+            <Card
+              key={course.id}
               className="cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => handleContinueCourse(course.id)}
+              onClick={() => handleContinueCourse(course)}
             >
               <CardContent className="p-4">
                 <div className="flex items-start gap-4">
                   {course.thumbnail ? (
-                    <img 
-                      src={course.thumbnail} 
+                    <img
+                      src={course.thumbnail}
                       alt={course.title}
                       className="w-16 h-16 rounded-lg object-cover"
                     />
@@ -127,7 +136,7 @@ export function ContinueLearning({ enrolledCourses, isLoading = false }: Continu
                       <BookOpen className="h-6 w-6 text-muted-foreground" />
                     </div>
                   )}
-                  
+
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between mb-2">
                       <div>
@@ -137,15 +146,18 @@ export function ContinueLearning({ enrolledCourses, isLoading = false }: Continu
                       <Badge variant="outline" className="text-xs">
                         {course.category}
                       </Badge>
+                      <Badge variant="secondary" className="text-xs capitalize">
+                        {course.course_type || 'online'}
+                      </Badge>
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-xs">
                         <span className="text-muted-foreground">Progress</span>
                         <span className="font-medium">{course.progress}%</span>
                       </div>
                       <Progress value={course.progress} className="h-1.5" />
-                      
+
                       <div className="flex items-center gap-4 text-xs text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
@@ -158,14 +170,14 @@ export function ContinueLearning({ enrolledCourses, isLoading = false }: Continu
                       </div>
                     </div>
                   </div>
-                  
+
                   <ChevronRight className="h-4 w-4 text-muted-foreground" />
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
-        
+
         <div className="flex justify-end pt-4">
           <Button variant="ghost" onClick={() => setOpen(false)}>
             Close

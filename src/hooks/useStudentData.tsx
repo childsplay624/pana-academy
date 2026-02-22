@@ -18,7 +18,8 @@ interface Course {
   instructor_name?: string;
   enrollment_id?: string;
   course_id?: string;
-  status?: string;  // ✅ Add enrollment status
+  status?: string;
+  course_type?: 'online' | 'onsite' | 'hybrid'; // ✅ Add course type
 }
 
 interface Stats {
@@ -31,12 +32,22 @@ interface Stats {
   streakDays: number;
 }
 
+export interface RecentActivity {
+  id: string;
+  type: 'enrollment' | 'progress' | 'completion' | 'certificate';
+  title: string;
+  description: string;
+  timestamp: string;
+  metadata?: string;
+}
+
 export function useStudentData() {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
   const [recommendedCourses, setRecommendedCourses] = useState<Course[]>([]);
+  const [recentActivities, setRecentActivities] = useState<RecentActivity[]>([]);
   const [stats, setStats] = useState<Stats>({
     enrolledCourses: 0,
     certificates: 0,
@@ -73,6 +84,7 @@ export function useStudentData() {
               category,
               duration_hours,
               thumbnail_url,
+              course_type,
               profiles!courses_instructor_id_fkey (
                 full_name
               )
@@ -105,7 +117,8 @@ export function useStudentData() {
             category: enrollment.courses?.category || 'General',
             totalHours: enrollment.courses?.duration_hours || 0,
             image: enrollment.courses?.thumbnail_url,
-            status: enrollment.status  // ✅ Include enrollment status
+            status: enrollment.status,
+            course_type: enrollment.courses?.course_type || 'online' // ✅ Include course type
           }));
 
         console.log('Transformed enrolled courses:', transformedEnrolledCourses);
@@ -129,6 +142,7 @@ export function useStudentData() {
             category,
             duration_hours,
             thumbnail_url,
+            course_type,
             profiles!courses_instructor_id_fkey (
               full_name
             )
@@ -162,6 +176,7 @@ export function useStudentData() {
           category: course.category || 'General',
           totalHours: course.duration_hours || 0,
           image: course.thumbnail_url,
+          course_type: course.course_type || 'online', // ✅ Include course type
           isNew: Math.random() > 0.7,
           isTrending: Math.random() > 0.8
         }));
@@ -207,6 +222,87 @@ export function useStudentData() {
           }))
         });
 
+        // Fetch and process recent activities
+        const activities: RecentActivity[] = [];
+
+        // 1. New enrollments
+        (enrollmentsData || []).forEach((e: any) => {
+          const course = Array.isArray(e.courses) ? e.courses[0] : e.courses;
+          activities.push({
+            id: `enroll-${e.id}`,
+            type: 'enrollment',
+            title: 'New Enrollment',
+            description: `You enrolled in ${course?.title || 'a new course'}`,
+            timestamp: e.enrolled_at,
+            metadata: e.status === 'completed' ? 'Successfully completed' : 'Just started'
+          });
+        });
+
+        // 2. Lesson progress (recent completions)
+        const { data: recentProgress } = await supabase
+          .from('lesson_progress')
+          .select(`
+            id,
+            completed_at,
+            lessons (
+              title,
+              modules (
+                courses (title)
+              )
+            )
+          `)
+          .eq('student_id', user.id)
+          .eq('completed', true)
+          .order('completed_at', { ascending: false })
+          .limit(5);
+
+        (recentProgress || []).forEach((p: any) => {
+          const lesson = Array.isArray(p.lessons) ? p.lessons[0] : p.lessons;
+          const module = Array.isArray(lesson?.modules) ? lesson.modules[0] : lesson?.modules;
+          const course = Array.isArray(module?.courses) ? module.courses[0] : module?.courses;
+
+          activities.push({
+            id: `progress-${p.id}`,
+            type: 'progress',
+            title: 'Lesson Completed',
+            description: `You completed "${lesson?.title || 'a lesson'}"`,
+            timestamp: p.completed_at,
+            metadata: course?.title
+          });
+        });
+
+        // 3. Certificates
+        const { data: recentCerts } = await supabase
+          .from('certificates')
+          .select(`
+            id,
+            issued_date,
+            courses (title)
+          `)
+          .eq('user_id', user.id)
+          .order('issued_date', { ascending: false })
+          .limit(3);
+
+        (recentCerts || []).forEach((c: any) => {
+          const course = Array.isArray(c.courses) ? c.courses[0] : c.courses;
+          activities.push({
+            id: `cert-${c.id}`,
+            type: 'certificate',
+            title: 'Certificate Earned',
+            description: `You earned a certificate in ${course?.title || 'a course'}`,
+            timestamp: c.issued_date,
+            metadata: 'Verified Achievement'
+          });
+        });
+
+        // Sort by timestamp and take top 5
+        const sortedActivities = activities
+          .filter(a => a.timestamp)
+          .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+          .slice(0, 5);
+
+        setRecentActivities(sortedActivities);
+
         setStats({
           enrolledCourses: enrolledCount,
           certificates: certificateCount, // ✅ Using actual certificate count from database
@@ -224,6 +320,7 @@ export function useStudentData() {
         // Set empty data instead of leaving it undefined
         setEnrolledCourses([]);
         setRecommendedCourses([]);
+        setRecentActivities([]);
         setStats({
           enrolledCourses: 0,
           certificates: 0,
@@ -248,6 +345,7 @@ export function useStudentData() {
     error,
     enrolledCourses,
     recommendedCourses,
+    recentActivities,
     stats
   };
 }

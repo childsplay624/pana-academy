@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { CertificateDesign } from './CertificateDesign';
 
 interface CertificateGeneratorProps {
   enrollmentId?: string;
@@ -273,75 +274,21 @@ export function CertificateGenerator({
               </Button>
             </div>
           </CardHeader>
-          <CardContent className="p-8">
+          <CardContent className="p-8 overflow-auto">
             {/* Certificate Preview Design */}
-            <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 p-8 rounded-lg border-2 border-dashed border-primary/30">
-              <div className="text-center space-y-6">
-                <div className="flex justify-center">
-                  <Award className="h-16 w-16 text-red-500" />
-                </div>
-
-                <h1 className="text-3xl font-bold text-primary">
-                  CERTIFICATE OF COMPLETION
-                </h1>
-
-                <div className="space-y-4">
-                  <p className="text-lg">This is to certify that</p>
-                  <div className="border-b-2 border-primary/30 pb-2 max-w-md mx-auto">
-                    <p className="text-xl font-semibold">[Student Name]</p>
-                  </div>
-                  <p className="text-lg">has successfully completed the course</p>
-                  <div className="border-b-2 border-primary/30 pb-2 max-w-lg mx-auto">
-                    <p className="text-xl font-semibold">
-                      {formData.customTitle || '[Course Title]'}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex justify-center gap-8 mt-8">
-                  <div className="text-center">
-                    <p className="text-sm text-muted-foreground">Completion Date</p>
-                    <p className="font-semibold">{new Date(formData.completionDate).toLocaleDateString()}</p>
-                  </div>
-                  {formData.grade && (
-                    <div className="text-center">
-                      <p className="text-sm text-muted-foreground">Grade</p>
-                      <Badge variant="secondary" className="font-semibold">
-                        {formData.grade}
-                      </Badge>
-                    </div>
-                  )}
-                  {formData.score && (
-                    <div className="text-center">
-                      <p className="text-sm text-muted-foreground">Score</p>
-                      <p className="font-semibold">{formData.score}%</p>
-                    </div>
-                  )}
-                </div>
-
-                <div className="border-t pt-6 mt-8">
-                  <div className="flex justify-between items-center">
-                    <div className="text-left">
-                      <div className="border-b border-gray-300 pb-1 mb-1 w-32">
-                        <p className="text-sm">Instructor</p>
-                      </div>
-                      <p className="text-xs text-muted-foreground">[Instructor Name]</p>
-                    </div>
-                    <div className="text-right">
-                      <div className="border-b border-gray-300 pb-1 mb-1 w-32">
-                        <p className="text-sm">Certificate ID</p>
-                      </div>
-                      <p className="text-xs text-muted-foreground font-mono">[Certificate Number]</p>
-                    </div>
-                  </div>
-                </div>
-
-                {formData.customDescription && (
-                  <div className="mt-6 p-4 bg-white/50 dark:bg-black/20 rounded">
-                    <p className="text-sm italic">{formData.customDescription}</p>
-                  </div>
-                )}
-              </div>
+            <div className="flex justify-center">
+              <CertificateDesign
+                studentName="[Student Name]"
+                courseTitle={formData.customTitle || "[Course Title]"}
+                completionDate={new Date(formData.completionDate).toLocaleDateString('en-US', { 
+                  month: 'long', 
+                  day: 'numeric', 
+                  year: 'numeric' 
+                })}
+                courseDuration="3-Day"
+                instructorName="PANA Academy Instructor"
+                certificateId="[Certificate Number]"
+              />
             </div>
           </CardContent>
         </Card>

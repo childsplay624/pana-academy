@@ -1,5 +1,4 @@
 import { supabase } from '@/integrations/supabase/client';
-import { Resend } from 'resend';
 
 export interface InvoiceData {
   invoiceNumber: string;
@@ -171,7 +170,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             <div class="section-title">Bill From:</div>
             <div><strong>PANA ACADEMY</strong></div>
             <div>Online Education Platform</div>
-            <div>support@panaacademy.com</div>
+            <div>support@pana-academy.com</div>
           </div>
         </div>
 
@@ -212,7 +211,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
         <div class="footer">
           <div class="thank-you">Thank you for your purchase!</div>
           <div>This is a computer-generated invoice and does not require a signature.</div>
-          <div>For any questions, please contact support@panaacademy.com</div>
+          <div>For any questions, please contact support@pana-academy.com</div>
         </div>
       </div>
     </body>
@@ -251,22 +250,21 @@ export const sendInvoiceEmail = async (
 
     if (error) throw error;
 
-    // Send email using Resend
-    const resend = new Resend(import.meta.env.VITE_RESEND_API_KEY);
-    
+    // Send email via the secure Edge Function (Resend key stays server-side)
     try {
-      await resend.emails.send({
-        from: 'noreply@panaacademy.com',
-        to: studentEmail,
-        subject: `Invoice ${invoiceData.invoiceNumber} - PANA Academy Course Purchase`,
-        html: invoiceHTML
+      await supabase.functions.invoke('send-transactional-email', {
+        body: {
+          to: studentEmail,
+          subject: `Invoice ${invoiceData.invoiceNumber} - PANA Academy Course Purchase`,
+          html: invoiceHTML,
+        }
       });
       console.log(`Invoice ${invoiceData.invoiceNumber} sent to ${studentEmail}`);
     } catch (emailError) {
-      console.error('Failed to send email:', emailError);
+      console.error('Failed to send invoice email:', emailError);
       // Don't fail the entire process if email fails
     }
-    
+
     return { success: true };
   } catch (error) {
     console.error('Error sending invoice email:', error);
@@ -281,14 +279,19 @@ export const createAndSendInvoice = async (
   paymentMethod: string
 ): Promise<{ success: boolean; error?: any }> => {
   try {
-    // Get user details
+    // Get user details — profiles table has no email column; retrieve email
+    // from the current auth session or fall back to the stored full_name only.
     const { data: userData, error: userError } = await supabase
       .from('profiles')
-      .select('full_name, email')
+      .select('full_name')
       .eq('id', userId)
       .single();
 
     if (userError) throw userError;
+
+    // Get the user's email from Supabase auth metadata
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    const userEmail = authUser?.email || 'student@pana-academy.com';
 
     // Get course details
     const { data: courseData, error: courseError } = await supabase
@@ -309,11 +312,11 @@ export const createAndSendInvoice = async (
     if (paymentError) throw paymentError;
 
     const metadata = paymentData.metadata || {};
-    
+
     const invoiceData: InvoiceData = {
       invoiceNumber: generateInvoiceNumber(),
       studentName: userData.full_name || 'Student',
-      studentEmail: userData.email,
+      studentEmail: userEmail,
       courseTitle: courseData.title,
       coursePrice: metadata.original_amount || courseData.price,
       taxAmount: metadata.tax_amount || 0,
@@ -325,7 +328,7 @@ export const createAndSendInvoice = async (
       currency: metadata.currency || 'NGN'
     };
 
-    return await sendInvoiceEmail(userData.email, invoiceData);
+    return await sendInvoiceEmail(userEmail, invoiceData);
   } catch (error) {
     console.error('Error creating and sending invoice:', error);
     return { success: false, error };

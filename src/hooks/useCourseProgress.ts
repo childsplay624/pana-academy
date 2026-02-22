@@ -149,15 +149,26 @@ export const useCourseProgress = (courseId?: string) => {
       }
 
       // Check for certificate - Implement this part based on your certificate service
-      // try {
-      //   const { data: certificates, error: certError } = await certificateService.getUserCertificates(user.id);
-      //   if (certificates && !certError) {
-      //     const courseCert = certificates.find(cert => cert.course_id === courseId);
-      //     if (courseCert) setCertificate(courseCert);
-      //   }
-      // } catch (e) {
-      //   console.error('Error loading certificate:', e);
-      // }
+      try {
+        const { data: certificates, error: certError } = await supabase
+          .from('certificates')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('course_id', courseId)
+          .order('issued_at', { ascending: false })
+          .limit(1);
+
+        if (certError) {
+          console.error('Error fetching certificates:', certError);
+          // Continue with course loading even if certificate check fails
+        } else if (certificates && certificates.length > 0) {
+          const courseCert = certificates[0];
+          setCertificate(courseCert);
+        }
+      } catch (e) {
+        console.error('Error loading certificate:', e);
+        // Continue with course loading even if certificate check fails
+      }
     } catch (error) {
       console.error('Error loading progress:', error);
       setError(error as Error);
@@ -388,7 +399,7 @@ export const useCourseProgress = (courseId?: string) => {
       });
       return null;
     }
-  }, [user?.id]);
+  }, [user?.id, toast]);
 
   // Generate certificate (if eligible)
   const generateCertificate = useCallback(async (courseId: string) => {

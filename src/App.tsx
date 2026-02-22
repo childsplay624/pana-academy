@@ -34,6 +34,7 @@ import { CourseEditor } from "./components/course-management/CourseEditor";
 import NewCourse from "./pages/admin/NewCourse";
 import PaymentManagement from "./pages/admin/PaymentManagement";
 import InvoicesPage from "./pages/admin/InvoicesPage";
+import VenuesPage from "./pages/admin/VenuesPage";
 import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/NotFound";
 import VerifyCertificate from "./pages/VerifyCertificate";
@@ -52,7 +53,7 @@ import ContactPage from "./pages/ContactPage";
 import TrainingCalendarPage from "./pages/TrainingCalendarPage";
 import AuthCallback from "./pages/auth/callback";
 import OurJourney from "./pages/our-journey";
-import IndexNew from "./pages/IndexNew";
+
 import AboutPage from "./pages/AboutPage";
 import { PaymentPage } from "./pages/PaymentPage";
 import { PaymentCallbackPage } from "./pages/PaymentCallbackPage";
@@ -73,7 +74,7 @@ const App = () => (
                 <ScrollToTop />
                 <Routes>
                   <Route path="/" element={<Index />} />
-                  <Route path="/home-new" element={<IndexNew />} />
+
                   <Route path="/about" element={<AboutPage />} />
                   <Route path="/courses" element={<PublicCoursesPage />} />
                   <Route path="/courses/:category" element={<PublicCoursesPage />} />
@@ -166,7 +167,7 @@ const App = () => (
                   <Route
                     path="/dashboard/payments"
                     element={
-                      <ProtectedRoute allowedRoles={['admin']}>
+                      <ProtectedRoute allowedRoles={['admin', 'instructor']}>
                         <PaymentManagement />
                       </ProtectedRoute>
                     }
@@ -174,7 +175,7 @@ const App = () => (
                   <Route
                     path="/dashboard/invoices"
                     element={
-                      <ProtectedRoute allowedRoles={['admin']}>
+                      <ProtectedRoute allowedRoles={['admin', 'instructor']}>
                         <InvoicesPage />
                       </ProtectedRoute>
                     }
@@ -222,8 +223,16 @@ const App = () => (
                   <Route
                     path="/dashboard/support-tickets"
                     element={
-                      <ProtectedRoute allowedRoles={['admin']}>
+                      <ProtectedRoute allowedRoles={['admin', 'instructor']}>
                         <SupportTickets />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/dashboard/venues"
+                    element={
+                      <ProtectedRoute allowedRoles={['admin', 'instructor']}>
+                        <VenuesPage />
                       </ProtectedRoute>
                     }
                   />
@@ -254,7 +263,7 @@ const App = () => (
                   <Route
                     path="/student/profile"
                     element={
-                      <ProtectedRoute allowedRoles={['student']}>
+                      <ProtectedRoute allowedRoles={['student', 'instructor']}>
                         <Profile />
                       </ProtectedRoute>
                     }
@@ -270,7 +279,7 @@ const App = () => (
                   <Route
                     path="/dashboard/analytics"
                     element={
-                      <ProtectedRoute allowedRoles={['admin']}>
+                      <ProtectedRoute allowedRoles={['admin', 'instructor']}>
                         <Analytics />
                       </ProtectedRoute>
                     }
@@ -278,7 +287,7 @@ const App = () => (
                   <Route
                     path="/dashboard/settings"
                     element={
-                      <ProtectedRoute allowedRoles={['admin']}>
+                      <ProtectedRoute allowedRoles={['admin', 'instructor']}>
                         <Settings />
                       </ProtectedRoute>
                     }

@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
-        
+
         // Fetch profile when user logs in
         if (session?.user) {
           setTimeout(() => {
@@ -91,7 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string, fullName?: string) => {
     const displayName = fullName || email;
-    
+
     try {
       // First create user without sending Supabase's confirmation email
       const { data, error: signUpError } = await supabase.auth.signUp({
@@ -107,16 +107,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (signUpError) throw signUpError;
-      
-      // If signup was successful, send verification email via Resend
+
+      // If signup was successful, send verification email via Edge Function
       if (data.user) {
         try {
           const { sendEmail, emailTemplates } = await import('@/services/emailService');
-          
+
           // Generate email verification link
           const verificationLink = `${window.location.origin}/verify-email?token=${data.user.id}`;
-          
-          // Send verification email
+
+          // Send verification email via secure Edge Function
           await sendEmail({
             to: email,
             subject: 'Verify your email address',
@@ -134,25 +134,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               </div>
             `
           });
-          
+
           // Send welcome email
           const { subject, html } = emailTemplates.welcome(displayName);
           await sendEmail({ to: email, subject, html });
-          
+
           return { error: null };
-          
+
         } catch (emailError) {
           console.error('Failed to send verification email:', emailError);
-          // Delete the user if email sending fails to maintain data consistency
-          if (data.user) {
-            await supabase.auth.admin.deleteUser(data.user.id);
-          }
-          throw new Error('Failed to send verification email. Please try again.');
+          // Note: Account was created but email failed. User can request a new verification
+          // email from the login page. Admin-level user deletion requires a server-side Edge Function.
+          throw new Error('Account created but verification email could not be sent. Please contact support or try signing in to request a new verification email.');
         }
       }
-      
+
       return { error: null };
-      
+
     } catch (error) {
       console.error('Signup error:', error);
       return { error };
@@ -164,7 +162,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
       password,
     });
-    
+
     return { error };
   };
 
@@ -179,7 +177,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         redirectTo: `${window.location.origin}/`
       }
     });
-    
+
     return { error };
   };
 
@@ -194,9 +192,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
           const { sendEmail, emailTemplates } = await import('@/services/emailService');
           const resetLink = `${redirectUrl}?token=reset_token_placeholder`; // In a real app, this would be the actual reset token
-          
+
           const { subject, html } = emailTemplates.passwordReset('User', resetLink);
-          
+
           await sendEmail({
             to: email,
             subject,
@@ -230,7 +228,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const { error } = await supabase
         .from('profiles')
-        .update({ 
+        .update({
           ...filteredUpdates,
           updated_at: new Date().toISOString()
         })

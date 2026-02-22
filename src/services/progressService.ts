@@ -77,7 +77,8 @@ export const progressService = {
         .single() as { data: Progress | null; error: any };
 
       // Calculate progress percentage (for simplicity, 0% or 100% for now)
-      if (fetchError?.code !== 'PGRST116') { // PGRST116 = not found
+      // PGRST116 = "no rows returned" - that's expected when starting a new lesson
+      if (fetchError && fetchError.code !== 'PGRST116') {
         throw fetchError;
       }
 
@@ -292,36 +293,57 @@ export const progressService = {
   // Get course progress
   async getCourseProgress(userId: string, courseId: string) {
     try {
-      // Get all lessons for the course
+      // Get all lessons for course by joining through modules
       const { data: lessons, error: lessonsError } = await supabase
-        .from('lessons')
-        .select('id')
+        .from('modules')
+        .select(`
+          id,
+          lessons!inner(
+            id,
+            title,
+            duration_minutes,
+            is_free
+          )
+        `)
         .eq('course_id', courseId);
 
-      if (lessonsError) throw lessonsError;
+      if (lessonsError) {
+        console.error('Error fetching modules:', lessonsError);
+        throw lessonsError;
+      }
 
-      const lessonIds = lessons?.map(lesson => lesson.id) || [];
+      // Extract lesson IDs from all modules' lessons
+      const lessonIds = lessons?.flatMap(module =>
+        module.lessons?.map(lesson => lesson.id) || []
+      ) || [];
+
+      if (lessonIds.length === 0) {
+        // No lessons found, return empty progress
+        return {
+          data: {
+            progress: 0,
+            completedLessons: 0,
+            totalLessons: 0,
+            timeSpent: 0,
+            lastAccessed: null,
+            details: []
+          },
+          error: null
+        };
+      }
 
       // Get user's progress for these lessons
       const { data: progress, error: progressError } = await supabase
         .from('lesson_progress')
         .select('*')
         .eq('student_id', userId)
-        .in('lesson_id', lessonIds) as {
-          data: Array<{
-            id: string;
-            user_id: string;
-            lesson_id: string;
-            completed: boolean;
-            completed_at: string | null;
-            time_spent_minutes: number;
-            created_at: string;
-            updated_at?: string;
-            last_accessed?: string;
-          }> | null; error: any
-        };
+        .in('lesson_id', lessonIds);
 
-      if (progressError) throw progressError;
+      if (progressError) {
+        console.error('Error fetching progress:', progressError);
+        throw progressError;
+      }
+
       const progressList = progress || [];
 
       // Calculate progress
