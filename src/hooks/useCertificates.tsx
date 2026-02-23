@@ -24,6 +24,13 @@ export interface Certificate {
   student_name?: string;
   metadata?: any;
   is_valid: boolean;
+  venue_name?: string;
+  venue_address?: string;
+  venue_city?: string;
+  venue_country?: string;
+  venue_map_url?: string;
+  course_start_date?: string;
+  course_end_date?: string;
   created_at: string;
   updated_at: string;
 }

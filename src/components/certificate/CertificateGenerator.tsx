@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -45,7 +45,55 @@ export function CertificateGenerator({
     customDescription: ''
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
+  const [courseData, setCourseData] = useState<any>(null);
+  const [studentData, setStudentData] = useState<any>(null);
   const [previewMode, setPreviewMode] = useState(false);
+
+  useEffect(() => {
+    if (formData.courseId) {
+      fetchCourseDetails();
+    }
+  }, [formData.courseId]);
+
+  useEffect(() => {
+    if (formData.studentId) {
+      fetchStudentDetails();
+    }
+  }, [formData.studentId]);
+
+  const fetchCourseDetails = async () => {
+    try {
+      setIsFetching(true);
+      const { data, error } = await supabase
+        .from('courses')
+        .select('*')
+        .eq('id', formData.courseId)
+        .single();
+
+      if (error) console.error('Error fetching course:', error);
+      else setCourseData(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  const fetchStudentDetails = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', formData.studentId)
+        .single();
+
+      if (error) console.error('Error fetching student:', error);
+      else setStudentData(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -278,16 +326,16 @@ export function CertificateGenerator({
             {/* Certificate Preview Design */}
             <div className="flex justify-center">
               <CertificateDesign
-                studentName="[Student Name]"
-                courseTitle={formData.customTitle || "[Course Title]"}
-                completionDate={new Date(formData.completionDate).toLocaleDateString('en-US', { 
-                  month: 'long', 
-                  day: 'numeric', 
-                  year: 'numeric' 
-                })}
-                courseDuration="3-Day"
+                studentName={studentData?.full_name || "[Student Name]"}
+                courseTitle={formData.customTitle || courseData?.title || "[Course Title]"}
+                completionDate={new Date(formData.completionDate).toISOString()}
+                courseDuration={courseData?.duration_hours ? `${Math.ceil(courseData.duration_hours / 8)}-Day` : "3-Day"}
                 instructorName="PANA Academy Instructor"
                 certificateId="[Certificate Number]"
+                venueName={courseData?.venue_name}
+                venueAddress={courseData?.venue_address}
+                venueCity={courseData?.venue_city}
+                venueCountry={courseData?.venue_country}
               />
             </div>
           </CardContent>

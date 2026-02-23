@@ -9,6 +9,10 @@ interface CertificateDesignProps {
   certificateId: string;
   customTitle?: string;
   className?: string;
+  venueName?: string;
+  venueAddress?: string;
+  venueCity?: string;
+  venueCountry?: string;
 }
 
 export function CertificateDesign({
@@ -16,9 +20,13 @@ export function CertificateDesign({
   courseTitle,
   completionDate,
   courseDuration = '3-Day',
-  instructorName, // Still accepted but we'll use defaults from template
+  instructorName,
   certificateId,
-  className = ''
+  className = '',
+  venueName,
+  venueAddress,
+  venueCity,
+  venueCountry,
 }: CertificateDesignProps) {
   const { imageUrl: logoImage } = useSiteImage('logo_pana_why');
 
@@ -100,6 +108,15 @@ export function CertificateDesign({
           <p className="text-lg text-black font-medium italic">
             {formatDateRange()}
           </p>
+          {venueName && (
+            <div className="mt-4 flex flex-col items-center text-sm text-gray-600">
+              <p className="font-bold text-black uppercase tracking-tight flex items-center gap-1">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" className="inline"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                Venue: {venueName}
+              </p>
+              <p className="italic">{venueAddress}, {venueCity}, {venueCountry}</p>
+            </div>
+          )}
         </div>
 
         {/* Bottom Section: Medal and Signatures */}

@@ -139,6 +139,30 @@ export const progressService = {
   // Check if course is completed and issue certificate if needed
   async checkCourseCompletion(userId: string, courseId: string): Promise<{ completed: boolean; certificate?: Certificate }> {
     try {
+      // Get course details to check type
+      const { data: course, error: courseFetchError } = await supabase
+        .from('courses')
+        .select('course_type, title')
+        .eq('id', courseId)
+        .single();
+
+      if (courseFetchError) throw courseFetchError;
+
+      // For onsite courses without online modules, don't auto-complete based on lessons
+      // These usually require manual attendance marking
+      if (course.course_type === 'onsite') {
+        // Check if there are even any lessons
+        const { count: lessonCount } = await supabase
+          .from('lessons')
+          .select('*', { count: 'exact', head: true })
+          .eq('course_id', courseId);
+
+        if (!lessonCount || lessonCount === 0) {
+          // Onsite course with no digital lessons - skip auto-issuance
+          return { completed: false };
+        }
+      }
+
       // Get total lessons in course
       const { count: totalLessons, error: countError } = await supabase
         .from('lessons')
@@ -167,12 +191,14 @@ export const progressService = {
 
       if (progressError) throw progressError;
 
-      const allLessonsCompleted = (completedCount || 0) >= (totalLessons || 0);
+      const allLessonsCompleted = (completedCount || 0) >= (totalLessons || 0) && (totalLessons || 0) > 0;
 
       // If course is completed, issue a certificate
       if (allLessonsCompleted) {
-        const certificate = await this.issueCertificate(userId, courseId);
-        return { completed: true, certificate };
+        const result = await this.issueCertificate(userId, courseId);
+        if (result.data) {
+          return { completed: true, certificate: result.data };
+        }
       }
 
       return { completed: false };
@@ -202,7 +228,17 @@ export const progressService = {
       // Get course details for the certificate
       const { data: course, error: courseError } = await supabase
         .from('courses')
-        .select('title, duration_hours')
+        .select(`
+          title, 
+          duration_hours, 
+          venue_name, 
+          venue_address, 
+          venue_city, 
+          venue_country, 
+          venue_map_url,
+          start_date,
+          end_date
+        `)
         .eq('id', courseId)
         .single();
 
@@ -225,8 +261,16 @@ export const progressService = {
         title: `Certificate of Completion - ${course.title}`,
         description: `Awarded for successfully completing the ${course.title} course`,
         enrollment_id: '', // This should be set to the actual enrollment ID if available
-        instructor_name: 'PANA Academy Instructor' // Default value, should be replaced with actual instructor
-      } satisfies Omit<Certificate, 'id'>;
+        instructor_name: 'PANA Academy Instructor',
+        // Optional onsite details
+        venue_name: (course as any).venue_name,
+        venue_address: (course as any).venue_address,
+        venue_city: (course as any).venue_city,
+        venue_country: (course as any).venue_country,
+        venue_map_url: (course as any).venue_map_url,
+        course_start_date: (course as any).start_date,
+        course_end_date: (course as any).end_date
+      };
 
       const { data: certificate, error: certError } = await supabase
         .from('certificates')
@@ -241,7 +285,7 @@ export const progressService = {
         userId,
         activityType: 'certificate_issued',
         entityType: 'certificate',
-        entityId: certificate.id,
+        entityId: (certificate as any).id,
         deviceInfo: {},
         ipAddress: ''
       });

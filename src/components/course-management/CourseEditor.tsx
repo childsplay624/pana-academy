@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
 import { ModuleManager } from './ModuleManager';
+import { EnrollmentManager } from './EnrollmentManager';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import {
   ArrowLeft,
@@ -434,9 +435,10 @@ export function CourseEditor() {
 
         <div className="container mx-auto px-4 py-4">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="details">Course Details</TabsTrigger>
               <TabsTrigger value="content">Content & Modules</TabsTrigger>
+              <TabsTrigger value="students">Students & Grading</TabsTrigger>
               <TabsTrigger value="settings">Settings</TabsTrigger>
             </TabsList>
 
@@ -709,6 +711,10 @@ export function CourseEditor() {
 
             <TabsContent value="content" className="space-y-6">
               <ModuleManager courseId={courseId!} canEdit={canEdit} />
+            </TabsContent>
+
+            <TabsContent value="students" className="space-y-6">
+              <EnrollmentManager courseId={courseId!} canEdit={canEdit} />
             </TabsContent>
 
             <TabsContent value="settings" className="space-y-6">

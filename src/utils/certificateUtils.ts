@@ -253,6 +253,15 @@ export const generateCertificateHtml = (certificate: Certificate, studentName: s
             Having Successfully completed the ${courseDuration} Training on<br>
             <div class="course-title">"${certificate.course_title}" Course</div>
             <div class="date-statement">${dateFormatted}</div>
+            ${certificate.venue_name ? `
+            <div style="margin-top: 15px; font-size: 14px; color: #666; display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                <div style="display: flex; align-items: center; gap: 5px; font-weight: 600; color: #333;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    Venue: ${certificate.venue_name}
+                </div>
+                <div style="font-style: italic;">${certificate.venue_address}, ${certificate.venue_city}, ${certificate.venue_country}</div>
+            </div>
+            ` : ''}
         </div>
 
         <div class="footer">

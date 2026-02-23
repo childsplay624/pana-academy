@@ -28,7 +28,8 @@ import {
   Palette,
   Save,
   Loader2,
-  User
+  User,
+  Wrench
 } from 'lucide-react';
 
 interface PlatformSettings {
@@ -141,13 +142,13 @@ export default function Settings() {
       const categorySettings = Object.entries(settings).filter(([key]) => {
         switch (category) {
           case 'General':
-            return ['platform_name', 'platform_url', 'support_email', 'default_language', 'platform_description'].includes(key);
+            return ['platform_name', 'platform_url', 'support_email', 'default_language', 'platform_description', 'maintenance_mode'].includes(key);
           case 'Security':
             return ['require_email_verification', 'two_factor_auth', 'password_requirements', 'session_timeout', 'max_login_attempts'].includes(key);
           case 'Notifications':
             return ['email_notifications', 'course_completion_alerts', 'payment_notifications', 'system_maintenance_alerts', 'admin_email'].includes(key);
           case 'Payment':
-            return ['paystack_enabled', 'flutterwave_enabled', 'default_currency', 'platform_fee', 'paystack_public_key', 'paystack_secret_key', 'flutterwave_public_key', 'flutterwave_secret_key', 'bank_details', 'tax_enabled', 'tax_rate', 'tax_type', 'tax_name', 'tax_number'].includes(key);
+            return ['paystack_enabled', 'flutterwave_enabled', 'default_currency', 'platform_fee', 'paystack_public_key', 'paystack_secret_key', 'flutterwave_public_key', 'flutterwave_secret_key', 'bank_details', 'tax_enabled', 'tax_rate', 'tax_type', 'tax_name', 'tax_number', 'manual_enabled'].includes(key);
           case 'Courses':
             return ['course_auto_approval', 'enable_course_reviews', 'certificate_generation', 'max_enrollment', 'certificate_validity', 'zoom_api_key', 'zoom_api_secret'].includes(key);
           case 'Appearance':
@@ -157,25 +158,39 @@ export default function Settings() {
         }
       });
 
-      // Update each setting in the database
+      // Save settings individually to ensure better error tracking and reliability
       for (const [key, value] of categorySettings) {
-        const { error } = await supabase
-          .from('platform_settings')
-          .update({ value: JSON.stringify(value) })
-          .eq('key', key);
+        // Skip undefined values to avoid database errors
+        if (value === undefined) continue;
 
-        if (error) throw error;
+        console.log(`Saving setting: ${key} =`, value);
+
+        const { error: upsertError } = await supabase
+          .from('platform_settings')
+          .upsert({
+            key,
+            value: JSON.stringify(value),
+            category: category.toLowerCase(),
+            updated_at: new Date().toISOString()
+          }, {
+            onConflict: 'key'
+          });
+
+        if (upsertError) {
+          console.error(`Database error saving setting ${key}:`, upsertError);
+          throw upsertError;
+        }
       }
 
       toast({
         title: "Settings updated",
         description: `${category} settings have been saved successfully.`,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save settings:', error);
       toast({
         title: "Error",
-        description: "Failed to save settings",
+        description: error.message || error.error_description || "Failed to save settings",
         variant: "destructive"
       });
     } finally {
@@ -366,7 +381,29 @@ export default function Settings() {
                     onChange={(e) => updateSetting('platform_description', e.target.value)}
                   />
                 </div>
-                <Button onClick={() => handleSave('General')} disabled={saving}>
+
+                <Separator className="my-6" />
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/20 rounded-xl">
+                    <div className="space-y-0.5">
+                      <div className="flex items-center gap-2 text-amber-900 dark:text-amber-400 font-semibold">
+                        <Wrench className="w-4 h-4" />
+                        Maintenance Mode
+                      </div>
+                      <p className="text-sm text-amber-700/80 dark:text-amber-400/60">
+                        When active, only administrators can access the platform.
+                        Public users will see the maintenance page.
+                      </p>
+                    </div>
+                    <Switch
+                      checked={settings.maintenance_mode === true}
+                      onCheckedChange={(checked) => updateSetting('maintenance_mode', checked)}
+                    />
+                  </div>
+                </div>
+
+                <Button onClick={() => handleSave('General')} disabled={saving} className="mt-4">
                   <Save className="w-4 h-4 mr-2" />
                   {saving ? 'Saving...' : 'Save Changes'}
                 </Button>

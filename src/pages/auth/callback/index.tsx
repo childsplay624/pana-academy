@@ -20,7 +20,7 @@ const AuthCallback = () => {
         console.error('Authentication error:', err);
         setError('Failed to sign in. Please try again.');
         // Redirect to login page after showing error
-        setTimeout(() => navigate('/login'), 3000);
+        setTimeout(() => navigate('/auth'), 3000);
       }
     };
 

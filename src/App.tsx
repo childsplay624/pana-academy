@@ -8,6 +8,7 @@ import { NotificationProvider } from "@/contexts/NotificationContext";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { MaintenanceGuard } from "@/components/MaintenanceGuard";
 import { ScrollToTop } from '@/components/ScrollToTop';
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -72,228 +73,230 @@ const App = () => (
               <Sonner />
               <BrowserRouter>
                 <ScrollToTop />
-                <Routes>
-                  <Route path="/" element={<Index />} />
+                <MaintenanceGuard>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
 
-                  <Route path="/about" element={<AboutPage />} />
-                  <Route path="/courses" element={<PublicCoursesPage />} />
-                  <Route path="/courses/:category" element={<PublicCoursesPage />} />
-                  <Route path="/course/:id" element={<CourseDetails />} />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/courses" element={<PublicCoursesPage />} />
+                    <Route path="/courses/:category" element={<PublicCoursesPage />} />
+                    <Route path="/course/:id" element={<CourseDetails />} />
 
-                  {/* Payment Routes */}
-                  <Route path="/payment/:courseId" element={
-                    <ProtectedRoute>
-                      <PaymentPage />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/payment/callback" element={
-                    <ProtectedRoute>
-                      <PaymentCallbackPage />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/course/:courseId/learn" element={
-                    <ProtectedRoute>
-                      <CoursePlayer />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/course/:courseId/learn/:moduleId/:lessonId" element={
-                    <ProtectedRoute>
-                      <CoursePlayer />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/auth" element={<Auth />} />
-                  <Route path="/auth/callback" element={<AuthCallback />} />
-                  <Route path="/reset-password" element={<ResetPassword />} />
-                  <Route path="/verify-email" element={<VerifyEmail />} />
-                  <Route path="/verify-certificate" element={<VerifyCertificate />} />
-                  <Route path="/team" element={<TeamPage />} />
-                  <Route path="/team/:memberId" element={<TeamMemberPage />} />
-                  <Route path="/training-delivery" element={<TrainingDeliveryPage />} />
-                  <Route path="/consulting-services" element={<ConsultingServicesPage />} />
-                  <Route path="/research-development" element={<RnDServicesPage />} />
-                  <Route path="/contact" element={<ContactPage />} />
-                  <Route path="/training-calendar" element={<TrainingCalendarPage />} />
-                  <Route path="/our-journey" element={<OurJourney />} />
-                  <Route path="/careers" element={<CareersPage />} />
-                  <Route path="/test" element={<TestPage />} />
-                  <Route
-                    path="/dashboard"
-                    element={
+                    {/* Payment Routes */}
+                    <Route path="/payment/:courseId" element={
                       <ProtectedRoute>
-                        <Dashboard />
+                        <PaymentPage />
                       </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/dashboard/student"
-                    element={
-                      <ProtectedRoute allowedRoles={['student']}>
-                        <StudentDashboard />
+                    } />
+                    <Route path="/payment/callback" element={
+                      <ProtectedRoute>
+                        <PaymentCallbackPage />
                       </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/dashboard/instructor"
-                    element={
-                      <ProtectedRoute allowedRoles={['instructor']}>
-                        <InstructorDashboard />
+                    } />
+                    <Route path="/course/:courseId/learn" element={
+                      <ProtectedRoute>
+                        <CoursePlayer />
                       </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/dashboard/admin"
-                    element={
-                      <ProtectedRoute allowedRoles={['admin']}>
-                        <AdminDashboard />
+                    } />
+                    <Route path="/course/:courseId/learn/:moduleId/:lessonId" element={
+                      <ProtectedRoute>
+                        <CoursePlayer />
                       </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/dashboard/users"
-                    element={
-                      <ProtectedRoute allowedRoles={['admin']}>
-                        <UserManagement />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/dashboard/courses"
-                    element={
-                      <ProtectedRoute allowedRoles={['admin', 'instructor', 'student']}>
-                        <CoursesPage />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/dashboard/payments"
-                    element={
-                      <ProtectedRoute allowedRoles={['admin', 'instructor']}>
-                        <PaymentManagement />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/dashboard/invoices"
-                    element={
-                      <ProtectedRoute allowedRoles={['admin', 'instructor']}>
-                        <InvoicesPage />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/course/:courseId"
-                    element={
-                      <ProtectedRoute allowedRoles={['student', 'instructor', 'admin']}>
-                        <CourseLearning />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/course/:courseId/edit"
-                    element={
-                      <ProtectedRoute allowedRoles={['instructor', 'admin']}>
-                        <CourseEditor />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/dashboard/courses/new"
-                    element={
-                      <ProtectedRoute allowedRoles={['admin', 'instructor']}>
-                        <NewCourse />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/dashboard/testimonials"
-                    element={
-                      <ProtectedRoute allowedRoles={['admin']}>
-                        <TestimonialManagement />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/dashboard/images"
-                    element={
-                      <ProtectedRoute allowedRoles={['admin']}>
-                        <ImageManagement />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/dashboard/support-tickets"
-                    element={
-                      <ProtectedRoute allowedRoles={['admin', 'instructor']}>
-                        <SupportTickets />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/dashboard/venues"
-                    element={
-                      <ProtectedRoute allowedRoles={['admin', 'instructor']}>
-                        <VenuesPage />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/dashboard/certificates"
-                    element={
-                      <ProtectedRoute allowedRoles={['student']}>
-                        <Certificates />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/dashboard/progress"
-                    element={
-                      <ProtectedRoute allowedRoles={['student']}>
-                        <Progress />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/dashboard/assignments"
-                    element={
-                      <ProtectedRoute allowedRoles={['student']}>
-                        <Assignments />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/student/profile"
-                    element={
-                      <ProtectedRoute allowedRoles={['student', 'instructor']}>
-                        <Profile />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/dashboard/help"
-                    element={
-                      <ProtectedRoute allowedRoles={['student']}>
-                        <Help />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/dashboard/analytics"
-                    element={
-                      <ProtectedRoute allowedRoles={['admin', 'instructor']}>
-                        <Analytics />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/dashboard/settings"
-                    element={
-                      <ProtectedRoute allowedRoles={['admin', 'instructor']}>
-                        <Settings />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
+                    } />
+                    <Route path="/auth" element={<Auth />} />
+                    <Route path="/auth/callback" element={<AuthCallback />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route path="/verify-email" element={<VerifyEmail />} />
+                    <Route path="/verify-certificate" element={<VerifyCertificate />} />
+                    <Route path="/team" element={<TeamPage />} />
+                    <Route path="/team/:memberId" element={<TeamMemberPage />} />
+                    <Route path="/training-delivery" element={<TrainingDeliveryPage />} />
+                    <Route path="/consulting-services" element={<ConsultingServicesPage />} />
+                    <Route path="/research-development" element={<RnDServicesPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/training-calendar" element={<TrainingCalendarPage />} />
+                    <Route path="/our-journey" element={<OurJourney />} />
+                    <Route path="/careers" element={<CareersPage />} />
+                    <Route path="/test" element={<TestPage />} />
+                    <Route
+                      path="/dashboard"
+                      element={
+                        <ProtectedRoute>
+                          <Dashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/student"
+                      element={
+                        <ProtectedRoute allowedRoles={['student']}>
+                          <StudentDashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/instructor"
+                      element={
+                        <ProtectedRoute allowedRoles={['instructor']}>
+                          <InstructorDashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/admin"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <AdminDashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/users"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <UserManagement />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/courses"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin', 'instructor', 'student']}>
+                          <CoursesPage />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/payments"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin', 'instructor']}>
+                          <PaymentManagement />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/invoices"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin', 'instructor']}>
+                          <InvoicesPage />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/course/:courseId"
+                      element={
+                        <ProtectedRoute allowedRoles={['student', 'instructor', 'admin']}>
+                          <CourseLearning />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/course/:courseId/edit"
+                      element={
+                        <ProtectedRoute allowedRoles={['instructor', 'admin']}>
+                          <CourseEditor />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/courses/new"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin', 'instructor']}>
+                          <NewCourse />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/testimonials"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <TestimonialManagement />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/images"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <ImageManagement />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/support-tickets"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin', 'instructor']}>
+                          <SupportTickets />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/venues"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin', 'instructor']}>
+                          <VenuesPage />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/certificates"
+                      element={
+                        <ProtectedRoute allowedRoles={['student']}>
+                          <Certificates />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/progress"
+                      element={
+                        <ProtectedRoute allowedRoles={['student']}>
+                          <Progress />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/assignments"
+                      element={
+                        <ProtectedRoute allowedRoles={['student']}>
+                          <Assignments />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/student/profile"
+                      element={
+                        <ProtectedRoute allowedRoles={['student', 'instructor']}>
+                          <Profile />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/help"
+                      element={
+                        <ProtectedRoute allowedRoles={['student']}>
+                          <Help />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/analytics"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin', 'instructor']}>
+                          <Analytics />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/settings"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin', 'instructor']}>
+                          <Settings />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </MaintenanceGuard>
               </BrowserRouter>
             </Dialog>
           </TooltipProvider>
