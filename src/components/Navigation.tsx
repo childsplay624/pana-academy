@@ -1,8 +1,17 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ChevronDown, Search, User } from "lucide-react";
+import { Menu, X, ChevronDown, Search, User, LogOut, LayoutDashboard, Settings } from "lucide-react";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Logo } from './Logo';
 import { NotificationBell } from '@/components/NotificationBell';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,7 +20,7 @@ const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
-  const { user, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const closeTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -322,27 +331,52 @@ const Navigation = () => {
             {/* Desktop CTA Buttons */}
             <div className="hidden md:flex items-center space-x-3">
               {user ? (
-                <>
+                <div className="flex items-center space-x-1">
                   <NotificationBell />
-                  <Link to="/dashboard">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border-red-600 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                    >
-                      Dashboard
-                    </Button>
-                  </Link>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-gray-600 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-500"
-                    onClick={signOut}
-                    aria-label="Sign out"
-                  >
-                    <User className="h-5 w-5" />
-                  </Button>
-                </>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="relative h-10 w-10 rounded-full focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all">
+                        <Avatar className="h-10 w-10 border border-gray-200 dark:border-gray-700 hover:border-red-500 transition-colors">
+                          <AvatarImage src={profile?.avatar_url || ""} alt={profile?.full_name || "User"} />
+                          <AvatarFallback className="bg-red-50 text-red-600 font-bold">
+                            {profile?.full_name ? profile.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'U'}
+                          </AvatarFallback>
+                        </Avatar>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="end" forceMount>
+                      <DropdownMenuLabel className="font-normal">
+                        <div className="flex flex-col space-y-1">
+                          <p className="text-sm font-bold leading-none text-gray-900 dark:text-gray-100">{profile?.full_name || 'My Account'}</p>
+                          <p className="text-xs leading-none text-muted-foreground truncate">
+                            {user.email}
+                          </p>
+                        </div>
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => navigate('/dashboard')} className="cursor-pointer">
+                        <LayoutDashboard className="mr-2 h-4 w-4" />
+                        <span>Dashboard</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate('/student/profile')} className="cursor-pointer">
+                        <User className="mr-2 h-4 w-4" />
+                        <span>My Profile</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate('/dashboard/settings')} className="cursor-pointer">
+                        <Settings className="mr-2 h-4 w-4" />
+                        <span>Settings</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={() => signOut()}
+                        className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-900/20"
+                      >
+                        <LogOut className="mr-2 h-4 w-4" />
+                        <span>Sign out</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               ) : (
                 <Link to="/auth">
                   <Button
@@ -467,23 +501,44 @@ const Navigation = () => {
 
                 <div className="pt-6 mt-6 border-t border-gray-200 dark:border-gray-700">
                   {user ? (
-                    <div className="space-y-2">
-                      <Link to="/dashboard" onClick={() => setIsOpen(false)}>
-                        <Button variant="outline" className="w-full justify-start">
-                          <User className="h-4 w-4 mr-2" />
-                          Dashboard
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3 px-4 py-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                        <Avatar className="h-10 w-10 border border-gray-200 dark:border-gray-700">
+                          <AvatarImage src={profile?.avatar_url || ""} alt={profile?.full_name || "User"} />
+                          <AvatarFallback className="bg-red-50 text-red-600 font-bold">
+                            {profile?.full_name ? profile.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'U'}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col min-w-0">
+                          <p className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate">{profile?.full_name || 'My Account'}</p>
+                          <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <Link to="/dashboard" onClick={() => setIsOpen(false)}>
+                          <Button variant="ghost" className="w-full justify-start font-medium px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <LayoutDashboard className="h-4 w-4 mr-3 text-gray-500" />
+                            Dashboard
+                          </Button>
+                        </Link>
+                        <Link to="/student/profile" onClick={() => setIsOpen(false)}>
+                          <Button variant="ghost" className="w-full justify-start font-medium px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <User className="h-4 w-4 mr-3 text-gray-500" />
+                            My Profile
+                          </Button>
+                        </Link>
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start font-medium px-4 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                          onClick={() => {
+                            signOut();
+                            setIsOpen(false);
+                          }}
+                        >
+                          <LogOut className="h-4 w-4 mr-3" />
+                          Sign Out
                         </Button>
-                      </Link>
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                        onClick={() => {
-                          signOut();
-                          setIsOpen(false);
-                        }}
-                      >
-                        Sign Out
-                      </Button>
+                      </div>
                     </div>
                   ) : (
                     <Link to="/auth" onClick={() => setIsOpen(false)}>

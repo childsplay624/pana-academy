@@ -1,21 +1,22 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
 } from '@/components/ui/table';
-import { 
-  FileText, 
-  Download, 
-  Search, 
+import {
+  FileText,
+  Download,
+  Search,
   Calendar,
   Mail,
   User,
@@ -43,6 +44,7 @@ interface Invoice {
 }
 
 export default function InvoicesPage() {
+  const navigate = useNavigate();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -80,23 +82,18 @@ export default function InvoicesPage() {
     }
   };
 
-  const downloadInvoice = (invoice: Invoice) => {
-    if (!invoice.invoice_html) {
-      toast.error('Invoice HTML not available');
-      return;
-    }
+  const downloadInvoice = async (invoice: Invoice) => {
+    try {
+      toast.info(`Generating PDF for ${invoice.invoice_number}...`);
 
-    const blob = new Blob([invoice.invoice_html], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${invoice.invoice_number}.html`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    
-    toast.success(`Invoice ${invoice.invoice_number} downloaded`);
+      const { generateInvoicePdf } = await import('@/utils/invoicePdfGenerator');
+      await generateInvoicePdf(invoice);
+
+      toast.success(`Invoice ${invoice.invoice_number} downloaded as PDF`);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error('Failed to generate PDF. Please try again.');
+    }
   };
 
   const resendInvoice = async (invoice: Invoice) => {
@@ -122,198 +119,205 @@ export default function InvoicesPage() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Invoices</h1>
-          <p className="text-muted-foreground">
-            Manage and view all course purchase invoices
-          </p>
-        </div>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            Invoice Management
-          </CardTitle>
-          <CardDescription>
-            View and manage all generated invoices from course purchases
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {/* Search */}
-          <div className="flex items-center space-x-2 mb-6">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search invoices..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-8"
-              />
-            </div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold">Invoices</h1>
+            <p className="text-sm text-muted-foreground">
+              Manage and view all course purchase invoices
+            </p>
           </div>
+        </div>
 
-          {/* Invoices Table */}
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Invoice #</TableHead>
-                  <TableHead>Student</TableHead>
-                  <TableHead>Course</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Payment</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredInvoices.length === 0 ? (
+        {/* Summary Stats */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2">
+                <FileText className="h-4 w-4 text-blue-600 flex-shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-xs sm:text-sm text-muted-foreground">Total Invoices</p>
+                  <p className="text-xl sm:text-2xl font-bold">{invoices.length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2">
+                <User className="h-4 w-4 text-green-600 flex-shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-xs sm:text-sm text-muted-foreground">Unique Students</p>
+                  <p className="text-xl sm:text-2xl font-bold">
+                    {new Set(invoices.map(inv => inv.student_email)).size}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2">
+                <CreditCard className="h-4 w-4 text-purple-600 flex-shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-xs sm:text-sm text-muted-foreground">Total Revenue</p>
+                  <p className="text-lg sm:text-2xl font-bold truncate">
+                    NGN {invoices.reduce((sum, inv) => sum + inv.total_amount, 0).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-orange-600 flex-shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-xs sm:text-sm text-muted-foreground">This Month</p>
+                  <p className="text-xl sm:text-2xl font-bold">
+                    {invoices.filter(inv =>
+                      new Date(inv.created_at).getMonth() === new Date().getMonth() &&
+                      new Date(inv.created_at).getFullYear() === new Date().getFullYear()
+                    ).length}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card>
+          <CardContent className="p-4 sm:p-6">
+            {/* Search */}
+            <div className="mb-6">
+              <div className="relative w-full sm:max-w-sm">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search invoices..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-8"
+                />
+              </div>
+            </div>
+
+            {/* Invoices Table - scrollable on small screens */}
+            <div className="rounded-md border overflow-x-auto">
+              <Table className="min-w-[700px]">
+                <TableHeader>
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8">
-                      <div className="flex flex-col items-center space-y-2">
-                        <FileText className="h-8 w-8 text-muted-foreground" />
-                        <p className="text-muted-foreground">
-                          {searchTerm ? 'No invoices found matching your search' : 'No invoices found'}
-                        </p>
-                      </div>
-                    </TableCell>
+                    <TableHead>Invoice #</TableHead>
+                    <TableHead>Student</TableHead>
+                    <TableHead>Course</TableHead>
+                    <TableHead>Amount</TableHead>
+                    <TableHead>Payment</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
-                ) : (
-                  filteredInvoices.map((invoice) => (
-                    <TableRow key={invoice.id}>
-                      <TableCell className="font-medium">
-                        {invoice.invoice_number}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-col">
-                          <span className="font-medium">{invoice.student_name}</span>
-                          <span className="text-sm text-muted-foreground">
-                            {invoice.student_email}
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="max-w-xs truncate" title={invoice.course_title}>
-                          {invoice.course_title}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-col">
-                          <span className="font-medium">
-                            {invoice.currency} {invoice.total_amount.toLocaleString()}
-                          </span>
-                          {invoice.tax_amount > 0 && (
-                            <span className="text-xs text-muted-foreground">
-                              +{invoice.currency} {invoice.tax_amount.toLocaleString()} tax
-                            </span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="text-xs">
-                            {invoice.payment_method}
-                          </Badge>
-                          <span className="text-xs text-muted-foreground">
-                            #{invoice.payment_reference.slice(-8)}
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                          <Calendar className="h-3 w-3" />
-                          {new Date(invoice.payment_date).toLocaleDateString()}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
+                </TableHeader>
+                <TableBody>
+                  {filteredInvoices.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center py-12">
+                        <div className="flex flex-col items-center space-y-4 max-w-sm mx-auto">
+                          <div className="p-3 rounded-full bg-muted">
+                            <FileText className="h-8 w-8 text-muted-foreground" />
+                          </div>
+                          <div className="space-y-1">
+                            <p className="font-medium">
+                              {searchTerm ? 'No invoices found matching your search' : 'No invoices found'}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              Invoices are automatically generated for new successful course purchases.
+                              Historical transactions can be viewed in the Payments section.
+                            </p>
+                          </div>
                           <Button
                             variant="outline"
-                            size="sm"
-                            onClick={() => downloadInvoice(invoice)}
-                            disabled={!invoice.invoice_html}
+                            onClick={() => navigate('/dashboard/payments')}
+                            className="mt-2"
                           >
-                            <Download className="h-3 w-3 mr-1" />
-                            Download
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => resendInvoice(invoice)}
-                          >
-                            <Mail className="h-3 w-3 mr-1" />
-                            Resend
+                            <CreditCard className="h-4 w-4 mr-2" />
+                            View Payments
                           </Button>
                         </div>
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                  ) : (
+                    filteredInvoices.map((invoice) => (
+                      <TableRow key={invoice.id}>
+                        <TableCell className="font-medium whitespace-nowrap">
+                          {invoice.invoice_number}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-col">
+                            <span className="font-medium whitespace-nowrap">{invoice.student_name}</span>
+                            <span className="text-sm text-muted-foreground">
+                              {invoice.student_email}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="max-w-[180px] truncate" title={invoice.course_title}>
+                            {invoice.course_title}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-col whitespace-nowrap">
+                            <span className="font-medium">
+                              {invoice.currency} {invoice.total_amount.toLocaleString()}
+                            </span>
+                            {invoice.tax_amount > 0 && (
+                              <span className="text-xs text-muted-foreground">
+                                +{invoice.currency} {invoice.tax_amount.toLocaleString()} tax
+                              </span>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2 whitespace-nowrap">
+                            <Badge variant="outline" className="text-xs">
+                              {invoice.payment_method}
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">
+                              #{invoice.payment_reference.slice(-8)}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1 text-sm text-muted-foreground whitespace-nowrap">
+                            <Calendar className="h-3 w-3" />
+                            {new Date(invoice.payment_date).toLocaleDateString()}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => downloadInvoice(invoice)}
+                            >
+                              <Download className="h-3 w-3 mr-1" />
+                              PDF
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => resendInvoice(invoice)}
+                            >
+                              <Mail className="h-3 w-3 mr-1" />
+                              Resend
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
 
-          {/* Summary Stats */}
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-blue-600" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total Invoices</p>
-                    <p className="text-2xl font-bold">{invoices.length}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2">
-                  <User className="h-4 w-4 text-green-600" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Unique Students</p>
-                    <p className="text-2xl font-bold">
-                      {new Set(invoices.map(inv => inv.student_email)).size}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2">
-                  <CreditCard className="h-4 w-4 text-purple-600" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total Revenue</p>
-                    <p className="text-2xl font-bold">
-                      NGN {invoices.reduce((sum, inv) => sum + inv.total_amount, 0).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-orange-600" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">This Month</p>
-                    <p className="text-2xl font-bold">
-                      {invoices.filter(inv => 
-                        new Date(inv.created_at).getMonth() === new Date().getMonth() &&
-                        new Date(inv.created_at).getFullYear() === new Date().getFullYear()
-                      ).length}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
       </div>
     </DashboardLayout>
   );

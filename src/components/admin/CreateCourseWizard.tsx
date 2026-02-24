@@ -110,8 +110,8 @@ export function CreateCourseWizard() {
                 description: `${courseBasics.courseType} course created successfully.`,
             });
 
-            // Navigate to course management or details page
-            navigate(`/admin/courses/${result.data.id}`);
+            // Navigate to course editor
+            navigate(`/course/${result.data.id}/edit`);
         } catch (error) {
             console.error('Error creating course:', error);
             toast({
@@ -125,7 +125,7 @@ export function CreateCourseWizard() {
     };
 
     return (
-        <div className="w-full max-w-5xl mx-auto p-6 space-y-6">
+        <div className="w-full max-w-5xl mx-auto space-y-6">
             {/* Header */}
             <div className="mb-8">
                 <h1 className="text-3xl font-bold tracking-tight mb-2">Create New Course</h1>
@@ -187,7 +187,7 @@ export function CreateCourseWizard() {
                         <CourseBasicsForm
                             initialData={courseBasics}
                             onSubmit={handleBasicsSubmit}
-                            onCancel={() => navigate('/admin/courses')}
+                            onCancel={() => navigate('/dashboard/courses')}
                         />
                     )}
 
@@ -222,19 +222,7 @@ export function CreateCourseWizard() {
                 </CardContent>
             </Card>
 
-            {/* Navigation Buttons (shown only on step 1) */}
-            {currentStep === 1 && (
-                <div className="flex justify-between mt-6">
-                    <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => navigate('/admin/courses')}
-                    >
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Cancel
-                    </Button>
-                </div>
-            )}
+
         </div>
     );
 }

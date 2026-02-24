@@ -11,6 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import { ChangePassword } from '@/components/ChangePassword';
 import {
   User,
   Mail,
@@ -48,7 +49,7 @@ export function ProfileEdit() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [studentProfile, setStudentProfile] = useState<StudentProfile | null>(null);
-  
+
   // Form state
   const [fullName, setFullName] = useState('');
   const [bio, setBio] = useState('');
@@ -81,7 +82,7 @@ export function ProfileEdit() {
 
     try {
       setLoading(true);
-      
+
       // Get extended profile data
       const { data, error } = await supabase
         .from('profiles')
@@ -112,7 +113,7 @@ export function ProfileEdit() {
 
     try {
       setSaving(true);
-      
+
       // Convert blob URL to base64 if it's a local preview
       let finalAvatarUrl = avatarUrl;
       if (avatarUrl && avatarUrl.startsWith('blob:')) {
@@ -134,7 +135,7 @@ export function ProfileEdit() {
           finalAvatarUrl = null; // Fallback to null if conversion fails
         }
       }
-      
+
       // Update all profile fields that exist in the database schema
       const updateData: any = {
         full_name: fullName,
@@ -154,7 +155,7 @@ export function ProfileEdit() {
           delete updateData[key];
         }
       });
-      
+
       const { error } = await supabase
         .from('profiles')
         .update(updateData)
@@ -197,7 +198,7 @@ export function ProfileEdit() {
 
     if (file.size > 5 * 1024 * 1024) { // 5MB limit
       toast({
-        title: "Error", 
+        title: "Error",
         description: "Image size must be less than 5MB",
         variant: "destructive"
       });
@@ -206,15 +207,15 @@ export function ProfileEdit() {
 
     try {
       setSaving(true);
-      
+
       // Create a local preview URL instead of uploading to storage
       // This avoids RLS policy issues
       const previewUrl = URL.createObjectURL(file);
-      
+
       console.log('Created avatar preview URL:', previewUrl);
 
       setAvatarUrl(previewUrl);
-      
+
       toast({
         title: "Avatar Preview",
         description: "Avatar preview created. Save to update your profile.",
@@ -372,7 +373,7 @@ export function ProfileEdit() {
                   id="phone"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+1 (555) 123-4567"
+                  placeholder="+234 702 600 0119"
                 />
               </div>
 
@@ -447,7 +448,7 @@ export function ProfileEdit() {
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm">
-                  {studentProfile?.created_at 
+                  {studentProfile?.created_at
                     ? new Date(studentProfile.created_at).toLocaleDateString()
                     : 'Unknown'
                   }
@@ -460,7 +461,7 @@ export function ProfileEdit() {
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm">
-                  {studentProfile?.updated_at 
+                  {studentProfile?.updated_at
                     ? new Date(studentProfile.updated_at).toLocaleDateString()
                     : 'Never'
                   }
@@ -488,6 +489,9 @@ export function ProfileEdit() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Change Password Section */}
+      <ChangePassword />
     </div>
   );
 }

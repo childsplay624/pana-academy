@@ -56,8 +56,8 @@ export default function Auth() {
         navigate('/dashboard');
       } else {
         const { error } = await signUp(
-          formData.email, 
-          formData.password, 
+          formData.email,
+          formData.password,
           formData.fullName
         );
         if (error) throw error;
@@ -92,17 +92,17 @@ export default function Auth() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex min-h-screen selection:bg-pana-red/30">
       {/* Left Side - Background with Image Overlay */}
-      <div 
-        className="w-full md:w-1/2 relative text-white p-8 md:p-12 flex flex-col min-h-screen pt-20"
+      <div
+        className="hidden md:flex md:w-5/12 lg:w-[45%] relative text-white p-6 md:p-10 flex-col min-h-screen animate-fade-in"
       >
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 overflow-hidden">
           {bgImage ? (
             <img
               src={bgImage}
-              alt="Authentication Background"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover scale-100"
+              style={{ filter: 'brightness(0.5) contrast(1.05)' }}
               onError={(e) => {
                 console.error('Background image failed to load:', bgImage);
                 e.currentTarget.style.display = 'none';
@@ -110,17 +110,19 @@ export default function Auth() {
               }}
             />
           ) : null}
-          <div className={`w-full h-full bg-gradient-to-br from-pana-navy to-pana-red ${bgImage ? 'hidden' : ''}`}></div>
-          <div className="absolute inset-0 bg-black/70"></div>
+          <div className={`w-full h-full bg-gradient-to-br from-pana-navy via-pana-navy to-pana-red ${bgImage ? 'hidden' : ''}`}></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-pana-navy via-black/30 to-transparent"></div>
+          <div className="absolute inset-0 bg-pana-navy/10 backdrop-blur-[1px]"></div>
         </div>
-        <div className="relative z-10 flex flex-col justify-end h-full pb-12">
-          <div className="mb-8">
-            <div className="relative">
+
+        <div className="relative z-10 flex flex-col justify-end h-full max-w-lg mr-auto items-start text-left pb-20">
+          <div className="mb-10 animate-float">
+            <div className="relative inline-block">
               {logoImage ? (
                 <img
                   src={logoImage}
                   alt="PANA Academy"
-                  className="h-20 w-auto brightness-125 drop-shadow-lg"
+                  className="h-14 w-auto object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]"
                   onError={(e) => {
                     console.error('Logo image failed to load:', logoImage);
                     e.currentTarget.style.display = 'none';
@@ -128,123 +130,133 @@ export default function Auth() {
                   }}
                 />
               ) : null}
-              <div className={`fallback-logo h-20 w-auto bg-red-600 rounded-lg flex items-center justify-center ${logoImage ? 'hidden' : ''}`}>
-                <span className="text-white font-bold text-xl">PANA</span>
+              <div className={`fallback-logo h-12 w-auto bg-gradient-to-r from-pana-red to-red-500 rounded-lg flex items-center justify-center px-4 shadow-lg ${logoImage ? 'hidden' : ''}`}>
+                <span className="text-white font-black text-xl tracking-tighter">PANA</span>
               </div>
             </div>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">
-            {isLogin ? 'Welcome back!' : 'Join us today'}
-          </h1>
-          <p className="text-pana-light-gray mb-8">
-            {isLogin 
-              ? 'Sign in to access your personalized learning dashboard and continue your journey.'
-              : 'Create an account to unlock all features and start your learning journey with us.'}
-          </p>         
+
+          <div className="space-y-4">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-black mb-3 leading-tight tracking-tight drop-shadow-sm">
+              {isLogin ? 'Welcome Back' : 'Join Our Mission'}
+              <span className="text-pana-red block mt-1 tracking-normal">to Excellence</span>
+            </h1>
+            <p className="text-white/70 mb-6 text-base md:text-lg font-normal leading-relaxed max-w-sm mr-auto">
+              {isLogin
+                ? 'Resume your mastery journey and access your advanced learning tools.'
+                : 'Join an elite community and unlock your full potential today.'}
+            </p>
+          </div>
         </div>
-        
-        <div className="text-center text-sm text-white/70 mt-8">
-          &copy; {new Date().getFullYear()} PANA Academy. All rights reserved.
+
+        <div className="absolute bottom-6 left-6 right-6 text-center text-[10px] text-white/30 tracking-[0.3em] font-bold uppercase">
+          &copy; {new Date().getFullYear()} PANA Academy &bull; Quality Excellence
         </div>
       </div>
 
       {/* Right Side - Form */}
-      <div className="w-full md:w-1/2 p-8 md:p-12 flex items-center justify-center min-h-screen">
-        <Card className="w-full max-w-md border-0 shadow-none md:shadow-md">
-          <CardHeader className="text-center space-y-1">
-            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Lock className="h-6 w-6 text-red-600" />
+      <div className="w-full md:w-7/12 lg:w-[55%] p-4 md:p-8 flex items-center justify-center min-h-screen bg-[#fcfdfe] relative overflow-hidden">
+        {/* Subtle decorative background elements */}
+        <div className="absolute top-0 right-0 w-48 h-48 bg-pana-red/5 rounded-full blur-3xl -mr-24 -mt-24"></div>
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-pana-navy/5 rounded-full blur-3xl -ml-32 -mb-32"></div>
+
+        <Card className="w-full max-w-[390px] border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.06)] bg-white/90 backdrop-blur-md relative z-10 animate-slide-in-right">
+          <CardHeader className="text-center space-y-3 pb-3">
+            <div className="w-16 h-16 bg-gradient-to-br from-pana-red to-red-800 rounded-xl flex items-center justify-center mx-auto mb-1 shadow-md shadow-pana-red/20 transform -rotate-1 hover:rotate-0 transition-transform duration-300">
+              <Lock className="h-8 w-8 text-white" />
             </div>
-            <CardTitle className="text-2xl font-bold text-gray-900">
-              {isLogin ? 'Sign in to your account' : 'Create an account'}
-            </CardTitle>
-            <p className="text-sm text-gray-500">
-              {isLogin ? "Don't have an account? " : 'Already have an account? '}
-              <button
-                type="button"
-                onClick={() => {
-                  setIsLogin(!isLogin);
-                  setFormData({ email: '', password: '', fullName: '' });
-                }}
-                className="font-medium text-red-600 hover:text-red-800 transition-colors"
-              >
-                {isLogin ? 'Sign up' : 'Sign in'}
-              </button>
-            </p>
+            <div className="space-y-1">
+              <CardTitle className="text-xl md:text-2xl font-black text-gray-900 tracking-tight">
+                {isLogin ? 'Propel Your Growth' : 'Start Your Era'}
+              </CardTitle>
+              <CardDescription className="text-gray-400 font-bold text-[10px] uppercase tracking-wider">
+                {isLogin ? "New here? " : 'A member? '}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsLogin(!isLogin);
+                    setFormData({ email: '', password: '', fullName: '' });
+                  }}
+                  className="font-black text-pana-red hover:text-red-800 transition-colors"
+                >
+                  {isLogin ? 'Sign up' : 'Login'}
+                </button>
+              </CardDescription>
+            </div>
           </CardHeader>
-          
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
+
+          <CardContent className="pt-1">
+            <form onSubmit={handleSubmit} className="space-y-4">
               {!isLogin && (
-                <div className="space-y-2">
-                  <Label htmlFor="fullName" className="text-sm font-medium text-gray-700">
-                    Full Name
+                <div className="space-y-1">
+                  <Label htmlFor="fullName" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">
+                    Full Identity
                   </Label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <User className="h-5 w-5 text-gray-400" />
+                  <div className="relative group">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none group-focus-within:text-pana-red transition-colors">
+                      <User className="h-3.5 w-3.5 text-gray-400" />
                     </div>
                     <Input
                       id="fullName"
                       name="fullName"
                       type="text"
-                      placeholder="John Doe"
+                      placeholder="e.g. Admiral Nelson"
                       value={formData.fullName}
                       onChange={handleChange}
-                      className="pl-10"
+                      className="pl-9 h-10 text-sm border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-1 focus:ring-pana-red/30 transition-all font-medium"
                       required={!isLogin}
                     />
                   </div>
                 </div>
               )}
-              
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-                  Email address
+
+              <div className="space-y-1">
+                <Label htmlFor="email" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">
+                  Access Portal (Email)
                 </Label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail className="h-5 w-5 text-gray-400" />
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none transition-colors">
+                    <Mail className="h-3.5 w-3.5 text-gray-400" />
                   </div>
                   <Input
                     id="email"
                     name="email"
                     type="email"
-                    placeholder="you@example.com"
+                    placeholder="name@domain.com"
                     value={formData.email}
                     onChange={handleChange}
-                    className="pl-10"
+                    className="pl-9 h-10 text-sm border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-1 focus:ring-pana-red/30 transition-all font-medium"
                     required
                   />
                 </div>
               </div>
-              
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password" className="text-sm font-medium text-gray-700">
-                    Password
+
+              <div className="space-y-1">
+                <div className="flex items-center justify-between ml-1">
+                  <Label htmlFor="password" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                    Security Key
                   </Label>
                   {isLogin && (
-                    <Link 
-                      to="/reset-password" 
-                      className="text-sm font-medium text-red-600 hover:text-red-800 transition-colors"
+                    <Link
+                      to="/reset-password"
+                      className="text-[9px] font-bold text-pana-red hover:text-red-800 transition-colors uppercase tracking-wider"
                     >
-                      Forgot password?
+                      Lost access?
                     </Link>
                   )}
                 </div>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className="h-5 w-5 text-gray-400" />
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none transition-colors">
+                    <Lock className="h-3.5 w-3.5 text-gray-400" />
                   </div>
                   <Input
                     id="password"
                     name="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder={isLogin ? "••••••••" : "Create a password"}
+                    placeholder="••••••••"
                     value={formData.password}
                     onChange={handleChange}
-                    className="pl-10 pr-10"
+                    className="pl-9 pr-9 h-10 text-sm border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-1 focus:ring-pana-red/30 transition-all font-medium"
                     required
                     minLength={6}
                   />
@@ -254,58 +266,52 @@ export default function Auth() {
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
-                      <EyeOff className="h-5 w-5 text-gray-400" />
+                      <EyeOff className="h-3.5 w-3.5 text-gray-400 hover:text-pana-red transition-colors" />
                     ) : (
-                      <Eye className="h-5 w-5 text-gray-400" />
+                      <Eye className="h-3.5 w-3.5 text-gray-400 hover:text-pana-red transition-colors" />
                     )}
                   </button>
                 </div>
-                {!isLogin && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    Must be at least 6 characters
-                  </p>
-                )}
               </div>
-              
+
               <Button
                 type="submit"
-                className="w-full bg-red-600 hover:bg-red-800 transition-colors"
+                className="w-full bg-gradient-to-r from-pana-navy to-pana-red hover:scale-[1.01] active:scale-[0.99] text-white font-bold h-11 transition-all shadow-lg shadow-pana-navy/10 uppercase tracking-widest text-[10px]"
                 disabled={isLoading}
               >
                 {isLoading ? (
                   <span className="flex items-center">
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin -ml-1 mr-2 h-3.5 w-3.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Processing...
+                    Executing...
                   </span>
                 ) : isLogin ? (
-                  'Sign in'
+                  'Sign In'
                 ) : (
-                  'Create account'
+                  'Create Account'
                 )}
               </Button>
             </form>
-            
+
             <div className="mt-6">
-              <div className="relative my-6">
+              <div className="relative mb-4">
                 <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
+                  <div className="w-full border-t border-gray-50" />
                 </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">
-                    Or continue with
+                <div className="relative flex justify-center text-[9px]">
+                  <span className="bg-white px-3 text-gray-300 font-bold uppercase tracking-[0.2em]">
+                    Social Access
                   </span>
                 </div>
               </div>
 
-              <div className="space-y-3 w-full">
-                                
+              <div className="grid grid-cols-2 gap-3">
                 <Button
                   variant="outline"
                   type="button"
-                  className="w-full bg-[#0077B5] text-white hover:bg-[#006097] hover:text-white"
+                  className="bg-[#0077B5] hover:bg-[#006097] text-white hover:text-white border-0 font-bold h-10 text-[10px] transition-all shadow-sm"
                   disabled={isLoading}
                   onClick={async () => {
                     try {
@@ -313,56 +319,47 @@ export default function Auth() {
                       await signInWithLinkedIn();
                     } catch (error) {
                       console.error('LinkedIn login error:', error);
-                      toast({
-                        title: "Login Error",
-                        description: "Failed to sign in with LinkedIn. Please try again.",
-                        variant: "destructive",
-                      });
                     } finally {
                       setIsLoading(false);
                     }
                   }}
                 >
-                  <Linkedin className="mr-2 h-4 w-4" />
+                  <Linkedin className="mr-1.5 h-3.5 w-3.5 fill-current" />
                   LinkedIn
                 </Button>
-                
+
                 <Button
                   variant="outline"
                   type="button"
-                  className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                  className="bg-white hover:bg-gray-50 text-gray-700 font-bold h-10 text-[10px] transition-all shadow-sm border-gray-100"
                   onClick={() => handleSocialLogin('google')}
                   disabled={isLoading}
                 >
-                  <img src="/google-icon.svg" alt="Google" className="w-5 h-5 mr-2" />
+                  <img src="/google-icon.svg" alt="Google" className="w-3.5 h-3.5 mr-1.5" />
                   Google
                 </Button>
-                
-                <Button
-                  variant="ghost"
-                  type="button"
-                  className="w-full mt-3 text-sm font-medium text-black hover:text-gray-800 hover:bg-gray-100"
-                  onClick={() => navigate('/')}
-                  disabled={isLoading}
-                >
-                  ← Back to Home
-                </Button>
               </div>
+
+              <Button
+                variant="ghost"
+                type="button"
+                className="w-full mt-4 h-8 text-[9px] font-bold text-gray-400 hover:text-pana-navy transition-all uppercase tracking-[0.2em]"
+                onClick={() => navigate('/')}
+                disabled={isLoading}
+              >
+                ← Return to Base
+              </Button>
             </div>
-            
-            <p className="mt-6 text-center text-sm text-gray-500">
-              By {isLogin ? 'signing in' : 'signing up'}, you agree to our{' '}
-              <Link to="/terms" className="font-medium text-red-600 hover:text-red-800">
-                Terms of Service
-              </Link>{' '}
-              and{' '}
-              <Link to="/privacy" className="font-medium text-red-600 hover:text-red-800">
-                Privacy Policy
-              </Link>.
+
+            <p className="mt-6 text-center text-[9px] text-gray-400 leading-relaxed font-medium">
+              BY JOINING, YOU AGREE TO OUR{' '}
+              <Link to="/terms" className="text-pana-red hover:underline underline-offset-2">TERMS</Link>
+              {' '}AND{' '}
+              <Link to="/privacy" className="text-pana-red hover:underline underline-offset-2">PRIVACY</Link>.
             </p>
-    </CardContent>
-  </Card>
-</div>
-</div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }

@@ -28,7 +28,7 @@ import { useSiteImage } from '@/hooks/useSiteImage';
 const PublicCoursesPage = () => {
   // Fetch header image from centralized system
   const { imageUrl: headerImage } = useSiteImage('header_training');
-  
+
   const [searchQuery, setSearchQuery] = useState('');
   const [allCourses, setAllCourses] = useState<Course[]>([]);
   const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
@@ -185,7 +185,7 @@ const PublicCoursesPage = () => {
           <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-pana-navy to-pana-red z-0"></div>
         )}
         <div className="absolute inset-0 bg-black/70 bg-blend-multiply z-10"></div>
-        
+
         {/* Search Form Overlay */}
         <div className="relative z-20 flex flex-col justify-center min-h-[500px] px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto text-center">
@@ -219,13 +219,13 @@ const PublicCoursesPage = () => {
                   <SelectContent>
                     <SelectItem value="All">All Categories</SelectItem>
                     <SelectItem value="soft_skills">Soft Skills</SelectItem>
-                    <SelectItem value="safety_courses">Safety Courses</SelectItem>
-                    <SelectItem value="sustainability_courses">Sustainability Courses</SelectItem>
-                    <SelectItem value="general_technical_courses">General Technical Courses</SelectItem>
-                    <SelectItem value="flow_drives_courses">Flow Drives Courses</SelectItem>
-                    <SelectItem value="flow_control_courses">Flow Control Courses</SelectItem>
-                    <SelectItem value="flow_measurement_courses">Flow Measurement Courses</SelectItem>
-                    <SelectItem value="instrumentation_automation">Instrumentation/Automation and Process Control</SelectItem>
+                    <SelectItem value="safety">Safety</SelectItem>
+                    <SelectItem value="sustainability">Sustainability</SelectItem>
+                    <SelectItem value="general_technical">General Technical</SelectItem>
+                    <SelectItem value="flow_drives">Flow Drives</SelectItem>
+                    <SelectItem value="flow_control">Flow Control</SelectItem>
+                    <SelectItem value="flow_measurement">Flow Measurement</SelectItem>
+                    <SelectItem value="instrumentation_automation">Instrumentation & Automation</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

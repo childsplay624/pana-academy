@@ -77,7 +77,8 @@ export const progressService = {
         .single() as { data: Progress | null; error: any };
 
       // Calculate progress percentage (for simplicity, 0% or 100% for now)
-      if (fetchError?.code !== 'PGRST116') { // PGRST116 = not found
+      // PGRST116 = "no rows returned" - that's expected when starting a new lesson
+      if (fetchError && fetchError.code !== 'PGRST116') {
         throw fetchError;
       }
 
@@ -138,6 +139,30 @@ export const progressService = {
   // Check if course is completed and issue certificate if needed
   async checkCourseCompletion(userId: string, courseId: string): Promise<{ completed: boolean; certificate?: Certificate }> {
     try {
+      // Get course details to check type
+      const { data: course, error: courseFetchError } = await supabase
+        .from('courses')
+        .select('course_type, title')
+        .eq('id', courseId)
+        .single();
+
+      if (courseFetchError) throw courseFetchError;
+
+      // For onsite courses without online modules, don't auto-complete based on lessons
+      // These usually require manual attendance marking
+      if (course.course_type === 'onsite') {
+        // Check if there are even any lessons
+        const { count: lessonCount } = await supabase
+          .from('lessons')
+          .select('*', { count: 'exact', head: true })
+          .eq('course_id', courseId);
+
+        if (!lessonCount || lessonCount === 0) {
+          // Onsite course with no digital lessons - skip auto-issuance
+          return { completed: false };
+        }
+      }
+
       // Get total lessons in course
       const { count: totalLessons, error: countError } = await supabase
         .from('lessons')
@@ -166,12 +191,14 @@ export const progressService = {
 
       if (progressError) throw progressError;
 
-      const allLessonsCompleted = (completedCount || 0) >= (totalLessons || 0);
+      const allLessonsCompleted = (completedCount || 0) >= (totalLessons || 0) && (totalLessons || 0) > 0;
 
       // If course is completed, issue a certificate
       if (allLessonsCompleted) {
-        const certificate = await this.issueCertificate(userId, courseId);
-        return { completed: true, certificate };
+        const result = await this.issueCertificate(userId, courseId);
+        if (result.data) {
+          return { completed: true, certificate: result.data };
+        }
       }
 
       return { completed: false };
@@ -201,7 +228,17 @@ export const progressService = {
       // Get course details for the certificate
       const { data: course, error: courseError } = await supabase
         .from('courses')
-        .select('title, duration_hours')
+        .select(`
+          title, 
+          duration_hours, 
+          venue_name, 
+          venue_address, 
+          venue_city, 
+          venue_country, 
+          venue_map_url,
+          start_date,
+          end_date
+        `)
         .eq('id', courseId)
         .single();
 
@@ -224,8 +261,16 @@ export const progressService = {
         title: `Certificate of Completion - ${course.title}`,
         description: `Awarded for successfully completing the ${course.title} course`,
         enrollment_id: '', // This should be set to the actual enrollment ID if available
-        instructor_name: 'PANA Academy Instructor' // Default value, should be replaced with actual instructor
-      } satisfies Omit<Certificate, 'id'>;
+        instructor_name: 'PANA Academy Instructor',
+        // Optional onsite details
+        venue_name: (course as any).venue_name,
+        venue_address: (course as any).venue_address,
+        venue_city: (course as any).venue_city,
+        venue_country: (course as any).venue_country,
+        venue_map_url: (course as any).venue_map_url,
+        course_start_date: (course as any).start_date,
+        course_end_date: (course as any).end_date
+      };
 
       const { data: certificate, error: certError } = await supabase
         .from('certificates')
@@ -240,7 +285,7 @@ export const progressService = {
         userId,
         activityType: 'certificate_issued',
         entityType: 'certificate',
-        entityId: certificate.id,
+        entityId: (certificate as any).id,
         deviceInfo: {},
         ipAddress: ''
       });
@@ -292,36 +337,57 @@ export const progressService = {
   // Get course progress
   async getCourseProgress(userId: string, courseId: string) {
     try {
-      // Get all lessons for the course
+      // Get all lessons for course by joining through modules
       const { data: lessons, error: lessonsError } = await supabase
-        .from('lessons')
-        .select('id')
+        .from('modules')
+        .select(`
+          id,
+          lessons!inner(
+            id,
+            title,
+            duration_minutes,
+            is_free
+          )
+        `)
         .eq('course_id', courseId);
 
-      if (lessonsError) throw lessonsError;
+      if (lessonsError) {
+        console.error('Error fetching modules:', lessonsError);
+        throw lessonsError;
+      }
 
-      const lessonIds = lessons?.map(lesson => lesson.id) || [];
+      // Extract lesson IDs from all modules' lessons
+      const lessonIds = lessons?.flatMap(module =>
+        module.lessons?.map(lesson => lesson.id) || []
+      ) || [];
+
+      if (lessonIds.length === 0) {
+        // No lessons found, return empty progress
+        return {
+          data: {
+            progress: 0,
+            completedLessons: 0,
+            totalLessons: 0,
+            timeSpent: 0,
+            lastAccessed: null,
+            details: []
+          },
+          error: null
+        };
+      }
 
       // Get user's progress for these lessons
       const { data: progress, error: progressError } = await supabase
         .from('lesson_progress')
         .select('*')
         .eq('student_id', userId)
-        .in('lesson_id', lessonIds) as {
-          data: Array<{
-            id: string;
-            user_id: string;
-            lesson_id: string;
-            completed: boolean;
-            completed_at: string | null;
-            time_spent_minutes: number;
-            created_at: string;
-            updated_at?: string;
-            last_accessed?: string;
-          }> | null; error: any
-        };
+        .in('lesson_id', lessonIds);
 
-      if (progressError) throw progressError;
+      if (progressError) {
+        console.error('Error fetching progress:', progressError);
+        throw progressError;
+      }
+
       const progressList = progress || [];
 
       // Calculate progress

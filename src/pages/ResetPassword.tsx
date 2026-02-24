@@ -38,7 +38,7 @@ export function ResetPassword() {
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (newPassword !== confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -51,10 +51,10 @@ export function ResetPassword() {
       // In a real app, you would verify the token and update the password
       // This is a simplified example
       setSuccess(true);
-      
+
       // Redirect to login after a short delay
       setTimeout(() => {
-        navigate('/login');
+        navigate('/auth');
       }, 3000);
     } catch (err: any) {
       setError(err.message || 'Failed to reset password');
@@ -118,18 +118,18 @@ export function ResetPassword() {
               </div>
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full bg-pana-gold hover:bg-pana-gold/90"
                 disabled={isLoading || success}
               >
                 {isLoading ? 'Resetting...' : 'Reset Password'}
               </Button>
-              <Button 
-                type="button" 
-                variant="outline" 
+              <Button
+                type="button"
+                variant="outline"
                 className="w-full"
-                onClick={() => navigate('/login')}
+                onClick={() => navigate('/auth')}
                 disabled={isLoading}
               >
                 Back to Login
@@ -183,18 +183,18 @@ export function ResetPassword() {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full bg-pana-gold hover:bg-pana-gold/90"
               disabled={isLoading || success}
             >
               {isLoading ? 'Sending...' : 'Send Reset Link'}
             </Button>
-            <Button 
-              type="button" 
-              variant="outline" 
+            <Button
+              type="button"
+              variant="outline"
               className="w-full"
-              onClick={() => navigate('/login')}
+              onClick={() => navigate('/auth')}
               disabled={isLoading}
             >
               Back to Login

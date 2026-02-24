@@ -4,7 +4,8 @@
 
 html {
   scroll-behavior: smooth;
-  font-size: clamp(1rem, 2.5vw, 1.125rem);
+  font-size: 16px;
+  /* Standardize base for better control */
 }
 
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
@@ -46,7 +47,8 @@ All colors MUST be HSL.
     /* PANA Academy Brand Colors */
     --pana-navy: 0 84% 15%;
     --pana-red: 0 84% 35%;
-    --pana-gold: 0 84% 35%; /* Changed from yellow to red */
+    --pana-gold: 0 84% 35%;
+    /* Changed from yellow to red */
     --pana-light-red: 0 84% 85%;
     --pana-gray: 215 15% 47%;
     --pana-light-gray: 215 27% 97%;

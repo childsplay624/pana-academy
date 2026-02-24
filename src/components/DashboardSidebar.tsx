@@ -9,6 +9,7 @@ import {
   TrendingUp,
   User,
   Calendar,
+  MapPin,
   FileText,
   HelpCircle,
   LogOut,
@@ -59,6 +60,7 @@ export function DashboardSidebar() {
         { title: "Support Tickets", url: "/dashboard/support-tickets", icon: MessageSquare },
         { title: "Manage Payments", url: "/dashboard/payments", icon: CreditCard },
         { title: "Invoices", url: "/dashboard/invoices", icon: FileText },
+        { title: "Manage Venues", url: "/dashboard/venues", icon: MapPin },
         { title: "Manage Images", url: "/dashboard/images", icon: ImageIcon },
         { title: "Testimonials", url: "/dashboard/testimonials", icon: MessageSquareText },
         { title: "Analytics", url: "/dashboard/analytics", icon: TrendingUp },
@@ -70,8 +72,12 @@ export function DashboardSidebar() {
       return [
         ...baseItems,
         { title: "My Courses", url: "/dashboard/courses", icon: BookOpen },
-        { title: "Students", url: "/dashboard/students", icon: Users },
+        { title: "Payments", url: "/dashboard/payments", icon: CreditCard },
+        { title: "Invoices", url: "/dashboard/invoices", icon: FileText },
+        { title: "Manage Venues", url: "/dashboard/venues", icon: MapPin },
+        { title: "Support Tickets", url: "/dashboard/support-tickets", icon: MessageSquare },
         { title: "Analytics", url: "/dashboard/analytics", icon: TrendingUp },
+        { title: "Profile", url: "/student/profile", icon: User },
         { title: "Settings", url: "/dashboard/settings", icon: Settings },
       ];
     }

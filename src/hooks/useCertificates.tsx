@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
+import { generateCertificateHtml, downloadCertificateAsPDF } from '@/utils/certificateUtils';
 
 export interface Certificate {
   id: string;
@@ -23,6 +24,13 @@ export interface Certificate {
   student_name?: string;
   metadata?: any;
   is_valid: boolean;
+  venue_name?: string;
+  venue_address?: string;
+  venue_city?: string;
+  venue_country?: string;
+  venue_map_url?: string;
+  course_start_date?: string;
+  course_end_date?: string;
   created_at: string;
   updated_at: string;
 }
@@ -44,7 +52,7 @@ export function useCertificates() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
 
   useEffect(() => {
     if (user) {
@@ -79,22 +87,22 @@ export function useCertificates() {
 
   const calculateStats = (certs: Certificate[]) => {
     const totalCertificates = certs.length;
-    
+
     // Calculate certificates issued this month
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
     const thisMonth = certs.filter(cert => {
       const issueDate = new Date(cert.issued_date);
-      return issueDate.getMonth() === currentMonth && 
-             issueDate.getFullYear() === currentYear;
+      return issueDate.getMonth() === currentMonth &&
+        issueDate.getFullYear() === currentYear;
     }).length;
 
     // Calculate average grade
     const gradesWithScores = certs.filter(cert => cert.score !== null && cert.score !== undefined);
-    const averageScore = gradesWithScores.length > 0 
+    const averageScore = gradesWithScores.length > 0
       ? gradesWithScores.reduce((sum, cert) => sum + (cert.score || 0), 0) / gradesWithScores.length
       : 0;
-    
+
     let averageGrade = 'N/A';
     if (averageScore > 0) {
       if (averageScore >= 90) averageGrade = 'A+';
@@ -143,31 +151,50 @@ export function useCertificates() {
         throw new Error('Certificate not found');
       }
 
-      // Call the edge function to generate certificate HTML
-      const { data, error } = await supabase.functions.invoke('generate-certificate-pdf', {
-        body: { certificateId }
-      });
+      toast.loading('Generating your PDF certificate...', { id: 'pdf-gen' });
 
-      if (error) {
-        throw error;
+      try {
+        // Direct PDF generation (User requested PDF specifically)
+        await downloadCertificateAsPDF(certificate, profile?.full_name || 'Student');
+        toast.dismiss('pdf-gen');
+        toast.success('Certificate downloaded as PDF!');
+        return;
+      } catch (pdfErr) {
+        console.warn('PDF generation failed, falling back to HTML:', pdfErr);
+        toast.dismiss('pdf-gen');
+
+        // Fallback: Generate HTML locally/remotely
+        let htmlContent: string;
+        try {
+          const { data, error: functionError } = await supabase.functions.invoke('generate-certificate-pdf', {
+            body: { certificateId }
+          });
+          if (functionError || !data?.html) throw new Error('Remote HTML fail');
+          htmlContent = data.html;
+        } catch {
+          htmlContent = generateCertificateHtml(certificate, profile?.full_name || 'Student');
+        }
+
+        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `certificate-${certificate.certificate_number}.html`;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+
+        setTimeout(() => {
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        }, 100);
+
+        toast.warning('PDF generation failed. Downloaded as HTML instead. Please print as PDF.');
       }
-
-      // Create a downloadable HTML file that can be printed as PDF
-      const htmlContent = data.html;
-      const blob = new Blob([htmlContent], { type: 'text/html' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `certificate-${certificate.certificate_number}.html`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-
-      toast.success('Certificate downloaded - open the file and print to PDF');
     } catch (err: any) {
       console.error('Error downloading certificate:', err);
-      toast.error('Failed to download certificate');
+      toast.dismiss('pdf-gen');
+      toast.error(`Failed to download certificate: ${err.message}`);
     }
   };
 
@@ -179,7 +206,7 @@ export function useCertificates() {
       }
 
       const shareUrl = `${window.location.origin}/verify-certificate?code=${certificate.verification_code}`;
-      
+
       if (navigator.share) {
         await navigator.share({
           title: `Certificate: ${certificate.course_title}`,

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { BookOpen, Search, Plus, Eye, Edit, Trash2, Users, Clock } from 'lucide-react';
+import { BookOpen, Search, Plus, Eye, Edit, Trash2, Users, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -34,6 +34,8 @@ export default function CourseManagement() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const { toast } = useToast();
 
   useEffect(() => {
@@ -65,6 +67,11 @@ export default function CourseManagement() {
     }
   };
 
+  // Reset to first page when search or filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter, categoryFilter]);
+
   const updateCourseStatus = async (courseId: string, newStatus: 'draft' | 'published' | 'archived' | 'review') => {
     try {
       const { error } = await supabase
@@ -74,7 +81,7 @@ export default function CourseManagement() {
 
       if (error) throw error;
 
-      setCourses(prev => prev.map(course => 
+      setCourses(prev => prev.map(course =>
         course.id === courseId ? { ...course, status: newStatus } : course
       ));
 
@@ -92,13 +99,19 @@ export default function CourseManagement() {
     }
   };
 
-  const filteredCourses = courses.filter(course => {
+  const allFilteredCourses = courses.filter(course => {
     const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         course.description?.toLowerCase().includes(searchTerm.toLowerCase());
+      course.description?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || course.status === statusFilter;
     const matchesCategory = categoryFilter === 'all' || course.category === categoryFilter;
     return matchesSearch && matchesStatus && matchesCategory;
   });
+
+  const totalPages = Math.ceil(allFilteredCourses.length / itemsPerPage);
+  const paginatedCourses = allFilteredCourses.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
@@ -234,7 +247,7 @@ export default function CourseManagement() {
           <CardHeader>
             <CardTitle>Courses</CardTitle>
             <CardDescription>
-              {filteredCourses.length} of {courses.length} courses
+              Displaying {paginatedCourses.length} of {allFilteredCourses.length} courses
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -252,7 +265,7 @@ export default function CourseManagement() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredCourses.map((course) => (
+                {paginatedCourses.map((course) => (
                   <TableRow key={course.id}>
                     <TableCell>
                       <div>
@@ -299,15 +312,15 @@ export default function CourseManagement() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">
-                        <Button 
-                          variant="ghost" 
+                        <Button
+                          variant="ghost"
                           size="sm"
                           onClick={() => window.open(`/course/${course.id}`, '_blank')}
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button 
-                          variant="ghost" 
+                        <Button
+                          variant="ghost"
                           size="sm"
                           onClick={() => window.open(`/course/${course.id}/edit`, '_blank')}
                         >
@@ -322,6 +335,48 @@ export default function CourseManagement() {
                 ))}
               </TableBody>
             </Table>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between mt-6">
+                <div className="text-sm text-muted-foreground">
+                  Page {currentPage} of {totalPages}
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4 mr-2" />
+                    Previous
+                  </Button>
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                      <Button
+                        key={page}
+                        variant={currentPage === page ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setCurrentPage(page)}
+                        className="w-8 h-8 p-0"
+                      >
+                        {page}
+                      </Button>
+                    ))}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage === totalPages}
+                  >
+                    Next
+                    <ChevronRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

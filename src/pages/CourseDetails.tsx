@@ -165,7 +165,8 @@ export default function CourseDetails() {
   };
 
   const startCourse = () => {
-    navigate(`/course/${courseId}`);
+    // Navigate to course player/learning page instead of back to course details
+    navigate(`/course/${courseId}/learn`);
   };
 
   if (loading) {

@@ -17,7 +17,7 @@ interface Course {
   id?: string;
   title: string;
   description: string;
-  category: 'soft_skills' | 'safety_courses' | 'sustainability_courses' | 'general_technical_courses' | 'flow_drives_courses' | 'flow_control_courses' | 'flow_measurement_courses' | 'instrumentation_automation';
+  category: 'soft_skills' | 'safety' | 'sustainability' | 'general_technical' | 'flow_drives' | 'flow_control' | 'flow_measurement' | 'instrumentation_automation';
   price: number;
   duration_hours: number;
   level: string;
@@ -27,9 +27,20 @@ interface Course {
   course_type: 'online' | 'onsite' | 'hybrid';
   zoom_meeting_id?: string;
   scheduled_date?: string;
-  start_date?: string; // For both course types, but required for live courses
-  end_date?: string;   // End date - required for live courses
   is_free: boolean;
+  venue_name?: string;
+  venue_address?: string;
+  venue_city?: string;
+  venue_country?: string;
+  venue_capacity?: number;
+  venue_map_url?: string;
+  onsite_schedule?: any;
+  requires_materials?: boolean;
+  materials_list?: string[];
+  parking_info?: string;
+  accommodation_info?: string;
+  start_date?: string;
+  end_date?: string;
 }
 
 export default function CourseCreator() {
@@ -53,9 +64,20 @@ export default function CourseCreator() {
     course_type: 'online',
     zoom_meeting_id: '',
     scheduled_date: '',
-    start_date: new Date().toISOString().split('T')[0], // Default to today's date
+    start_date: '',
     end_date: '',
-    is_free: false
+    is_free: false,
+    venue_name: '',
+    venue_address: '',
+    venue_city: '',
+    venue_country: '',
+    venue_capacity: 0,
+    venue_map_url: '',
+    onsite_schedule: [],
+    requires_materials: false,
+    materials_list: [],
+    parking_info: '',
+    accommodation_info: ''
   });
 
   const saveCourse = async () => {
@@ -171,7 +193,18 @@ export default function CourseCreator() {
             scheduled_date: updatedCourse.scheduled_date || null,
             start_date: courseData.start_date,
             end_date: courseData.end_date,
-            is_free: courseData.is_free
+            is_free: courseData.is_free,
+            venue_name: updatedCourse.venue_name,
+            venue_address: updatedCourse.venue_address,
+            venue_city: updatedCourse.venue_city,
+            venue_country: updatedCourse.venue_country,
+            venue_capacity: updatedCourse.venue_capacity,
+            venue_map_url: updatedCourse.venue_map_url,
+            onsite_schedule: updatedCourse.onsite_schedule,
+            requires_materials: updatedCourse.requires_materials,
+            materials_list: updatedCourse.materials_list,
+            parking_info: updatedCourse.parking_info,
+            accommodation_info: updatedCourse.accommodation_info
           })
           .eq('id', courseId);
 
@@ -201,7 +234,18 @@ export default function CourseCreator() {
           scheduled_date: updatedCourse.scheduled_date || null,
           start_date: courseData.start_date,
           end_date: courseData.end_date,
-          is_free: courseData.is_free
+          is_free: courseData.is_free,
+          venue_name: updatedCourse.venue_name,
+          venue_address: updatedCourse.venue_address,
+          venue_city: updatedCourse.venue_city,
+          venue_country: updatedCourse.venue_country,
+          venue_capacity: updatedCourse.venue_capacity,
+          venue_map_url: updatedCourse.venue_map_url,
+          onsite_schedule: updatedCourse.onsite_schedule,
+          requires_materials: updatedCourse.requires_materials,
+          materials_list: updatedCourse.materials_list,
+          parking_info: updatedCourse.parking_info,
+          accommodation_info: updatedCourse.accommodation_info
         };
 
         console.log('Creating course with data:', newCourse);
@@ -236,8 +280,8 @@ export default function CourseCreator() {
   return (
     <DashboardLayout>
       <div className="bg-background">{/* Removed min-h-screen as it's handled by CourseLayout */}
-        {/* Header */}
-        <div className="border-b">
+        {/* Header - Sticky so actions are always available */}
+        <div className="sticky top-0 z-40 border-b bg-card/95 backdrop-blur-sm">
           <div className="container mx-auto px-4 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -276,7 +320,7 @@ export default function CourseCreator() {
           </div>
         </div>
 
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-4">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="details">Course Details</TabsTrigger>
@@ -315,13 +359,13 @@ export default function CourseCreator() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="soft_skills">Soft Skills</SelectItem>
-                          <SelectItem value="safety_courses">Safety Courses</SelectItem>
-                          <SelectItem value="sustainability_courses">Sustainability Courses</SelectItem>
-                          <SelectItem value="general_technical_courses">General Technical Courses</SelectItem>
-                          <SelectItem value="flow_drives_courses">Flow Drives Courses</SelectItem>
-                          <SelectItem value="flow_control_courses">Flow Control Courses</SelectItem>
-                          <SelectItem value="flow_measurement_courses">Flow Measurement Courses</SelectItem>
-                          <SelectItem value="instrumentation_automation">Instrumentation/Automation and Process Control</SelectItem>
+                          <SelectItem value="safety">Safety</SelectItem>
+                          <SelectItem value="sustainability">Sustainability</SelectItem>
+                          <SelectItem value="general_technical">General Technical</SelectItem>
+                          <SelectItem value="flow_drives">Flow Drives</SelectItem>
+                          <SelectItem value="flow_control">Flow Control</SelectItem>
+                          <SelectItem value="flow_measurement">Flow Measurement</SelectItem>
+                          <SelectItem value="instrumentation_automation">Instrumentation & Automation</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -362,26 +406,24 @@ export default function CourseCreator() {
 
                       <div>
                         <label className="block text-sm font-medium text-foreground mb-1">
-                          Start Date & Time *
+                          Start Date
                         </label>
                         <Input
                           type="datetime-local"
                           value={course.start_date || ''}
-                          onChange={(e) => setCourse({ ...course, start_date: e.target.value })}
-                          required
+                          onChange={(e) => setCourse(prev => ({ ...prev, start_date: e.target.value }))}
                         />
                         <p className="text-xs text-gray-500 mt-1">When does the course start?</p>
                       </div>
 
                       <div>
                         <label className="block text-sm font-medium text-foreground mb-1">
-                          End Date & Time *
+                          End Date
                         </label>
                         <Input
                           type="datetime-local"
                           value={course.end_date || ''}
-                          onChange={(e) => setCourse({ ...course, end_date: e.target.value })}
-                          required
+                          onChange={(e) => setCourse(prev => ({ ...prev, end_date: e.target.value }))}
                           min={course.start_date || undefined}
                         />
                         <p className="text-xs text-gray-500 mt-1">When does the course finish?</p>

@@ -16,6 +16,7 @@ import { ArrowRight, Loader2 } from 'lucide-react';
 import { CourseType } from '@/types/course.types';
 import { supabase } from '@/integrations/supabase/client';
 import { ImagePicker } from './ImagePicker';
+import { useAuth } from '@/hooks/useAuth';
 
 interface CourseBasicsFormProps {
     initialData: any;
@@ -29,6 +30,8 @@ interface Instructor {
 }
 
 export function CourseBasicsForm({ initialData, onSubmit, onCancel }: CourseBasicsFormProps) {
+    const { profile } = useAuth();
+    const isAdmin = profile?.role === 'admin';
     const [instructors, setInstructors] = useState<Instructor[]>([]);
     const [loadingInstructors, setLoadingInstructors] = useState(true);
 
@@ -52,7 +55,20 @@ export function CourseBasicsForm({ initialData, onSubmit, onCancel }: CourseBasi
         register('thumbnailUrl');
     }, [register]);
 
+    // Auto-set instructorId for non-admin users (instructors)
     useEffect(() => {
+        if (!isAdmin && profile?.id) {
+            setValue('instructorId', profile.id);
+        }
+    }, [isAdmin, profile?.id, setValue]);
+
+    useEffect(() => {
+        // Only fetch the instructor list if the user is an admin
+        if (!isAdmin) {
+            setLoadingInstructors(false);
+            return;
+        }
+
         const fetchInstructors = async () => {
             try {
                 const { data, error } = await supabase
@@ -71,7 +87,7 @@ export function CourseBasicsForm({ initialData, onSubmit, onCancel }: CourseBasi
         };
 
         fetchInstructors();
-    }, []);
+    }, [isAdmin]);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -161,13 +177,13 @@ export function CourseBasicsForm({ initialData, onSubmit, onCancel }: CourseBasi
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="soft_skills">🤝 Soft Skills</SelectItem>
-                        <SelectItem value="safety_courses">🦺 Safety Courses</SelectItem>
-                        <SelectItem value="sustainability_courses">🌍 Sustainability Courses</SelectItem>
-                        <SelectItem value="general_technical_courses">🔧 General Technical Courses</SelectItem>
-                        <SelectItem value="flow_drives_courses">⚙️ Flow Drives Courses</SelectItem>
-                        <SelectItem value="flow_control_courses">🎛️ Flow Control Courses</SelectItem>
-                        <SelectItem value="flow_measurement_courses">📏 Flow Measurement Courses</SelectItem>
-                        <SelectItem value="instrumentation_automation">🤖 Instrumentation/Automation and Process Control</SelectItem>
+                        <SelectItem value="safety">🦺 Safety</SelectItem>
+                        <SelectItem value="sustainability">🌍 Sustainability</SelectItem>
+                        <SelectItem value="general_technical">🔧 General Technical</SelectItem>
+                        <SelectItem value="flow_drives">⚙️ Flow Drives</SelectItem>
+                        <SelectItem value="flow_control">🎛️ Flow Control</SelectItem>
+                        <SelectItem value="flow_measurement">📏 Flow Measurement</SelectItem>
+                        <SelectItem value="instrumentation_automation">🤖 Instrumentation & Automation</SelectItem>
                     </SelectContent>
                 </Select>
                 {errors.categoryId && (
@@ -196,27 +212,37 @@ export function CourseBasicsForm({ initialData, onSubmit, onCancel }: CourseBasi
             {/* Instructor Selection */}
             <div className="space-y-2">
                 <Label htmlFor="instructorId">Instructor *</Label>
-                {loadingInstructors ? (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground italic h-10 border rounded-md px-3 bg-muted/50">
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Loading instructors...
-                    </div>
+                {isAdmin ? (
+                    // Admin sees a dropdown to pick any instructor
+                    loadingInstructors ? (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground italic h-10 border rounded-md px-3 bg-muted/50">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Loading instructors...
+                        </div>
+                    ) : (
+                        <Select
+                            value={instructorId}
+                            onValueChange={(value) => setValue('instructorId', value)}
+                        >
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select an instructor" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {instructors.map((instructor) => (
+                                    <SelectItem key={instructor.id} value={instructor.id}>
+                                        {instructor.full_name || 'Unnamed Instructor'}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    )
                 ) : (
-                    <Select
-                        value={instructorId}
-                        onValueChange={(value) => setValue('instructorId', value)}
-                    >
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select an instructor" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {instructors.map((instructor) => (
-                                <SelectItem key={instructor.id} value={instructor.id}>
-                                    {instructor.full_name || 'Unnamed Instructor'}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    // Instructors see their own name (auto-assigned)
+                    <Input
+                        value={profile?.full_name || 'You (Instructor)'}
+                        disabled
+                        className="bg-muted/50"
+                    />
                 )}
                 {errors.instructorId && (
                     <p className="text-sm text-red-500">{String(errors.instructorId.message)}</p>
@@ -306,10 +332,7 @@ export function CourseBasicsForm({ initialData, onSubmit, onCancel }: CourseBasi
             </div>
 
             {/* Actions */}
-            <div className="flex justify-between pt-6">
-                <Button type="button" variant="outline" onClick={onCancel}>
-                    Cancel
-                </Button>
+            <div className="flex justify-end pt-6">
                 <Button type="submit">
                     Next: {courseType === 'online' ? 'Online' : courseType === 'onsite' ? 'On-Site' : 'Hybrid'} Details
                     <ArrowRight className="ml-2 h-4 w-4" />

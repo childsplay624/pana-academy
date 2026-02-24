@@ -54,6 +54,7 @@ interface Course {
   category: string;
   totalHours: number;
   image?: string | null;
+  course_type?: 'online' | 'onsite' | 'hybrid';
   [key: string]: any;
 }
 
@@ -161,6 +162,7 @@ export default function StudentDashboard() {
     error,
     enrolledCourses = [],
     recommendedCourses = [],
+    recentActivities = [],
     stats: rawStats = {
       enrolledCourses: 0,
       certificates: 0,
@@ -235,30 +237,30 @@ export default function StudentDashboard() {
       }
     >
       <DashboardLayout>
-        <div className="space-y-8">
-          {/* Header */}
-          <header className="border-b pb-6 mb-8">
+        <div className="space-y-6">
+          <TooltipProvider>
+            {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <h1 className="text-3xl font-bold tracking-tight">
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
                   Welcome back, {userProfile?.first_name || userProfile?.full_name || 'Student'}!
                 </h1>
-                <p className="text-muted-foreground mt-1">
+                <p className="text-sm text-muted-foreground">
                   {isLoading ? (
-                    <Skeleton className="h-5 w-64 inline-block" />
+                    <Skeleton className="h-4 w-64 inline-block" />
                   ) : (
                     'Here\'s what\'s happening with your learning today.'
                   )}
                 </p>
               </div>
-              <div className="flex items-center gap-4">
-                <Button variant="outline" className="gap-1.5">
-                  <Calendar className="h-4 w-4" />
-                  <span>Today: {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</span>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" className="hidden sm:flex gap-1.5 h-9">
+                  <Calendar className="h-3.5 w-3.5" />
+                  <span>{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                 </Button>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="outline" size="sm" onClick={signOut}>
+                    <Button variant="outline" size="sm" onClick={signOut} className="h-9">
                       Sign Out
                     </Button>
                   </TooltipTrigger>
@@ -268,23 +270,21 @@ export default function StudentDashboard() {
                 </Tooltip>
               </div>
             </div>
-          </header>
 
-          {/* Main Content */}
-          <TooltipProvider>
             {/* Stats Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               <StatCard
-                title="Enrolled Courses"
+                title="Enrolled"
                 value={stats.enrolledCourses}
                 description={
                   stats.enrolledCourses === 0
-                    ? 'Start your learning journey'
-                    : `${stats.enrolledCourses} active ${stats.enrolledCourses === 1 ? 'course' : 'courses'}`
+                    ? 'Start learning'
+                    : 'Active courses'
                 }
                 icon={BookOpen}
                 tooltip="Number of courses you're currently enrolled in"
                 isLoading={isLoading}
+                className="h-full"
               />
 
               <StatCard
@@ -292,41 +292,41 @@ export default function StudentDashboard() {
                 value={stats.certificates}
                 description={
                   stats.certificates === 0
-                    ? 'Complete courses to earn certificates'
+                    ? 'Earn your first'
                     : `${stats.certificates} earned`
                 }
                 icon={Award}
                 tooltip="Certificates earned from completed courses"
                 isLoading={isLoading}
+                className="h-full"
               />
 
               <StatCard
-                title="Learning Progress"
+                title="Progress"
                 value={`${stats.totalProgress}%`}
                 description={
                   <div className="mt-1">
-                    <Progress value={stats.totalProgress} className="h-2" />
-                    <span className="text-xs text-muted-foreground mt-1 block">
-                      Overall completion rate
-                    </span>
+                    <Progress value={stats.totalProgress} className="h-1" />
                   </div>
                 }
                 icon={TrendingUp}
                 tooltip="Your overall learning progress across all courses"
                 isLoading={isLoading}
+                className="h-full"
               />
 
               <StatCard
                 title="Time Spent"
-                value={`${Math.floor((stats.totalTimeSpent || 0) / 60)}h ${(stats.totalTimeSpent || 0) % 60}m`}
+                value={`${Math.floor((stats.totalTimeSpent || 0) / 60)}h`}
                 description={
                   (stats.totalTimeSpent || 0) === 0
-                    ? 'Start learning to track time'
-                    : 'Total learning time this month'
+                    ? 'Start learning'
+                    : `${(stats.totalTimeSpent || 0) % 60}m this month`
                 }
                 icon={Clock}
                 tooltip="Total time spent learning this month"
                 isLoading={isLoading}
+                className="h-full"
               />
             </div>
 
@@ -595,6 +595,7 @@ export default function StudentDashboard() {
                         progress={course.progress}
                         thumbnail={course.thumbnail || course.image}
                         lastAccessed={course.lastAccessed}
+                        course_type={course.course_type}
                         className="h-full"
                       />
                     ))}
@@ -684,11 +685,13 @@ export default function StudentDashboard() {
                     <CardDescription>Your latest learning activities and achievements</CardDescription>
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="ghost" size="sm" className="text-primary">
-                      <Calendar className="h-4 w-4 mr-1" />
-                      View Calendar
+                    <Button variant="ghost" size="sm" className="text-primary" asChild>
+                      <Link to="/dashboard/calendar">
+                        <Calendar className="h-4 w-4 mr-1" />
+                        View Calendar
+                      </Link>
                     </Button>
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" onClick={handleRetry}>
                       <RefreshCw className="h-4 w-4 mr-1" />
                       Refresh
                     </Button>
@@ -696,23 +699,52 @@ export default function StudentDashboard() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-start gap-3 p-3 border rounded-lg">
-                  <Activity className="h-5 w-5 text-blue-500 mt-0.5" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">Activity information</p>
-                    <p className="text-sm text-muted-foreground">You're making progress in Introduction to Programming</p>
-                    <p className="text-xs text-muted-foreground mt-1">45% complete • Last accessed 2 days ago</p>
+                {isLoading ? (
+                  Array(3).fill(0).map((_, i) => (
+                    <div key={i} className="flex items-start gap-3 p-3 border rounded-lg animate-pulse">
+                      <div className="h-5 w-5 bg-gray-200 rounded-full mt-0.5" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 w-1/4 bg-gray-200 rounded" />
+                        <div className="h-3 w-3/4 bg-gray-200 rounded" />
+                      </div>
+                    </div>
+                  ))
+                ) : recentActivities.length > 0 ? (
+                  recentActivities.map((activity) => (
+                    <div key={activity.id} className="flex items-start gap-3 p-3 border rounded-lg hover:bg-gray-50/50 transition-colors">
+                      <div className={`p-1.5 rounded-full ${activity.type === 'enrollment' ? 'bg-blue-50 text-blue-500' :
+                        activity.type === 'progress' ? 'bg-green-50 text-green-500' :
+                          activity.type === 'certificate' ? 'bg-yellow-50 text-yellow-500' :
+                            'bg-gray-50 text-gray-500'
+                        }`}>
+                        {activity.type === 'enrollment' && <Plus className="h-4 w-4" />}
+                        {activity.type === 'progress' && <CheckCircle className="h-4 w-4" />}
+                        {activity.type === 'certificate' && <Award className="h-4 w-4" />}
+                        {activity.type === 'completion' && <Trophy className="h-4 w-4" />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-sm font-semibold truncate">{activity.title}</p>
+                          <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                            {new Date(activity.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground truncate">{activity.description}</p>
+                        {activity.metadata && (
+                          <p className="text-[11px] text-muted-foreground mt-1 font-medium bg-gray-100 dark:bg-gray-800/50 inline-block px-1.5 py-0.5 rounded">
+                            {activity.metadata}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-6 text-muted-foreground border border-dashed rounded-lg">
+                    <Activity className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">No recent activities found</p>
+                    <p className="text-xs">Your learning progress will appear here</p>
                   </div>
-                </div>
-
-                <div className="flex items-start gap-3 p-3 border rounded-lg">
-                  <Activity className="h-5 w-5 text-green-500 mt-0.5" />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">Activity information</p>
-                    <p className="text-sm text-muted-foreground">You're making progress in Web Development Fundamentals</p>
-                    <p className="text-xs text-muted-foreground mt-1">15% complete • Last accessed 1 week ago</p>
-                  </div>
-                </div>
+                )}
               </CardContent>
             </Card>
 
@@ -757,6 +789,7 @@ export default function StudentDashboard() {
                         progress={course.progress}
                         thumbnail={course.thumbnail || course.image}
                         lastAccessed={course.lastAccessed}
+                        course_type={course.course_type}
                         className="h-full"
                       />
                     ))}
@@ -777,6 +810,6 @@ export default function StudentDashboard() {
           </TooltipProvider>
         </div>
       </DashboardLayout>
-    </ErrorBoundary>
+    </ErrorBoundary >
   );
 }

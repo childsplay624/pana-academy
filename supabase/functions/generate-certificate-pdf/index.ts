@@ -1,4 +1,4 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { serve } from "https://deno.land/std@0.192.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
@@ -6,15 +6,18 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-serve(async (req) => {
+serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
 
   try {
+    const supabaseUrl = (globalThis as any).Deno?.env.get('SUPABASE_URL')!
+    const supabaseAnonKey = (globalThis as any).Deno?.env.get('SUPABASE_ANON_KEY')!
+
     const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      supabaseUrl,
+      supabaseAnonKey,
       {
         global: {
           headers: { Authorization: req.headers.get('Authorization')! },
@@ -34,16 +37,19 @@ serve(async (req) => {
       )
     }
 
+    console.log('Generating certificate for ID:', certificateId)
+
     // Get certificate data
-    const { data: certificate, error: certError } = await supabaseClient
+    const { data: certData, error: certError } = await supabaseClient
       .from('certificates')
       .select('*')
       .eq('id', certificateId)
       .single()
 
-    if (certError || !certificate) {
+    if (certError || !certData) {
+      console.error('Certificate not found:', certError)
       return new Response(
-        JSON.stringify({ error: 'Certificate not found' }),
+        JSON.stringify({ error: 'Certificate not found', details: certError?.message }),
         {
           status: 404,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -51,22 +57,27 @@ serve(async (req) => {
       )
     }
 
+    const certificate = certData;
+
     // Get user data
-    const { data: user, error: userError } = await supabaseClient
+    const { data: userData, error: userError } = await supabaseClient
       .from('profiles')
       .select('full_name')
       .eq('id', certificate.user_id)
       .single()
 
-    if (userError || !user) {
+    if (userError || !userData) {
+      console.error('User not found:', userError)
       return new Response(
-        JSON.stringify({ error: 'User not found' }),
+        JSON.stringify({ error: 'User not found', details: userError?.message }),
         {
           status: 404,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         }
       )
     }
+
+    const user = userData;
 
     // Generate HTML certificate
     const certificateHtml = `
@@ -273,13 +284,13 @@ serve(async (req) => {
             <div>Certificate Number: <span class="verification-code">${certificate.certificate_number}</span></div>
             <div>Verification Code: <span class="verification-code">${certificate.verification_code}</span></div>
             <div style="font-size: 12px; margin-top: 10px; opacity: 0.9;">
-                Verify this certificate at: ${Deno.env.get('SUPABASE_URL')?.replace('https://', '').replace('.supabase.co', '')}.vercel.app/verify-certificate?code=${certificate.verification_code}
+                Verify this Certificate at: ${(globalThis as any).Deno?.env.get('SUPABASE_URL')?.replace('https://', '').replace('.supabase.co', '')}.vercel.app/verify-certificate?code=${certificate.verification_code}
             </div>
         </div>
     </div>
 </body>
 </html>
-    `
+`
 
     // For now, return the HTML. In a production environment, you would:
     // 1. Use a PDF generation library like Puppeteer
@@ -288,8 +299,8 @@ serve(async (req) => {
     // 4. Return the PDF URL
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
+      JSON.stringify({
+        success: true,
         html: certificateHtml,
         message: 'Certificate HTML generated successfully'
       }),

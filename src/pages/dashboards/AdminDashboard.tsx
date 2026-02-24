@@ -18,7 +18,8 @@ import {
   UserPlus,
   FileText,
   ImageIcon,
-  CreditCard
+  CreditCard,
+  TrendingUp
 } from 'lucide-react';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { supabase } from '@/integrations/supabase/client';
@@ -38,9 +39,14 @@ interface DashboardStats {
     pendingReview: number;
     draft: number;
   };
+  invoices: {
+    total: number;
+    revenue: number;
+    uniqueStudents: number;
+  };
   recentActivity: Array<{
     id: string;
-    type: 'user_registered' | 'course_created' | 'course_published';
+    type: 'user_registered' | 'course_created' | 'course_published' | 'invoice_generated';
     description: string;
     timestamp: string;
   }>;
@@ -74,6 +80,21 @@ export default function AdminDashboard() {
 
       if (coursesError) throw coursesError;
 
+      // Fetch invoices data
+      const { data: invoices, error: invoicesError } = await supabase
+        .from('invoices')
+        .select('id, created_at, total_amount, student_name, course_title, student_email');
+
+      if (invoicesError) throw invoicesError;
+
+      // Fetch payments data (as a fallback/supplement for revenue)
+      const { data: payments, error: paymentsError } = await supabase
+        .from('payments')
+        .select('amount, status')
+        .eq('status', 'completed');
+
+      if (paymentsError) throw paymentsError;
+
       // Process user statistics
       const userStats = {
         total: users?.length || 0,
@@ -90,7 +111,20 @@ export default function AdminDashboard() {
         draft: courses?.filter(c => c.status === 'draft').length || 0,
       };
 
-      // Generate recent activity (mock data for now)
+      // Process invoice statistics (Revenue from invoices + any payments not yet invoiced)
+      const invoiceIds = new Set(invoices?.map(inv => inv.id)); // This might not work if they don't share IDs
+      // Better strategy: Use payments for revenue total as it's the source of truth for money
+      const totalRevenue = payments?.reduce((sum, p) => sum + Number(p.amount), 0) || 0;
+
+      const invoiceStats = {
+        total: invoices?.length || 0,
+        revenue: totalRevenue,
+        uniqueStudents: new Set([
+          ...(invoices?.map(inv => inv.student_email) || []),
+        ]).size || 0,
+      };
+
+      // Generate recent activity
       const recentActivity = [
         ...(users?.slice(-3).map(user => ({
           id: user.id,
@@ -103,12 +137,19 @@ export default function AdminDashboard() {
           type: 'course_created' as const,
           description: `Course "${course.title}" was created`,
           timestamp: course.created_at
+        })) || []),
+        ...(invoices?.slice(-3).map(invoice => ({
+          id: invoice.id,
+          type: 'invoice_generated' as const,
+          description: `Invoice generated for ${invoice.student_name} (${invoice.course_title})`,
+          timestamp: invoice.created_at
         })) || [])
       ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 5);
 
       setStats({
         users: userStats,
         courses: courseStats,
+        invoices: invoiceStats,
         recentActivity
       });
 
@@ -129,6 +170,7 @@ export default function AdminDashboard() {
       case 'user_registered': return <UserPlus className="h-4 w-4" />;
       case 'course_created': return <BookOpen className="h-4 w-4" />;
       case 'course_published': return <CheckCircle className="h-4 w-4" />;
+      case 'invoice_generated': return <FileText className="h-4 w-4" />;
       default: return <AlertCircle className="h-4 w-4" />;
     }
   };
@@ -138,6 +180,7 @@ export default function AdminDashboard() {
       case 'user_registered': return 'text-blue-500';
       case 'course_created': return 'text-green-500';
       case 'course_published': return 'text-purple-500';
+      case 'invoice_generated': return 'text-orange-500';
       default: return 'text-gray-500';
     }
   };
@@ -301,6 +344,63 @@ export default function AdminDashboard() {
                 className="w-full flex items-center justify-center gap-2"
               >
                 Review Courses
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Invoice & Revenue Management */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CreditCard className="h-5 w-5" />
+                Invoices & Revenue
+              </CardTitle>
+              <CardDescription>Monitor payments and revenue generated</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Invoice Stats */}
+              <div className="grid grid-cols-3 gap-4">
+                <div className="text-center p-3 rounded-lg border">
+                  <div className="flex items-center justify-center mb-2">
+                    <FileText className="h-5 w-5 text-blue-500" />
+                  </div>
+                  <div className="text-2xl font-bold">{stats.invoices.total}</div>
+                  <div className="text-sm text-muted-foreground">Paid Orders</div>
+                </div>
+                <div className="text-center p-3 rounded-lg border">
+                  <div className="flex items-center justify-center mb-2">
+                    <Users className="h-5 w-5 text-green-500" />
+                  </div>
+                  <div className="text-2xl font-bold">{stats.invoices.uniqueStudents}</div>
+                  <div className="text-sm text-muted-foreground">Customers</div>
+                </div>
+                <div className="text-center p-3 rounded-lg border">
+                  <div className="flex items-center justify-center mb-2">
+                    <TrendingUp className="h-5 w-5 text-purple-500" />
+                  </div>
+                  <div className="text-2xl font-bold">100%</div>
+                  <div className="text-sm text-muted-foreground">Growth</div>
+                </div>
+              </div>
+
+              {/* Total Revenue */}
+              <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/10 border border-green-100 dark:border-green-900/20 rounded-lg">
+                <div>
+                  <div className="font-medium text-green-700 dark:text-green-400">Total Revenue</div>
+                  <div className="text-sm text-green-600/80 dark:text-green-400/60">Across all paid courses</div>
+                </div>
+                <div className="text-2xl font-bold text-green-700 dark:text-green-400">
+                  ₦{stats.invoices.revenue.toLocaleString()}
+                </div>
+              </div>
+
+              {/* Action Button */}
+              <Button
+                onClick={() => navigate('/dashboard/invoices')}
+                className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700"
+              >
+                View All Invoices
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </CardContent>

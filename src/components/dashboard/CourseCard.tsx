@@ -24,6 +24,7 @@ interface CourseCardProps {
     moduleName: string;
   } | null;
   enrollmentId?: string;
+  course_type?: 'online' | 'onsite' | 'hybrid';
 }
 
 export function CourseCard({
@@ -39,7 +40,8 @@ export function CourseCard({
   totalHours = 0,
   className,
   nextLesson,
-  enrollmentId
+  enrollmentId,
+  course_type = 'online'
 }: CourseCardProps) {
   const formatLastAccessed = (date?: string) => {
     if (!date) return 'Never accessed';
@@ -78,6 +80,9 @@ export function CourseCard({
           <div className="absolute top-3 left-3 flex gap-2">
             {isNew && <Badge variant="secondary" className="text-xs">New</Badge>}
             {isTrending && <Badge variant="outline" className="text-xs">Trending</Badge>}
+            <Badge variant="secondary" className="text-xs capitalize">
+              {course_type}
+            </Badge>
           </div>
 
           {/* Progress overlay */}
@@ -141,16 +146,19 @@ export function CourseCard({
           variant={progress === 100 ? "outline" : "default"}
           asChild
         >
-          <Link to={nextLesson && progress > 0 && progress < 100
-            ? `/course/${id}/learn?lesson=${nextLesson.id}`
-            : `/course/${id}`
+          <Link to={
+            course_type === 'online'
+              ? (nextLesson && progress > 0 && progress < 100
+                ? `/course/${id}/learn?lesson=${nextLesson.id}`
+                : `/course/${id}/learn`)
+              : `/course/${id}`
           }>
             <Play className="h-3 w-3 mr-1" />
             {progress === 100
               ? 'Review Course'
               : progress > 0
-                ? `Resume${nextLesson ? `: ${nextLesson.title.slice(0, 20)}${nextLesson.title.length > 20 ? '...' : ''}` : ''}`
-                : 'Start Course'
+                ? (course_type === 'online' ? `Resume${nextLesson ? `: ${nextLesson.title.slice(0, 20)}${nextLesson.title.length > 20 ? '...' : ''}` : ''}` : 'View Details')
+                : (course_type === 'online' ? 'Start Course' : 'View Schedule')
             }
           </Link>
         </Button>

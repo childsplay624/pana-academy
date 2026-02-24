@@ -4,63 +4,37 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, CheckCircle, Star, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useSiteImages } from '@/hooks/useSiteImage';
-import heroSlide1 from "@/assets/hero-slide-1.jpg";
-import heroSlide2 from "@/assets/hero-slide-2.jpg";
-import heroSlide3 from "@/assets/hero-slide-3.jpg";
-
-// Fallback slides for when database images aren't loaded yet
-const fallbackSlides = [
-  {
-    id: 1,
-    backgroundImage: heroSlide1,
-    title: "Transform Your Oil & Gas Career",
-    highlight: "in 6-12 Months",
-    subtitle: "Join 5,000+ professionals mastering industry skills with hands-on training and recognized certifications.",
-  },
-  {
-    id: 2,
-    backgroundImage: heroSlide2,
-    title: "Next-Generation",
-    highlight: "Professional Training",
-    subtitle: "Advance your expertise with programs bridging traditional skills and future demands.",
-  },
-  {
-    id: 3,
-    backgroundImage: heroSlide3,
-    title: "Excellence in",
-    highlight: "Corporate Learning",
-    subtitle: "Partner with us to transform your workforce through corporate training solutions.",
-  },
-];
-
 const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const { images: heroImages, isLoading, error } = useSiteImages('hero');
 
-  // Build slides from database or use fallbacks
-  const slides = heroImages.length > 0 && heroImages[0]?.url
-    ? heroImages.map((img, index) => ({
-      id: index + 1,
-      backgroundImage: img.url,
-      title: img.alt_text?.split(' - ')[0] || fallbackSlides[index]?.title || "PANA Academy",
-      highlight: img.alt_text?.split(' - ')[1] || fallbackSlides[index]?.highlight || "Professional Training",
-      subtitle: img.description || fallbackSlides[index]?.subtitle || "Advance your career with industry-leading training.",
-    }))
-    : fallbackSlides;
-
-  // Handle error
-  if (error) {
-    console.error('Error loading hero images:', error);
-    // You can also display an error message to the user here
-  }
+  // Build slides strictly from database
+  const slides = heroImages.map((img, index) => ({
+    id: index + 1,
+    backgroundImage: img.url,
+    title: img.alt_text?.split(' - ')[0] || "PANA Academy",
+    highlight: img.alt_text?.split(' - ')[1] || "Professional Training",
+    subtitle: img.description || "Advance your career with industry-leading training.",
+  }));
 
   // Auto-play
   useEffect(() => {
+    if (slides.length <= 1) return;
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, []);
+  }, [slides.length]);
+
+  if (isLoading) {
+    return (
+      <div className="h-[90vh] bg-black/10 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (slides.length === 0) return null;
 
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
