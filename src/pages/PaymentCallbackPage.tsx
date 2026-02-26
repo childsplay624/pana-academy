@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { useNotifications } from '@/contexts/NotificationContext';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ export function PaymentCallbackPage() {
     const navigate = useNavigate();
     const { user } = useAuth();
     const { toast } = useToast();
+    const { showNotification } = useNotifications();
 
     useEffect(() => {
         const processCallback = async () => {
@@ -35,6 +37,14 @@ export function PaymentCallbackPage() {
                             title: "Payment Successful!",
                             description: "You have been enrolled in the course",
                         });
+
+                        // Fire a persistent in-app notification
+                        showNotification(
+                            'enrollment',
+                            'Enrollment Confirmed!',
+                            'You have been successfully enrolled in your new course. Start learning now!',
+                            `/course/${courseId}/learn`
+                        );
 
                         // Redirect to course page
                         setTimeout(() => {

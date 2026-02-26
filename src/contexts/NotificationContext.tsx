@@ -1,60 +1,106 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 
-type NotificationType = 'success' | 'error' | 'info' | 'warning';
+export type NotificationType = 'success' | 'error' | 'info' | 'warning' | 'enrollment' | 'grade' | 'certificate' | 'system';
 
-interface Notification {
+export interface Notification {
   id: string;
   type: NotificationType;
   title: string;
   message: string;
   timestamp: Date;
+  read: boolean;
+  link?: string; // Optional navigation link
 }
 
 interface NotificationContextType {
   notifications: Notification[];
-  showNotification: (type: NotificationType, title: string, message: string) => void;
+  unreadCount: number;
+  showNotification: (type: NotificationType, title: string, message: string, link?: string) => void;
   removeNotification: (id: string) => void;
+  markAsRead: (id: string) => void;
+  markAllAsRead: () => void;
+  clearAll: () => void;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
+const STORAGE_KEY = 'pana_notifications';
+const MAX_NOTIFICATIONS = 50;
+
 export function NotificationProvider({ children }: { children: ReactNode }) {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored) as Notification[];
+        // Rehydrate Date objects from JSON strings
+        return parsed.map(n => ({ ...n, timestamp: new Date(n.timestamp) }));
+      }
+    } catch {
+      // ignore parse errors
+    }
+    return [];
+  });
+
   const { toast } = useToast();
 
-  const showNotification = (type: NotificationType, title: string, message: string) => {
-    const id = Math.random().toString(36).substring(2, 9);
+  // Persist notifications to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(notifications));
+    } catch {
+      // ignore storage errors (e.g. private browsing quota)
+    }
+  }, [notifications]);
+
+  const unreadCount = notifications.filter(n => !n.read).length;
+
+  const showNotification = (type: NotificationType, title: string, message: string, link?: string) => {
+    const id = `${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     const newNotification: Notification = {
       id,
       type,
       title,
       message,
       timestamp: new Date(),
+      read: false,
+      link,
     };
 
-    // Show toast notification
+    // Show toast (brief popup)
     toast({
       title,
       description: message,
       variant: type === 'error' ? 'destructive' : 'default',
     });
 
-    // Add to notifications list
-    setNotifications((prev) => [...prev, newNotification]);
-
-    // Auto-remove after 5 seconds
-    setTimeout(() => {
-      removeNotification(id);
-    }, 5000);
+    // Add to persistent notification list (cap at MAX_NOTIFICATIONS)
+    setNotifications(prev => [newNotification, ...prev].slice(0, MAX_NOTIFICATIONS));
   };
 
   const removeNotification = (id: string) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  };
+
+  const markAsRead = (id: string) => {
+    setNotifications(prev =>
+      prev.map(n => (n.id === id ? { ...n, read: true } : n))
+    );
+  };
+
+  const markAllAsRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+  };
+
+  const clearAll = () => {
+    setNotifications([]);
   };
 
   return (
-    <NotificationContext.Provider value={{ notifications, showNotification, removeNotification }}>
+    <NotificationContext.Provider
+      value={{ notifications, unreadCount, showNotification, removeNotification, markAsRead, markAllAsRead, clearAll }}
+    >
       {children}
     </NotificationContext.Provider>
   );

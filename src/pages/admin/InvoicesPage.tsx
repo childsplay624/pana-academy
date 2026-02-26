@@ -98,11 +98,43 @@ export default function InvoicesPage() {
 
   const resendInvoice = async (invoice: Invoice) => {
     try {
-      // TODO: Implement email resend functionality
-      toast.success(`Invoice ${invoice.invoice_number} would be resent to ${invoice.student_email}`);
+      toast.info(`Resending invoice ${invoice.invoice_number} to ${invoice.student_email}...`);
+
+      let html = invoice.invoice_html;
+
+      // If HTML is not stored, generate it on the fly
+      if (!html) {
+        const { generateInvoiceHTML } = await import('@/services/invoiceService');
+        html = generateInvoiceHTML({
+          invoiceNumber: invoice.invoice_number,
+          studentName: invoice.student_name,
+          studentEmail: invoice.student_email,
+          courseTitle: invoice.course_title,
+          coursePrice: invoice.course_price,
+          taxAmount: invoice.tax_amount,
+          platformFee: invoice.platform_fee,
+          totalAmount: invoice.total_amount,
+          paymentMethod: invoice.payment_method,
+          paymentReference: invoice.payment_reference,
+          paymentDate: new Date(invoice.payment_date).toLocaleDateString(),
+          currency: invoice.currency
+        });
+      }
+
+      const { error } = await supabase.functions.invoke('send-transactional-email', {
+        body: {
+          to: invoice.student_email,
+          subject: `Invoice ${invoice.invoice_number} - PANA Academy Course Purchase`,
+          html: html,
+        }
+      });
+
+      if (error) throw error;
+
+      toast.success(`Invoice ${invoice.invoice_number} successfully resent!`);
     } catch (error) {
       console.error('Error resending invoice:', error);
-      toast.error('Failed to resend invoice');
+      toast.error('Failed to resend invoice. Please check the console for details.');
     }
   };
 

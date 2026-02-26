@@ -117,22 +117,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const verificationLink = `${window.location.origin}/verify-email?token=${data.user.id}`;
 
           // Send verification email via secure Edge Function
+          const verificationEmail = emailTemplates.verification(displayName, verificationLink);
           await sendEmail({
             to: email,
-            subject: 'Verify your email address',
-            html: `
-              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2>Welcome to PANA Academy, ${displayName}!</h2>
-                <p>Thank you for signing up. Please verify your email address by clicking the button below:</p>
-                <a href="${verificationLink}" 
-                   style="display: inline-block; padding: 12px 24px; background-color: #ba000e; color: white; text-decoration: none; border-radius: 4px; margin: 20px 0;">
-                  Verify Email
-                </a>
-                <p>Or copy and paste this link into your browser:</p>
-                <p style="word-break: break-all; color: #666; font-size: 14px;">${verificationLink}</p>
-                <p>This link will expire in 24 hours.</p>
-              </div>
-            `
+            ...verificationEmail
           });
 
           // Send welcome email

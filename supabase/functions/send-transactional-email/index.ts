@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-
-const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
+const RESEND_API_KEY = Deno.env.get('VITE_RESEND_API_KEY') || Deno.env.get('RESEND_API_KEY')
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -9,72 +8,154 @@ const corsHeaders = {
 
 interface EmailRequest {
   to: string | string[];
-  type?: 'welcome' | 'enrollment' | 'certificate' | 'grading' | 'reminder' | 'custom';
+  type?: 'welcome' | 'enrollment' | 'certificate' | 'grading' | 'reminder' | 'verification' | 'reset_password' | 'custom';
   payload?: any;
   subject?: string;
   html?: string;
 }
 
+const BRAND_COLORS = {
+  navy: '#0f172a',
+  red: '#b91c1c',
+  gold: '#c5a059',
+  bg: '#f8fafc'
+};
+
+// Centralized Layout Wrapper
+const emailLayout = (content: string, previewText: string) => `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PANA Academy</title>
+  <style>
+    body { background-color: ${BRAND_COLORS.bg}; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+    .wrapper { width: 100%; table-layout: fixed; padding: 40px 0; }
+    .container { max-width: 600px; margin: 0 auto; background-color: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    .header { background-color: ${BRAND_COLORS.navy}; padding: 30px; text-align: center; }
+    .content { padding: 40px; color: #334155; line-height: 1.6; font-size: 16px; }
+    .footer { background-color: #f1f5f9; padding: 20px; text-align: center; color: #64748b; font-size: 12px; }
+    .btn { display: inline-block; padding: 14px 28px; background-color: ${BRAND_COLORS.red}; color: white !important; text-decoration: none; border-radius: 6px; font-weight: 600; margin-top: 20px; }
+    .gold-bar { height: 4px; background: ${BRAND_COLORS.gold}; }
+    h1 { color: ${BRAND_COLORS.navy}; margin-top: 0; }
+    .preview { display: none; max-height: 0px; overflow: hidden; }
+  </style>
+</head>
+<body>
+  <span class="preview">${previewText}</span>
+  <div class="wrapper">
+    <div class="container">
+      <div class="header">
+        <div style="font-size: 24px; font-weight: bold; color: white; letter-spacing: 2px;">
+          PANA <span style="color: ${BRAND_COLORS.red};">ACADEMY</span>
+        </div>
+      </div>
+      <div class="gold-bar"></div>
+      <div class="content">
+        ${content}
+      </div>
+      <div class="footer">
+        <p>&copy; ${new Date().getFullYear()} PANA Academy. All rights reserved.</p>
+        <p>Competency Cultivation Hub | Port Harcourt & Abuja, Nigeria</p>
+        <p><a href="mailto:support@pana-academy.com" style="color: #64748b;">support@pana-academy.com</a></p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+`;
+
 const templates: Record<string, (payload: any) => { subject: string; html: string }> = {
   welcome: (payload: any) => ({
     subject: `Welcome to PANA Academy, ${payload.name}!`,
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h1>Welcome to PANA Academy, ${payload.name}!</h1>
-        <p>Thank you for joining our learning community. We're excited to have you on board.</p>
-        <p>Start exploring our courses and enhance your skills today!</p>
-        <a href="${payload.appUrl}" style="display: inline-block; padding: 10px 20px; background-color: #ba000e; color: white; text-decoration: none; border-radius: 4px; margin-top: 20px;">
-          Get Started
-        </a>
-        <p style="margin-top: 30px; font-size: 12px; color: #666;">
-          If you didn't create an account, please ignore this email.
-        </p>
+    html: emailLayout(`
+      <h1>Welcome Aboard, ${payload.name}!</h1>
+      <p>We're thrilled to have you join our learning community. PANA Academy is dedicated to your professional growth and competency cultivation.</p>
+      <p>Your account is now active. You can start exploring our catalog of specialized courses and resources.</p>
+      <div style="text-align: center;">
+        <a href="${payload.appUrl}/dashboard" class="btn">Access Your Dashboard</a>
       </div>
-    `
+      <p style="margin-top: 30px;">If you have any questions, our support team is always here to help.</p>
+    `, "Welcome to PANA Academy - Your professional growth starts here.")
   }),
   enrollment: (payload: any) => ({
-    subject: `You're enrolled in ${payload.courseTitle}`,
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h1>Welcome to ${payload.courseTitle}, ${payload.userName}!</h1>
-        <p>You've successfully enrolled in the course. We're excited to have you in the class!</p>
-        <p>Course: <strong>${payload.courseTitle}</strong></p>
-        <p>Start your learning journey now by accessing the course materials.</p>
-        <a href="${payload.appUrl}/my-courses" style="display: inline-block; padding: 10px 20px; background-color: #ba000e; color: white; text-decoration: none; border-radius: 4px; margin-top: 20px;">
-          Go to My Courses
-        </a>
+    subject: `Enrollment Confirmed: ${payload.courseTitle}`,
+    html: emailLayout(`
+      <h1>Enrollment Successful!</h1>
+      <p>Hello ${payload.userName}, you are now officially enrolled in:</p>
+      <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid ${BRAND_COLORS.red};">
+        <strong style="font-size: 18px;">${payload.courseTitle}</strong>
       </div>
-    `
+      <p>Get ready to dive into the course materials and start your journey towards mastering new skills.</p>
+      <div style="text-align: center;">
+        <a href="${payload.appUrl}/my-courses" class="btn">Start Learning Now</a>
+      </div>
+    `, `You're officially enrolled in ${payload.courseTitle}`)
   }),
   certificate: (payload: any) => ({
-    subject: `Congratulations! Your certificate for ${payload.courseTitle} is ready`,
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h1>Congratulations, ${payload.userName}!</h1>
-        <p>You have successfully completed <strong>${payload.courseTitle}</strong>.</p>
-        <p>Your certificate of completion has been generated and is now available in your dashboard.</p>
-        <a href="${payload.appUrl}/dashboard" style="display: inline-block; padding: 10px 20px; background-color: #ba000e; color: white; text-decoration: none; border-radius: 4px; margin-top: 20px;">
-          View Certificate
-        </a>
+    subject: `Congratulations! Your Certificate for ${payload.courseTitle}`,
+    html: emailLayout(`
+      <h1 style="color: ${BRAND_COLORS.gold};">Achievement Unlocked!</h1>
+      <p>Incredible work, ${payload.userName}! You have successfully completed all the requirements for:</p>
+      <p style="font-weight: bold; font-size: 18px;">${payload.courseTitle}</p>
+      <p>Your official Certificate of Completion is now ready for download and sharing.</p>
+      <div style="text-align: center;">
+        <a href="${payload.appUrl}/dashboard" class="btn">View Certificate</a>
       </div>
-    `
+    `, `Great job! You earned your certificate for ${payload.courseTitle}`)
   }),
   grading: (payload: any) => ({
-    subject: `Your submission for ${payload.assignmentTitle} has been graded`,
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2>Assignment Graded: ${payload.assignmentTitle}</h2>
-        <p>Hello ${payload.userName},</p>
-        <p>Your submission has been reviewed and graded.</p>
-        <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <p><strong>Score:</strong> ${payload.score}%</p>
-          ${payload.feedback ? `<p><strong>Feedback:</strong> ${payload.feedback}</p>` : ''}
-        </div>
-        <a href="${payload.appUrl}/dashboard" style="display: inline-block; padding: 10px 20px; background-color: #ba000e; color: white; text-decoration: none; border-radius: 4px; margin-top: 20px;">
-          View Details
-        </a>
+    subject: `Grade Released: ${payload.assignmentTitle}`,
+    html: emailLayout(`
+      <h1>Assignment Results</h1>
+      <p>Hello ${payload.userName}, your instructor has reviewed and graded your submission for:</p>
+      <p><strong>${payload.assignmentTitle}</strong></p>
+      <div style="background-color: #f8fafc; padding: 25px; border-radius: 12px; margin: 20px 0; text-align: center; border: 1px solid #e2e8f0;">
+        <div style="font-size: 14px; text-transform: uppercase; color: #64748b;">Your Grade</div>
+        <div style="font-size: 42px; font-weight: bold; color: ${BRAND_COLORS.red}; margin: 10px 0;">${payload.score}%</div>
+        ${payload.feedback ? `<div style="text-align: left; margin-top: 15px; font-style: italic; color: #475569;">"${payload.feedback}"</div>` : ''}
       </div>
-    `
+      <div style="text-align: center;">
+        <a href="${payload.appUrl}/dashboard" class="btn">Review Submission</a>
+      </div>
+    `, `Your grade for ${payload.assignmentTitle} is now available.`)
+  }),
+  verification: (payload: any) => ({
+    subject: 'Verify your email address - PANA Academy',
+    html: emailLayout(`
+      <h1>Verify Your Email</h1>
+      <p>Hello ${payload.name},</p>
+      <p>Thank you for joining PANA Academy! To ensure the security of your account, please verify your email address by clicking the button below:</p>
+      <div style="text-align: center;">
+        <a href="${payload.verificationLink}" class="btn">Verify Email Address</a>
+      </div>
+      <p style="margin-top: 30px; font-size: 14px; color: #64748b;">
+        If the button doesn't work, copy and paste this link into your browser:<br>
+        <span style="word-break: break-all; color: ${BRAND_COLORS.red};">${payload.verificationLink}</span>
+      </p>
+      <p style="font-size: 12px; color: #94a3b8; margin-top: 20px;">
+        This link will expire in 24 hours.
+      </p>
+    `, "Verify your email to get started with PANA Academy.")
+  }),
+  reset_password: (payload: any) => ({
+    subject: 'Reset Your Password - PANA Academy',
+    html: emailLayout(`
+      <h1>Password Reset Request</h1>
+      <p>Hello ${payload.name},</p>
+      <p>We received a request to reset the password for your PANA Academy account. Click the button below to set a new password:</p>
+      <div style="text-align: center;">
+        <a href="${payload.resetLink}" class="btn">Reset Password</a>
+      </div>
+      <p style="margin-top: 30px; font-size: 14px; color: #64748b;">
+        If you didn't request this, you can safely ignore this email. This link will expire in 1 hour.
+      </p>
+      <p style="font-size: 14px; color: #64748b;">
+        Button not working? Use this link instead:<br>
+        <span style="word-break: break-all; color: ${BRAND_COLORS.red};">${payload.resetLink}</span>
+      </p>
+    `, "Reset your PANA Academy password.")
   })
 }
 
@@ -84,7 +165,7 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { to, type, payload, subject: rawSubject, html: rawHtml }: EmailRequest = await req.json()
+    const { to, type, payload, subject: rawSubject, html: rawHtml } = (await req.json()) as EmailRequest;
 
     let subject = rawSubject;
     let html = rawHtml;
@@ -99,6 +180,10 @@ serve(async (req: Request) => {
       throw new Error('Missing required fields: to, subject, and html (or a valid type)')
     }
 
+    if (!RESEND_API_KEY) {
+      throw new Error('VITE_RESEND_API_KEY is not set')
+    }
+
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -106,14 +191,14 @@ serve(async (req: Request) => {
         'Authorization': `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: 'PANA Academy <onboarding@resend.dev>', // Should be updated to verified domain in production
+        from: 'PANA Academy <noreply@pana-academy.com>',
         to: Array.isArray(to) ? to : [to],
         subject: subject,
         html: html,
       }),
     })
 
-    const data = await res.json()
+    const data = (await res.json()) as any
 
     if (!res.ok) {
       console.error('Resend API error:', data)
@@ -123,16 +208,17 @@ serve(async (req: Request) => {
       })
     }
 
-    return new Response(JSON.stringify({ success: true, id: data.id }), {
+    return new Response(JSON.stringify({ success: true, id: data?.id }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error:', error)
-    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : 'Internal server error' }), {
+    return new Response(JSON.stringify({ error: error?.message || 'Internal server error' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   }
 })
+

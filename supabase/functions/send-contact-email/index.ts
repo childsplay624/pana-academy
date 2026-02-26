@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
-const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
+const RESEND_API_KEY = Deno.env.get('VITE_RESEND_API_KEY') || Deno.env.get('RESEND_API_KEY')
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -22,7 +22,7 @@ serve(async (req: Request) => {
 
     try {
         // Parse request body
-        const { name, email, subject, message }: ContactFormData = await req.json()
+        const { name, email, subject, message } = (await req.json()) as ContactFormData
 
         // Validate input
         if (!name || !email || !subject || !message) {
@@ -81,7 +81,7 @@ serve(async (req: Request) => {
             }),
         })
 
-        const data = await res.json()
+        const data = (await res.json()) as any
 
         if (!res.ok) {
             console.error('Resend API error:', data)
@@ -98,7 +98,7 @@ serve(async (req: Request) => {
             JSON.stringify({
                 success: true,
                 message: 'Email sent successfully',
-                id: data.id
+                id: data?.id
             }),
             {
                 status: 200,
@@ -106,12 +106,12 @@ serve(async (req: Request) => {
             }
         )
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error:', error)
         return new Response(
             JSON.stringify({
                 error: 'Internal server error',
-                message: error instanceof Error ? error.message : 'Unknown error'
+                message: error?.message || 'Unknown error'
             }),
             {
                 status: 500,

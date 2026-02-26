@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Star, Quote } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Testimonial } from "@/types/testimonial.types";
+import heroTraining from "@/assets/hero-training.jpg";
 
 const TestimonialsSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -52,7 +53,7 @@ const TestimonialsSection = () => {
 
   if (loading) {
     return (
-      <section id="testimonials" className="py-20 relative bg-cover bg-center" style={{ backgroundImage: 'url(/src/assets/hero-training.jpg)' }}>
+      <section id="testimonials" className="py-20 relative bg-cover bg-center" style={{ backgroundImage: `url(${heroTraining})` }}>
         {/* Black overlay */}
         <div className="absolute inset-0 bg-black/70 z-0"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -67,7 +68,7 @@ const TestimonialsSection = () => {
 
   if (testimonials.length === 0) {
     return (
-      <section id="testimonials" className="py-20 relative bg-cover bg-center" style={{ backgroundImage: 'url(/src/assets/hero-training.jpg)' }}>
+      <section id="testimonials" className="py-20 relative bg-cover bg-center" style={{ backgroundImage: `url(${heroTraining})` }}>
         {/* Black overlay */}
         <div className="absolute inset-0 bg-black/70 z-0"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -83,7 +84,7 @@ const TestimonialsSection = () => {
   const currentTestimonial = testimonials[currentIndex];
 
   return (
-    <section id="testimonials" className="py-20 relative bg-cover bg-center" style={{ backgroundImage: 'url(/src/assets/hero-training.jpg)' }}>
+    <section id="testimonials" className="py-20 relative bg-cover bg-center" style={{ backgroundImage: `url(${heroTraining})` }}>
       {/* Black overlay */}
       <div className="absolute inset-0 bg-black/70 z-0"></div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">

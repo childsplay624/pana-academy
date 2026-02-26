@@ -1,51 +1,77 @@
 // Import required modules
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const RESEND_API_KEY = Deno.env.get('VITE_RESEND_API_KEY') || Deno.env.get('RESEND_API_KEY');
 
 // Define the request type
 interface EmailRequest {
   to: string;
   subject: string;
   html: string;
-  text?: string;
+  from?: string;
 }
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
 
 // Main function to handle the request
 serve(async (req: Request) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
+  }
+
   try {
     // Parse the request body
-    const { to, subject, html, text } = (await req.json()) as EmailRequest;
+    const { to, subject, html, from } = (await req.json()) as EmailRequest;
 
     // Validate required fields
     if (!to || !subject || !html) {
       return new Response(
         JSON.stringify({ error: 'Missing required fields' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Get Supabase client with service role key
-    const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    if (!RESEND_API_KEY) {
+      throw new Error('RESEND_API_KEY is not set');
+    }
 
-    // Send email using Supabase's built-in email function
-    const { data, error } = await supabase.functions.invoke('send-email', {
-      body: { to, subject, html, text },
+    // Send email using Resend
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: from || 'PANA Academy <noreply@pana-academy.com>',
+        to: [to],
+        subject: subject,
+        html: html,
+      }),
     });
 
-    if (error) throw error;
+    const data = (await res.json()) as any;
+
+    if (!res.ok) {
+      console.error('Resend API error:', data);
+      throw new Error(data?.message || 'Failed to send email via Resend');
+    }
 
     // Return success response
     return new Response(
-      JSON.stringify({ success: true, message: 'Email sent successfully' }),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
+      JSON.stringify({ success: true, message: 'Email sent successfully via Resend', id: data?.id }),
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error sending email:', error);
     return new Response(
-      JSON.stringify({ error: error.message || 'Failed to send email' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      JSON.stringify({ error: error?.message || 'Failed to send email' }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });
+

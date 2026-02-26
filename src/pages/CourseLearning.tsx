@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useGamification } from '@/hooks/useGamification';
 import { useEmailNotifications } from '@/hooks/useEmailNotifications';
+import { useNotifications } from '@/contexts/NotificationContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -68,7 +69,8 @@ export default function CourseLearning() {
   const { awardPoints, updateStreak } = useGamification();
   const { sendEnrollmentConfirmation, sendCertificateNotification } = useEmailNotifications();
   const { toast } = useToast();
-  
+  const { showNotification } = useNotifications();
+
   const [loading, setLoading] = useState(true);
   const [course, setCourse] = useState<Course | null>(null);
   const [modules, setModules] = useState<Module[]>([]);
@@ -166,14 +168,14 @@ export default function CourseLearning() {
           0
         );
         const currentProgress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
-        
+
         // Update enrollment progress if it's different
         if (currentProgress !== enrollmentData.progress_percentage) {
           await supabase
             .from('enrollments')
             .update({ progress_percentage: currentProgress })
             .eq('id', enrollmentData.id);
-          
+
           // Update local enrollment state
           setEnrollment({ ...enrollmentData, progress_percentage: currentProgress });
         }
@@ -227,7 +229,7 @@ export default function CourseLearning() {
       // Update enrollment progress
       const totalLessons = modules.reduce((acc, module) => acc + module.lessons.length, 0);
       const completedLessons = modules.reduce(
-        (acc, module) => acc + module.lessons.filter(l => 
+        (acc, module) => acc + module.lessons.filter(l =>
           l.progress?.completed || l.id === lesson.id
         ).length,
         0
@@ -275,7 +277,7 @@ export default function CourseLearning() {
               .select('*')
               .eq('id', enrollment.id)
               .maybeSingle();
-            
+
             if (refreshed && !refreshError) {
               setEnrollment(refreshed);
               toast({
@@ -283,6 +285,13 @@ export default function CourseLearning() {
                 description: 'Certificate generated successfully!',
                 variant: 'default' as const
               });
+              // Fire in-app notification for certificate
+              showNotification(
+                'certificate',
+                '🏆 Certificate Earned!',
+                `Congratulations! You've completed "${course.title}" and your certificate is ready.`,
+                '/dashboard'
+              );
             } else if (refreshError) {
               console.error('Error refreshing enrollment:', refreshError);
               toast({
@@ -339,6 +348,14 @@ export default function CourseLearning() {
         title: "Enrolled Successfully! 🎉",
         description: "You can now access all course content. A confirmation email has been sent.",
       });
+
+      // Fire in-app notification for enrolment
+      showNotification(
+        'enrollment',
+        'Enrolled in Course!',
+        `You are now enrolled in "${course?.title || 'the course'}". Start learning today!`,
+        `/course/${courseId}/learn`
+      );
 
       // Refresh data
       await fetchCourseData();
@@ -446,7 +463,7 @@ export default function CourseLearning() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-muted-foreground mb-4">{course.description}</p>
-                    
+
                     {!enrollment && (
                       <Button onClick={enrollInCourse} className="w-full">
                         <Users className="h-4 w-4 mr-2" />
@@ -494,8 +511,8 @@ export default function CourseLearning() {
                             Completed
                           </Badge>
                         ) : (
-                          <Button 
-                            size="sm" 
+                          <Button
+                            size="sm"
                             onClick={() => completeLesson(currentLesson)}
                             disabled={!enrollment}
                           >
@@ -520,13 +537,13 @@ export default function CourseLearning() {
                           </div>
                         </div>
                       )}
-                      
+
                       {currentLesson.content && (
                         <div className="prose prose-sm max-w-none">
                           <div dangerouslySetInnerHTML={{ __html: currentLesson.content }} />
                         </div>
                       )}
-                      
+
                       {!currentLesson.content && !currentLesson.video_url && (
                         <div className="text-center py-8 text-muted-foreground">
                           <BookOpen className="h-12 w-12 mx-auto mb-2 opacity-50" />
@@ -569,9 +586,8 @@ export default function CourseLearning() {
                       {module.lessons.map((lesson) => (
                         <div
                           key={lesson.id}
-                          className={`flex items-center gap-2 p-2 rounded cursor-pointer hover:bg-muted/50 transition-colors ${
-                            currentLesson?.id === lesson.id ? 'bg-muted' : ''
-                          }`}
+                          className={`flex items-center gap-2 p-2 rounded cursor-pointer hover:bg-muted/50 transition-colors ${currentLesson?.id === lesson.id ? 'bg-muted' : ''
+                            }`}
                           onClick={() => setCurrentLesson(lesson)}
                         >
                           <div className="flex-shrink-0">
