@@ -36,6 +36,7 @@ import {
     rejectPayment
 } from '@/services/paymentService';
 import { useToast } from '@/hooks/use-toast';
+import { sendEmail } from '@/services/emailService';
 import type { Payment, PaymentStatus } from '@/types/database.types';
 
 export default function PaymentManagement() {
@@ -81,6 +82,22 @@ export default function PaymentManagement() {
                     title: 'Success',
                     description: 'Payment approved and student enrolled',
                 });
+
+                // Send payment confirmation email (non-blocking)
+                const payment = payments.find(p => p.id === id);
+                if (payment?.profiles?.email && payment?.profiles?.full_name && payment?.courses?.title) {
+                    sendEmail({
+                        to: payment.profiles.email,
+                        type: 'payment_confirmed',
+                        payload: {
+                            userName: payment.profiles.full_name,
+                            courseTitle: payment.courses.title,
+                            amount: payment.amount?.toLocaleString(),
+                            reference: payment.reference,
+                        }
+                    }).catch(err => console.warn('Payment confirmation email failed (non-critical):', err));
+                }
+
                 fetchPayments();
             } else {
                 throw error;
@@ -107,6 +124,20 @@ export default function PaymentManagement() {
                     title: 'Payment Rejected',
                     description: 'The payment has been marked as failed',
                 });
+
+                // Send payment rejection email (non-blocking)
+                if (selectedPayment?.profiles?.email && selectedPayment?.profiles?.full_name && selectedPayment?.courses?.title) {
+                    sendEmail({
+                        to: selectedPayment.profiles.email,
+                        type: 'payment_rejected',
+                        payload: {
+                            userName: selectedPayment.profiles.full_name,
+                            courseTitle: selectedPayment.courses.title,
+                            reason: rejectionReason || undefined,
+                        }
+                    }).catch(err => console.warn('Payment rejection email failed (non-critical):', err));
+                }
+
                 setIsRejectOpen(false);
                 setRejectionReason('');
                 fetchPayments();

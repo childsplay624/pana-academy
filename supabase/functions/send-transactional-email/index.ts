@@ -1,4 +1,9 @@
+// @ts-ignore
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+
+declare const Deno: any;
+
+// VITE_RESEND_API_KEY is the secret name configured in Supabase project settings
 const RESEND_API_KEY = Deno.env.get('VITE_RESEND_API_KEY') || Deno.env.get('RESEND_API_KEY')
 
 const corsHeaders = {
@@ -57,7 +62,7 @@ const emailLayout = (content: string, previewText: string) => `
       </div>
       <div class="footer">
         <p>&copy; ${new Date().getFullYear()} PANA Academy. All rights reserved.</p>
-        <p>Competency Cultivation Hub | Port Harcourt & Abuja, Nigeria</p>
+        <p>Competency Cultivation Hub | Port Harcourt &amp; Abuja, Nigeria</p>
         <p><a href="mailto:support@pana-academy.com" style="color: #64748b;">support@pana-academy.com</a></p>
       </div>
     </div>
@@ -121,6 +126,37 @@ const templates: Record<string, (payload: any) => { subject: string; html: strin
       </div>
     `, `Your grade for ${payload.assignmentTitle} is now available.`)
   }),
+  payment_confirmed: (payload: any) => ({
+    subject: `Payment Confirmed: ${payload.courseTitle}`,
+    html: emailLayout(`
+      <h1>Payment Received!</h1>
+      <p>Hello ${payload.userName}, your payment has been confirmed and you are now enrolled in:</p>
+      <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid ${BRAND_COLORS.gold};">
+        <strong style="font-size: 18px;">${payload.courseTitle}</strong>
+        <div style="margin-top: 12px; color: #64748b;">
+          <div>Amount Paid: <strong>₦${payload.amount}</strong></div>
+          <div>Reference: <strong>${payload.reference}</strong></div>
+        </div>
+      </div>
+      <p>You can now access all course materials from your dashboard.</p>
+      <div style="text-align: center;">
+        <a href="${payload.appUrl}/my-courses" class="btn">Go to My Courses</a>
+      </div>
+    `, `Your payment for ${payload.courseTitle} has been confirmed.`)
+  }),
+  payment_rejected: (payload: any) => ({
+    subject: `Payment Update: ${payload.courseTitle}`,
+    html: emailLayout(`
+      <h1>Payment Could Not Be Verified</h1>
+      <p>Hello ${payload.userName},</p>
+      <p>Unfortunately, we were unable to verify your payment for <strong>${payload.courseTitle}</strong>.</p>
+      ${payload.reason ? `<div style="background: #fef2f2; padding: 16px; border-radius: 8px; margin: 20px 0; border-left: 4px solid ${BRAND_COLORS.red};"><strong>Reason:</strong> ${payload.reason}</div>` : ''}
+      <p>Please contact our support team or try submitting your payment receipt again.</p>
+      <div style="text-align: center;">
+        <a href="${payload.appUrl}/contact" class="btn">Contact Support</a>
+      </div>
+    `, `Important update about your payment for ${payload.courseTitle}.`)
+  }),
   verification: (payload: any) => ({
     subject: 'Verify your email address - PANA Academy',
     html: emailLayout(`
@@ -181,9 +217,10 @@ serve(async (req: Request) => {
     }
 
     if (!RESEND_API_KEY) {
-      throw new Error('VITE_RESEND_API_KEY is not set')
+      throw new Error('RESEND_API_KEY is not configured in Supabase project secrets')
     }
 
+    // Use Resend REST API directly (no nodemailer dependency)
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -193,25 +230,22 @@ serve(async (req: Request) => {
       body: JSON.stringify({
         from: 'PANA Academy <noreply@pana-academy.com>',
         to: Array.isArray(to) ? to : [to],
-        subject: subject,
-        html: html,
+        subject,
+        html,
       }),
-    })
+    });
 
-    const data = (await res.json()) as any
+    const data = (await res.json()) as any;
 
     if (!res.ok) {
-      console.error('Resend API error:', data)
-      return new Response(JSON.stringify({ error: 'Failed to send email', details: data }), {
-        status: res.status,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
+      console.error('Resend API error:', data);
+      throw new Error(data?.message || 'Failed to send email via Resend');
     }
 
     return new Response(JSON.stringify({ success: true, id: data?.id }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
+    });
 
   } catch (error: any) {
     console.error('Error:', error)
@@ -221,4 +255,3 @@ serve(async (req: Request) => {
     })
   }
 })
-

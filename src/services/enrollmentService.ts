@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { checkPaymentStatus } from './paymentService';
+import { sendEmail } from './emailService';
 
 export type EnrollmentStatus = 'enrolled' | 'completed' | 'dropped' | 'suspended';
 
@@ -87,6 +88,22 @@ export const enrollInCourse = async (courseId: string): Promise<{ data: Enrollme
       .single<DatabaseEnrollment>();
 
     if (error) throw error;
+
+    // Send enrollment confirmation email (fire-and-forget — non-blocking)
+    supabase.auth.getUser().then(({ data: { user: currentUser } }) => {
+      if (currentUser?.email) {
+        supabase.from('profiles').select('full_name').eq('id', currentUser.id).single().then(({ data: profile }) => {
+          sendEmail({
+            to: currentUser.email!,
+            type: 'enrollment',
+            payload: {
+              courseTitle: course.title,
+              userName: profile?.full_name || currentUser.email,
+            }
+          }).catch(err => console.warn('Enrollment email failed (non-critical):', err));
+        });
+      }
+    });
 
     return {
       data: {

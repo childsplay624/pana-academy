@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { sendEmail, emailTemplates } from '@/services/emailService';
 
 interface Profile {
   id: string;
@@ -108,33 +109,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (signUpError) throw signUpError;
 
-      // If signup was successful, send verification email via Edge Function
+      // If signup was successful, send welcome email via Edge Function
+      // Note: Supabase also sends its own confirmation email based on project settings.
       if (data.user) {
-        try {
-          const { sendEmail, emailTemplates } = await import('@/services/emailService');
-
-          // Generate email verification link
-          const verificationLink = `${window.location.origin}/verify-email?token=${data.user.id}`;
-
-          // Send verification email via secure Edge Function
-          const verificationEmail = emailTemplates.verification(displayName, verificationLink);
-          await sendEmail({
-            to: email,
-            ...verificationEmail
-          });
-
-          // Send welcome email
-          const { subject, html } = emailTemplates.welcome(displayName);
-          await sendEmail({ to: email, subject, html });
-
-          return { error: null };
-
-        } catch (emailError) {
-          console.error('Failed to send verification email:', emailError);
-          // Note: Account was created but email failed. User can request a new verification
-          // email from the login page. Admin-level user deletion requires a server-side Edge Function.
-          throw new Error('Account created but verification email could not be sent. Please contact support or try signing in to request a new verification email.');
-        }
+        // Fire-and-forget: don't block signup if email fails
+        const { subject, html } = emailTemplates.welcome(displayName);
+        sendEmail({ to: email, subject, html }).catch((emailError) => {
+          console.warn('Welcome email failed to send (non-critical):', emailError);
+        });
       }
 
       return { error: null };
@@ -172,27 +154,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const resetPassword = async (email: string) => {
     try {
       const redirectUrl = `${window.location.origin}/reset-password`;
+      // Supabase sends the password reset email natively via its auth system.
+      // We do NOT send a separate custom email to avoid duplicate/broken emails.
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: redirectUrl,
       });
-
-      if (!error) {
-        try {
-          const { sendEmail, emailTemplates } = await import('@/services/emailService');
-          const resetLink = `${redirectUrl}?token=reset_token_placeholder`; // In a real app, this would be the actual reset token
-
-          const { subject, html } = emailTemplates.passwordReset('User', resetLink);
-
-          await sendEmail({
-            to: email,
-            subject,
-            html,
-          });
-        } catch (emailError) {
-          console.error('Failed to send password reset email:', emailError);
-          // Don't fail the reset if email sending fails
-        }
-      }
 
       return { error };
     } catch (error) {

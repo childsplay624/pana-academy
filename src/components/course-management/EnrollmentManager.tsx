@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useEmailNotifications } from '@/hooks/useEmailNotifications';
 import {
     Table,
     TableBody,
@@ -65,6 +66,7 @@ export function EnrollmentManager({ courseId, canEdit }: EnrollmentManagerProps)
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedEnrollment, setSelectedEnrollment] = useState<EnrollmentWithStudent | null>(null);
     const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
+    const { sendEnrollmentConfirmation, sendCertificateNotification } = useEmailNotifications();
 
     useEffect(() => {
         fetchEnrollments();
@@ -111,6 +113,24 @@ export function EnrollmentManager({ courseId, canEdit }: EnrollmentManagerProps)
             if (error) throw error;
 
             toast.success(`Enrollment marked as ${status}`);
+
+            // Send certificate notification email when enrollment is completed
+            if (status === 'completed') {
+                const enrollment = enrollments.find(e => e.id === enrollmentId);
+                if (enrollment?.profiles?.email && enrollment?.profiles?.full_name) {
+                    // Fetch course title for the email
+                    supabase.from('courses').select('title').eq('id', courseId).single().then(({ data: course }) => {
+                        if (course) {
+                            sendCertificateNotification(
+                                course.title,
+                                enrollment.profiles.full_name!,
+                                enrollment.profiles.email!
+                            ).catch(err => console.warn('Certificate email failed (non-critical):', err));
+                        }
+                    });
+                }
+            }
+
             fetchEnrollments();
         } catch (error: any) {
             toast.error(error.message || 'Failed to update enrollment');

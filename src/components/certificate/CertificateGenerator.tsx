@@ -20,6 +20,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { CertificateDesign } from './CertificateDesign';
+import { useEmailNotifications } from '@/hooks/useEmailNotifications';
 
 interface CertificateGeneratorProps {
   enrollmentId?: string;
@@ -49,6 +50,7 @@ export function CertificateGenerator({
   const [courseData, setCourseData] = useState<any>(null);
   const [studentData, setStudentData] = useState<any>(null);
   const [previewMode, setPreviewMode] = useState(false);
+  const { sendCertificateNotification } = useEmailNotifications();
 
   useEffect(() => {
     if (formData.courseId) {
@@ -84,7 +86,7 @@ export function CertificateGenerator({
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('full_name')
+        .select('full_name, email')
         .eq('id', formData.studentId)
         .single();
 
@@ -151,6 +153,16 @@ export function CertificateGenerator({
       }
 
       toast.success('Certificate generated successfully');
+
+      // Send certificate notification email (non-blocking)
+      if (studentData?.email && studentData?.full_name && courseData?.title) {
+        sendCertificateNotification(
+          courseData.title,
+          studentData.full_name,
+          studentData.email
+        ).catch(err => console.warn('Certificate email failed (non-critical):', err));
+      }
+
       onCertificateCreated?.(data);
     } catch (error: any) {
       console.error('Error generating certificate:', error);
