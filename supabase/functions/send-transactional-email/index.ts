@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-nocheck
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
 declare const Deno: any;
@@ -8,7 +8,7 @@ const RESEND_API_KEY = Deno.env.get('VITE_RESEND_API_KEY') || Deno.env.get('RESE
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-auth',
 }
 
 interface EmailRequest {
@@ -292,14 +292,23 @@ serve(async (req: Request) => {
     }
 
     if (!to || !subject || !html) {
-      throw new Error('Missing required fields: to, subject, and html (or a valid type)')
+      return new Response(JSON.stringify({ error: 'Missing required fields: to, subject, and html (or a valid type)' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     if (!RESEND_API_KEY) {
-      throw new Error('RESEND_API_KEY is not configured in Supabase project secrets')
+      console.error('CRITICAL: RESEND_API_KEY is not configured in Supabase project secrets');
+      return new Response(JSON.stringify({ error: 'Service configuration error' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    // Use Resend REST API directly (no nodemailer dependency)
+    console.log(`Attempting to send ${type || 'custom'} email to:`, to);
+
+    // Use Resend REST API directly
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -317,9 +326,24 @@ serve(async (req: Request) => {
     const data = (await res.json()) as any;
 
     if (!res.ok) {
-      console.error('Resend API error:', data);
-      throw new Error(data?.message || 'Failed to send email via Resend');
+      console.error('Resend API call failed:', {
+        status: res.status,
+        statusText: res.statusText,
+        error: data
+      });
+
+      let errorMessage = data?.message || 'Failed to send email via Resend';
+      if (res.status === 403 || res.status === 422) {
+        errorMessage = `Resend Error: ${errorMessage}. This usually means your domain (pana-academy.com) is not verified or the API key is invalid for this sender.`;
+      }
+
+      return new Response(JSON.stringify({ error: errorMessage, details: data }), {
+        status: res.status,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
+
+    console.log('Email sent successfully:', data.id);
 
     return new Response(JSON.stringify({ success: true, id: data?.id }), {
       status: 200,
@@ -327,7 +351,7 @@ serve(async (req: Request) => {
     });
 
   } catch (error: any) {
-    console.error('Error:', error)
+    console.error('Edge Function fatal error:', error)
     return new Response(JSON.stringify({ error: error?.message || 'Internal server error' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
