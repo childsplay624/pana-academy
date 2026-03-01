@@ -29,8 +29,10 @@ import {
   Save,
   Loader2,
   User,
-  Wrench
+  Wrench,
+  FlaskConical
 } from 'lucide-react';
+import { EmailTester } from '@/components/admin/EmailTester';
 
 interface PlatformSettings {
   [key: string]: any;
@@ -250,6 +252,11 @@ export default function Settings() {
               <BookOpen className="w-4 h-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">Courses</span>
               <span className="sm:hidden">C</span>
+            </TabsTrigger>
+            <TabsTrigger value="email-tester" className="flex items-center justify-center text-xs sm:text-sm h-10 px-2 sm:px-3 text-red-600 dark:text-red-400">
+              <FlaskConical className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Email Test</span>
+              <span className="sm:hidden">T</span>
             </TabsTrigger>
           </TabsList>
 
@@ -1188,6 +1195,11 @@ export default function Settings() {
                 </Button>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Email Testing Tab */}
+          <TabsContent value="email-tester">
+            <EmailTester />
           </TabsContent>
         </Tabs>
       </div>

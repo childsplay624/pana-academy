@@ -30,6 +30,9 @@ interface Stats {
   weeklyGoalProgress: number;
   completedCourses: number;
   streakDays: number;
+  totalPoints: number;
+  level: number;
+  experiencePoints: number;
 }
 
 export interface RecentActivity {
@@ -53,9 +56,12 @@ export function useStudentData() {
     certificates: 0,
     totalProgress: 0,
     totalTimeSpent: 0,
-    weeklyGoalProgress: 75,
+    weeklyGoalProgress: 0,
     completedCourses: 0,
-    streakDays: 5
+    streakDays: 0,
+    totalPoints: 0,
+    level: 1,
+    experiencePoints: 0
   });
 
   useEffect(() => {
@@ -210,6 +216,15 @@ export function useStudentData() {
           return statusMatch || progressMatch;
         }).length;
 
+        // Fetch Gamification Stats
+        const { data: gamificationData } = await supabase
+          .from('user_gamification')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+
+        console.log('Gamification data:', gamificationData);
+
         // 🐛 DEBUG: Log completion calculation
         console.log('✅ COMPLETED COUNT:', {
           total: transformedEnrolledCourses.length,
@@ -308,9 +323,12 @@ export function useStudentData() {
           certificates: certificateCount, // ✅ Using actual certificate count from database
           totalProgress,
           totalTimeSpent,
-          weeklyGoalProgress: 75,
+          weeklyGoalProgress: (gamificationData?.streak_days || 0) > 0 ? 100 : 0, // Simplified for now
           completedCourses,
-          streakDays: 5
+          streakDays: gamificationData?.streak_days || 0,
+          totalPoints: gamificationData?.total_points || 0,
+          level: gamificationData?.level || 1,
+          experiencePoints: gamificationData?.experience_points || 0
         });
 
       } catch (err) {

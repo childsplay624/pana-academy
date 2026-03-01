@@ -75,10 +75,44 @@ export const useEmailNotifications = () => {
     }
   };
 
+  const sendLevelUpNotification = async (userName: string, userEmail: string, newLevel: number, totalXp: number) => {
+    try {
+      const { error } = await supabase.functions.invoke('send-transactional-email', {
+        body: {
+          to: userEmail,
+          type: 'level_up',
+          payload: { userName, newLevel, xp: totalXp }
+        }
+      });
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Failed to send level up notification email:', error);
+    }
+  };
+
+  const sendStreakReminder = async (userName: string, userEmail: string, streakDays: number, hoursLeft: number) => {
+    try {
+      const { error } = await supabase.functions.invoke('send-transactional-email', {
+        body: {
+          to: userEmail,
+          type: 'streak_reminder',
+          payload: { userName, streakDays, hoursLeft }
+        }
+      });
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Failed to send streak reminder email:', error);
+    }
+  };
+
   return {
     sendEnrollmentConfirmation,
     sendCertificateNotification,
     sendAssignmentGradedNotification,
-    sendSessionReminder
+    sendSessionReminder,
+    sendLevelUpNotification,
+    sendStreakReminder
   };
 };

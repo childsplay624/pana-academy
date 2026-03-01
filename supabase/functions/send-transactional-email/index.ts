@@ -13,7 +13,7 @@ const corsHeaders = {
 
 interface EmailRequest {
   to: string | string[];
-  type?: 'welcome' | 'enrollment' | 'certificate' | 'grading' | 'reminder' | 'verification' | 'reset_password' | 'custom';
+  type?: 'welcome' | 'enrollment' | 'certificate' | 'grading' | 'reminder' | 'verification' | 'reset_password' | 'custom' | 'level_up' | 'streak_reminder' | 'invoice';
   payload?: any;
   subject?: string;
   html?: string;
@@ -192,6 +192,85 @@ const templates: Record<string, (payload: any) => { subject: string; html: strin
         <span style="word-break: break-all; color: ${BRAND_COLORS.red};">${payload.resetLink}</span>
       </p>
     `, "Reset your PANA Academy password.")
+  }),
+  level_up: (payload: any) => ({
+    subject: `LEVEL UP! You've reached Level ${payload.newLevel} 🏆`,
+    html: emailLayout(`
+      <h1 style="color: ${BRAND_COLORS.red}; text-align: center;">LEVEL UP!</h1>
+      <p style="text-align: center; font-size: 18px; font-weight: bold;">Congratulations ${payload.userName}!</p>
+      <div style="background: linear-gradient(135deg, ${BRAND_COLORS.navy} 0%, #1e293b 100%); padding: 30px; border-radius: 16px; margin: 20px 0; text-align: center; color: white; border: 2px solid ${BRAND_COLORS.gold};">
+        <div style="font-size: 14px; text-transform: uppercase; color: ${BRAND_COLORS.gold}; letter-spacing: 2px;">Your New Level</div>
+        <div style="font-size: 64px; font-weight: bold; margin: 10px 0;">${payload.newLevel}</div>
+        <div style="font-size: 14px; opacity: 0.8;">Total Experience: ${payload.xp} XP</div>
+      </div>
+      <p>Your dedication to learning is paying off. Reaching a new level unlocks new potential and brings you closer to mastering your craft.</p>
+      <div style="text-align: center; margin-top: 30px;">
+        <a href="${payload.appUrl}/dashboard" class="btn">View Your Achievements</a>
+      </div>
+    `, `Amazing! You've reached Level ${payload.newLevel} on PANA Academy.`)
+  }),
+  streak_reminder: (payload: any) => ({
+    subject: `🔥 ${payload.streakDays} Day Streak at Risk!`,
+    html: emailLayout(`
+      <h1 style="color: ${BRAND_COLORS.red};">Keep the Fire Burning!</h1>
+      <p>Hello ${payload.userName},</p>
+      <p>Don't let your <strong>${payload.streakDays} day streak</strong> slip away! You're doing incredible work, and just a few minutes of learning today will keep your momentum going.</p>
+      <div style="background-color: #fff7ed; padding: 25px; border-radius: 12px; margin: 20px 0; text-align: center; border: 1px solid #ffedd5;">
+        <div style="font-size: 48px; margin-bottom: 10px;">🔥</div>
+        <div style="font-size: 18px; font-weight: bold; color: #9a3412;">Remaining: ${payload.hoursLeft} Hours</div>
+        <p style="font-size: 14px; color: #c2410c; margin-top: 5px;">If you miss today, your streak will reset to 0.</p>
+      </div>
+      <p>Join the other students who are logging in right now to cultivate their competencies.</p>
+      <div style="text-align: center;">
+        <a href="${payload.appUrl}/dashboard" class="btn">Learn for 5 Minutes</a>
+      </div>
+    `, `Quick reminder: Your ${payload.streakDays} day learning streak ends in ${payload.hoursLeft} hours.`)
+  }),
+  invoice: (payload: any) => ({
+    subject: `Invoice ${payload.invoiceNumber} - PANA Academy`,
+    html: emailLayout(`
+      <div style="text-align: right; color: #64748b; font-size: 14px; margin-bottom: 20px;">
+        Invoice Date: ${payload.date}
+      </div>
+      <h1>Receipt of Purchase</h1>
+      <p>Hello ${payload.userName},</p>
+      <p>Thank you for your purchase. Here is your invoice for the course:</p>
+      
+      <div style="background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; margin: 20px 0; overflow: hidden;">
+        <div style="padding: 20px; border-bottom: 2px solid #e2e8f0; font-weight: bold; background: white;">
+          ${payload.courseTitle}
+        </div>
+        <div style="padding: 20px;">
+          <table style="width: 100%; font-size: 14px; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 10px 0; color: #64748b;">Subtotal</td>
+              <td style="padding: 10px 0; text-align: right; color: #334155;">NGN ${payload.subtotal}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px 0; color: #64748b;">Tax</td>
+              <td style="padding: 10px 0; text-align: right; color: #334155;">NGN ${payload.tax}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px 0; color: #64748b;">Platform Fee</td>
+              <td style="padding: 10px 0; text-align: right; color: #334155;">NGN ${payload.fee}</td>
+            </tr>
+            <tr style="border-top: 1px dashed #cbd5e1;">
+              <td style="padding: 15px 0; font-weight: bold; font-size: 18px; color: ${BRAND_COLORS.navy};">Total Amount</td>
+              <td style="padding: 15px 0; text-align: right; font-weight: bold; font-size: 18px; color: ${BRAND_COLORS.red};">NGN ${payload.total}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      
+      <div style="background: #f1f5f9; padding: 15px; border-radius: 6px; font-size: 12px; color: #475569;">
+        <strong>Payment Reference:</strong> ${payload.reference}<br>
+        <strong>Payment Method:</strong> ${payload.method}
+      </div>
+      
+      <div style="text-align: center; margin-top: 30px;">
+        <a href="${payload.appUrl}/dashboard" class="btn">Access Your Courses</a>
+      </div>
+    `, `Your invoice ${payload.invoiceNumber} for ${payload.courseTitle} is attached.`)
   })
 }
 

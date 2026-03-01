@@ -12,7 +12,7 @@ import {
   Plus, Trophy, RefreshCw, FileText, Video, FileCode,
   AlertTriangle, Download, Play, Code, Settings, User,
   BarChart3, Flame, Activity, FileType, Eye, CalendarDays, X,
-  Search, Filter
+  Search, Filter, Zap
 } from 'lucide-react';
 import { SetGoals } from '@/components/dashboard/SetGoals';
 import { StudySchedule } from '@/components/dashboard/StudySchedule';
@@ -30,6 +30,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { EmptyState } from '@/components/dashboard/EmptyState';
 import { DeadlinesWidget } from '@/components/dashboard/DeadlinesWidget';
 import { ProfileEdit } from '@/components/student/ProfileEdit';
+import { LevelProgress } from '@/components/gamification/LevelProgress';
 
 // Define interfaces for our data models
 interface UserProfile {
@@ -316,19 +317,53 @@ export default function StudentDashboard() {
               />
 
               <StatCard
-                title="Time Spent"
-                value={`${Math.floor((stats.totalTimeSpent || 0) / 60)}h`}
+                title="Learning Streak"
+                value={`${stats.streakDays} Days`}
                 description={
-                  (stats.totalTimeSpent || 0) === 0
-                    ? 'Start learning'
-                    : `${(stats.totalTimeSpent || 0) % 60}m this month`
+                  stats.streakDays === 0
+                    ? 'Start a streak!'
+                    : 'Keep it going! 🔥'
                 }
-                icon={Clock}
-                tooltip="Total time spent learning this month"
+                icon={Flame}
+                tooltip="Consecutive days you've learned on PANA Academy"
                 isLoading={isLoading}
-                className="h-full"
+                className="h-full border-orange-200 bg-orange-50/10"
               />
             </div>
+
+            {/* Gamification Level Progress */}
+            <Card className="mb-8 border-red-200 bg-red-50/5 overflow-hidden">
+              <CardContent className="pt-6 relative">
+                <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                  <Trophy className="h-32 w-32" />
+                </div>
+                {isLoading ? (
+                  <Skeleton className="h-24 w-full" />
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                    <div className="md:col-span-2">
+                      <LevelProgress
+                        level={stats.level}
+                        experience={stats.experiencePoints}
+                        progressData={{
+                          current: stats.experiencePoints % 100, // Simple formula for now
+                          required: 100,
+                          percentage: stats.experiencePoints % 100
+                        }}
+                      />
+                    </div>
+                    <div className="flex flex-col items-center justify-center p-4 bg-white/50 dark:bg-gray-800/50 rounded-xl border border-red-100">
+                      <div className="text-sm font-medium text-muted-foreground mb-1">Total Power</div>
+                      <div className="text-3xl font-bold text-red-600 flex items-center gap-2">
+                        <Zap className="h-6 w-6 fill-red-600" />
+                        {stats.totalPoints.toLocaleString()}
+                      </div>
+                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-1">Ranking: Master</div>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
 
             {/* Data Visualization - Side by Side Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
@@ -663,7 +698,7 @@ export default function StudentDashboard() {
                 <CardContent className="text-center space-y-4">
                   <div className="flex items-center justify-center">
                     <Flame className="h-8 w-8 text-orange-500 mr-2" />
-                    <span className="text-3xl font-bold">0</span>
+                    <span className="text-3xl font-bold">{stats.streakDays}</span>
                   </div>
                   <p className="text-sm text-muted-foreground">
                     Start a new learning streak today!

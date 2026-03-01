@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/components/ui/use-toast';
+import { useEmailNotifications } from '@/hooks/useEmailNotifications';
 
 interface UserGamification {
   id: string;
@@ -53,8 +54,9 @@ interface Leaderboard {
 }
 
 export function useGamification() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { toast } = useToast();
+  const { sendLevelUpNotification } = useEmailNotifications();
   const [loading, setLoading] = useState(true);
   const [userGamification, setUserGamification] = useState<UserGamification | null>(null);
   const [userBadges, setUserBadges] = useState<UserBadge[]>([]);
@@ -97,7 +99,7 @@ export function useGamification() {
         .single();
 
       if (error && error.code !== 'PGRST116') throw error;
-      
+
       if (!data) {
         await initializeGamification();
         return fetchUserGamification();
@@ -175,7 +177,7 @@ export function useGamification() {
         .limit(10);
 
       if (error) throw error;
-      
+
       // Fetch profiles separately to avoid relation issues
       if (data && data.length > 0) {
         const userIds = data.map(item => item.user_id);
@@ -218,11 +220,30 @@ export function useGamification() {
 
       if (error) throw error;
 
+      // Store old level
+      const oldLevel = userGamification?.level || 1;
+
       // Refresh data
       await Promise.all([
         fetchUserGamification(),
         fetchPointsHistory()
       ]);
+
+      // Check for level up notification
+      const { data: newData } = await supabase
+        .from('user_gamification')
+        .select('level, experience_points')
+        .eq('user_id', user.id)
+        .single();
+
+      if (newData && newData.level > oldLevel && user.email) {
+        await sendLevelUpNotification(
+          profile?.full_name || 'Student',
+          user.email,
+          newData.level,
+          newData.experience_points
+        );
+      }
 
       toast({
         title: "Points Earned! 🎉",
@@ -274,7 +295,7 @@ export function useGamification() {
         .eq('status', 'completed');
 
       const earnedBadgeIds = userBadges.map(ub => ub.badge_id);
-      
+
       for (const badge of allBadges) {
         if (earnedBadgeIds.includes(badge.id)) continue;
 
@@ -330,14 +351,14 @@ export function useGamification() {
   // Get level progress
   const getLevelProgress = () => {
     if (!userGamification) return { current: 0, required: 100, percentage: 0 };
-    
+
     const currentLevel = userGamification.level;
     const currentExp = userGamification.experience_points;
-    
+
     // Level thresholds: Level n requires (n-1)^2 * 100 exp
     const currentLevelThreshold = Math.pow(currentLevel - 1, 2) * 100;
     const nextLevelThreshold = Math.pow(currentLevel, 2) * 100;
-    
+
     const progressInLevel = currentExp - currentLevelThreshold;
     const expRequiredForLevel = nextLevelThreshold - currentLevelThreshold;
     const percentage = Math.min((progressInLevel / expRequiredForLevel) * 100, 100);
@@ -352,7 +373,7 @@ export function useGamification() {
   // Fetch all data
   const fetchAllData = async () => {
     if (!user) return;
-    
+
     setLoading(true);
     try {
       await Promise.all([

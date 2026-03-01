@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { sendEmail } from '@/services/emailService';
 
 interface Invoice {
   id: string;
@@ -98,8 +99,28 @@ export default function InvoicesPage() {
 
   const resendInvoice = async (invoice: Invoice) => {
     try {
-      // TODO: Implement email resend functionality
-      toast.success(`Invoice ${invoice.invoice_number} would be resent to ${invoice.student_email}`);
+      const { success } = await sendEmail({
+        to: invoice.student_email,
+        type: 'invoice',
+        payload: {
+          userName: invoice.student_name,
+          invoiceNumber: invoice.invoice_number,
+          courseTitle: invoice.course_title,
+          subtotal: invoice.course_price.toLocaleString(),
+          tax: invoice.tax_amount.toLocaleString(),
+          fee: invoice.platform_fee.toLocaleString(),
+          total: invoice.total_amount.toLocaleString(),
+          reference: invoice.payment_reference,
+          method: invoice.payment_method,
+          date: new Date(invoice.payment_date).toLocaleDateString()
+        }
+      });
+
+      if (success) {
+        toast.success(`Invoice ${invoice.invoice_number} resent successfully to ${invoice.student_email}`);
+      } else {
+        throw new Error('Failed to send email');
+      }
     } catch (error) {
       console.error('Error resending invoice:', error);
       toast.error('Failed to resend invoice');
