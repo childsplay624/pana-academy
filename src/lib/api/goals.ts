@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/types/supabase';
 
 type StudySessionInsert = Omit<Database['public']['Tables']['study_sessions']['Insert'], 'id' | 'user_id' | 'created_at'>;
@@ -22,9 +22,8 @@ interface UpdateGoalsParams {
 export const goalsApi = {
   // Get or create user goals with default values
   async getOrCreateGoals() {
-    const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (!user) {
       throw new Error('User not authenticated');
     }
@@ -66,9 +65,8 @@ export const goalsApi = {
 
   // Update user goals
   async updateGoals(updates: Partial<Omit<Goal, 'id' | 'user_id' | 'created_at'>>) {
-    const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (!user) {
       throw new Error('User not authenticated');
     }
@@ -92,9 +90,8 @@ export const goalsApi = {
 
   // Record a study session
   async recordStudySession(session: StudySessionInsert): Promise<StudySession> {
-    const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (!user) {
       throw new Error('User not authenticated');
     }
@@ -115,9 +112,8 @@ export const goalsApi = {
   // Get study statistics
   async getStudyStatistics(): Promise<StudyStatistics> {
     try {
-      const supabase = createClient();
       const { data: { user }, error: authError } = await supabase.auth.getUser();
-      
+
       if (authError || !user) {
         console.error('Authentication error:', authError);
         throw new Error('User not authenticated. Please sign in again.');
@@ -160,7 +156,7 @@ export const goalsApi = {
       // Get current streak
       const currentStreak = await this.getCurrentStreak();
       console.log('Current streak:', currentStreak);
-      
+
       return {
         totalMinutesThisWeek,
         completedCourses: progress?.length || 0,
@@ -175,9 +171,8 @@ export const goalsApi = {
   // Get current streak
   async getCurrentStreak(): Promise<number> {
     try {
-      const supabase = createClient();
       const { data: { user }, error: authError } = await supabase.auth.getUser();
-      
+
       if (authError || !user) {
         console.error('Authentication error in getCurrentStreak:', authError);
         throw new Error('User not authenticated');
@@ -209,9 +204,8 @@ export const goalsApi = {
 
   // Update course progress
   async updateCourseProgress(courseId: string, progress: number): Promise<Progress> {
-    const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (!user) {
       throw new Error('User not authenticated');
     }
@@ -226,9 +220,9 @@ export const goalsApi = {
           is_completed: progress >= 100,
           last_accessed: new Date().toISOString(),
         },
-        { 
+        {
           onConflict: 'user_id,course_id',
-          ignoreDuplicates: false 
+          ignoreDuplicates: false
         }
       )
       .select()

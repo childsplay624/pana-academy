@@ -1,13 +1,12 @@
-import { createClient } from '@/lib/supabase/client';
-import { Database } from '@/types/supabase';
+import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/types/supabase';
 
 type Schedule = Database['public']['Tables']['schedules']['Insert'];
 
 export const schedulesApi = {
   async createSchedule(scheduleData: Omit<Schedule, 'id' | 'created_at' | 'user_id'>) {
-    const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (!user) {
       throw new Error('User not authenticated');
     }
@@ -26,9 +25,8 @@ export const schedulesApi = {
   },
 
   async getSchedules() {
-    const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (!user) {
       throw new Error('User not authenticated');
     }
@@ -47,8 +45,7 @@ export const schedulesApi = {
   },
 
   async updateSchedule(id: string, updates: Partial<Schedule>) {
-    const supabase = createClient();
-    
+
     const { data, error } = await supabase
       .from('schedules')
       .update(updates)
@@ -64,8 +61,7 @@ export const schedulesApi = {
   },
 
   async deleteSchedule(id: string) {
-    const supabase = createClient();
-    
+
     const { error } = await supabase
       .from('schedules')
       .delete()

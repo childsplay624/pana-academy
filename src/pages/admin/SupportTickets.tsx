@@ -8,11 +8,11 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
-import { 
-  MessageSquare, 
-  Clock, 
-  CheckCircle, 
-  AlertCircle, 
+import {
+  MessageSquare,
+  Clock,
+  CheckCircle,
+  AlertCircle,
   Search,
   Filter,
   User,
@@ -21,7 +21,7 @@ import {
   Loader2,
   X
 } from 'lucide-react';
-import { supabase } from '@/lib/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 
 interface SupportTicket {
   id: string;
@@ -62,7 +62,7 @@ export default function SupportTickets() {
     try {
       console.log('Fetching tickets...');
       console.log('Current user:', user);
-      
+
       // First try to get tickets without profile join
       const { data: ticketsData, error: ticketsError } = await supabase
         .from('support_tickets')
@@ -71,24 +71,24 @@ export default function SupportTickets() {
 
       console.log('Tickets data (no join):', ticketsData);
       console.log('Tickets error (no join):', ticketsError);
-      
+
       if (ticketsError) {
         console.error('Supabase error details:', ticketsError);
         throw ticketsError;
       }
-      
+
       // If we got tickets, try to get profile info separately
       if (ticketsData && ticketsData.length > 0) {
         const userIds = [...new Set(ticketsData.map(ticket => ticket.user_id))];
-        
+
         const { data: profilesData, error: profilesError } = await supabase
           .from('profiles')
           .select('id, full_name, email')
           .in('id', userIds);
-          
+
         console.log('Profiles data:', profilesData);
         console.log('Profiles error:', profilesError);
-        
+
         // Combine tickets with profile data
         const ticketsWithProfiles = ticketsData.map(ticket => ({
           ...ticket,
@@ -97,7 +97,7 @@ export default function SupportTickets() {
             email: 'unknown@example.com'
           }
         }));
-        
+
         setTickets(ticketsWithProfiles);
       } else {
         setTickets([]);
@@ -117,7 +117,7 @@ export default function SupportTickets() {
   const updateTicketStatus = async (ticketId: string, status: string) => {
     try {
       const updateData: any = { status };
-      
+
       if (status === 'resolved') {
         updateData.resolved_at = new Date().toISOString();
       }
@@ -214,11 +214,11 @@ export default function SupportTickets() {
 
   const filteredTickets = tickets.filter(ticket => {
     const matchesSearch = ticket.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         ticket.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         ticket.profiles?.full_name.toLowerCase().includes(searchTerm.toLowerCase());
+      ticket.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ticket.profiles?.full_name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || ticket.status === statusFilter;
     const matchesPriority = priorityFilter === 'all' || ticket.priority === priorityFilter;
-    
+
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
