@@ -8,8 +8,10 @@ const RESEND_API_KEY = Deno.env.get('VITE_RESEND_API_KEY') || Deno.env.get('RESE
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-auth',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-auth, x-pana-signature',
 }
+
+const PANA_SIGNATURE = Deno.env.get('VITE_PANA_SIGNATURE');
 
 interface EmailRequest {
   to: string | string[];
@@ -279,6 +281,15 @@ serve(async (req: Request) => {
     return new Response('ok', { headers: corsHeaders })
   }
 
+  // Security Check: Verify PANA Signature
+  const signature = req.headers.get('x-pana-signature');
+  if (PANA_SIGNATURE && signature !== PANA_SIGNATURE) {
+    console.warn('Unauthorized access attempt: Invalid signature');
+    return new Response(JSON.stringify({ error: 'Unauthorized: Invalid signature' }), {
+      status: 401,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
   try {
     const { to, type, payload, subject: rawSubject, html: rawHtml } = (await req.json()) as EmailRequest;
 

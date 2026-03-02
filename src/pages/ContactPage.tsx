@@ -28,6 +28,9 @@ export const ContactPage = () => {
 
     try {
       const { data, error } = await supabase.functions.invoke('send-contact-email', {
+        headers: {
+          'x-pana-signature': import.meta.env.VITE_PANA_SIGNATURE,
+        },
         body: formData
       });
 

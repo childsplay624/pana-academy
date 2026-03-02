@@ -5,8 +5,15 @@ const RESEND_API_KEY = Deno.env.get('VITE_RESEND_API_KEY') || Deno.env.get('RESE
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-auth',
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-auth, x-pana-signature',
 }
+
+const PANA_SIGNATURE = Deno.env.get('VITE_PANA_SIGNATURE');
+
+// Simple in-memory rate limiting (Note: This resets on function restart, but good for basic protection)
+const rateLimitMap = new Map<string, number[]>();
+const RATE_LIMIT_COUNT = 5; // 5 emails
+const RATE_LIMIT_WINDOW = 3600000; // per hour (1 hour in ms)
 
 interface ContactFormData {
     name: string
@@ -20,6 +27,36 @@ serve(async (req: Request) => {
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders })
     }
+
+    // Security Check: Verify PANA Signature
+    const signature = req.headers.get('x-pana-signature');
+    if (PANA_SIGNATURE && signature !== PANA_SIGNATURE) {
+        console.warn('Unauthorized access attempt: Invalid signature');
+        return new Response(JSON.stringify({ error: 'Unauthorized: Invalid signature' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+    }
+
+    // Rate Limiting Check
+    const ip = req.headers.get('x-forwarded-for') || 'anonymous';
+    const now = Date.now();
+    const userRequests = rateLimitMap.get(ip) || [];
+
+    // Filter old requests
+    const recentRequests = userRequests.filter(timestamp => now - timestamp < RATE_LIMIT_WINDOW);
+
+    if (recentRequests.length >= RATE_LIMIT_COUNT) {
+        console.warn(`Rate limit exceeded for IP: ${ip}`);
+        return new Response(JSON.stringify({ error: 'Too many requests. Please try again later.' }), {
+            status: 429,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+    }
+
+    // Update rate limit map
+    recentRequests.push(now);
+    rateLimitMap.set(ip, recentRequests);
 
     try {
         // Parse request body

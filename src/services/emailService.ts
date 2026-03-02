@@ -21,6 +21,9 @@ export const sendEmail = async (options: EmailOptions) => {
     };
 
     const { data, error } = await supabase.functions.invoke('send-transactional-email', {
+      headers: {
+        'x-pana-signature': import.meta.env.VITE_PANA_SIGNATURE,
+      },
       body: {
         to: options.to,
         type: options.type,

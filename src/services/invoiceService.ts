@@ -253,6 +253,9 @@ export const sendInvoiceEmail = async (
     // Send email via the secure Edge Function (Resend key stays server-side)
     try {
       await supabase.functions.invoke('send-transactional-email', {
+        headers: {
+          'x-pana-signature': import.meta.env.VITE_PANA_SIGNATURE,
+        },
         body: {
           to: studentEmail,
           subject: `Invoice ${invoiceData.invoiceNumber} - PANA Academy Course Purchase`,
