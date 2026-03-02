@@ -30,12 +30,16 @@ serve(async (req: Request) => {
 
     // Security Check: Verify PANA Signature
     const signature = req.headers.get('x-pana-signature');
-    if (PANA_SIGNATURE && signature !== PANA_SIGNATURE) {
-        console.warn('Unauthorized access attempt: Invalid signature');
-        return new Response(JSON.stringify({ error: 'Unauthorized: Invalid signature' }), {
-            status: 401,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
+    if (PANA_SIGNATURE) {
+        if (signature !== PANA_SIGNATURE) {
+            console.warn('Unauthorized access attempt: Invalid signature');
+            return new Response(JSON.stringify({ error: 'Unauthorized: Invalid signature' }), {
+                status: 401,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            });
+        }
+    } else {
+        console.warn('VITE_PANA_SIGNATURE is not set in Supabase Secrets. Contact form is working without signature verification.');
     }
 
     // Rate Limiting Check
