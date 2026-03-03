@@ -113,8 +113,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Note: Supabase also sends its own confirmation email based on project settings.
       if (data.user) {
         // Fire-and-forget: don't block signup if email fails
-        const { subject, html } = emailTemplates.welcome(displayName);
-        sendEmail({ to: email, subject, html }).catch((emailError) => {
+        // Use type + payload so the Edge Function builds the HTML server-side
+        const template = emailTemplates.welcome(displayName);
+        sendEmail({ to: email, type: template.type, payload: template.payload }).catch((emailError) => {
           console.warn('Welcome email failed to send (non-critical):', emailError);
         });
       }
