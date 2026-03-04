@@ -304,6 +304,7 @@ export function EnrollmentManager({ courseId, canEdit }: EnrollmentManagerProps)
                                 enrollmentId={selectedEnrollment.id}
                                 courseId={courseId}
                                 studentId={selectedEnrollment.student_id}
+                                studentEmail={selectedEnrollment.profiles?.email || undefined}
                                 onCertificateCreated={() => {
                                     fetchEnrollments();
                                     setIsGeneratorOpen(false);

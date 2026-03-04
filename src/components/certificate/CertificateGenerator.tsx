@@ -26,6 +26,7 @@ interface CertificateGeneratorProps {
   enrollmentId?: string;
   courseId?: string;
   studentId?: string;
+  studentEmail?: string; // Passed from parent — profiles table has no email column
   onCertificateCreated?: (certificateId: string) => void;
 }
 
@@ -33,6 +34,7 @@ export function CertificateGenerator({
   enrollmentId,
   courseId,
   studentId,
+  studentEmail,
   onCertificateCreated
 }: CertificateGeneratorProps) {
   const [formData, setFormData] = useState({
@@ -86,12 +88,13 @@ export function CertificateGenerator({
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('full_name, email')
+        .select('full_name') // email is NOT in profiles — it comes from auth.users
         .eq('id', formData.studentId)
         .single();
 
       if (error) console.error('Error fetching student:', error);
-      else setStudentData(data);
+      // Merge the passed-in email with the fetched profile data
+      else setStudentData({ ...data, email: studentEmail || null });
     } catch (err) {
       console.error(err);
     }
@@ -155,12 +158,18 @@ export function CertificateGenerator({
       toast.success('Certificate generated successfully');
 
       // Send certificate notification email (non-blocking)
-      if (studentData?.email && studentData?.full_name && courseData?.title) {
+      // Use passed-in studentEmail prop since profiles table has no email column
+      const emailToUse = studentEmail || studentData?.email;
+      if (emailToUse && studentData?.full_name && courseData?.title) {
         sendCertificateNotification(
           courseData.title,
           studentData.full_name,
-          studentData.email
+          emailToUse
         ).catch(err => console.warn('Certificate email failed (non-critical):', err));
+      } else {
+        console.warn('Certificate email skipped: missing email, name, or course title', {
+          emailToUse, name: studentData?.full_name, course: courseData?.title
+        });
       }
 
       onCertificateCreated?.(data);
