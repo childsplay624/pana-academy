@@ -210,6 +210,14 @@ export function useGamification() {
     if (!user) return false;
 
     try {
+      // Capture the REAL current level from DB before awarding — React state can be stale
+      const { data: preData } = await supabase
+        .from('user_gamification')
+        .select('level')
+        .eq('user_id', user.id)
+        .single();
+      const oldLevel = preData?.level ?? 1;
+
       const { data, error } = await supabase.rpc('award_points', {
         _user_id: user.id,
         _points: points,
@@ -220,16 +228,13 @@ export function useGamification() {
 
       if (error) throw error;
 
-      // Store old level
-      const oldLevel = userGamification?.level || 1;
-
       // Refresh data
       await Promise.all([
         fetchUserGamification(),
         fetchPointsHistory()
       ]);
 
-      // Check for level up notification
+      // Check for level up notification using fresh DB data
       const { data: newData } = await supabase
         .from('user_gamification')
         .select('level, experience_points')
