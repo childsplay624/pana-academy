@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { BookOpen, Search, Plus, Eye, Edit, Trash2, Users, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 
 interface Course {
@@ -29,6 +30,8 @@ interface Course {
 
 export default function CourseManagement() {
   const navigate = useNavigate();
+  const { profile } = useAuth();
+  const isAdmin = profile?.role === 'admin';
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -39,12 +42,12 @@ export default function CourseManagement() {
   const { toast } = useToast();
 
   useEffect(() => {
-    fetchCourses();
-  }, []);
+    if (profile?.id) fetchCourses();
+  }, [profile?.id]);
 
   const fetchCourses = async () => {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('courses')
         .select(`
           *,
@@ -53,6 +56,12 @@ export default function CourseManagement() {
         `)
         .order('created_at', { ascending: false });
 
+      // Instructors only see their own courses
+      if (profile?.role === 'instructor') {
+        query = query.eq('instructor_id', profile.id);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       setCourses(data || []);
     } catch (error) {
@@ -279,20 +288,24 @@ export default function CourseManagement() {
                       {course.profiles?.full_name || 'Unknown'}
                     </TableCell>
                     <TableCell>
-                      <Select
-                        value={course.status}
-                        onValueChange={(value) => updateCourseStatus(course.id, value as any)}
-                      >
-                        <SelectTrigger className="w-[120px]">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="draft">Draft</SelectItem>
-                          <SelectItem value="published">Published</SelectItem>
-                          <SelectItem value="review">Review</SelectItem>
-                          <SelectItem value="archived">Archived</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      {isAdmin ? (
+                        <Select
+                          value={course.status}
+                          onValueChange={(value) => updateCourseStatus(course.id, value as any)}
+                        >
+                          <SelectTrigger className="w-[120px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="draft">Draft</SelectItem>
+                            <SelectItem value="published">Published</SelectItem>
+                            <SelectItem value="review">Review</SelectItem>
+                            <SelectItem value="archived">Archived</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Badge variant={getStatusBadgeVariant(course.status)}>{course.status}</Badge>
+                      )}
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">{course.category}</Badge>
@@ -319,16 +332,22 @@ export default function CourseManagement() {
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => window.open(`/course/${course.id}/edit`, '_blank')}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        {/* Edit: instructors can only edit own courses; admins can edit all */}
+                        {(isAdmin || course.instructor_id === profile?.id) && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => window.open(`/course/${course.id}/edit`, '_blank')}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        )}
+                        {/* Delete: admins only */}
+                        {isAdmin && (
+                          <Button variant="ghost" size="sm">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
