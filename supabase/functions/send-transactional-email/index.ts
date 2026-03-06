@@ -142,7 +142,7 @@ const templates: Record<string, (payload: any) => { subject: string; html: strin
       </div>
       <p>You can now access all course materials from your dashboard.</p>
       <div style="text-align: center;">
-        <a href="${payload.courseId ? `${payload.appUrl}/courses/${payload.courseId}` : `${payload.appUrl}/my-courses`}" class="btn">Start Learning Now</a>
+        <a href="${payload.courseId ? `${payload.appUrl}/course/${payload.courseId}` : `${payload.appUrl}/my-courses`}" class="btn">Start Learning Now</a>
       </div>
     `, `Your payment for ${payload.courseTitle} has been confirmed.`)
   }),
