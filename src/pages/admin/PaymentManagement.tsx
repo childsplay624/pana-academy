@@ -92,6 +92,7 @@ export default function PaymentManagement() {
                         payload: {
                             userName: payment.profiles.full_name,
                             courseTitle: payment.courses.title,
+                            courseId: payment.course_id,
                             amount: payment.amount?.toLocaleString(),
                             reference: payment.reference,
                         }
