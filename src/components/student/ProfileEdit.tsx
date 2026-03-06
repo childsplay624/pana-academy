@@ -114,29 +114,7 @@ export function ProfileEdit() {
     try {
       setSaving(true);
 
-      // Convert blob URL to base64 if it's a local preview
-      let finalAvatarUrl = avatarUrl;
-      if (avatarUrl && avatarUrl.startsWith('blob:')) {
-        try {
-          const response = await fetch(avatarUrl);
-          const blob = await response.blob();
-          const reader = new FileReader();
-          finalAvatarUrl = await new Promise((resolve, reject) => {
-            reader.onload = () => {
-              const result = reader.result as string;
-              resolve(result);
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-          });
-          console.log('Converted avatar to base64');
-        } catch (error) {
-          console.error('Failed to convert avatar to base64:', error);
-          finalAvatarUrl = null; // Fallback to null if conversion fails
-        }
-      }
-
-      // Update all profile fields that exist in the database schema
+      // avatar_url is already saved instantly on upload — only update text fields here
       const updateData: any = {
         full_name: fullName,
         bio,
@@ -145,7 +123,6 @@ export function ProfileEdit() {
         website,
         education,
         work_experience: workExperience,
-        avatar_url: finalAvatarUrl,
         updated_at: new Date().toISOString()
       };
 
@@ -184,48 +161,53 @@ export function ProfileEdit() {
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file || !user) return;
 
-    // Validate file type and size
     if (!file.type.startsWith('image/')) {
-      toast({
-        title: "Error",
-        description: "Please select an image file",
-        variant: "destructive"
-      });
+      toast({ title: 'Error', description: 'Please select an image file', variant: 'destructive' });
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) { // 5MB limit
-      toast({
-        title: "Error",
-        description: "Image size must be less than 5MB",
-        variant: "destructive"
-      });
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: 'Error', description: 'Image size must be less than 5MB', variant: 'destructive' });
       return;
     }
 
     try {
       setSaving(true);
 
-      // Create a local preview URL instead of uploading to storage
-      // This avoids RLS policy issues
-      const previewUrl = URL.createObjectURL(file);
+      // Upload to Supabase Storage avatars bucket
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${user.id}/${Date.now()}.${fileExt}`;
 
-      console.log('Created avatar preview URL:', previewUrl);
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, { upsert: true });
 
-      setAvatarUrl(previewUrl);
+      if (uploadError) throw uploadError;
 
+      // Get the public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      // Save immediately to profiles table
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl, updated_at: new Date().toISOString() })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+
+      setAvatarUrl(publicUrl);
+
+      toast({ title: 'Photo Updated', description: 'Your profile photo has been updated.' });
+    } catch (error: any) {
+      console.error('Failed to upload avatar:', error);
       toast({
-        title: "Avatar Preview",
-        description: "Avatar preview created. Save to update your profile.",
-      });
-    } catch (error) {
-      console.error('Failed to create avatar preview:', error);
-      toast({
-        title: "Error",
-        description: `Failed to create avatar preview: ${error.message || 'Unknown error'}`,
-        variant: "destructive"
+        title: 'Upload Failed',
+        description: error.message || 'Failed to upload photo. Please try again.',
+        variant: 'destructive'
       });
     } finally {
       setSaving(false);

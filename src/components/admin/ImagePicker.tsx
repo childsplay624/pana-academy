@@ -3,7 +3,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Image as ImageIcon, Upload, Check, X, Loader2 } from 'lucide-react';
-import { fetchSiteImages, uploadImage, ImageCategory, SiteImage } from '@/services/imageService';
+import { fetchSiteImages, ImageCategory, SiteImage } from '@/services/imageService';
+import { supabase } from '@/integrations/supabase/client';
 import { ImageUploader } from './ImageUploader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -53,17 +54,25 @@ export function ImagePicker({ value, onSelect, category = 'other', label = 'Sele
 
     const handleUpload = async (file: File, metadata: { alt_text?: string; description?: string }) => {
         try {
-            const newImage = await uploadImage(file, {
-                key: `course-${Date.now()}`,
-                category: category,
-                alt_text: metadata.alt_text,
-                description: metadata.description
-            });
-            onSelect(newImage.url);
+            const fileExt = file.name.split('.').pop();
+            const filePath = `thumbnails/${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
+
+            // Upload directly to the course-images storage bucket
+            const { error: uploadError } = await supabase.storage
+                .from('course-images')
+                .upload(filePath, file, { upsert: false, cacheControl: '3600' });
+
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('course-images')
+                .getPublicUrl(filePath);
+
+            onSelect(publicUrl);
             setIsOpen(false);
         } catch (error) {
             console.error('Error in ImagePicker upload:', error);
-            throw error; // Rethrow so ImageUploader can show error toast
+            throw error; // Let ImageUploader show the error toast
         }
     };
 
