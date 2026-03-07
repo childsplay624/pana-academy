@@ -269,15 +269,24 @@ const CourseDetails: React.FC = () => {
                 )}
               </div>
               {user && isInstructor ? (
-                <Button
-                  variant="outline"
-                  className="mt-4"
-                  onClick={() => navigate(`/instructor/courses/${id}/edit`)}
-                >
-                  Edit Course
-                </Button>
+                /* Instructor: show Edit + Enroll side by side */
+                <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate(`/course/${id}/edit`)}
+                  >
+                    Edit Course
+                  </Button>
+                  {!isEnrolled && (
+                    <PaymentButton
+                      courseId={course.id}
+                      amount={course.price || 0}
+                      courseTitle={course.title}
+                    />
+                  )}
+                </div>
               ) : user ? (
-                !isInstructor && !isEnrolled && (
+                !isEnrolled && (
                   <PaymentButton
                     courseId={course.id}
                     amount={course.price || 0}
