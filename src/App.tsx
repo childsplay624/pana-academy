@@ -183,7 +183,7 @@ const App = () => (
                       }
                     />
                     <Route
-                      path="/course/:courseId"
+                      path="/course-overview/:courseId"
                       element={
                         <ProtectedRoute allowedRoles={['student', 'instructor', 'admin']}>
                           <CourseLearning />

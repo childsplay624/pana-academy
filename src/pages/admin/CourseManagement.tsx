@@ -41,11 +41,7 @@ export default function CourseManagement() {
   const itemsPerPage = 10;
   const { toast } = useToast();
 
-  useEffect(() => {
-    if (profile?.id) fetchCourses();
-  }, [profile?.id]);
-
-  const fetchCourses = async () => {
+  const fetchCourses = async (role: string | undefined, userId: string | undefined) => {
     try {
       let query = supabase
         .from('courses')
@@ -56,9 +52,9 @@ export default function CourseManagement() {
         `)
         .order('created_at', { ascending: false });
 
-      // Instructors only see their own courses
-      if (profile?.role === 'instructor') {
-        query = query.eq('instructor_id', profile.id);
+      // Instructors only see their own courses — filter at query level
+      if (role === 'instructor' && userId) {
+        query = query.eq('instructor_id', userId);
       }
 
       const { data, error } = await query;
@@ -75,6 +71,12 @@ export default function CourseManagement() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (profile?.id) {
+      fetchCourses(profile.role, profile.id);
+    }
+  }, [profile?.id, profile?.role]);
 
   // Reset to first page when search or filters change
   useEffect(() => {

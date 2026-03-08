@@ -5,12 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { sessionService } from '@/services/sessionService';
-import { 
-  Users, 
-  DollarSign, 
-  TrendingUp, 
+import {
+  Users,
+  DollarSign,
+  TrendingUp,
   TrendingDown,
   Calendar,
   BarChart,
@@ -21,7 +22,7 @@ import {
   ShoppingCart,
   UserCheck
 } from 'lucide-react';
-import { 
+import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart as RechartsBarChart, Bar, PieChart as RechartsPieChart, Pie, Cell
 } from 'recharts';
@@ -61,164 +62,160 @@ export default function Analytics() {
   const [timeRange, setTimeRange] = useState('7d');
   const [loading, setLoading] = useState(true);
   const [analytics, setAnalytics] = useState<RealAnalyticsData | null>(null);
+  const [trendData, setTrendData] = useState<{ name: string; revenue: number; enrollments: number }[]>([]);
   const { toast } = useToast();
+  const { profile } = useAuth();
+  const isInstructor = profile?.role === 'instructor';
 
   const fetchRealAnalytics = async () => {
     try {
       setLoading(true);
-      
-      // Calculate date range
+
       const now = new Date();
       const daysBack = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : 90;
       const startDate = new Date(now.getTime() - (daysBack * 24 * 60 * 60 * 1000));
       const previousStartDate = new Date(now.getTime() - (daysBack * 2 * 24 * 60 * 60 * 1000));
 
-      // Fetch all necessary data
-      const [
-        usersResult,
-        coursesResult,
-        enrollmentsResult,
-        transactionsResult,
-        paymentsResult
-      ] = await Promise.all([
-        supabase.from('profiles').select('id, created_at, role'),
-        supabase.from('courses').select('id, title, price, status, instructor_id, created_at'),
-        supabase.from('enrollments').select('id, student_id, course_id, status, enrolled_at, completed_at, progress_percentage'),
-        supabase.from('transactions').select('id, user_id, course_id, amount, status, created_at, metadata').eq('status', 'completed'),
-        supabase.from('payments').select('id, user_id, course_id, amount, status, created_at').eq('status', 'completed')
-      ]);
+      // ── Step 1: Get courses (instructor-scoped) ────────────────────
+      let coursesQuery = supabase
+        .from('courses')
+        .select('id, title, price, status, instructor_id, created_at');
 
-      if (usersResult.error || coursesResult.error || enrollmentsResult.error || 
-          transactionsResult.error || paymentsResult.error) {
-        throw new Error('Failed to fetch analytics data');
+      if (isInstructor && profile?.id) {
+        coursesQuery = coursesQuery.eq('instructor_id', profile.id);
       }
 
-      const users = usersResult.data || [];
+      const coursesResult = await coursesQuery;
       const courses = coursesResult.data || [];
+      const ownCourseIds = courses.map(c => c.id);
+
+      // ── Step 2: Fetch remaining data (scoped to instructor's courses) ─
+      const empty = { data: [] as any[], error: null };
+
+      const usersResult = isInstructor
+        ? (ownCourseIds.length > 0
+          ? await supabase.from('enrollments').select('student_id').in('course_id', ownCourseIds)
+          : empty)
+        : await supabase.from('profiles').select('id, created_at, role');
+
+      const enrollmentsResult = ownCourseIds.length > 0
+        ? await supabase.from('enrollments').select('id, student_id, course_id, status, enrolled_at, completed_at, progress_percentage').in('course_id', ownCourseIds)
+        : empty;
+
+      const transactionsResult = ownCourseIds.length > 0
+        ? await supabase.from('transactions').select('id, user_id, course_id, amount, status, created_at').eq('status', 'completed').in('course_id', ownCourseIds)
+        : empty;
+
+      const paymentsResult = ownCourseIds.length > 0
+        ? await supabase.from('payments').select('id, user_id, course_id, amount, status, created_at').eq('status', 'completed').in('course_id', ownCourseIds)
+        : empty;
+
+
       const enrollments = enrollmentsResult.data || [];
       const transactions = transactionsResult.data || [];
       const payments = paymentsResult.data || [];
 
-      // Revenue Analytics
+      // For instructors, unique students = unique student_ids in enrollments
+      const users = isInstructor
+        ? [...new Set((usersResult.data || []).map((e: any) => e.student_id))].map(id => ({ id }))
+        : (usersResult.data || []);
+
+      // ── Revenue ────────────────────────────────────────────────────
       const totalRevenue = [...transactions, ...payments].reduce((sum, txn) => sum + Number(txn.amount), 0);
-      const revenueFromPurchases = payments.reduce((sum, payment) => sum + Number(payment.amount), 0);
+      const revenueFromPurchases = payments.reduce((sum, p) => sum + Number(p.amount), 0);
       const totalPurchases = payments.length;
       const avgOrderValue = totalPurchases > 0 ? revenueFromPurchases / totalPurchases : 0;
 
-      // Previous period revenue for growth calculation
-      const previousTransactions = transactions.filter(txn => 
-        new Date(txn.created_at) >= previousStartDate && new Date(txn.created_at) < startDate
+      const previousPayments = payments.filter(p =>
+        new Date(p.created_at) >= previousStartDate && new Date(p.created_at) < startDate
       );
-      const previousPayments = payments.filter(payment => 
-        new Date(payment.created_at) >= previousStartDate && new Date(payment.created_at) < startDate
-      );
-      const previousRevenue = [...previousTransactions, ...previousPayments].reduce((sum, txn) => sum + Number(txn.amount), 0);
+      const previousRevenue = previousPayments.reduce((sum, p) => sum + Number(p.amount), 0);
       const revenueGrowth = previousRevenue > 0 ? ((totalRevenue - previousRevenue) / previousRevenue) * 100 : 0;
 
-      // User Analytics
+      // ── Users ──────────────────────────────────────────────────────
       const totalUsers = users.length;
-      const payingStudentIds = new Set([...transactions, ...payments].map(txn => txn.user_id));
+      const payingStudentIds = new Set([...transactions, ...payments].map(t => t.user_id));
       const payingStudents = payingStudentIds.size;
-      const freeStudents = totalUsers - payingStudents;
+      const freeStudents = Math.max(0, totalUsers - payingStudents);
       const conversionRate = totalUsers > 0 ? (payingStudents / totalUsers) * 100 : 0;
+      const userGrowth = 0; // Omit for scoped data - not meaningful without timestamps
 
-      const previousUsers = users.filter(user => 
-        new Date(user.created_at) >= previousStartDate && new Date(user.created_at) < startDate
-      ).length;
-      const currentUsers = users.filter(user => 
-        new Date(user.created_at) >= startDate
-      ).length;
-      const userGrowth = previousUsers > 0 ? ((currentUsers - previousUsers) / previousUsers) * 100 : 0;
-
-      // Course Analytics
-      const publishedCourses = courses.filter(course => course.status === 'published').length;
-      const avgCoursePrice = courses.length > 0 
-        ? courses.reduce((sum, course) => sum + Number(course.price), 0) / courses.length 
-        : 0;
+      // ── Courses ────────────────────────────────────────────────────
+      const publishedCourses = courses.filter(c => c.status === 'published').length;
+      const avgCoursePrice = courses.length > 0
+        ? courses.reduce((sum, c) => sum + Number(c.price), 0) / courses.length : 0;
       const totalEnrollments = enrollments.length;
       const completedEnrollments = enrollments.filter(e => e.status === 'completed').length;
       const courseCompletionRate = totalEnrollments > 0 ? (completedEnrollments / totalEnrollments) * 100 : 0;
 
-      // Purchase Funnel
+      // ── Funnel ─────────────────────────────────────────────────────
       const currentEnrollments = enrollments.filter(e => new Date(e.enrolled_at) >= startDate).length;
       const currentPurchases = payments.filter(p => new Date(p.created_at) >= startDate).length;
-      const currentCompletions = enrollments.filter(e => 
-        e.completed_at && new Date(e.completed_at) >= startDate
-      ).length;
-      
-      // Estimate total views (this would ideally come from page view tracking)
-      const totalViews = Math.max(currentEnrollments * 3, 100);
+      const currentCompletions = enrollments.filter(e => e.completed_at && new Date(e.completed_at) >= startDate).length;
+      const totalViews = Math.max(currentEnrollments * 3, 10);
 
-      const purchaseFunnel = {
-        totalViews,
-        enrollments: currentEnrollments,
-        purchases: currentPurchases,
-        completions: currentCompletions
-      };
-
-      // Top Performing Courses
-      const courseAnalytics = courses.map(course => {
-        const courseEnrollments = enrollments.filter(e => e.course_id === course.id);
-        const coursePurchases = payments.filter(p => p.course_id === course.id);
-        const courseRevenue = coursePurchases.reduce((sum, p) => sum + Number(p.amount), 0);
-        const completedCount = courseEnrollments.filter(e => e.status === 'completed').length;
-        const completionRate = courseEnrollments.length > 0 ? (completedCount / courseEnrollments.length) * 100 : 0;
-
+      // ── Top courses ────────────────────────────────────────────────
+      const topCourses = courses.map(course => {
+        const ce = enrollments.filter(e => e.course_id === course.id);
+        const cp = payments.filter(p => p.course_id === course.id);
+        const completed = ce.filter(e => e.status === 'completed').length;
         return {
           id: course.id,
           name: course.title,
-          enrollments: courseEnrollments.length,
-          purchases: coursePurchases.length,
-          revenue: courseRevenue,
-          completionRate
+          enrollments: ce.length,
+          purchases: cp.length,
+          revenue: cp.reduce((s, p) => s + Number(p.amount), 0),
+          completionRate: ce.length > 0 ? (completed / ce.length) * 100 : 0
         };
       }).sort((a, b) => b.revenue - a.revenue).slice(0, 5);
 
-      const analyticsData: RealAnalyticsData = {
-        totalRevenue,
-        revenueFromPurchases,
-        avgOrderValue,
-        revenueGrowth,
-        totalUsers,
-        payingStudents,
-        freeStudents,
-        conversionRate,
-        userGrowth,
-        totalCourses: courses.length,
-        publishedCourses,
-        avgCoursePrice,
-        totalEnrollments,
-        courseCompletionRate,
-        purchaseFunnel,
-        topCourses: courseAnalytics
-      };
+      // ── Daily trend (real time-series) ─────────────────────────────
+      const dailyMap: Record<string, { revenue: number; enrollments: number }> = {};
+      for (let i = daysBack - 1; i >= 0; i--) {
+        const d = new Date(now);
+        d.setDate(d.getDate() - i);
+        const key = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        dailyMap[key] = { revenue: 0, enrollments: 0 };
+      }
+      payments.forEach(p => {
+        const key = new Date(p.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        if (dailyMap[key]) dailyMap[key].revenue += Number(p.amount);
+      });
+      enrollments.forEach(e => {
+        const key = new Date(e.enrolled_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        if (dailyMap[key]) dailyMap[key].enrollments += 1;
+      });
+      setTrendData(Object.entries(dailyMap).map(([name, v]) => ({ name, ...v })));
 
-      setAnalytics(analyticsData);
+      setAnalytics({
+        totalRevenue, revenueFromPurchases, avgOrderValue, revenueGrowth,
+        totalUsers, payingStudents, freeStudents, conversionRate, userGrowth,
+        totalCourses: courses.length, publishedCourses, avgCoursePrice,
+        totalEnrollments, courseCompletionRate,
+        purchaseFunnel: { totalViews, enrollments: currentEnrollments, purchases: currentPurchases, completions: currentCompletions },
+        topCourses
+      });
     } catch (error) {
       console.error('Failed to fetch analytics:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load analytics data",
-        variant: "destructive"
-      });
+      toast({ title: 'Error', description: 'Failed to load analytics data', variant: 'destructive' });
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchRealAnalytics();
-  }, [timeRange]);
+    if (profile !== undefined) fetchRealAnalytics();
+  }, [timeRange, profile?.id]);
 
   const exportReport = async () => {
     if (!analytics) return;
-    
+
     try {
       toast({
         title: "Export Started",
         description: "Your analytics report is being generated...",
       });
-      
+
       const csvData = [
         ['Metric', 'Value', 'Change'],
         ['Total Revenue', `₦${analytics.totalRevenue.toLocaleString()}`, `${analytics.revenueGrowth > 0 ? '+' : ''}${analytics.revenueGrowth.toFixed(1)}%`],
@@ -236,18 +233,18 @@ export default function Analytics() {
         ['Funnel Purchases', analytics.purchaseFunnel.purchases.toLocaleString(), ''],
         ['Funnel Completions', analytics.purchaseFunnel.completions.toLocaleString(), '']
       ];
-      
+
       const csvContent = csvData.map(row => row.join(',')).join('\n');
       const blob = new Blob([csvContent], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
-      
+
       const link = document.createElement('a');
       link.href = url;
       link.download = `real-analytics-report-${timeRange}-${new Date().toISOString().split('T')[0]}.csv`;
       link.click();
-      
+
       URL.revokeObjectURL(url);
-      
+
       toast({
         title: "Report Ready",
         description: "Your comprehensive analytics report has been downloaded.",
@@ -468,8 +465,8 @@ export default function Analytics() {
                 ].map((stage, index) => (
                   <div key={stage.name} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div 
-                        className="w-4 h-4 rounded" 
+                      <div
+                        className="w-4 h-4 rounded"
                         style={{ backgroundColor: stage.color }}
                       />
                       <span className="font-medium">{stage.name}</span>
@@ -478,8 +475,8 @@ export default function Analytics() {
                       <p className="font-bold">{stage.value.toLocaleString()}</p>
                       {index > 0 && (
                         <p className="text-xs text-muted-foreground">
-                          {((stage.value / (index === 1 ? analytics.purchaseFunnel.totalViews : 
-                              index === 2 ? analytics.purchaseFunnel.enrollments : 
+                          {((stage.value / (index === 1 ? analytics.purchaseFunnel.totalViews :
+                            index === 2 ? analytics.purchaseFunnel.enrollments :
                               analytics.purchaseFunnel.purchases)) * 100).toFixed(1)}% conversion
                         </p>
                       )}
@@ -525,29 +522,27 @@ export default function Analytics() {
           </Card>
         </div>
 
-        {/* Revenue Trend */}
+        {/* Revenue & Enrollment Trend */}
         <Card>
           <CardHeader>
-            <CardTitle>Revenue & User Growth Trend</CardTitle>
-            <CardDescription>Daily performance over selected period</CardDescription>
+            <CardTitle>Revenue & Enrollment Trend</CardTitle>
+            <CardDescription>
+              {isInstructor ? 'Your course performance' : 'Platform-wide daily performance'} over the selected period
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={[
-                { name: 'Revenue', value: analytics.totalRevenue },
-                { name: 'Users', value: analytics.totalUsers },
-                { name: 'Courses', value: analytics.totalCourses }
-              ]}>
+              <LineChart data={trendData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Line 
-                  type="monotone" 
-                  dataKey="value" 
-                  stroke="#10b981" 
-                  strokeWidth={2}
-                />
+                <XAxis dataKey="name" tick={{ fontSize: 11 }} interval={Math.floor(trendData.length / 7)} />
+                <YAxis yAxisId="left" />
+                <YAxis yAxisId="right" orientation="right" />
+                <Tooltip formatter={(value, name) => [
+                  name === 'revenue' ? `₦${Number(value).toLocaleString()}` : value,
+                  name === 'revenue' ? 'Revenue' : 'Enrollments'
+                ]} />
+                <Line yAxisId="left" type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={2} dot={false} />
+                <Line yAxisId="right" type="monotone" dataKey="enrollments" stroke="#3b82f6" strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
