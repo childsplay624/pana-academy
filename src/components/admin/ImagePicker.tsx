@@ -57,15 +57,15 @@ export function ImagePicker({ value, onSelect, category = 'other', label = 'Sele
             const fileExt = file.name.split('.').pop();
             const filePath = `thumbnails/${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
 
-            // Upload directly to the course-images storage bucket
+            // Upload directly to the site-images storage bucket
             const { error: uploadError } = await supabase.storage
-                .from('course-images')
+                .from('site-images')
                 .upload(filePath, file, { upsert: false, cacheControl: '3600' });
 
             if (uploadError) throw uploadError;
 
             const { data: { publicUrl } } = supabase.storage
-                .from('course-images')
+                .from('site-images')
                 .getPublicUrl(filePath);
 
             onSelect(publicUrl);
