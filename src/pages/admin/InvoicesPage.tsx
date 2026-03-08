@@ -23,6 +23,7 @@ import {
   CreditCard
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { sendEmail } from '@/services/emailService';
 
@@ -46,14 +47,15 @@ interface Invoice {
 
 export default function InvoicesPage() {
   const navigate = useNavigate();
+  const { profile } = useAuth();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredInvoices, setFilteredInvoices] = useState<Invoice[]>([]);
 
   useEffect(() => {
-    fetchInvoices();
-  }, []);
+    if (profile?.id) fetchInvoices();
+  }, [profile?.id, profile?.role]);
 
   useEffect(() => {
     const filtered = invoices.filter(invoice =>
@@ -68,13 +70,33 @@ export default function InvoicesPage() {
 
   const fetchInvoices = async () => {
     try {
+      // Fetch all invoices first (RLS already limits what the user can see)
       const { data, error } = await (supabase as any)
         .from('invoices')
         .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setInvoices(data || []);
+
+      let result = data || [];
+
+      // Instructors: filter to only invoices for their own courses
+      if (profile?.role === 'instructor' && profile?.id) {
+        const { data: myCourses } = await supabase
+          .from('courses')
+          .select('title')
+          .eq('instructor_id', profile.id);
+
+        const myCourseTitles = new Set(
+          (myCourses || []).map((c: any) => c.title.toLowerCase())
+        );
+
+        result = result.filter((inv: Invoice) =>
+          myCourseTitles.has(inv.course_title.toLowerCase())
+        );
+      }
+
+      setInvoices(result);
     } catch (error) {
       console.error('Error fetching invoices:', error);
       toast.error('Failed to load invoices');

@@ -36,6 +36,8 @@ import {
     rejectPayment
 } from '@/services/paymentService';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { sendEmail } from '@/services/emailService';
 import type { Payment, PaymentStatus } from '@/types/database.types';
 
@@ -50,16 +52,32 @@ export default function PaymentManagement() {
     const [rejectionReason, setRejectionReason] = useState('');
     const [processingId, setProcessingId] = useState<string | null>(null);
     const { toast } = useToast();
+    const { profile } = useAuth();
 
     useEffect(() => {
-        fetchPayments();
-    }, [filterStatus]);
+        if (profile?.id) fetchPayments();
+    }, [filterStatus, profile?.id, profile?.role]);
 
     const fetchPayments = async () => {
         setLoading(true);
         try {
             const statusArg = filterStatus === 'all' ? undefined : filterStatus;
-            const data = await getAllManualPayments(statusArg);
+            let data = await getAllManualPayments(statusArg);
+
+            // Instructors: filter to only payments for their own courses
+            if (profile?.role === 'instructor' && profile?.id) {
+                const { data: myCourses } = await supabase
+                    .from('courses')
+                    .select('id')
+                    .eq('instructor_id', profile.id);
+
+                const myCourseIds = new Set(
+                    (myCourses || []).map((c: any) => c.id)
+                );
+
+                data = data.filter((p: any) => myCourseIds.has(p.course_id));
+            }
+
             setPayments(data);
         } catch (error) {
             console.error('Error fetching payments:', error);
