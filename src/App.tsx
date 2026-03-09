@@ -169,7 +169,7 @@ const App = () => (
                     <Route
                       path="/dashboard/payments"
                       element={
-                        <ProtectedRoute allowedRoles={['admin', 'instructor']}>
+                        <ProtectedRoute allowedRoles={['admin']}>
                           <PaymentManagement />
                         </ProtectedRoute>
                       }
@@ -177,7 +177,7 @@ const App = () => (
                     <Route
                       path="/dashboard/invoices"
                       element={
-                        <ProtectedRoute allowedRoles={['admin', 'instructor']}>
+                        <ProtectedRoute allowedRoles={['admin']}>
                           <InvoicesPage />
                         </ProtectedRoute>
                       }
@@ -225,7 +225,7 @@ const App = () => (
                     <Route
                       path="/dashboard/support-tickets"
                       element={
-                        <ProtectedRoute allowedRoles={['admin', 'instructor']}>
+                        <ProtectedRoute allowedRoles={['admin']}>
                           <SupportTickets />
                         </ProtectedRoute>
                       }
@@ -281,7 +281,7 @@ const App = () => (
                     <Route
                       path="/dashboard/analytics"
                       element={
-                        <ProtectedRoute allowedRoles={['admin', 'instructor']}>
+                        <ProtectedRoute allowedRoles={['admin']}>
                           <Analytics />
                         </ProtectedRoute>
                       }
@@ -289,7 +289,7 @@ const App = () => (
                     <Route
                       path="/dashboard/settings"
                       element={
-                        <ProtectedRoute allowedRoles={['admin', 'instructor']}>
+                        <ProtectedRoute allowedRoles={['admin']}>
                           <Settings />
                         </ProtectedRoute>
                       }

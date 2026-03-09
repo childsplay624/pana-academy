@@ -72,12 +72,7 @@ export function DashboardSidebar() {
       return [
         ...baseItems,
         { title: "My Courses", url: "/dashboard/courses", icon: BookOpen },
-        { title: "Payments", url: "/dashboard/payments", icon: CreditCard },
-        { title: "Invoices", url: "/dashboard/invoices", icon: FileText },
-        { title: "Support Tickets", url: "/dashboard/support-tickets", icon: MessageSquare },
-        { title: "Analytics", url: "/dashboard/analytics", icon: TrendingUp },
         { title: "Profile", url: "/student/profile", icon: User },
-        { title: "Settings", url: "/dashboard/settings", icon: Settings },
       ];
     }
 

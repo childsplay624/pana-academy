@@ -6,18 +6,15 @@ import {
   BookOpen,
   Users,
   TrendingUp,
-  DollarSign,
   Plus,
   ArrowRight,
   Clock,
   CheckCircle,
   Eye,
-  FileText,
   BarChart3,
   AlertCircle,
   UserPlus,
   GraduationCap,
-  Settings
 } from 'lucide-react';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { useAuth } from '@/hooks/useAuth';
@@ -37,7 +34,6 @@ interface InstructorCourse {
   thumbnail_url: string | null;
   enrollmentCount: number;
   completionRate: number;
-  revenue: number;
 }
 
 interface InstructorStats {
@@ -51,10 +47,6 @@ interface InstructorStats {
     total: number;
     activeThisMonth: number;
     completedCourse: number;
-  };
-  revenue: {
-    total: number;
-    thisMonth: number;
   };
   completion: {
     averageRate: number;
@@ -111,18 +103,8 @@ export default function InstructorDashboard() {
         enrollments = enrollData || [];
       }
 
-      // 3. Fetch payments for instructor's courses
+      // 3. Fetch payments - Removed as per request (only admins should have access to payment data)
       let payments: any[] = [];
-      if (courseIds.length > 0) {
-        const { data: payData, error: payError } = await supabase
-          .from('payments')
-          .select('amount, course_id, status, created_at')
-          .in('course_id', courseIds)
-          .eq('status', 'completed');
-
-        if (payError) throw payError;
-        payments = payData || [];
-      }
 
       // ── Compute Stats ────────────────────────────────────────────────
 
@@ -152,16 +134,7 @@ export default function InstructorDashboard() {
         completedCourse: completedStudents,
       };
 
-      // Revenue stats
-      const totalRevenue = payments.reduce((sum, p) => sum + Number(p.amount), 0);
-      const monthlyRevenue = payments
-        .filter(p => new Date(p.created_at) >= startOfMonth)
-        .reduce((sum, p) => sum + Number(p.amount), 0);
 
-      const revenueStats = {
-        total: totalRevenue,
-        thisMonth: monthlyRevenue,
-      };
 
       // Completion rate
       const enrolledWithProgress = enrollments.filter(
@@ -199,7 +172,6 @@ export default function InstructorDashboard() {
           thumbnail_url: course.thumbnail_url,
           enrollmentCount: courseEnrollments.length,
           completionRate,
-          revenue: coursePayments.reduce((s, p) => s + Number(p.amount), 0),
         };
       });
 
@@ -262,7 +234,6 @@ export default function InstructorDashboard() {
       setStats({
         courses: courseStats,
         students: studentStats,
-        revenue: revenueStats,
         completion: { averageRate: avgCompletion },
         recentActivity: recentActivity.slice(0, 5),
         coursesList,
@@ -363,14 +334,7 @@ export default function InstructorDashboard() {
               <Plus className="h-4 w-4" />
               Create Course
             </Button>
-            <Button
-              variant="outline"
-              onClick={() => navigate('/dashboard/analytics')}
-              className="flex items-center gap-2"
-            >
-              <BarChart3 className="h-4 w-4" />
-              Analytics
-            </Button>
+
           </div>
         </div>
 
@@ -418,20 +382,7 @@ export default function InstructorDashboard() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Revenue</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">₦{stats.revenue.total.toLocaleString()}</div>
-              <p className="text-xs text-muted-foreground">
-                {stats.revenue.thisMonth > 0
-                  ? `₦${stats.revenue.thisMonth.toLocaleString()} this month`
-                  : 'Total earnings from course sales'}
-              </p>
-            </CardContent>
-          </Card>
+
         </div>
 
         {/* ── Main Content Grid ───────────────────────────────────────── */}
@@ -510,12 +461,7 @@ export default function InstructorDashboard() {
                             <TrendingUp className="h-3 w-3" />
                             {course.completionRate}% completion
                           </span>
-                          {course.revenue > 0 && (
-                            <span className="flex items-center gap-1 text-green-600">
-                              <DollarSign className="h-3 w-3" />
-                              ₦{course.revenue.toLocaleString()}
-                            </span>
-                          )}
+
                         </div>
                       </div>
 
@@ -541,54 +487,7 @@ export default function InstructorDashboard() {
           <div className="space-y-6">
 
             {/* Revenue Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <DollarSign className="h-5 w-5" />
-                  Earnings Overview
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/10 border border-green-100 dark:border-green-900/20 rounded-lg">
-                  <div>
-                    <div className="text-sm font-medium text-green-700 dark:text-green-400">
-                      Total Earnings
-                    </div>
-                    <div className="text-xs text-green-600/80 dark:text-green-400/60">
-                      All time
-                    </div>
-                  </div>
-                  <div className="text-xl font-bold text-green-700 dark:text-green-400">
-                    ₦{stats.revenue.total.toLocaleString()}
-                  </div>
-                </div>
 
-                <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/20 rounded-lg">
-                  <div>
-                    <div className="text-sm font-medium text-blue-700 dark:text-blue-400">
-                      This Month
-                    </div>
-                    <div className="text-xs text-blue-600/80 dark:text-blue-400/60">
-                      {new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}
-                    </div>
-                  </div>
-                  <div className="text-xl font-bold text-blue-700 dark:text-blue-400">
-                    ₦{stats.revenue.thisMonth.toLocaleString()}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="text-center p-3 rounded-lg border">
-                    <div className="text-lg font-bold">{stats.students.total}</div>
-                    <div className="text-xs text-muted-foreground">Total Students</div>
-                  </div>
-                  <div className="text-center p-3 rounded-lg border">
-                    <div className="text-lg font-bold">{stats.students.completedCourse}</div>
-                    <div className="text-xs text-muted-foreground">Completions</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
 
             {/* Recent Activity */}
             <Card>
@@ -657,22 +556,8 @@ export default function InstructorDashboard() {
             <Eye className="h-6 w-6" />
             <span>Manage Courses</span>
           </Button>
-          <Button
-            variant="outline"
-            onClick={() => navigate('/dashboard/analytics')}
-            className="h-20 flex flex-col items-center justify-center gap-2"
-          >
-            <BarChart3 className="h-6 w-6" />
-            <span>View Analytics</span>
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => navigate('/dashboard/settings')}
-            className="h-20 flex flex-col items-center justify-center gap-2"
-          >
-            <Settings className="h-6 w-6" />
-            <span>Settings</span>
-          </Button>
+
+
         </div>
       </div>
     </DashboardLayout>
