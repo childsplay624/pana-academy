@@ -50,7 +50,7 @@ export function FileUpload({
 
   const getFileIcon = (fileName: string) => {
     const extension = fileName.split('.').pop()?.toLowerCase();
-    
+
     if (['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv'].includes(extension || '')) {
       return <Video className="h-5 w-5 text-blue-500" />;
     } else if (['pdf', 'doc', 'docx', 'txt', 'rtf'].includes(extension || '')) {
@@ -101,7 +101,7 @@ export function FileUpload({
 
       // Upload file to Supabase Storage
       const { data, error } = await supabase.storage
-        .from('course-content')
+        .from('site-images')
         .upload(fileName, file, {
           cacheControl: '3600',
           upsert: false
@@ -111,7 +111,7 @@ export function FileUpload({
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
-        .from('course-content')
+        .from('site-images')
         .getPublicUrl(fileName);
 
       const uploadedFile: UploadedFile = {
@@ -145,7 +145,7 @@ export function FileUpload({
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
-    
+
     if (files.length === 0) return;
 
     if (multiple) {

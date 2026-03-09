@@ -114,8 +114,8 @@ export function ImageUploader({ onUpload, category, disabled, showCustomKey = fa
                 <div
                     {...getRootProps()}
                     className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragActive
-                            ? 'border-primary bg-primary/5'
-                            : 'border-muted-foreground/25 hover:border-primary/50'
+                        ? 'border-primary bg-primary/5'
+                        : 'border-muted-foreground/25 hover:border-primary/50'
                         } ${disabled || uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                     <input {...getInputProps()} />
@@ -190,7 +190,7 @@ export function ImageUploader({ onUpload, category, disabled, showCustomKey = fa
                             />
                         </div>
 
-                        <div className="flex gap-3">
+                        <div className="flex flex-col sm:flex-row gap-3">
                             <Button
                                 onClick={handleUpload}
                                 disabled={!altText || (showCustomKey && !customKey) || uploading}

@@ -80,7 +80,7 @@ export function ImagePicker({ value, onSelect, category = 'other', label = 'Sele
         <div className="space-y-2">
             <div className="flex items-center gap-4">
                 {value ? (
-                    <div className="relative group w-32 h-32 rounded-lg overflow-hidden border">
+                    <div className="relative group w-32 h-32 rounded-lg overflow-hidden border flex-shrink-0">
                         <img src={value} alt="Selected" className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                             <Button size="icon" variant="secondary" className="h-8 w-8" onClick={() => setIsOpen(true)}>
@@ -95,7 +95,7 @@ export function ImagePicker({ value, onSelect, category = 'other', label = 'Sele
                     <Button
                         type="button"
                         variant="outline"
-                        className="w-32 h-32 border-dashed flex flex-col gap-2"
+                        className="w-32 h-32 border-dashed flex flex-col gap-2 flex-shrink-0"
                         onClick={() => setIsOpen(true)}
                     >
                         <ImageIcon className="h-8 w-8 text-muted-foreground" />
@@ -112,7 +112,7 @@ export function ImagePicker({ value, onSelect, category = 'other', label = 'Sele
                                 {value ? 'Change image' : 'Choose from gallery'}
                             </Button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-[700px] h-[600px] flex flex-col">
+                        <DialogContent className="max-w-[95vw] sm:max-w-[700px] w-full h-[85vh] sm:h-[600px] flex flex-col">
                             <DialogHeader>
                                 <DialogTitle>Image Picker</DialogTitle>
                             </DialogHeader>
@@ -143,7 +143,7 @@ export function ImagePicker({ value, onSelect, category = 'other', label = 'Sele
                                                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
                                             </div>
                                         ) : filteredImages.length > 0 ? (
-                                            <div className="grid grid-cols-3 gap-4 pb-4">
+                                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pb-4">
                                                 {filteredImages.map((img) => (
                                                     <Card
                                                         key={img.id}
