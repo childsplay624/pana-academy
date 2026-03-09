@@ -228,6 +228,23 @@ const templates: Record<string, (payload: any) => { subject: string; html: strin
       </div>
     `, `Quick reminder: Your ${payload.streakDays} day learning streak ends in ${payload.hoursLeft} hours.`)
   }),
+  payment_proof_uploaded: (payload: any) => ({
+    subject: `New Payment Proof Uploaded: ${payload.reference}`,
+    html: emailLayout(`
+      <h1>New Payment Proof Received</h1>
+      <p>A student has uploaded a proof of payment for manual confirmation.</p>
+      <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid ${BRAND_COLORS.navy};">
+        <div style="margin-bottom: 10px;">Student: <strong>${payload.userName || 'Unknown Student'}</strong></div>
+        <div style="margin-bottom: 10px;">Course: <strong>${payload.courseTitle || 'Unknown Course'}</strong></div>
+        <div style="margin-bottom: 10px;">Amount: <strong>₦${payload.amount || '0'}</strong></div>
+        <div style="margin-bottom: 10px;">Reference: <strong>${payload.reference}</strong></div>
+      </div>
+      <p>Please review the receipt in the admin dashboard and confirm or reject the payment.</p>
+      <div style="text-align: center;">
+        <a href="${payload.appUrl}/dashboard/payments" class="btn">View Payments Dashboard</a>
+      </div>
+    `, `New payment proof uploaded for ${payload.reference}`)
+  }),
   invoice: (payload: any) => ({
     subject: `Invoice ${payload.invoiceNumber} - PANA Academy`,
     html: emailLayout(`

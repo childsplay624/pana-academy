@@ -278,6 +278,35 @@ export const uploadReceipt = async (
 
     if (updateError) throw updateError;
 
+    // --- PROACTIVE FIX: Notify Admin by Email ---
+    try {
+      const { sendEmail } = await import('./emailService');
+
+      // Fetch details for the email
+      const { data: paymentData } = await (supabase as any)
+        .from('payments')
+        .select('amount, courses(title), profiles(full_name)')
+        .eq('reference', reference)
+        .single();
+
+      if (paymentData) {
+        await sendEmail({
+          to: 'info@pana-academy.com', // Primary admin gateway
+          type: 'payment_proof_uploaded',
+          payload: {
+            userName: paymentData.profiles?.full_name,
+            courseTitle: paymentData.courses?.title,
+            amount: paymentData.amount,
+            reference: reference
+          }
+        });
+      }
+    } catch (emailErr) {
+      // Don't block the UI if email fails, but log it
+      console.warn('Silent failure sending admin notification email:', emailErr);
+    }
+    // --- END FIX ---
+
     return { success: true, url: publicUrl };
   } catch (error) {
     console.error('Error uploading receipt:', error);

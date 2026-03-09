@@ -6,7 +6,7 @@ type EmailPayload = {
 
 type EmailOptions = {
   to: string | string[];
-  type: 'welcome' | 'enrollment' | 'certificate' | 'grading' | 'reminder' | 'verification' | 'reset_password' | 'payment_confirmed' | 'payment_rejected' | 'level_up' | 'streak_reminder' | 'invoice' | 'custom';
+  type: 'welcome' | 'enrollment' | 'certificate' | 'grading' | 'reminder' | 'verification' | 'reset_password' | 'payment_confirmed' | 'payment_rejected' | 'level_up' | 'streak_reminder' | 'invoice' | 'payment_proof_uploaded' | 'custom';
   payload?: EmailPayload;
   subject?: string;
   html?: string;
