@@ -110,8 +110,8 @@ export function CreateCourseWizard() {
                 description: `${courseBasics.courseType} course created successfully.`,
             });
 
-            // Navigate to course editor
-            navigate(`/course/${result.data.id}/edit`);
+            // Navigate to course editor content tab
+            navigate(`/course/${result.data.id}/edit?tab=content`);
         } catch (error) {
             console.error('Error creating course:', error);
             toast({

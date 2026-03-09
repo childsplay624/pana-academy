@@ -486,9 +486,6 @@ export default function InstructorDashboard() {
           {/* ── Right Column: Activity + Revenue ─────────────────────── */}
           <div className="space-y-6">
 
-            {/* Revenue Card */}
-
-
             {/* Recent Activity */}
             <Card>
               <CardHeader>

@@ -112,6 +112,13 @@ export function CourseEditor() {
     if (courseId) {
       fetchCourse();
     }
+
+    // Set active tab from query param if available
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get('tab');
+    if (tab && ['details', 'content', 'students', 'settings'].includes(tab)) {
+      setActiveTab(tab);
+    }
   }, [courseId]);
 
   const fetchCourse = async () => {
@@ -346,14 +353,16 @@ export function CourseEditor() {
                   >
                     My Courses
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => navigate('/dashboard/analytics')}
-                    className="text-muted-foreground hover:text-foreground"
-                  >
-                    Analytics
-                  </Button>
+                  {profile?.role === 'admin' && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => navigate('/dashboard/analytics')}
+                      className="text-muted-foreground hover:text-foreground"
+                    >
+                      Analytics
+                    </Button>
+                  )}
                 </nav>
               </div>
 

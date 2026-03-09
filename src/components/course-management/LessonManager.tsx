@@ -68,14 +68,17 @@ export function LessonManager({ moduleId, lessons, canEdit, onLessonsUpdate }: L
 
     try {
       const nextOrderIndex = Math.max(...lessons.map(l => l.order_index), 0) + 1;
-      
+
+      // Map 'reading' to 'text' for database compatibility if needed
+      const dbType = newLesson.lesson_type === 'reading' ? 'text' : newLesson.lesson_type;
+
       const { error } = await supabase
         .from('lessons')
         .insert({
           title: newLesson.title,
           content: newLesson.content || null,
           video_url: newLesson.video_url || null,
-          lesson_type: newLesson.lesson_type,
+          lesson_type: dbType,
           duration_minutes: newLesson.duration_minutes,
           is_free: newLesson.is_free,
           module_id: moduleId,
@@ -96,7 +99,7 @@ export function LessonManager({ moduleId, lessons, canEdit, onLessonsUpdate }: L
         file_urls: []
       });
       onLessonsUpdate();
-      
+
       toast({
         title: "Success",
         description: "Lesson created successfully",
@@ -122,13 +125,16 @@ export function LessonManager({ moduleId, lessons, canEdit, onLessonsUpdate }: L
     }
 
     try {
+      // Map 'reading' to 'text' for database compatibility if needed
+      const dbType = editingLesson.lesson_type === 'reading' ? 'text' : editingLesson.lesson_type;
+
       const { error } = await supabase
         .from('lessons')
         .update({
           title: editingLesson.title,
           content: editingLesson.content,
           video_url: editingLesson.video_url,
-          lesson_type: editingLesson.lesson_type,
+          lesson_type: dbType,
           duration_minutes: editingLesson.duration_minutes,
           is_free: editingLesson.is_free,
           file_urls: editingLesson.file_urls
@@ -139,7 +145,7 @@ export function LessonManager({ moduleId, lessons, canEdit, onLessonsUpdate }: L
 
       setEditingLesson(null);
       onLessonsUpdate();
-      
+
       toast({
         title: "Success",
         description: "Lesson updated successfully",
@@ -165,7 +171,7 @@ export function LessonManager({ moduleId, lessons, canEdit, onLessonsUpdate }: L
         if (error) throw error;
 
         onLessonsUpdate();
-        
+
         toast({
           title: "Success",
           description: "Lesson deleted successfully",
@@ -186,7 +192,13 @@ export function LessonManager({ moduleId, lessons, canEdit, onLessonsUpdate }: L
       case 'video':
         return <Video className="h-4 w-4" />;
       case 'reading':
+      case 'text':
+      case 'pdf':
         return <FileText className="h-4 w-4" />;
+      case 'quiz':
+        return <Play className="h-4 w-4" />;
+      case 'assignment':
+        return <Paperclip className="h-4 w-4" />;
       default:
         return <Play className="h-4 w-4" />;
     }
@@ -222,7 +234,7 @@ export function LessonManager({ moduleId, lessons, canEdit, onLessonsUpdate }: L
                   className="col-span-3"
                 />
               </div>
-              
+
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="lesson-type" className="text-right">
                   Type
@@ -298,6 +310,22 @@ export function LessonManager({ moduleId, lessons, canEdit, onLessonsUpdate }: L
                   </span>
                 </div>
               </div>
+
+              <div className="col-span-4 mt-2">
+                <Label className="mb-2 block">Upload Lesson Materials</Label>
+                <FileUpload
+                  onFileUpload={(fileUrl) => {
+                    setNewLesson(prev => ({
+                      ...prev,
+                      file_urls: [...prev.file_urls, fileUrl]
+                    }));
+                  }}
+                  existingFiles={newLesson.file_urls}
+                  multiple={true}
+                  accept="video/*,application/pdf,image/*,.doc,.docx,.txt"
+                  description="Upload videos, documents, or images for this lesson"
+                />
+              </div>
             </div>
             <DialogFooter>
               <Button onClick={addLesson}>Create Lesson</Button>
@@ -328,7 +356,7 @@ export function LessonManager({ moduleId, lessons, canEdit, onLessonsUpdate }: L
                   className="col-span-3"
                 />
               </div>
-              
+
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="edit-lesson-type" className="text-right">
                   Type
@@ -481,7 +509,7 @@ export function LessonManager({ moduleId, lessons, canEdit, onLessonsUpdate }: L
                   </div>
                 </div>
               </div>
-              
+
               {canEdit && (
                 <div className="flex items-center gap-2">
                   <Button
