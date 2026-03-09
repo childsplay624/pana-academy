@@ -112,12 +112,12 @@ export function ImagePicker({ value, onSelect, category = 'other', label = 'Sele
                                 {value ? 'Change image' : 'Choose from gallery'}
                             </Button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-[95vw] sm:max-w-[700px] w-full h-[85vh] sm:h-[600px] flex flex-col">
+                        <DialogContent className="max-w-[95vw] sm:max-w-[700px] w-full h-[85vh] sm:h-[600px] flex flex-col overflow-hidden">
                             <DialogHeader>
                                 <DialogTitle>Image Picker</DialogTitle>
                             </DialogHeader>
 
-                            <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
+                            <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
                                 <TabsList className="grid w-full grid-cols-2">
                                     <TabsTrigger value="gallery">Gallery</TabsTrigger>
                                     <TabsTrigger value="upload">Upload New</TabsTrigger>
