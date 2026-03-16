@@ -77,17 +77,17 @@ export function ImagePicker({ value, onSelect, category = 'other', label = 'Sele
     };
 
     return (
-        <div className="space-y-2">
-            <div className="flex items-center gap-4">
+        <div className="space-y-2 w-full">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
                 {value ? (
-                    <div className="relative group w-32 h-32 rounded-lg overflow-hidden border flex-shrink-0">
+                    <div className="relative group w-full sm:w-32 h-40 sm:h-32 rounded-lg overflow-hidden border flex-shrink-0 bg-muted">
                         <img src={value} alt="Selected" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                            <Button size="icon" variant="secondary" className="h-8 w-8" onClick={() => setIsOpen(true)}>
-                                <Upload className="h-4 w-4" />
+                        <div className="absolute inset-0 bg-black/40 sm:opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                            <Button size="icon" variant="secondary" className="h-10 w-10 sm:h-8 sm:w-8 shadow-lg" onClick={() => setIsOpen(true)}>
+                                <Upload className="h-5 w-5 sm:h-4 sm:w-4" />
                             </Button>
-                            <Button size="icon" variant="destructive" className="h-8 w-8" onClick={() => onSelect('')}>
-                                <X className="h-4 w-4" />
+                            <Button size="icon" variant="destructive" className="h-10 w-10 sm:h-8 sm:w-8 shadow-lg" onClick={() => onSelect('')}>
+                                <X className="h-5 w-5 sm:h-4 sm:w-4" />
                             </Button>
                         </div>
                     </div>
@@ -95,7 +95,7 @@ export function ImagePicker({ value, onSelect, category = 'other', label = 'Sele
                     <Button
                         type="button"
                         variant="outline"
-                        className="w-32 h-32 border-dashed flex flex-col gap-2 flex-shrink-0"
+                        className="w-full sm:w-32 h-32 border-dashed flex flex-col gap-2 flex-shrink-0"
                         onClick={() => setIsOpen(true)}
                     >
                         <ImageIcon className="h-8 w-8 text-muted-foreground" />
@@ -103,16 +103,16 @@ export function ImagePicker({ value, onSelect, category = 'other', label = 'Sele
                     </Button>
                 )}
 
-                <div className="flex-1 space-y-1">
-                    <p className="text-sm font-medium">Course Thumbnail</p>
-                    <p className="text-xs text-muted-foreground">Recommended size: 800x600px</p>
+                <div className="flex-1 space-y-1 w-full text-center sm:text-left">
+                    <p className="text-sm font-semibold">Course Thumbnail</p>
+                    <p className="text-xs text-muted-foreground">Best for display: 800x600px square or 4:3</p>
                     <Dialog open={isOpen} onOpenChange={setIsOpen}>
                         <DialogTrigger asChild>
-                            <Button variant="link" className="p-0 h-auto text-xs text-primary">
+                            <Button variant="link" className="p-0 h-auto text-sm text-primary">
                                 {value ? 'Change image' : 'Choose from gallery'}
                             </Button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-[95vw] sm:max-w-[700px] w-full h-[85vh] sm:h-[600px] flex flex-col overflow-hidden">
+                        <DialogContent className="max-w-[95vw] sm:max-w-[800px] w-full h-[90vh] sm:h-[650px] flex flex-col p-2 sm:p-6 overflow-hidden">
                             <DialogHeader>
                                 <DialogTitle>Image Picker</DialogTitle>
                             </DialogHeader>
@@ -143,7 +143,7 @@ export function ImagePicker({ value, onSelect, category = 'other', label = 'Sele
                                                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
                                             </div>
                                         ) : filteredImages.length > 0 ? (
-                                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pb-4">
+                                            <div className="grid grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 pb-4 px-1">
                                                 {filteredImages.map((img) => (
                                                     <Card
                                                         key={img.id}

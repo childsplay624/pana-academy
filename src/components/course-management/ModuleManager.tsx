@@ -115,7 +115,7 @@ export function ModuleManager({ courseId, canEdit }: ModuleManagerProps) {
 
     try {
       const nextOrderIndex = Math.max(...modules.map(m => m.order_index), 0) + 1;
-      
+
       const { error } = await supabase
         .from('modules')
         .insert({
@@ -130,7 +130,7 @@ export function ModuleManager({ courseId, canEdit }: ModuleManagerProps) {
       setIsAddModuleOpen(false);
       setNewModule({ title: '', description: '' });
       fetchModules();
-      
+
       toast({
         title: "Success",
         description: "Module created successfully",
@@ -168,7 +168,7 @@ export function ModuleManager({ courseId, canEdit }: ModuleManagerProps) {
 
       setEditingModule(null);
       fetchModules();
-      
+
       toast({
         title: "Success",
         description: "Module updated successfully",
@@ -194,7 +194,7 @@ export function ModuleManager({ courseId, canEdit }: ModuleManagerProps) {
         if (error) throw error;
 
         fetchModules();
-        
+
         toast({
           title: "Success",
           description: "Module deleted successfully",
@@ -241,34 +241,35 @@ export function ModuleManager({ courseId, canEdit }: ModuleManagerProps) {
               Add Module
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
               <DialogTitle>Add New Module</DialogTitle>
               <DialogDescription>
                 Create a new module to organize your course content
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="title" className="text-right">
-                  Title
+            <div className="flex flex-col gap-5 py-4">
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="title" className="text-sm font-semibold">
+                  Module Title
                 </Label>
                 <Input
                   id="title"
+                  placeholder="e.g. Getting Started with the Basics"
                   value={newModule.title}
                   onChange={(e) => setNewModule(prev => ({ ...prev, title: e.target.value }))}
-                  className="col-span-3"
                 />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="description" className="text-right">
-                  Description
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="description" className="text-sm font-semibold">
+                  Module Description
                 </Label>
                 <Textarea
                   id="description"
+                  placeholder="What will students cover in this module?"
                   value={newModule.description}
                   onChange={(e) => setNewModule(prev => ({ ...prev, description: e.target.value }))}
-                  className="col-span-3"
+                  rows={3}
                 />
               </div>
             </div>
@@ -282,34 +283,35 @@ export function ModuleManager({ courseId, canEdit }: ModuleManagerProps) {
       {/* Edit Module Dialog */}
       {editingModule && (
         <Dialog open={true} onOpenChange={() => setEditingModule(null)}>
-          <DialogContent>
+          <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
               <DialogTitle>Edit Module</DialogTitle>
               <DialogDescription>
                 Update the module information
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-title" className="text-right">
-                  Title
+            <div className="flex flex-col gap-5 py-4">
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="edit-title" className="text-sm font-semibold">
+                  Module Title
                 </Label>
                 <Input
                   id="edit-title"
+                  placeholder="e.g. Getting Started with the Basics"
                   value={editingModule.title}
                   onChange={(e) => setEditingModule(prev => prev ? { ...prev, title: e.target.value } : null)}
-                  className="col-span-3"
                 />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-description" className="text-right">
-                  Description
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="edit-description" className="text-sm font-semibold">
+                  Module Description
                 </Label>
                 <Textarea
                   id="edit-description"
+                  placeholder="What will students cover in this module?"
                   value={editingModule.description || ''}
                   onChange={(e) => setEditingModule(prev => prev ? { ...prev, description: e.target.value } : null)}
-                  className="col-span-3"
+                  rows={3}
                 />
               </div>
             </div>
@@ -369,7 +371,7 @@ export function ModuleManager({ courseId, canEdit }: ModuleManagerProps) {
                       )}
                     </div>
                   </div>
-                  
+
                   {canEdit && (
                     <div className="flex items-center gap-2">
                       <Button
@@ -390,7 +392,7 @@ export function ModuleManager({ courseId, canEdit }: ModuleManagerProps) {
                   )}
                 </div>
               </CardHeader>
-              
+
               {expandedModules.has(module.id) && (
                 <CardContent>
                   <LessonManager

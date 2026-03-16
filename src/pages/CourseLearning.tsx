@@ -65,7 +65,7 @@ interface Lesson {
 export default function CourseLearning() {
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { awardPoints, updateStreak } = useGamification();
   const { sendEnrollmentConfirmation, sendCertificateNotification } = useEmailNotifications();
   const { toast } = useToast();
@@ -292,6 +292,13 @@ export default function CourseLearning() {
                 `Congratulations! You've completed "${course.title}" and your certificate is ready.`,
                 '/dashboard'
               );
+
+              // Send email notification for certificate
+              sendCertificateNotification(
+                course.title,
+                profile?.full_name || user?.email || 'Student',
+                user?.email || ''
+              ).catch(err => console.warn('Certificate email failed (non-critical):', err));
             } else if (refreshError) {
               console.error('Error refreshing enrollment:', refreshError);
               toast({
@@ -342,7 +349,11 @@ export default function CourseLearning() {
       if (error) throw error;
 
       // Send enrollment confirmation email
-      await sendEnrollmentConfirmation(courseId, user.id);
+      await sendEnrollmentConfirmation(
+        course?.title || 'Course',
+        profile?.full_name || user?.email || 'Student',
+        user?.email || ''
+      );
 
       toast({
         title: "Enrolled Successfully! 🎉",

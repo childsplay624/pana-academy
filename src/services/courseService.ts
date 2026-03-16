@@ -89,9 +89,25 @@ export const fetchCourseById = async (id: string): Promise<Course | null> => {
       .from('courses')
       .select(`
         *,
-        instructor:instructor_id (id, full_name, avatar_url)
+        instructor:instructor_id (id, full_name, avatar_url),
+        modules:modules (
+          id,
+          title,
+          order_index,
+          lessons:lessons (
+            id,
+            title,
+            content,
+            video_url,
+            lesson_type,
+            duration_minutes,
+            order_index,
+            is_free
+          )
+        )
       `)
       .eq('id', id)
+      .order('order_index', { foreignTable: 'modules', ascending: true })
       .single();
 
     if (error) {
@@ -101,7 +117,7 @@ export const fetchCourseById = async (id: string): Promise<Course | null> => {
 
     if (!data) return null;
 
-    const dbCourse = data as unknown as DatabaseCourse;
+    const dbCourse = data as unknown as any;
 
     // Transform the data to match our Course interface
     const course: Course = {
@@ -112,16 +128,16 @@ export const fetchCourseById = async (id: string): Promise<Course | null> => {
       instructor_name: dbCourse.instructor?.full_name || 'Unknown Instructor',
       instructor_avatar: dbCourse.instructor?.avatar_url,
       category: dbCourse.category,
-      level: dbCourse.level as 'beginner' | 'intermediate' | 'advanced',
+      level: dbCourse.level,
       duration_hours: dbCourse.duration_hours,
       students_count: dbCourse.students_count || 0,
       rating: dbCourse.rating,
       price: dbCourse.price || 0,
       thumbnail_url: dbCourse.thumbnail_url,
       learning_outcomes: dbCourse.learning_outcomes || [],
-      requirements: (dbCourse as any).requirements || [],
-      features: (dbCourse as any).features || [],
-      resources_count: (dbCourse as any).resources_count || 0,
+      requirements: dbCourse.requirements || [],
+      features: dbCourse.features || [],
+      resources_count: dbCourse.resources_count || 0,
       venue_name: dbCourse.venue_name,
       venue_address: dbCourse.venue_address,
       venue_city: dbCourse.venue_city,
@@ -133,7 +149,10 @@ export const fetchCourseById = async (id: string): Promise<Course | null> => {
       end_date: dbCourse.end_date,
       is_free: dbCourse.is_free || false,
       status: dbCourse.status || 'published',
-      modules: dbCourse.modules || [],
+      modules: (dbCourse.modules || []).map((m: any) => ({
+        ...m,
+        lessons: (m.lessons || []).sort((a: any, b: any) => (a.order_index || 0) - (b.order_index || 0))
+      })),
       created_at: dbCourse.created_at,
       updated_at: dbCourse.updated_at
     };
@@ -141,7 +160,7 @@ export const fetchCourseById = async (id: string): Promise<Course | null> => {
     return course;
   } catch (error) {
     console.error('Error in fetchCourseById:', error);
-    throw error; // Re-throw to handle in the component
+    throw error;
   }
 };
 

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+// Updated: 2026-03-15 22:04
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -215,61 +216,72 @@ export function LessonManager({ moduleId, lessons, canEdit, onLessonsUpdate }: L
               Add Lesson
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[600px]">
+          <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Add New Lesson</DialogTitle>
               <DialogDescription>
                 Create a new lesson for this module
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="lesson-title" className="text-right">
-                  Title
+            <div className="flex flex-col gap-5 py-4">
+              {/* Title - Full Width */}
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="lesson-title" className="text-sm font-semibold">
+                  Lesson Title
                 </Label>
                 <Input
                   id="lesson-title"
+                  placeholder="e.g. Introduction to React Hooks"
                   value={newLesson.title}
                   onChange={(e) => setNewLesson(prev => ({ ...prev, title: e.target.value }))}
-                  className="col-span-3"
                 />
               </div>
 
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="lesson-type" className="text-right">
-                  Type
-                </Label>
-                <Select
-                  value={newLesson.lesson_type}
-                  onValueChange={(value) => setNewLesson(prev => ({ ...prev, lesson_type: value }))}
-                >
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="video">Video</SelectItem>
-                    <SelectItem value="reading">Reading</SelectItem>
-                    <SelectItem value="assignment">Assignment</SelectItem>
-                    <SelectItem value="quiz">Quiz</SelectItem>
-                  </SelectContent>
-                </Select>
+              {/* Type and Duration - Stacked Vertically */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1 flex flex-col gap-1.5">
+                  <Label htmlFor="lesson-type" className="text-sm font-semibold">
+                    Lesson Type
+                  </Label>
+                  <Select
+                    value={newLesson.lesson_type}
+                    onValueChange={(value) => setNewLesson(prev => ({ ...prev, lesson_type: value }))}
+                  >
+                    <SelectTrigger id="lesson-type">
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="video">Video</SelectItem>
+                      <SelectItem value="reading">Reading</SelectItem>
+                      <SelectItem value="assignment">Assignment</SelectItem>
+                      <SelectItem value="quiz">Quiz</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex-1 flex flex-col gap-1.5">
+                  <Label htmlFor="lesson-duration" className="text-sm font-semibold">
+                    Duration (minutes)
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="lesson-duration"
+                      type="number"
+                      min="0"
+                      value={newLesson.duration_minutes}
+                      onChange={(e) => setNewLesson(prev => ({ ...prev, duration_minutes: Number(e.target.value) }))}
+                      className="pr-12"
+                    />
+                    <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-muted-foreground text-xs">
+                      min
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="lesson-duration" className="text-right">
-                  Duration (minutes)
-                </Label>
-                <Input
-                  id="lesson-duration"
-                  type="number"
-                  value={newLesson.duration_minutes}
-                  onChange={(e) => setNewLesson(prev => ({ ...prev, duration_minutes: Number(e.target.value) }))}
-                  className="col-span-3"
-                />
-              </div>
-
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="lesson-video" className="text-right">
+              {/* Video URL - Full Width */}
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="lesson-video" className="text-sm font-semibold">
                   Video URL
                 </Label>
                 <Input
@@ -277,38 +289,38 @@ export function LessonManager({ moduleId, lessons, canEdit, onLessonsUpdate }: L
                   value={newLesson.video_url}
                   onChange={(e) => setNewLesson(prev => ({ ...prev, video_url: e.target.value }))}
                   placeholder="https://youtube.com/watch?v=..."
-                  className="col-span-3"
                 />
               </div>
 
-              <div className="grid grid-cols-4 items-start gap-4">
-                <Label htmlFor="lesson-content" className="text-right">
-                  Content
+              {/* Content - Full Width */}
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="lesson-content" className="text-sm font-semibold">
+                  Lesson Content / Notes
                 </Label>
                 <Textarea
                   id="lesson-content"
                   value={newLesson.content}
                   onChange={(e) => setNewLesson(prev => ({ ...prev, content: e.target.value }))}
-                  placeholder="Lesson content, notes, or description..."
+                  placeholder="Provide details about the lesson content..."
                   rows={4}
-                  className="col-span-3"
                 />
               </div>
 
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="lesson-free" className="text-right">
-                  Free Lesson
-                </Label>
-                <div className="col-span-3 flex items-center gap-2">
-                  <Switch
-                    id="lesson-free"
-                    checked={newLesson.is_free}
-                    onCheckedChange={(checked) => setNewLesson(prev => ({ ...prev, is_free: checked }))}
-                  />
-                  <span className="text-sm text-muted-foreground">
-                    Allow non-enrolled students to access this lesson
-                  </span>
+              {/* Free Lesson Toggle */}
+              <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/30">
+                <div className="space-y-0.5">
+                  <Label htmlFor="lesson-free" className="text-sm font-semibold">
+                    Free Preview
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Allow all students to view this lesson without enrolling
+                  </p>
                 </div>
+                <Switch
+                  id="lesson-free"
+                  checked={newLesson.is_free}
+                  onCheckedChange={(checked) => setNewLesson(prev => ({ ...prev, is_free: checked }))}
+                />
               </div>
 
               <div className="col-span-4 mt-2">
@@ -337,61 +349,72 @@ export function LessonManager({ moduleId, lessons, canEdit, onLessonsUpdate }: L
       {/* Edit Lesson Dialog */}
       {editingLesson && (
         <Dialog open={true} onOpenChange={() => setEditingLesson(null)}>
-          <DialogContent className="sm:max-w-[600px]">
+          <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Edit Lesson</DialogTitle>
               <DialogDescription>
                 Update the lesson information
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-lesson-title" className="text-right">
-                  Title
+            <div className="flex flex-col gap-5 py-4">
+              {/* Title - Full Width */}
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="edit-lesson-title" className="text-sm font-semibold">
+                  Lesson Title
                 </Label>
                 <Input
                   id="edit-lesson-title"
+                  placeholder="e.g. Introduction to React Hooks"
                   value={editingLesson.title}
                   onChange={(e) => setEditingLesson(prev => prev ? { ...prev, title: e.target.value } : null)}
-                  className="col-span-3"
                 />
               </div>
 
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-lesson-type" className="text-right">
-                  Type
-                </Label>
-                <Select
-                  value={editingLesson.lesson_type || 'video'}
-                  onValueChange={(value) => setEditingLesson(prev => prev ? { ...prev, lesson_type: value } : null)}
-                >
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="video">Video</SelectItem>
-                    <SelectItem value="reading">Reading</SelectItem>
-                    <SelectItem value="assignment">Assignment</SelectItem>
-                    <SelectItem value="quiz">Quiz</SelectItem>
-                  </SelectContent>
-                </Select>
+              {/* Type and Duration - Stacked Vertically */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1 flex flex-col gap-1.5">
+                  <Label htmlFor="edit-lesson-type" className="text-sm font-semibold">
+                    Lesson Type
+                  </Label>
+                  <Select
+                    value={editingLesson.lesson_type || 'video'}
+                    onValueChange={(value) => setEditingLesson(prev => prev ? { ...prev, lesson_type: value } : null)}
+                  >
+                    <SelectTrigger id="edit-lesson-type">
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="video">Video</SelectItem>
+                      <SelectItem value="reading">Reading</SelectItem>
+                      <SelectItem value="assignment">Assignment</SelectItem>
+                      <SelectItem value="quiz">Quiz</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex-1 flex flex-col gap-1.5">
+                  <Label htmlFor="edit-lesson-duration" className="text-sm font-semibold">
+                    Duration (minutes)
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="edit-lesson-duration"
+                      type="number"
+                      min="0"
+                      value={editingLesson.duration_minutes}
+                      onChange={(e) => setEditingLesson(prev => prev ? { ...prev, duration_minutes: Number(e.target.value) } : null)}
+                      className="pr-12"
+                    />
+                    <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-muted-foreground text-xs">
+                      min
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-lesson-duration" className="text-right">
-                  Duration (minutes)
-                </Label>
-                <Input
-                  id="edit-lesson-duration"
-                  type="number"
-                  value={editingLesson.duration_minutes}
-                  onChange={(e) => setEditingLesson(prev => prev ? { ...prev, duration_minutes: Number(e.target.value) } : null)}
-                  className="col-span-3"
-                />
-              </div>
-
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-lesson-video" className="text-right">
+              {/* Video URL - Full Width */}
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="edit-lesson-video" className="text-sm font-semibold">
                   Video URL
                 </Label>
                 <Input
@@ -399,38 +422,38 @@ export function LessonManager({ moduleId, lessons, canEdit, onLessonsUpdate }: L
                   value={editingLesson.video_url || ''}
                   onChange={(e) => setEditingLesson(prev => prev ? { ...prev, video_url: e.target.value } : null)}
                   placeholder="https://youtube.com/watch?v=..."
-                  className="col-span-3"
                 />
               </div>
 
-              <div className="grid grid-cols-4 items-start gap-4">
-                <Label htmlFor="edit-lesson-content" className="text-right">
-                  Content
+              {/* Content - Full Width */}
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="edit-lesson-content" className="text-sm font-semibold">
+                  Lesson Content / Notes
                 </Label>
                 <Textarea
                   id="edit-lesson-content"
                   value={editingLesson.content || ''}
                   onChange={(e) => setEditingLesson(prev => prev ? { ...prev, content: e.target.value } : null)}
-                  placeholder="Lesson content, notes, or description..."
+                  placeholder="Provide details about the lesson content..."
                   rows={4}
-                  className="col-span-3"
                 />
               </div>
 
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-lesson-free" className="text-right">
-                  Free Lesson
-                </Label>
-                <div className="col-span-3 flex items-center gap-2">
-                  <Switch
-                    id="edit-lesson-free"
-                    checked={editingLesson.is_free}
-                    onCheckedChange={(checked) => setEditingLesson(prev => prev ? { ...prev, is_free: checked } : null)}
-                  />
-                  <span className="text-sm text-muted-foreground">
-                    Allow non-enrolled students to access this lesson
-                  </span>
+              {/* Free Lesson Toggle */}
+              <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/30">
+                <div className="space-y-0.5">
+                  <Label htmlFor="edit-lesson-free" className="text-sm font-semibold">
+                    Free Preview
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Allow all students to view this lesson without enrolling
+                  </p>
                 </div>
+                <Switch
+                  id="edit-lesson-free"
+                  checked={editingLesson.is_free}
+                  onCheckedChange={(checked) => setEditingLesson(prev => prev ? { ...prev, is_free: checked } : null)}
+                />
               </div>
 
               <div className="col-span-4">
