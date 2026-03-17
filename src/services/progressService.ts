@@ -11,7 +11,7 @@ interface Progress {
   completed: boolean;
   completed_at: string | null;
   progress_percentage: number;
-  time_spent_minutes: number;
+  time_spent: number;
   created_at: string;
   updated_at?: string;
   last_accessed?: string;
@@ -92,7 +92,7 @@ export const progressService = {
           .update({
             completed: params.completed ?? existingProgress.completed,
             completed_at: params.completed ? now : existingProgress.completed_at,
-            time_spent_minutes: (existingProgress.time_spent_minutes || 0) + (params.timeSpentMinutes || 0),
+            time_spent: (existingProgress.time_spent || 0) + (params.timeSpentMinutes || 0),
             updated_at: now
           })
           .eq('id', existingProgress.id)
@@ -105,10 +105,10 @@ export const progressService = {
           .insert({
             student_id: params.userId,
             lesson_id: params.lessonId,
-            module_id: params.moduleId || '', // Add module_id if provided
+            module_id: params.moduleId || null, // Add module_id if provided
             completed: params.completed || false,
             completed_at: params.completed ? now : null,
-            time_spent_minutes: params.timeSpentMinutes || 0,
+            time_spent: params.timeSpentMinutes || 0,
             created_at: now,
             updated_at: now
           })
@@ -399,7 +399,7 @@ export const progressService = {
 
       // Calculate total time spent
       const totalTimeSpent = progressList.reduce(
-        (sum, p) => sum + (p.time_spent_minutes || 0), 0
+        (sum, p) => sum + (p.time_spent || 0), 0
       );
 
       // Get last accessed time using last updated or created time

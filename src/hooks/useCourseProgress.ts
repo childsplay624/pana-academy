@@ -14,7 +14,7 @@ interface Progress {
   completed: boolean;
   completed_at: string | null;
   progress_percentage: number;
-  time_spent_minutes: number;
+  time_spent: number;
   time_spent_seconds?: number; // Add this line
   last_accessed_at?: string;   // Add this line
   created_at: string;

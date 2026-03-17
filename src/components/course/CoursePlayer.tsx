@@ -16,8 +16,10 @@ import {
   Loader2,
   AlertCircle,
   RefreshCw,
-  ArrowLeft
+  ArrowLeft,
+  LayoutDashboard
 } from 'lucide-react';
+import { Logo } from '../Logo';
 import { LessonProgress } from './LessonProgress';
 import { useCourseProgress } from '@/hooks/useCourseProgress';
 import { fetchCourseById } from '@/services/courseService';
@@ -332,7 +334,34 @@ export function CoursePlayer() {
   const courseProgress = calculateCourseProgress();
 
   return (
-    <div className="flex flex-col lg:flex-row h-[calc(100vh-4rem)] bg-background">
+    <div className="flex flex-col h-screen bg-background">
+      {/* Mini Header */}
+      <header className="h-16 border-b bg-card px-4 flex items-center justify-between shrink-0 z-50">
+        <div className="flex items-center space-x-4">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => navigate('/dashboard')}
+            className="flex items-center gap-2 hover:bg-primary/5 transition-colors"
+          >
+            <LayoutDashboard className="w-4 h-4" />
+            <span className="hidden sm:inline">Back to Dashboard</span>
+          </Button>
+          <div className="h-8 w-px bg-border hidden sm:block" />
+          <div className="scale-75 origin-left">
+            <Logo />
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-4">
+          <div className="hidden md:flex flex-col items-end">
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Currently Learning</span>
+            <span className="text-sm font-bold truncate max-w-[200px] lg:max-w-[400px]">{course.title}</span>
+          </div>
+        </div>
+      </header>
+
+      <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
       {/* Sidebar */}
       <div className="w-full lg:w-80 border-r bg-card overflow-hidden flex flex-col">
         <div className="p-4 border-b">
@@ -483,5 +512,6 @@ export function CoursePlayer() {
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }
