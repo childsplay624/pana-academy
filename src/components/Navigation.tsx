@@ -72,10 +72,6 @@ const Navigation = () => {
       href: "/courses",
     },
     {
-      name: "Testimonials",
-      href: "#testimonials",
-    },
-    {
       name: "Contact Us",
       href: "/contact",
     }
@@ -220,7 +216,7 @@ const Navigation = () => {
             >
               <a
                 href={item.href}
-                className={`relative px-4 py-2.5 rounded-lg text-sm font-medium tracking-wide transition-all duration-200 flex items-center gap-1.5 whitespace-nowrap ${isActive
+                className={`relative uppercase px-4 py-2.5 rounded-lg text-sm font-medium tracking-wide transition-all duration-200 flex items-center gap-1.5 whitespace-nowrap ${isActive
                   ? 'text-red-600 dark:text-red-500'
                   : 'text-gray-700 dark:text-gray-200 hover:text-red-600 dark:hover:text-red-500 hover:bg-gray-50 dark:hover:bg-gray-800/50'
                   }`}
@@ -278,7 +274,7 @@ const Navigation = () => {
                           <a
                             key={subItem.name}
                             href={subItem.href}
-                            className={`block px-4 py-3 text-sm transition-colors duration-150 ${isSubActive
+                            className={`block uppercase px-4 py-3 text-sm transition-colors duration-150 ${isSubActive
                               ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-medium'
                               : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50'
                               }`}
@@ -439,7 +435,7 @@ const Navigation = () => {
                     <div key={item.name}>
                       <a
                         href={item.href}
-                        className={`flex items-center justify-between px-4 py-3 rounded-lg text-base font-medium transition-colors duration-150 ${isActive
+                        className={`flex uppercase items-center justify-between px-4 py-3 rounded-lg text-base font-medium transition-colors duration-150 ${isActive
                           ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400'
                           : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'
                           }`}
@@ -480,7 +476,7 @@ const Navigation = () => {
                                   <a
                                     key={subItem.name}
                                     href={subItem.href}
-                                    className={`block px-4 py-2.5 rounded-lg text-sm transition-colors duration-150 ${isSubActive
+                                    className={`block uppercase px-4 py-2.5 rounded-lg text-sm transition-colors duration-150 ${isSubActive
                                       ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-medium'
                                       : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
                                       }`}

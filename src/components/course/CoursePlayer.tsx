@@ -101,8 +101,10 @@ export function CoursePlayer() {
               ...lesson,
               id: String(lesson.id),
               title: lesson.title || 'Untitled Lesson',
-              order_in_module: lesson.order_in_module || 0,
-              duration: lesson.duration || '00:00',
+              order_in_module: lesson.order_index || 0, // Correctly map order_index
+              duration_seconds: (lesson.duration_minutes || 0) * 60, // Convert to seconds
+              video_url: lesson.video_url,
+              content: lesson.content,
               created_at: lesson.created_at || new Date().toISOString(),
               updated_at: lesson.updated_at || new Date().toISOString()
             }))
@@ -488,12 +490,18 @@ export function CoursePlayer() {
               </div>
             </div>
 
-            <Card className="mb-6">
+            <Card className="mb-6 shadow-sm border-border/50">
               <CardContent className="p-6">
-                <div className="prose max-w-none">
-                  {currentLesson.content || (
-                    <p className="text-muted-foreground">
-                      No content available for this lesson.
+                <div className="prose max-w-none dark:prose-invert">
+                  {currentLesson.content ? (
+                    <div 
+                      dangerouslySetInnerHTML={{ __html: currentLesson.content }} 
+                      className="lesson-content-renderer"
+                    />
+                  ) : (
+                    <p className="text-muted-foreground flex items-center gap-2">
+                       <BookOpen className="w-4 h-4" />
+                       No content available for this lesson.
                     </p>
                   )}
                 </div>

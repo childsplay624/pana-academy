@@ -97,8 +97,8 @@ serve(async (req: Request) => {
                 'Authorization': `Bearer ${RESEND_API_KEY}`,
             },
             body: JSON.stringify({
-                from: 'PANA Academy <onboarding@resend.dev>', // Use your verified domain
-                to: ['Info@pana-academy.com'],
+                from: 'PANA Academy <info@pana-academy.com>', // Use your verified domain
+                to: ['info@pana-academy.com'],
                 reply_to: email,
                 subject: `Contact Form: ${subject}`,
                 html: `

@@ -8,14 +8,35 @@ const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const { images: heroImages, isLoading, error } = useSiteImages('hero');
 
+  const fallbackSlides = [
+    {
+      title: "Leading Competency Hub",
+      highlight: "for Global Professionals",
+      subtitle: "Empowering individuals and organizations with world-class training and practical competencies to excel in any industry."
+    },
+    {
+      title: "Elevate Your Career",
+      highlight: "With Expert-Led Training",
+      subtitle: "Join industry leaders and gain the practical skills needed to thrive in today's competitive landscape."
+    },
+    {
+      title: "Transform Your Future",
+      highlight: "Through Innovative Learning",
+      subtitle: "Discover cutting-edge courses designed to bridge the gap between theoretical knowledge and practical application."
+    }
+  ];
+
   // Build slides strictly from database
-  const slides = heroImages.map((img, index) => ({
-    id: index + 1,
-    backgroundImage: img.url,
-    title: img.alt_text?.split(' - ')[0] || "PANA Academy",
-    highlight: img.alt_text?.split(' - ')[1] || "Professional Training",
-    subtitle: img.description || "Advance your career with industry-leading training.",
-  }));
+  const slides = heroImages.map((img, index) => {
+    const fallback = fallbackSlides[index % fallbackSlides.length];
+    return {
+      id: index + 1,
+      backgroundImage: img.url,
+      title: img.alt_text?.includes(' - ') ? img.alt_text.split(' - ')[0] : fallback.title,
+      highlight: img.alt_text?.includes(' - ') ? img.alt_text.split(' - ')[1] : fallback.highlight,
+      subtitle: (img.description && img.description.length > 5 && !img.description.includes("Empowering") && !img.description.toLowerCase().includes("hero slide")) ? img.description : fallback.subtitle,
+    };
+  });
 
   // Auto-play
   useEffect(() => {
@@ -60,61 +81,36 @@ const HeroSection = () => {
         <div className="absolute inset-0 bg-black/60"></div>
       </div>
 
-      {/* Boxed Content - left but indented */}
-      <div className="relative z-10 flex justify-start w-full px-6 md:px-12 lg:px-20">
+      {/* Minimal Centered Content */}
+      <div className="relative z-10 flex flex-col items-center justify-center w-full px-6 md:px-12 h-full text-center">
         <motion.div
           key={current.id + "-text"}
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: 50 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 md:p-8 shadow-lg max-w-xl ml-4 md:ml-10"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="max-w-4xl mx-auto"
         >
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-red-600/20 backdrop-blur-sm px-4 py-2 rounded-full text-white text-sm font-medium border border-red-500/30 mb-4">
-            <Star className="w-4 h-4 fill-current" />
-            <span>PANA Academy</span>
-          </div>
-
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-white">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-light tracking-tight text-white drop-shadow-md">
             {current.title}{" "}
-            <span className="block text-red-400">{current.highlight}</span>
+            <span className="block font-bold text-white mt-1">{current.highlight}</span>
           </h1>
 
-          <p className="mt-6 text-lg md:text-xl text-gray-200 leading-relaxed">{current.subtitle}</p>
+          <p className="mt-8 text-lg md:text-2xl text-gray-200 opacity-90 font-light max-w-2xl mx-auto leading-relaxed drop-shadow-sm">
+            {current.subtitle}
+          </p>
 
-          {/* Trust Indicators */}
-          <div className="mt-6 space-y-2">
-            <div className="flex items-center gap-2 text-white/90">
-              <CheckCircle className="w-5 h-5 text-green-400" />
-              <span className="text-sm md:text-base">Industry-recognized certificates</span>
-            </div>
-            <div className="flex items-center gap-2 text-white/90">
-              <CheckCircle className="w-5 h-5 text-green-400" />
-              <span className="text-sm md:text-base">Expert instructors with 10+ years experience</span>
-            </div>
-            <div className="flex items-center gap-2 text-white/90">
-              <CheckCircle className="w-5 h-5 text-green-400" />
-              <span className="text-sm md:text-base">Job placement support</span>
-            </div>
-          </div>
-
-          {/* CTAs */}
-          <div className="mt-8 flex flex-col sm:flex-row gap-4">
+          {/* Simple Clean CTA */}
+          <div className="mt-12 flex justify-center">
             <Link to="/courses">
               <Button
                 size="lg"
-                className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 px-8 py-6 text-lg font-semibold group"
+                className="bg-red-600 text-white hover:bg-red-700 border-none px-10 py-7 text-lg rounded-full shadow-2xl transition-all hover:scale-105 font-medium"
               >
-                Browse Courses
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                Explore Courses
               </Button>
             </Link>
-
           </div>
-
-          {/* Social Proof */}
-
         </motion.div>
       </div>
 

@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Lock, Mail, User, Eye, EyeOff, Github, Linkedin } from 'lucide-react';
+import { Lock, Mail, User, Eye, EyeOff, Github, Linkedin, ArrowLeft } from 'lucide-react';
 import { signInWithLinkedIn } from '@/lib/auth-utils';
 import { useSiteImage } from '@/hooks/useSiteImage';
 
@@ -92,7 +92,15 @@ export default function Auth() {
   };
 
   return (
-    <div className="flex min-h-screen selection:bg-pana-red/30">
+    <div className="flex min-h-screen selection:bg-pana-red/30 relative">
+      {/* Back to Home Link */}
+      <Link 
+        to="/" 
+        className="absolute top-6 left-6 z-50 flex items-center gap-2 text-gray-400 md:text-white/60 hover:text-pana-red md:hover:text-white transition-all group font-bold tracking-widest text-[10px] uppercase"
+      >
+        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+        Back to Home
+      </Link>
       {/* Left Side - Background with Image Overlay */}
       <div
         className="hidden md:flex md:w-5/12 lg:w-[45%] relative text-white p-6 md:p-10 flex-col min-h-screen animate-fade-in"
@@ -340,15 +348,6 @@ export default function Auth() {
                 </Button>
               </div>
 
-              <Button
-                variant="ghost"
-                type="button"
-                className="w-full mt-4 h-8 text-[9px] font-bold text-gray-400 hover:text-pana-navy transition-all uppercase tracking-[0.2em]"
-                onClick={() => navigate('/')}
-                disabled={isLoading}
-              >
-                ← Return to Base
-              </Button>
             </div>
 
             <p className="mt-6 text-center text-[9px] text-gray-400 leading-relaxed font-medium">

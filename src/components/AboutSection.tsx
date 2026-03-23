@@ -49,6 +49,12 @@ const AboutSection = () => {
           {/* Right Column - Content */}
           <div className="space-y-8">
             <div>
+              <h3 className="text-2xl font-bold text-pana-navy mb-4">Our Vision</h3>
+              <p className="text-black leading-relaxed">
+                To be Africa’s leading Competency Hub for the Oil and Gas Industry.
+              </p>
+            </div>
+            <div>
               <h3 className="text-2xl font-bold text-pana-navy mb-4">Our Mission</h3>
               <p className="text-black leading-relaxed">
                 To empower individuals and organizations with the knowledge, skills, and capabilities needed to excel in today's dynamic business environment. We bridge the gap between theoretical knowledge and practical application through innovative training methodologies.
@@ -57,12 +63,7 @@ const AboutSection = () => {
             <p className="text-black leading-relaxed">
               To holistically develop and upskill Oil and Gas Industry workforce by providing training opportunities that facilitate the cultivation of real-world practical competences/skills directly applicable to relevant job roles in the industry.
             </p>
-            <div>
-              <h3 className="text-2xl font-bold text-pana-navy mb-4">Our Vision</h3>
-              <p className="text-black leading-relaxed">
-                To be Africa’s leading Competency Hub for the Oil and Gas Industry.
-              </p>
-            </div>
+
             <div>
               <h3 className="text-2xl font-bold text-pana-navy mb-4">Purpose</h3>
               <p className="text-black leading-relaxed">

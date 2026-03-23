@@ -69,6 +69,8 @@ export function useSiteImage(key: string): UseSiteImageReturn {
             'header_careers': null,
             'logo': '/logo.png',
             'hero': '/panawhy.png',
+            'values_sands': '/values/sands.jpg',
+            'values_maxims': '/values/maxims.jpg',
         };
         
         return fallbacks[key] || null;

@@ -56,9 +56,9 @@ CREATE TRIGGER update_site_images_updated_at
 -- Seed with existing images
 INSERT INTO public.site_images (key, category, url, alt_text, description, display_order) VALUES
   -- Hero slides
-  ('hero_slide_1', 'hero', '/img/hero-slide-1.jpg', 'Transform Your Oil & Gas Career', 'Hero slide showing professional training environment', 1),
-  ('hero_slide_2', 'hero', '/img/hero-slide-2.jpg', 'Next-Generation Professional Training', 'Hero slide highlighting modern training facilities', 2),
-  ('hero_slide_3', 'hero', '/img/hero-slide-3.jpg', 'Excellence in Corporate Learning', 'Hero slide showcasing corporate training solutions', 3),
+  ('hero_slide_1', 'hero', '/img/hero-slide-1.jpg', 'Leading Competency Hub - for Global Professionals', 'Empowering individuals and organizations with world-class training and practical competencies to excel in any industry.', 1),
+  ('hero_slide_2', 'hero', '/img/hero-slide-2.jpg', 'Elevate Your Career - With Expert-Led Training', 'Join industry leaders and gain the practical skills needed to thrive in today''s competitive landscape.', 2),
+  ('hero_slide_3', 'hero', '/img/hero-slide-3.jpg', 'Transform Your Future - Through Innovative Learning', 'Discover cutting-edge courses designed to bridge the gap between theoretical knowledge and practical application.', 3),
   
   -- Team members
   ('team_daere_akobo', 'team', '/team/daere-akobo.png', 'Daere Akobo', 'Profile photo of Daere Akobo', 1),
