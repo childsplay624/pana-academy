@@ -8,7 +8,7 @@ import { ImageIcon, Users, Images, Award, MoreHorizontal, AlertTriangle, HardDri
 import { ImageUploader } from '@/components/admin/ImageUploader';
 import { ImageCard } from '@/components/admin/ImageCard';
 import { useSiteImages } from '@/hooks/useSiteImage';
-import { uploadImage, updateImage, deleteImage, replaceImage, getImageInsights, ImageCategory } from '@/services/imageService';
+import { uploadImage, updateImage, deleteImage, replaceImage, getImageInsights, ImageCategory, saveExternalUrl } from '@/services/imageService';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery } from '@tanstack/react-query';
 
@@ -106,6 +106,36 @@ export default function ImageManagement() {
             toast({
                 title: 'Replace failed',
                 description: 'Failed to replace image. Please try again.',
+                variant: 'destructive',
+            });
+            throw error;
+        }
+    };
+
+    const handleUrlUpload = async (url: string, metadata: { alt_text?: string; description?: string; customKey?: string }) => {
+        try {
+            const maxOrder = images.reduce((max, img) => Math.max(max, img.display_order), 0);
+            const imageKey = metadata.customKey || `${activeTab}_${Date.now()}`;
+
+            await saveExternalUrl(url, {
+                key: imageKey,
+                category: activeTab,
+                alt_text: metadata.alt_text,
+                description: metadata.description || '',
+                display_order: maxOrder + 1,
+            });
+
+            await refetch();
+            await refetchInsights();
+            toast({
+                title: 'URL Saved',
+                description: 'The media link has been saved successfully.',
+            });
+        } catch (error) {
+            console.error('URL error:', error);
+            toast({
+                title: 'Save failed',
+                description: 'Failed to save URL. Please try again.',
                 variant: 'destructive',
             });
             throw error;
@@ -277,8 +307,8 @@ export default function ImageManagement() {
 
                                     {/* Upload Section */}
                                     <div>
-                                        <h3 className="text-lg font-semibold mb-4">Upload New Image</h3>
-                                        <ImageUploader onUpload={handleUpload} category={category} showCustomKey={category === 'hero' || category === 'logo'} />
+                                        <h3 className="text-lg font-semibold mb-4">Upload New Asset</h3>
+                                        <ImageUploader onUpload={handleUpload} onUrlUpload={handleUrlUpload} category={category} showCustomKey={category === 'hero' || category === 'logo'} />
                                     </div>
 
                                     <Separator />

@@ -21,6 +21,35 @@ export interface SiteImage {
     updated_at: string;
 }
 
+/**
+ * Register an external URL (e.g. YouTube or direct video link) in the database
+ */
+export async function saveExternalUrl(
+    url: string,
+    metadata: ImageMetadata
+): Promise<SiteImage> {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const { data, error } = await supabase
+        .from('site_images')
+        .insert({
+            key: metadata.key,
+            category: metadata.category,
+            url,
+            alt_text: metadata.alt_text,
+            description: metadata.description,
+            display_order: metadata.display_order || 0,
+            is_active: true,
+            created_by: user?.id,
+            metadata: metadata.metadata
+        })
+        .select()
+        .single();
+
+    if (error) throw error;
+    return data;
+}
+
 export interface ImageMetadata {
     key: string;
     category: ImageCategory;
