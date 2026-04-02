@@ -49,7 +49,7 @@ const HeroSection = () => {
 
   if (isLoading) {
     return (
-      <div className="h-[90vh] bg-black/10 flex items-center justify-center">
+      <div className="h-[75vh] bg-black/10 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
@@ -63,7 +63,7 @@ const HeroSection = () => {
   const current = slides[currentSlide];
 
   return (
-    <section className="relative h-[90vh] flex items-center overflow-hidden mt-20">
+    <section className="relative h-[75vh] flex items-center overflow-hidden mt-10">
       {/* Background with smooth scroll */}
       <div className="absolute inset-0">
         <AnimatePresence mode="wait">

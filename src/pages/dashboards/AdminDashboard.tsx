@@ -497,6 +497,14 @@ export default function AdminDashboard() {
           </Button>
           <Button
             variant="outline"
+            onClick={() => navigate('/dashboard/messages')}
+            className="h-20 flex flex-col items-center justify-center gap-2"
+          >
+            <Mail className="h-6 w-6 text-red-600" />
+            <span>Manage Messages</span>
+          </Button>
+          <Button
+            variant="outline"
             onClick={() => navigate('/dashboard/invoices')}
             className="h-20 flex flex-col items-center justify-center gap-2"
           >

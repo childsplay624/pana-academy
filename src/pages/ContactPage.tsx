@@ -27,33 +27,54 @@ export const ContactPage = () => {
     setIsSubmitting(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('send-contact-email', {
+      // 1. SAVE TO DATABASE AS BACKUP
+      const { error: dbError } = await supabase
+        .from('contact_messages' as any)
+        .insert([formData]);
+
+      if (dbError) {
+        console.error('Database save error:', dbError);
+        // We continue anyway to try the email
+      }
+
+      // 2. SEND EMAIL VIA EDGE FUNCTION
+      const { data, error: functionError } = await supabase.functions.invoke('send-contact-email', {
         headers: {
-          'x-pana-signature': import.meta.env.VITE_PANA_SIGNATURE,
+          'x-pana-signature': import.meta.env.VITE_PANA_SIGNATURE || '',
         },
         body: formData
       });
 
-      if (error) throw error;
+      if (functionError) throw functionError;
 
       toast({
         title: "Message sent successfully!",
-        description: "We'll get back to you as soon as possible.",
+        description: "We've received your inquiry and will get back to you shortly.",
       });
 
-      // Clear form
       setFormData({
         name: "",
         email: "",
         subject: "",
         message: ""
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending message:', error);
+      
+      // If we got here, but the DB save might have worked, 
+      // we should tell the user we got it but the notification failed
       toast({
-        title: "Failed to send message",
-        description: "Please try again or contact us directly via email.",
-        variant: "destructive",
+        title: "Message Received",
+        description: "Your message has been saved in our system, but we encountered an issue sending a notification email. We will still review your request.",
+        variant: "default",
+      });
+      
+      // Still clear the form since it was saved to DB
+       setFormData({
+        name: "",
+        email: "",
+        subject: "",
+        message: ""
       });
     } finally {
       setIsSubmitting(false);

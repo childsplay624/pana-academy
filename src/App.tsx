@@ -61,6 +61,7 @@ import { PaymentCallbackPage } from "./pages/PaymentCallbackPage";
 import CareersPage from "./pages/CareersPage";
 import TestimonialsPage from "./pages/TestimonialsPage";
 import TeamManagement from "./pages/admin/TeamManagement";
+import ContactMessages from "./pages/admin/ContactMessages";
 
 const queryClient = new QueryClient();
 
@@ -80,7 +81,8 @@ const App = () => (
                     <Route path="/" element={<Index />} />
 
                     <Route path="/about" element={<AboutPage />} />
-                    <Route path="/courses" element={<PublicCoursesPage />} />
+                    <Route path="/dashboard/team" element={<ProtectedRoute><TeamManagement /></ProtectedRoute>} />
+                    <Route path="/dashboard/messages" element={<ProtectedRoute><ContactMessages /></ProtectedRoute>} />
                     <Route path="/courses/:category" element={<PublicCoursesPage />} />
                     <Route path="/course/:id" element={<CourseDetails />} />
 
