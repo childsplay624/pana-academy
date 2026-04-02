@@ -19,7 +19,8 @@ import {
   FileText,
   ImageIcon,
   CreditCard,
-  TrendingUp
+  TrendingUp,
+  Mail
 } from 'lucide-react';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { supabase } from '@/integrations/supabase/client';

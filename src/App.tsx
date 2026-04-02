@@ -81,8 +81,6 @@ const App = () => (
                     <Route path="/" element={<Index />} />
 
                     <Route path="/about" element={<AboutPage />} />
-                    <Route path="/dashboard/team" element={<ProtectedRoute><TeamManagement /></ProtectedRoute>} />
-                    <Route path="/dashboard/messages" element={<ProtectedRoute><ContactMessages /></ProtectedRoute>} />
                     <Route path="/courses/:category" element={<PublicCoursesPage />} />
                     <Route path="/course/:id" element={<CourseDetails />} />
 
@@ -211,11 +209,19 @@ const App = () => (
                         </ProtectedRoute>
                       }
                     />
-                     <Route
+                    <Route
                       path="/dashboard/team"
                       element={
                         <ProtectedRoute allowedRoles={['admin']}>
                           <TeamManagement />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/messages"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <ContactMessages />
                         </ProtectedRoute>
                       }
                     />

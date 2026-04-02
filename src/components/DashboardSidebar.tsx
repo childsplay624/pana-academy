@@ -16,7 +16,8 @@ import {
   CreditCard,
   ImageIcon,
   MessageSquareText,
-  MessageSquare
+  MessageSquare,
+  Mail
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -59,6 +60,7 @@ export function DashboardSidebar() {
         { title: "Team Management", url: "/dashboard/team", icon: Users },
         { title: "Course Management", url: "/dashboard/courses", icon: BookOpen },
         { title: "Support Tickets", url: "/dashboard/support-tickets", icon: MessageSquare },
+        { title: "Manage Messages", url: "/dashboard/messages", icon: Mail },
         { title: "Manage Payments", url: "/dashboard/payments", icon: CreditCard },
         { title: "Invoices", url: "/dashboard/invoices", icon: FileText },
         { title: "Manage Venues", url: "/dashboard/venues", icon: MapPin },
