@@ -26,27 +26,45 @@ const HeroSection = () => {
     }
   ];
 
-  // Build slides strictly from database/fallback
-  const slides = heroImages.map((img, index) => {
-    const fallback = fallbackSlides[index % fallbackSlides.length];
-    const isVideo = img.url?.toLowerCase().endsWith('.mp4') || img.url?.toLowerCase().endsWith('.webm');
-    
-    return {
-      id: index + 1,
-      mediaUrl: img.url,
-      type: isVideo ? 'video' : 'image',
-      title: img.alt_text?.includes(' - ') ? img.alt_text.split(' - ')[0] : fallback.title,
-      highlight: img.alt_text?.includes(' - ') ? img.alt_text.split(' - ')[1] : fallback.highlight,
-      subtitle: (img.description && img.description.length > 5 && !img.description.includes("Empowering") && !img.description.toLowerCase().includes("hero slide")) ? img.description : fallback.subtitle,
-    };
-  });
+  // Build slides with custom video support
+  const slides = [
+    // Specifically added YouTube video from user
+    {
+      id: 'yt-1',
+      mediaUrl: 'https://www.youtube.com/embed/r-C0gPsmyvE?autoplay=1&mute=1&controls=0&loop=1&playlist=r-C0gPsmyvE&rel=0&showinfo=0',
+      type: 'youtube',
+      title: "PANA Academy",
+      highlight: "Excellence in Training",
+      subtitle: "Bridging the gap between knowledge and practical application through world-class instruction.",
+    },
+    ...heroImages.map((img, index) => {
+      const fallback = fallbackSlides[index % fallbackSlides.length];
+      const isVideo = img.url?.toLowerCase().endsWith('.mp4') || img.url?.toLowerCase().endsWith('.webm');
+      const isYouTube = img.url?.includes('youtube.com') || img.url?.includes('youtu.be');
+      
+      let finalUrl = img.url;
+      if (isYouTube) {
+        const videoId = img.url.split('/').pop()?.split('?')[0].replace('watch?v=', '');
+        finalUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}&rel=0&showinfo=0`;
+      }
+
+      return {
+        id: index + 1,
+        mediaUrl: finalUrl,
+        type: isYouTube ? 'youtube' : isVideo ? 'video' : 'image',
+        title: img.alt_text?.includes(' - ') ? img.alt_text.split(' - ')[0] : fallback.title,
+        highlight: img.alt_text?.includes(' - ') ? img.alt_text.split(' - ')[1] : fallback.highlight,
+        subtitle: (img.description && img.description.length > 5 && !img.description.includes("Empowering") && !img.description.toLowerCase().includes("hero slide")) ? img.description : fallback.subtitle,
+      };
+    })
+  ];
 
   // Auto-play
   useEffect(() => {
     if (slides.length <= 1) return;
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 8000); // Increased time for video visibility
+    }, 10000); // 10 seconds for video content
     return () => clearInterval(timer);
   }, [slides.length]);
 
@@ -78,7 +96,15 @@ const HeroSection = () => {
             transition={{ duration: 1.2 }}
             className="absolute inset-0"
           >
-            {current.type === 'video' ? (
+            {current.type === 'youtube' ? (
+              <iframe
+                src={current.mediaUrl}
+                className="w-full h-full object-cover scale-[1.3] pointer-events-none"
+                frameBorder="0"
+                allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+              />
+            ) : current.type === 'video' ? (
               <video
                 src={current.mediaUrl}
                 autoPlay
