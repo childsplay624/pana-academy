@@ -26,12 +26,15 @@ const HeroSection = () => {
     }
   ];
 
-  // Build slides strictly from database
+  // Build slides strictly from database/fallback
   const slides = heroImages.map((img, index) => {
     const fallback = fallbackSlides[index % fallbackSlides.length];
+    const isVideo = img.url?.toLowerCase().endsWith('.mp4') || img.url?.toLowerCase().endsWith('.webm');
+    
     return {
       id: index + 1,
-      backgroundImage: img.url,
+      mediaUrl: img.url,
+      type: isVideo ? 'video' : 'image',
       title: img.alt_text?.includes(' - ') ? img.alt_text.split(' - ')[0] : fallback.title,
       highlight: img.alt_text?.includes(' - ') ? img.alt_text.split(' - ')[1] : fallback.highlight,
       subtitle: (img.description && img.description.length > 5 && !img.description.includes("Empowering") && !img.description.toLowerCase().includes("hero slide")) ? img.description : fallback.subtitle,
@@ -43,7 +46,7 @@ const HeroSection = () => {
     if (slides.length <= 1) return;
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 5000);
+    }, 8000); // Increased time for video visibility
     return () => clearInterval(timer);
   }, [slides.length]);
 
@@ -65,20 +68,35 @@ const HeroSection = () => {
   return (
     <section className="relative h-[75vh] flex items-center overflow-hidden mt-10">
       {/* Background with smooth scroll */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 overflow-hidden">
         <AnimatePresence mode="wait">
-          <motion.img
+          <motion.div
             key={current.id}
-            src={current.backgroundImage}
-            alt={current.title}
-            initial={{ opacity: 0, scale: 1.02 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.98 }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="w-full h-full object-cover object-center absolute inset-0"
-          />
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.2 }}
+            className="absolute inset-0"
+          >
+            {current.type === 'video' ? (
+              <video
+                src={current.mediaUrl}
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <img
+                src={current.mediaUrl}
+                alt={current.title}
+                className="w-full h-full object-cover object-center"
+              />
+            )}
+            <div className="absolute inset-0 bg-black/50"></div>
+          </motion.div>
         </AnimatePresence>
-        <div className="absolute inset-0 bg-black/60"></div>
       </div>
 
       {/* Minimal Centered Content */}
