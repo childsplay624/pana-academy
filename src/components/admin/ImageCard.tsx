@@ -111,17 +111,43 @@ export function ImageCard({ image, onUpdate, onDelete, onReplace }: ImageCardPro
         return `${(kb / 1024).toFixed(1)} MB`;
     };
 
+    const isYouTube = image.url.includes('youtube.com') || image.url.includes('youtu.be');
+    const isVideo = image.url.toLowerCase().endsWith('.mp4') || image.url.toLowerCase().endsWith('.webm');
+    
+    // Get YouTube thumbnail if applicable
+    const getYouTubeThumbnail = (url: string) => {
+        const videoId = url.split('/').pop()?.split('?')[0].replace('watch?v=', '');
+        return `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+    };
+
+    const previewSrc = isYouTube ? getYouTubeThumbnail(image.url) : image.url;
+
     return (
         <>
             <Card className="overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="aspect-video bg-muted/20 relative group">
-                    <img
-                        src={image.url}
-                        alt={image.alt_text || 'Site image'}
-                        className="w-full h-full object-cover"
-                    />
+                    {isVideo ? (
+                        <video
+                            src={image.url}
+                            className="w-full h-full object-cover"
+                            muted
+                        />
+                    ) : (
+                        <img
+                            src={previewSrc}
+                            alt={image.alt_text || 'Site image'}
+                            className="w-full h-full object-cover"
+                        />
+                    )}
+                    
+                    {isYouTube && (
+                        <div className="absolute top-2 left-2 z-10">
+                            <Badge variant="default" className="bg-red-600 hover:bg-red-700">YouTube</Badge>
+                        </div>
+                    )}
+                    
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                        {onReplace && (
+                        {onReplace && !isYouTube && (
                             <Button
                                 size="sm"
                                 variant="default"
@@ -148,13 +174,15 @@ export function ImageCard({ image, onUpdate, onDelete, onReplace }: ImageCardPro
                             <Trash2 className="w-4 h-4" />
                         </Button>
                     </div>
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileSelect}
-                        className="hidden"
-                    />
+                    {!isYouTube && (
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileSelect}
+                            className="hidden"
+                        />
+                    )}
                 </div>
 
                 <CardContent className="p-4 space-y-2">
@@ -209,11 +237,15 @@ export function ImageCard({ image, onUpdate, onDelete, onReplace }: ImageCardPro
 
                     <div className="space-y-4 py-4">
                         <div className="aspect-video bg-muted/20 rounded-lg overflow-hidden">
-                            <img
-                                src={image.url}
-                                alt={image.alt_text || 'Preview'}
-                                className="w-full h-full object-contain"
-                            />
+                            {isVideo ? (
+                                <video src={image.url} className="w-full h-full object-contain" muted />
+                            ) : (
+                                <img
+                                    src={previewSrc}
+                                    alt={image.alt_text || 'Preview'}
+                                    className="w-full h-full object-contain"
+                                />
+                            )}
                         </div>
 
                         <div className="space-y-2">
@@ -265,11 +297,15 @@ export function ImageCard({ image, onUpdate, onDelete, onReplace }: ImageCardPro
 
                     <div className="py-4">
                         <div className="aspect-video bg-muted/20 rounded-lg overflow-hidden mb-4">
-                            <img
-                                src={image.url}
-                                alt={image.alt_text || 'Preview'}
-                                className="w-full h-full object-contain"
-                            />
+                            {isVideo ? (
+                                <video src={image.url} className="w-full h-full object-contain" muted />
+                            ) : (
+                                <img
+                                    src={previewSrc}
+                                    alt={image.alt_text || 'Preview'}
+                                    className="w-full h-full object-contain"
+                                />
+                            )}
                         </div>
                         <p className="text-sm font-medium">{image.key}</p>
                         {image.alt_text && (
