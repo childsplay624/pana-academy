@@ -27,17 +27,7 @@ const HeroSection = () => {
   ];
 
   // Build slides with custom video support
-  const slides = [
-    // Specifically added YouTube video from user
-    {
-      id: 'yt-1',
-      mediaUrl: 'https://www.youtube.com/embed/r-C0gPsmyvE?autoplay=1&mute=1&controls=0&loop=1&playlist=r-C0gPsmyvE&rel=0&showinfo=0',
-      type: 'youtube',
-      title: "PANA Academy",
-      highlight: "Excellence in Training",
-      subtitle: "Bridging the gap between knowledge and practical application through world-class instruction.",
-    },
-    ...heroImages.map((img, index) => {
+  const slides = heroImages.map((img, index) => {
       const fallback = fallbackSlides[index % fallbackSlides.length];
       const isVideo = img.url?.toLowerCase().endsWith('.mp4') || img.url?.toLowerCase().endsWith('.webm');
       const isYouTube = img.url?.includes('youtube.com') || img.url?.includes('youtu.be');
@@ -56,8 +46,7 @@ const HeroSection = () => {
         highlight: img.alt_text?.includes(' - ') ? img.alt_text.split(' - ')[1] : fallback.highlight,
         subtitle: (img.description && img.description.length > 5 && !img.description.includes("Empowering") && !img.description.toLowerCase().includes("hero slide")) ? img.description : fallback.subtitle,
       };
-    })
-  ];
+    });
 
   // Auto-play
   useEffect(() => {
