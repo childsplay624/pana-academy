@@ -481,6 +481,14 @@ export default function AdminDashboard() {
           </Button>
           <Button
             variant="outline"
+            onClick={() => navigate('/dashboard/team')}
+            className="h-20 flex flex-col items-center justify-center gap-2"
+          >
+            <Users className="h-6 w-6" />
+            <span>Manage Team</span>
+          </Button>
+          <Button
+            variant="outline"
             onClick={() => navigate('/dashboard/payments')}
             className="h-20 flex flex-col items-center justify-center gap-2"
           >

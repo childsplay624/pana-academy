@@ -69,8 +69,9 @@ export function useSiteImage(key: string): UseSiteImageReturn {
             'header_careers': null,
             'logo': '/logo.png',
             'hero': '/panawhy.png',
-            'values_sands': '/values/sands.jpg',
+            'values_sands': '/values/sands.PNG',
             'values_maxims': '/values/maxims.jpg',
+            'team_ifeyinwa_eucharia': '/team/Ifeyinwa-Eucharia.jpg',
         };
         
         return fallbacks[key] || null;

@@ -56,6 +56,7 @@ export function DashboardSidebar() {
       return [
         ...baseItems,
         { title: "User Management", url: "/dashboard/users", icon: Users },
+        { title: "Team Management", url: "/dashboard/team", icon: Users },
         { title: "Course Management", url: "/dashboard/courses", icon: BookOpen },
         { title: "Support Tickets", url: "/dashboard/support-tickets", icon: MessageSquare },
         { title: "Manage Payments", url: "/dashboard/payments", icon: CreditCard },

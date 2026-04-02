@@ -32,7 +32,7 @@ const Navigation = () => {
       href: "/",
     },
     {
-      name: "About PANA",
+      name: "about",
       href: "/about",
       dropdown: [
         {
@@ -46,6 +46,10 @@ const Navigation = () => {
         {
           name: "Our Journey",
           href: "/our-journey",
+        },
+        {
+          name: "Testimonials",
+          href: "/testimonials",
         }
       ]
     },

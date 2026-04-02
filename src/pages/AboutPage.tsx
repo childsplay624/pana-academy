@@ -69,14 +69,14 @@ const AboutPage = () => {
                 <Navigation />
 
                 {/* Hero Section with Visual Impact */}
-                <section className="relative pt-0 pb-20 md:pb-28 overflow-hidden mt-20">
+                <section className="relative pt-32 pb-24 md:pt-48 md:pb-32 overflow-hidden min-h-[400px] md:min-h-[500px]">
                     {/* Background Image */}
                     <div className="absolute inset-0">
                         {headerImage ? (
                             <img
                                 src={headerImage}
                                 alt="About PANA Academy"
-                                className="w-full h-full object-cover object-center"
+                                className="w-full h-full object-cover object-top"
                                 loading="eager"
                             />
                         ) : (
@@ -126,7 +126,7 @@ const AboutPage = () => {
                                     </Button>
                                 </Link>
                                 <Link to="/contact" className="no-underline">
-                                    <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white/10 px-8 py-6 text-lg group">
+                                    <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-red-700 px-8 py-6 text-lg transition-all duration-300 shadow-lg group">
                                         Get in Touch
                                         <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                                     </Button>
@@ -267,7 +267,7 @@ const AboutPage = () => {
                                 <Button
                                     size="lg"
                                     variant="outline"
-                                    className="border-white text-white hover:bg-white/10 px-8 py-6 text-lg"
+                                    className="bg-white text-red-600 hover:bg-gray-100 px-8 py-6 text-lg font-semibold"
                                 >
                                     Contact Us
                                 </Button>

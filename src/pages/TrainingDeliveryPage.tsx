@@ -21,14 +21,14 @@ const TrainingDelivery = () => {
 
         <main>
           {/* Hero Section with Visual Impact */}
-          <section className="relative pt-0 pb-20 md:pb-28 overflow-hidden mt-20">
+          <section className="relative pt-32 pb-24 md:pt-48 md:pb-32 overflow-hidden min-h-[400px] md:min-h-[500px]">
             {/* Background Image */}
             <div className="absolute inset-0">
               {headerImage ? (
                 <img
                   src={headerImage}
                   alt="Training Delivery"
-                  className="w-full h-full object-cover object-center"
+                  className="w-full h-full object-cover object-top"
                   loading="eager"
                 />
               ) : (
@@ -112,7 +112,7 @@ const TrainingDelivery = () => {
                 <div className="text-center mb-12">
                   <div className="inline-flex items-center gap-2 bg-pana-gold/10 px-4 py-2 rounded-full text-pana-gold font-medium mb-4">
                     <Target className="w-4 h-4" />
-                    Our Mission
+
                   </div>
                   <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
                     Transforming Learning Through Innovation
@@ -121,7 +121,7 @@ const TrainingDelivery = () => {
 
                 <div className="prose prose-lg max-w-none text-center">
                   <p className="text-xl text-muted-foreground leading-relaxed">
-                    At PANA Academy, training delivery refers to the innovative methods, strategies, and approaches we use to present learning content, hands-on practical sessions to facilitate competency cultivation. We meticulously design our training delivery methods to maximize impact, effectiveness, and measurable outcomes for enhanced performance and sustainable career and organizational success.
+                    Our training delivery encompasses methods, strategies, and approaches we use to present learning content and hands-on practical sessions to facilitate competency cultivation. We meticulously design our training delivery methods to maximise impact, effectiveness, and measurable outcomes for enhanced performance and sustainable career and organisational success.
                   </p>
                 </div>
 

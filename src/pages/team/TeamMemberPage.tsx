@@ -1,208 +1,232 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Mail, Linkedin, Twitter, Share2, Award, Briefcase, GraduationCap, CheckCircle2 } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { useSiteImage } from "@/hooks/useSiteImage";
-
-const teamMembers = [
-  {
-    id: "daere-akobo",
-    name: "Dr. Daere Afonya-a Akobo, FCIoD (London)",
-    title: "Chairman and Group CEO",
-    subtitle: "PANA Holdings",
-    description: "Visionary entrepreneur and business leader with over 25 years of experience across multiple industries including oil & gas, power, and technology.",
-    fullBio: "Dr. Daere Akobo, FCIoD (London) is a visionary entrepreneur, business mentor, and philanthropist celebrated for his unwavering commitment to excellence and innovation. As the Chairman and Group CEO of PANA Holdings, he oversees a dynamic portfolio of companies, including PE Energy Ltd, Synergy E&P Ltd, AKD Digital Solutions, PE Goldland, PANA Academy, PANA Infrastructure, Afriksnus, Ataraxia, Diplomatic Village Limited (DVL), and the Daere Afonya-a Akobo Foundation (DAAF). Through DAAF, Dr. Akobo is deeply dedicated to giving back to the community, empowering the less privileged, and driving meaningful social impact. In business, his bold, creative, and innovative mindset enables him to tackle complex challenges, deliver transformative solutions, and inspire growth across industries.",
-    experience: [
-      "Over 25 years of experience in electrical engineering and flow measurement",
-      "Former Electrical and Instrumentation Superintendent at International Petroleum of Nigeria",
-      "Recognized as African Continental Top Talent at General Electric (GE)",
-      "Extensive business portfolio across multiple industries including power, water technology, and IT"
-    ],
-    image: "/team/daere-akobo.png",
-    imageKey: "team_daere_akobo"
-  },
-  {
-    id: "iyenemi-akobo",
-    name: "Mrs. Iyenemi Akobo",
-    title: "Executive Director",
-    subtitle: "Global Business Services",
-    description: "Seasoned business administrator with international training and expertise in corporate governance and business administration.",
-    fullBio: "Mrs. Iyenemi Akobo has been the backbone of the entire organization since its inception. With a background in Business Administration and CLE training in various international institutions in London, Dubai, Switzerland and Harvard, she is an alumna of the prestigious IMD Business School. She is a central figure in the administration of the group and a valued contributor to the growth of the business structure. She has held and efficiently managed key positions enabling and spurring the growth vision of the Chairman. She is the Executive Director (ED) for the Global Business Services unit, additionally supervising HR, Commercial Services and part of the Accounting functions. She became a director of the company in 2015 and rose to the position of Deputy Managing Director from 2018 to August 2022 (Retirement date). In addition, she held the position of General Manager Human Resources & Organization of the Company from 2015 to 2022. She is the first female to hold the position in the over 60 years of existence of the Company. She won the award of the first Nigerian Content Operator of the year for the Company and received the PETAN Chairman's Outstanding Achievement Recognition Award for Nigerian content in 2015. She was also a director of the Nigerian Agip Closed Pension Fund Ltd from 2015 to August 2022.",
-    experience: [
-      "Former Deputy Managing Director, Nigerian Agip Oil Company Limited (NAOC)",
-      "Over 25 years of experience in the oil and gas industry",
-      "Fellow of the Institute of Chartered Accountants of Nigeria",
-      "Recipient of PETAN Chairman's Outstanding Achievement Recognition Award"
-    ],
-    image: "/team/iyenemi-akobo.png",
-    imageKey: "team_iyenemi_akobo"
-  },
-  {
-    id: "callista-azogu",
-    name: "Mrs. Callista C. Azogu",
-    title: "Board Member",
-    subtitle: "Former Deputy Managing Director, NAOC",
-    description: "Accomplished executive with extensive experience in the oil and gas industry, specializing in finance, HR, and corporate governance.",
-    fullBio: "Mrs. Callista C. Azogu attended FGGC Gboko and University of Ilorin, bagging MSc. in Managerial Accounting, BSc. Accounting & Finance. She joined Nigerian Agip Oil Company Limited (NAOC) in August 1996 as a Budget Analyst and rose through the ranks working through various professional areas in the Oil and Gas sector within the Eni ('AGIP') group locally and abroad. Her experiences span topmost level industry advocacy, Accounting, Finance, Nigerian content, Human Resources, Administration, and Commercial. She became a director of the company in 2015 and rose to the position of Deputy Managing Director from 2018 to August 2022 (Retirement date). In addition, she held the position of General Manager Human Resources & Organization of the Company from 2015 to 2022. She is the first female to hold the position in the over 60 years of existence of the Company. She won the award of the first Nigerian Content Operator of the year for the Company and received the PETAN Chairman's Outstanding Achievement Recognition Award for Nigerian content in 2015. She was also a director of the Nigerian Agip Closed Pension Fund Ltd from 2015 to August 2022.",
-    experience: [
-      "Former Deputy Managing Director, Nigerian Agip Oil Company Limited (NAOC)",
-      "Over 25 years of experience in the oil and gas industry",
-      "Fellow of the Institute of Chartered Accountants of Nigeria",
-      "Recipient of PETAN Chairman's Outstanding Achievement Recognition Award"
-    ],
-    image: "/team/callista-azogu.png",
-    imageKey: "team_callista_azogu"
-  },
-  {
-    id: "ifeyinwa-achumba",
-    name: "Dr. Ifeyinwa Eucharia Achumba",
-    title: "Advisory Board Member",
-    subtitle: "MNCS, MNSE, COREN Reg, CPN Reg, MIEEE, FFTF Fellow",
-    description: "Experienced academic and industry professional with expertise in STEM education and industry-academia partnerships.",
-    fullBio: "Dr. Ifeyinwa Eucharia Achumba is an accomplished academic and industry professional with over twenty-five years of university service in various capacities including Head of Department (Electrical and Electronic Engineering), Head of Department (Computer Engineering), University Senate member, and Director of Information and Communication Technology (DICT). Her teaching efforts are geared towards producing graduate entrepreneurs and industry-ready graduates. She is a passionate advocate for Academia-Industry Partnerships (AIP) and a strong proponent of increasing female participation in STEM fields.",
-    experience: [
-      "Over 25 years of university service in various academic and administrative roles",
-      "PhD from the University of Portsmouth, United Kingdom with Postdoctoral research experience",
-      "Current Chair of the Institute of Electrical and Electronic Engineers (IEEE) Nigeria Section",
-      "Intellectual Property Commissioner for Oil and Gas Trainers Association of Nigeria (OGTAN)",
-      "Active participant in Oil & Gas National Occupational Standards (NOS) development",
-      "Member of the Sector Working Group (SWG) on Education for NCDMB"
-    ],
-    image: "/team/Ifeyinwa-Eucharia.jpg",
-    imageKey: "team_ifeyinwa_achumba"
-  },
-  {
-    id: "kennedy-dike",
-    name: "Kennedy Okechukwu Dike MCIPM, HRPL, FSM, FMCI",
-    title: "Advisory Board Member",
-    subtitle: "PANA Academy",
-    description: "Seasoned HR practitioner with vast experience in Oil & Gas, Manufacturing, and Corporate Governance.",
-    fullBio: "Kennedy Okechukwu Dike MCIPM, HRPL, FSM, FMCI is a seasoned Human Resources practitioner with vast experience spanning Oil & Gas, Manufacturing, Shipping, International Freight Logistics, Business Sustainability and Corporate governance. As certified HR Manager, he is licensed to practice Human Resources in Nigeria by the Chartered Institute of Personnel Management (CIPMN) the apex regulatory body for human resources practice Nigeria. He is also a member of the Society for Corporate Governance in Nigeria and currently the GM, Global Business Services PANA Holdings. Before joining PANA Holdings, he worked for Belemaoil Producing Ltd, Notore Chemical Industries Plc, The Oiltest Group and Ideke Shipping Ltd working in partnership with Hellmann Worldwide Logistics. Mr. Dike had served as a member of the Governing Council of the University of Calabar and Governing Council of the Chartered Institute of Personnel Management Nigeria (CIPMN). He is presently a member of the Board of Trustees of a number of organizations. He is the Rivers State Branch Chairman of Learning & Development Network International LDNI; Fellow Mentoring and Career Development Institute of Nigeria; Fellow, Institute of Strategic Management Nigeria (Chartered) and Fellow Chartered Business Institute London.",
-    experience: [
-      "GM, Global Business Services PANA Holdings",
-      "Former member of Governing Council, University of Calabar",
-      "Fellow, Institute of Strategic Management Nigeria",
-      "Extensive experience in HR, corporate governance, and business sustainability"
-    ],
-    image: "/team/kennedy-dike.jpg",
-    imageKey: "team_kennedy_dike"
-  }
-];
+import { supabase } from "@/integrations/supabase/client";
+import { TeamMember } from "@/types/team.types";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function TeamMemberPage() {
-  const { memberId } = useParams<{ memberId: string }>();
-  const member = teamMembers.find(m => m.id === memberId);
-  const { imageUrl } = useSiteImage(member?.imageKey || '');
+  const { memberId: slug } = useParams<{ memberId: string }>();
+  const [member, setMember] = useState<TeamMember | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { imageUrl } = useSiteImage(member?.image_key || '');
 
-  // Use a simple layout effect or regular effect to scroll top when member changes
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [memberId]);
+    const fetchMember = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('team_members')
+          .select('*')
+          .eq('slug', slug)
+          .single();
 
-  if (!member) return <div className="min-h-screen flex items-center justify-center">Team member not found</div>;
+        if (error) throw error;
+        setMember(data as TeamMember);
+      } catch (error) {
+        console.error('Error fetching team member:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (slug) fetchMember();
+    window.scrollTo(0, 0);
+  }, [slug]);
+
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-white">
+      <motion.div 
+        animate={{ scale: [1, 1.2, 1], opacity: [1, 0.5, 1] }}
+        transition={{ repeat: Infinity, duration: 2 }}
+        className="h-16 w-16 bg-red-600 rounded-full flex items-center justify-center text-white font-bold"
+      >
+        P
+      </motion.div>
+    </div>
+  );
+
+  if (!member) return (
+    <div className="min-h-screen flex flex-col items-center justify-center">
+      <h1 className="text-2xl font-bold mb-4 text-gray-900">Member Disengaged</h1>
+      <Link to="/team">
+        <Button variant="outline" className="border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-all">
+          Return to Team
+        </Button>
+      </Link>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-white">
       <Navigation />
-      <main className="flex-grow py-12">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Back button outside the box */}
-          <div className="mb-6">
-            <Button
-              asChild
-              variant="ghost"
-              className="hover:bg-red-50"
-            >
-              <Link to="/team" className="flex items-center text-red-600">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Team
-              </Link>
-            </Button>
+      
+      <main className="flex-grow pt-20">
+        {/* ENHANCED Premium Header Section */}
+        <section className="relative w-full bg-gray-50 overflow-hidden">
+          {/* Subtle Dynamic Background Patterns */}
+          <div className="absolute inset-0 z-0 opacity-40">
+            <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-red-100 rounded-full blur-[100px]" />
+            <div className="absolute top-[20%] right-[-5%] w-[30%] h-[30%] bg-blue-100 rounded-full blur-[100px]" />
           </div>
 
-          {/* Main content box */}
-          <div className="bg-white rounded-xl shadow-md overflow-hidden">
-            <Card className="overflow-hidden group border-0 shadow-none">
-              {/* Full-width header image */}
-              <div className="relative h-80 w-full overflow-hidden">
-                {/* Large header image */}
-                <div className="absolute inset-0">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-16 lg:py-24">
+            <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-center">
+              
+              {/* IMAGE DISPLAY: Enhanced prominent vertical display */}
+              <motion.div 
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="relative w-full max-w-[480px] lg:w-1/2 group"
+              >
+                {/* Decorative background frame */}
+                <div className="absolute -top-4 -left-4 w-24 h-24 border-t-4 border-l-4 border-red-600 z-10" />
+                <div className="absolute -bottom-4 -right-4 w-24 h-24 border-b-4 border-r-4 border-gray-900 z-10" />
+
+                {/* Main Profile Image */}
+                <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.15)] ring-8 ring-white bg-white">
                   {imageUrl ? (
-                    <img
-                      src={imageUrl}
-                      alt={member.name}
-                      className="w-full h-full object-cover object-top"
+                    <img 
+                      src={imageUrl} 
+                      alt={member.name} 
+                      className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center">
-                      <span className="text-6xl font-bold text-red-400">
-                        {member.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                      </span>
+                    <div className="w-full h-full bg-gradient-to-br from-red-600 to-red-900 flex items-center justify-center text-white italic text-9xl opacity-20 select-none">
+                      PANA
                     </div>
                   )}
+                  
+                  {/* Floating badge for image */}
+                  <div className="absolute bottom-6 left-6 flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-md rounded-xl shadow-lg">
+                    <CheckCircle2 className="w-4 h-4 text-green-500" />
+                    <span className="text-xs font-bold text-gray-900 uppercase tracking-widest">
+                       Verified Leadership
+                    </span>
+                  </div>
                 </div>
 
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                {/* Reflection effect */}
+                <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/20 to-transparent pointer-events-none rounded-b-[2rem]" />
+              </motion.div>
 
-                {/* Profile image */}
-                <div className="absolute -bottom-16 left-8 z-10">
-                  <div className="h-40 w-40 rounded-full overflow-hidden border-4 border-white shadow-2xl bg-white">
-                    {imageUrl ? (
-                      <img
-                        src={imageUrl}
-                        alt={member.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-red-100 flex items-center justify-center">
-                        <span className="text-4xl font-bold text-red-600">
-                          {member.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                        </span>
-                      </div>
+              {/* PROFILE INFO: Focused and Premium Typography */}
+              <motion.div 
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+                className="w-full lg:w-1/2 space-y-8"
+              >
+                <div className="space-y-4">
+                  <span className="inline-block px-4 py-1.5 rounded-full bg-red-600/10 text-red-600 text-xs font-bold uppercase tracking-widest mb-2">
+                    {member.category} Member
+                  </span>
+                  <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 tracking-tighter leading-none italic pointer-events-none selection:bg-red-200">
+                    {member.name}
+                  </h1>
+                  <div className="h-1.5 w-24 bg-red-600 rounded-full" />
+                  <div className="space-y-1">
+                    <p className="text-2xl md:text-3xl font-light text-gray-700">
+                      {member.title}
+                    </p>
+                    {member.subtitle && (
+                      <p className="text-lg md:text-xl text-gray-400 font-medium italic">
+                        — {member.subtitle}
+                      </p>
                     )}
                   </div>
                 </div>
+
+                <p className="text-lg text-gray-500 leading-relaxed max-w-xl">
+                   {member.description}
+                </p>
+
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* DETAILS SECTION: Modern Clean Layout */}
+        <section className="py-24">
+          <div className="container mx-auto px-4 max-w-6xl">
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-16 md:gap-24">
+              
+              {/* Profile Meta / Sidebar Info */}
+              <div className="space-y-10">
+                 <div className="space-y-6 pb-10 border-b border-gray-100">
+                    <h3 className="text-sm font-bold uppercase tracking-widest text-red-600">Core Expertise</h3>
+                    <div className="grid grid-cols-1 gap-4">
+                       <div className="flex items-center gap-3">
+                          <div className="w-2 h-2 rounded-full bg-gray-900" />
+                          <span className="text-gray-900 font-semibold">{member.category === 'board' ? 'Executive Strategy' : 'Strategic Advisor'}</span>
+                       </div>
+                       <div className="flex items-center gap-3">
+                          <div className="w-2 h-2 rounded-full bg-gray-900" />
+                          <span className="text-gray-900 font-semibold">Leadership Development</span>
+                       </div>
+                       <div className="flex items-center gap-3">
+                          <div className="w-2 h-2 rounded-full bg-gray-900" />
+                          <span className="text-gray-900 font-semibold truncate">Policy Advocacy</span>
+                       </div>
+                    </div>
+                 </div>
+
+                 <div className="p-8 bg-gray-50 rounded-[2rem] space-y-4">
+                    <h4 className="font-bold text-gray-900">About the Profile</h4>
+                    <p className="text-sm text-gray-500 leading-relaxed">
+                       This profile represents the official leadership data for PANA Academy. All records are verified by our corporate governance board.
+                    </p>
+                    <Link to="/team">
+                      <Button variant="link" className="px-0 text-red-600 p-0 h-auto font-bold group">
+                         Explore All Records
+                         <ArrowLeft className="ml-2 w-4 h-4 rotate-180 transition-transform group-hover:translate-x-1" />
+                      </Button>
+                    </Link>
+                 </div>
               </div>
 
-              <CardHeader className="pt-20 px-8 pb-6">
-                <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-6">
-                  <div className="space-y-2">
-                    <CardTitle className="text-3xl font-bold text-gray-900">{member.name}</CardTitle>
-                    <p className="text-lg font-medium text-red-600">{member.title}</p>
-                    {member.subtitle && <p className="text-gray-500">{member.subtitle}</p>}
-                  </div>
-                </div>
-              </CardHeader>
-
-              <CardContent className="px-8 pb-8">
-                <div className="prose max-w-none">
-                  <div className="mb-8">
-                    <h3 className="text-xl font-semibold mb-4 text-gray-800">Biography</h3>
-                    <div className="prose text-gray-600">
-                      {member.fullBio || member.description}
+              {/* Main Expanded Content */}
+              <div className="space-y-16">
+                 {/* BIOGRAPHY */}
+                 <div className="space-y-6">
+                    <h2 className="text-4xl font-black text-gray-900 uppercase tracking-tighter italic">Biography</h2>
+                    <div className="prose prose-lg max-w-none text-gray-600 leading-relaxed whitespace-pre-line text-justify">
+                       {member.full_bio || member.description}
                     </div>
-                  </div>
+                 </div>
 
-                  {member.experience && member.experience.length > 0 && (
-                    <div>
-                      <h3 className="text-xl font-semibold mb-4 text-gray-800">Experience</h3>
-                      <ul className="space-y-3 list-disc pl-5">
+                 {/* EXPERIENCE */}
+                 {member.experience && Array.isArray(member.experience) && member.experience.length > 0 && (
+                   <div className="space-y-8">
+                      <h2 className="text-4xl font-black text-gray-900 uppercase tracking-tighter italic">Career Landmarks</h2>
+                      <div className="grid grid-cols-1 gap-4">
                         {member.experience.map((exp: string, index: number) => (
-                          <li key={index} className="text-gray-600">{exp}</li>
+                          <motion.div 
+                            key={index}
+                            whileHover={{ x: 10 }}
+                            className="bg-white p-6 rounded-2xl border-l-[6px] border-red-600 shadow-sm shadow-red-100 flex gap-4 items-center group cursor-default"
+                          >
+                            <div className="p-3 bg-red-50 rounded-xl group-hover:bg-red-600 group-hover:text-white transition-colors">
+                               <Award className="w-5 h-5 flex-shrink-0" />
+                            </div>
+                            <p className="text-gray-800 font-medium leading-relaxed">{exp}</p>
+                          </motion.div>
                         ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                      </div>
+                   </div>
+                 )}
+              </div>
+            </div>
           </div>
-        </div>
+        </section>
+
       </main>
+
       <Footer />
     </div>
   );

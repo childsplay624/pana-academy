@@ -21,13 +21,13 @@ const ConsultingServicesPage = () => {
 
         <main className="flex-grow">
           {/* Page Header with Image */}
-          <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
+          <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden min-h-[400px] md:min-h-[500px]">
             <div className="absolute inset-0">
               {headerImage ? (
                 <img
                   src={headerImage}
                   alt="Consulting Services"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover object-top"
                 />
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-pana-navy to-pana-red"></div>
@@ -94,7 +94,7 @@ const ConsultingServicesPage = () => {
                 <div>
                   <h2 className="text-3xl font-bold text-pana-navy mb-6">Our Approach</h2>
                   <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                    At PANA Academy, we don't just advise, we transform. Our consultancy services are designed to help organizations navigate complexity, unlock growth, and build resilient strategies. Whether you're a startup seeking market entry, an NGO refining impact models, or a government agency driving policy innovation, PANA Academy delivers actionable insights, and we turn challenges into opportunities and ideas into results.
+                    At PANA Academy, we go beyond offering advice, we work  with you to drive meaningful transformation. Our consultancy services are designed to help businesses  navigate complexity, unlock growth opportunities, and create strategies that are strong and innovative. Whether you are a startup exploring market entry, an NGO strengthening its impact model, or a government agency advancing policy innovation, PANA Academy provides practical solutions. We turn challenges into opportunities and ideas into measurable results.
                   </p>
 
                   <div className="space-y-6">
@@ -147,7 +147,7 @@ const ConsultingServicesPage = () => {
                         <div className="p-3 bg-pana-gold/10 rounded-full">
                           <Target className="h-8 w-8 text-pana-navy" />
                         </div>
-                        <h3 className="text-xl font-bold text-pana-navy">Our Mission</h3>
+                        <h3 className="text-xl font-bold text-pana-navy">Our Goal</h3>
                       </div>
                       <p className="text-gray-600">
                         To empower organizations with strategic insights and practical solutions that drive sustainable growth and innovation.

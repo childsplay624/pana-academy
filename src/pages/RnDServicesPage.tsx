@@ -21,13 +21,13 @@ const RnDServicesPage = () => {
 
         <main className="flex-grow">
           {/* Page Header with Image */}
-          <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
+          <section className="relative pt-32 pb-24 md:pt-48 md:pb-32 overflow-hidden min-h-[400px] md:min-h-[500px]">
             <div className="absolute inset-0">
               {headerImage ? (
                 <img
                   src={headerImage}
                   alt="R&D Services"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover object-top"
                 />
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-pana-navy to-pana-red"></div>
@@ -87,7 +87,7 @@ const RnDServicesPage = () => {
                 <div>
                   <h2 className="text-3xl font-bold text-pana-navy mb-6">Research and Development (R&D)</h2>
                   <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                    At PANA Academy, we don't just undertake R&D, we render Research and Development (R&D). Our Research and Development (R&D) empowers businesses, startups, and institutions to transform ideas into market-ready solutions. We route concept validation through to prototype development, and we provide the tools, talent pipeline, and technical expertise.
+                    From concept validation to prototype development, PANA Academy bridges critical gaps in research and development. We empower organizations across all sectors to innovate, grow, and transform ideas into impactful, market-ready solutions through practical insights, technical expertise, and a strong talent pipeline.
                   </p>
 
                   <div className="space-y-4">

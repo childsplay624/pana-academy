@@ -59,6 +59,8 @@ import AboutPage from "./pages/AboutPage";
 import { PaymentPage } from "./pages/PaymentPage";
 import { PaymentCallbackPage } from "./pages/PaymentCallbackPage";
 import CareersPage from "./pages/CareersPage";
+import TestimonialsPage from "./pages/TestimonialsPage";
+import TeamManagement from "./pages/admin/TeamManagement";
 
 const queryClient = new QueryClient();
 
@@ -116,6 +118,7 @@ const App = () => (
                     <Route path="/contact" element={<ContactPage />} />
                     <Route path="/training-calendar" element={<TrainingCalendarPage />} />
                     <Route path="/our-journey" element={<OurJourney />} />
+                     <Route path="/testimonials" element={<TestimonialsPage />} />
                     <Route path="/careers" element={<CareersPage />} />
                     <Route path="/test" element={<TestPage />} />
                     <Route
@@ -203,6 +206,14 @@ const App = () => (
                       element={
                         <ProtectedRoute allowedRoles={['admin', 'instructor']}>
                           <NewCourse />
+                        </ProtectedRoute>
+                      }
+                    />
+                     <Route
+                      path="/dashboard/team"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <TeamManagement />
                         </ProtectedRoute>
                       }
                     />
