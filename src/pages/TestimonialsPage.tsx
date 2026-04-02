@@ -38,7 +38,7 @@ const TestimonialsPage = () => {
   };
 
   const stats = [
-    { label: "Satisfied Clients", value: "500+", icon: Users },
+    { label: "Satisfied Clients", value: "200+", icon: Users },
     { label: "Success Stories", value: "100%", icon: Award },
     { label: "Expert Trainers", value: "50+", icon: Star },
   ];
@@ -64,7 +64,7 @@ const TestimonialsPage = () => {
             <div className="w-full h-full bg-gradient-to-br from-pana-navy via-slate-900 to-red-900" />
           )}
         </div>
-        
+
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-24 -right-24 w-96 h-96 bg-red-600/10 rounded-full blur-3xl animate-pulse" />
@@ -81,11 +81,11 @@ const TestimonialsPage = () => {
               <MessageSquare className="w-4 h-4" />
               <span>Real Stories, Real Results</span>
             </div>
-            
+
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
               Voices of <span className="text-red-600">Excellence</span>
             </h1>
-            
+
             <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-10 leading-relaxed">
               Discover how PANA Academy has empowered professionals and organizations across the globe to achieve unprecedented growth and technical mastery.
             </p>
@@ -125,15 +125,15 @@ const TestimonialsPage = () => {
                   <Card className="h-full bg-white border-none shadow-xl hover:shadow-2xl transition-all duration-300 group overflow-hidden relative">
                     {/* Decorative accent */}
                     <div className="absolute top-0 right-0 w-24 h-24 bg-red-50 rounded-bl-full -mr-12 -mt-12 transition-all group-hover:bg-red-100" />
-                    
+
                     <CardContent className="p-8 flex flex-col h-full pt-10">
                       <Quote className="w-10 h-10 text-red-600/10 mb-6 group-hover:text-red-600/20 transition-colors" />
-                      
+
                       <div className="flex mb-4">
                         {[...Array(5)].map((_, i) => (
-                          <Star 
-                            key={i} 
-                            className={`w-4 h-4 ${i < testimonial.rating ? 'fill-pana-gold text-pana-gold' : 'text-slate-200'}`} 
+                          <Star
+                            key={i}
+                            className={`w-4 h-4 ${i < testimonial.rating ? 'fill-pana-gold text-pana-gold' : 'text-slate-200'}`}
                           />
                         ))}
                       </div>
@@ -179,7 +179,7 @@ const TestimonialsPage = () => {
               <p className="text-lg text-slate-600 mb-10 leading-relaxed">
                 We don't just teach theories; we cultivate real-world competencies. Our training is designed to bridge the gap between classroom learning and industrial application.
               </p>
-              
+
               <ul className="space-y-4">
                 {[
                   "Practical, hands-on exposure to industry tools",
