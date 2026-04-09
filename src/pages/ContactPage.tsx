@@ -239,7 +239,7 @@ export const ContactPage = () => {
           <section className="h-96 bg-gray-100">
             <div className="h-full w-full">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3975.5827738087896!2d7.0098!3d4.8156!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1069d2b7e1e1e1e1%3A0x1e1e1e1e1e1e1e1e!2sPort%20Harcourt%2C%20Rivers%20State%2C%20Nigeria!5e0!3m2!1sen!2sus!4v1620000000000!5m2!1sen!2sus"
+                src="https://maps.google.com/maps?q=4.815760,7.035122&z=17&output=embed"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
