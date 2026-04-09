@@ -1,7 +1,10 @@
 // @ts-nocheck
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const RESEND_API_KEY = Deno.env.get('VITE_RESEND_API_KEY') || Deno.env.get('RESEND_API_KEY')
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL')
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -14,13 +17,6 @@ const PANA_SIGNATURE = Deno.env.get('VITE_PANA_SIGNATURE');
 const rateLimitMap = new Map<string, number[]>();
 const RATE_LIMIT_COUNT = 5; // 5 emails
 const RATE_LIMIT_WINDOW = 3600000; // per hour (1 hour in ms)
-
-interface ContactFormData {
-    name: string
-    email: string
-    subject: string
-    message: string
-}
 
 serve(async (req: Request) => {
     // Handle CORS preflight requests
@@ -66,17 +62,7 @@ serve(async (req: Request) => {
         const body = await req.json();
         
         // Handle Supabase Webhook payload vs Direct Invocation
-        let name, email, subject, message;
-        
-        if (body.record) {
-            // It's a Supabase Webhook payload
-            ({ name, email, subject, message } = body.record);
-            console.log('Processed as Database Webhook for record ID:', body.record.id);
-        } else {
-            // It's a direct invocation
-            ({ name, email, subject, message } = body);
-            console.log('Processed as Direct Invocation');
-        }
+        const { name, email, subject, message } = body.record || body;
 
         // Validate input
         if (!name || !email || !subject || !message) {
@@ -85,6 +71,20 @@ serve(async (req: Request) => {
                 JSON.stringify({ error: 'All fields are required' }),
                 { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
             )
+        }
+
+        // 1. SAVE TO DATABASE (Only if not already called by a webhook)
+        if (!body.record && SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
+            const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+            const { error: dbError } = await supabase
+                .from('contact_messages')
+                .insert([{ name, email, subject, message }]);
+            
+            if (dbError) {
+                console.error('Database error:', dbError);
+            } else {
+                console.log('Successfully saved to database');
+            }
         }
 
         // Validate email format

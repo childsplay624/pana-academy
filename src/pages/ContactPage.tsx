@@ -27,13 +27,16 @@ export const ContactPage = () => {
     setIsSubmitting(true);
 
     try {
-      // PROCESSED SIMPLY: Just save to database
-      // A Supabase Database Webhook handles sending the actual email
-      const { error: dbError } = await supabase
-        .from('contact_messages' as any)
-        .insert([formData]);
+      // UNIFIED PROCESS: One call handles both DB saving and Email sending
+      const { data, error: functionError } = await supabase.functions.invoke('send-contact-email', {
+        headers: {
+          'x-pana-signature': import.meta.env.VITE_PANA_SIGNATURE || '',
+        },
+        body: formData
+      });
 
-      if (dbError) throw dbError;
+      if (functionError) throw functionError;
+      if (data?.error) throw new Error(data.error);
 
       toast({
         title: "Message sent successfully!",
@@ -50,7 +53,7 @@ export const ContactPage = () => {
       console.error('Error sending message:', error);
       toast({
         title: "Error Sending Message",
-        description: "We couldn't reach our servers. Please try again later.",
+        description: error.message || "Failed to send message. Please try again later.",
         variant: "destructive",
       });
     } finally {
