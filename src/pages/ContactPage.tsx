@@ -27,33 +27,13 @@ export const ContactPage = () => {
     setIsSubmitting(true);
 
     try {
-      // 1. SAVE TO DATABASE AS BACKUP
+      // PROCESSED SIMPLY: Just save to database
+      // A Supabase Database Webhook handles sending the actual email
       const { error: dbError } = await supabase
         .from('contact_messages' as any)
         .insert([formData]);
 
-      if (dbError) {
-        console.error('Database save error:', dbError);
-        // We continue anyway to try the email
-      }
-
-      // 2. SEND EMAIL VIA EDGE FUNCTION
-      const { data, error: functionError } = await supabase.functions.invoke('send-contact-email', {
-        headers: {
-          'x-pana-signature': import.meta.env.VITE_PANA_SIGNATURE || '',
-        },
-        body: formData
-      });
-
-      if (functionError) {
-        console.error('Function invocation error:', functionError);
-        throw functionError;
-      }
-
-      if (data?.error) {
-        console.error('Email service error:', data.error);
-        throw new Error(data.error);
-      }
+      if (dbError) throw dbError;
 
       toast({
         title: "Message sent successfully!",
@@ -68,24 +48,10 @@ export const ContactPage = () => {
       });
     } catch (error: any) {
       console.error('Error sending message:', error);
-      
-      const errorMessage = error.message || "Failed to send message";
-      const isConfigError = errorMessage.toLowerCase().includes('resend') || errorMessage.toLowerCase().includes('verified');
-
       toast({
-        title: isConfigError ? "Email Configuration Issue" : "Message Received with Warning",
-        description: isConfigError 
-          ? `The system is not correctly configured to send emails. Please contact admin. Error: ${errorMessage}`
-          : "Your message has been saved in our system, but we encountered an issue sending a notification email. We will still review your request.",
-        variant: isConfigError ? "destructive" : "default",
-      });
-      
-      // Still clear the form if it was saved to DB (checked by absence of dbError throwing)
-      setFormData({
-        name: "",
-        email: "",
-        subject: "",
-        message: ""
+        title: "Error Sending Message",
+        description: "We couldn't reach our servers. Please try again later.",
+        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);

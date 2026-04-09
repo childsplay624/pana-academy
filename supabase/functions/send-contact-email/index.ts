@@ -63,17 +63,27 @@ serve(async (req: Request) => {
     rateLimitMap.set(ip, recentRequests);
 
     try {
-        // Parse request body
-        const { name, email, subject, message } = (await req.json()) as ContactFormData
+        const body = await req.json();
+        
+        // Handle Supabase Webhook payload vs Direct Invocation
+        let name, email, subject, message;
+        
+        if (body.record) {
+            // It's a Supabase Webhook payload
+            ({ name, email, subject, message } = body.record);
+            console.log('Processed as Database Webhook for record ID:', body.record.id);
+        } else {
+            // It's a direct invocation
+            ({ name, email, subject, message } = body);
+            console.log('Processed as Direct Invocation');
+        }
 
         // Validate input
         if (!name || !email || !subject || !message) {
+            console.error('Missing fields:', { name: !!name, email: !!email, subject: !!subject, message: !!message });
             return new Response(
                 JSON.stringify({ error: 'All fields are required' }),
-                {
-                    status: 400,
-                    headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-                }
+                { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
             )
         }
 
