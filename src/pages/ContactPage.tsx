@@ -45,7 +45,15 @@ export const ContactPage = () => {
         body: formData
       });
 
-      if (functionError) throw functionError;
+      if (functionError) {
+        console.error('Function invocation error:', functionError);
+        throw functionError;
+      }
+
+      if (data?.error) {
+        console.error('Email service error:', data.error);
+        throw new Error(data.error);
+      }
 
       toast({
         title: "Message sent successfully!",
@@ -61,16 +69,19 @@ export const ContactPage = () => {
     } catch (error: any) {
       console.error('Error sending message:', error);
       
-      // If we got here, but the DB save might have worked, 
-      // we should tell the user we got it but the notification failed
+      const errorMessage = error.message || "Failed to send message";
+      const isConfigError = errorMessage.toLowerCase().includes('resend') || errorMessage.toLowerCase().includes('verified');
+
       toast({
-        title: "Message Received",
-        description: "Your message has been saved in our system, but we encountered an issue sending a notification email. We will still review your request.",
-        variant: "default",
+        title: isConfigError ? "Email Configuration Issue" : "Message Received with Warning",
+        description: isConfigError 
+          ? `The system is not correctly configured to send emails. Please contact admin. Error: ${errorMessage}`
+          : "Your message has been saved in our system, but we encountered an issue sending a notification email. We will still review your request.",
+        variant: isConfigError ? "destructive" : "default",
       });
       
-      // Still clear the form since it was saved to DB
-       setFormData({
+      // Still clear the form if it was saved to DB (checked by absence of dbError throwing)
+      setFormData({
         name: "",
         email: "",
         subject: "",

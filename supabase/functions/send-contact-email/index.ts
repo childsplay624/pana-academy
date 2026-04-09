@@ -90,6 +90,16 @@ serve(async (req: Request) => {
         }
 
         // Send email using Resend
+        console.log(`Attempting to send contact email from ${email} via Resend`);
+        
+        if (!RESEND_API_KEY) {
+            console.error('ERROR: RESEND_API_KEY is not defined in the environment secrets.');
+            return new Response(
+                JSON.stringify({ error: 'Mail service configuration error' }),
+                { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+        }
+
         const res = await fetch('https://api.resend.com/emails', {
             method: 'POST',
             headers: {
@@ -97,27 +107,30 @@ serve(async (req: Request) => {
                 'Authorization': `Bearer ${RESEND_API_KEY}`,
             },
             body: JSON.stringify({
-                from: 'PANA Academy <info@pana-academy.com>', // Use your verified domain
+                from: 'PANA Academy <info@pana-academy.com>', // MUST be verified in Resend
                 to: ['info@pana-academy.com'],
                 reply_to: email,
                 subject: `Contact Form: ${subject}`,
                 html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #DC2626;">New Contact Form Submission</h2>
-            <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-              <p><strong>Name:</strong> ${name}</p>
-              <p><strong>Email:</strong> ${email}</p>
-              <p><strong>Subject:</strong> ${subject}</p>
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
+            <div style="background-color: #0f172a; padding: 20px; text-align: center;">
+              <h1 style="color: white; margin: 0; font-size: 24px;">New Contact Inquiry</h1>
             </div>
-            <div style="margin: 20px 0;">
-              <h3 style="color: #374151;">Message:</h3>
-              <p style="white-space: pre-wrap;">${message}</p>
+            <div style="padding: 30px;">
+              <p style="font-size: 16px; color: #374151;">You have received a new message from the PANA Academy contact form.</p>
+              <div style="background-color: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <p style="margin: 0 0 10px 0;"><strong>Name:</strong> ${name}</p>
+                <p style="margin: 0 0 10px 0;"><strong>Email:</strong> ${email}</p>
+                <p style="margin: 0 0 10px 0;"><strong>Subject:</strong> ${subject}</p>
+              </div>
+              <div style="margin: 20px 0;">
+                <h3 style="color: #374151; border-bottom: 2px solid #ef4444; padding-bottom: 5px; display: inline-block;">Message:</h3>
+                <p style="white-space: pre-wrap; color: #4b5563; line-height: 1.6;">${message}</p>
+              </div>
             </div>
-            <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
-            <p style="color: #6b7280; font-size: 12px;">
-              Sent from PANA Academy Contact Form<br>
-              ${new Date().toLocaleString()}
-            </p>
+            <div style="background-color: #f3f4f6; padding: 15px; text-align: center; color: #6b7280; font-size: 12px;">
+              Sent from PANA Academy Contact Form • ${new Date().toLocaleString()}
+            </div>
           </div>
         `,
             }),
@@ -126,11 +139,17 @@ serve(async (req: Request) => {
         const data = (await res.json()) as any
 
         if (!res.ok) {
-            console.error('Resend API error:', data)
+            console.error('Resend API error details:', data)
+            
+            let errorMessage = 'Failed to send email';
+            if (res.status === 403 || res.status === 422) {
+                errorMessage = `Resend configuration error: ${data?.message || 'Domain not verified or unauthorized'}`;
+            }
+
             return new Response(
-                JSON.stringify({ error: 'Failed to send email', details: data }),
+                JSON.stringify({ error: errorMessage, details: data }),
                 {
-                    status: 500,
+                    status: res.status,
                     headers: { ...corsHeaders, 'Content-Type': 'application/json' }
                 }
             )
