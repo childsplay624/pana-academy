@@ -39,14 +39,38 @@ const Footer = () => {
 
   // Load Mailchimp script on component mount
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = '//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js';
-    script.type = 'text/javascript';
-    script.async = true;
-    document.body.appendChild(script);
+    // 1. Load the main Mailchimp validation script
+    const mcScript = document.createElement('script');
+    mcScript.src = '//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js';
+    mcScript.type = 'text/javascript';
+    mcScript.async = true;
+    document.body.appendChild(mcScript);
+
+    // 2. Load the initialization script for the form fields
+    const initScript = document.createElement('script');
+    initScript.type = 'text/javascript';
+    initScript.text = `
+      (function($) {
+        window.fnames = new Array(); window.ftypes = new Array();
+        fnames[0]='EMAIL';ftypes[0]='email';
+        fnames[1]='FNAME';ftypes[1]='text';
+        fnames[2]='LNAME';ftypes[2]='text';
+        fnames[3]='ADDRESS';ftypes[3]='address';
+        fnames[4]='PHONE';ftypes[4]='phone';
+        fnames[5]='BIRTHDAY';ftypes[5]='birthday';
+        fnames[6]='COMPANY';ftypes[6]='text';
+      }(jQuery));
+      var $mcj = jQuery.noConflict(true);
+    `;
+    
+    // We append the init script after a slight delay to ensure jQuery is loaded by mc-validate
+    setTimeout(() => {
+      document.body.appendChild(initScript);
+    }, 1000);
 
     return () => {
-      document.body.removeChild(script);
+      if (document.body.contains(mcScript)) document.body.removeChild(mcScript);
+      if (document.body.contains(initScript)) document.body.removeChild(initScript);
     };
   }, []);
 
@@ -126,7 +150,7 @@ const Footer = () => {
 
           {/* Newsletter Subscription */}
           <div className="mt-12 pt-8 border-t border-gray-700">
-            <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div className="grid md:grid-cols-2 gap-8 items-center" id="mc_embed_shell">
               <div>
                 <h4 className="text-xl font-semibold mb-2 text-pana-gold">Stay Updated</h4>
                 <p className="text-gray-300">
@@ -134,69 +158,68 @@ const Footer = () => {
                 </p>
               </div>
               <div id="mc_embed_signup" className="w-full">
-                <form
-                  action="https://pana-academy.us5.list-manage.com/subscribe/post?u=c3b793e3a53abf91535915fb2&amp;id=6cd696a57a&amp;f_id=00de32e0f0"
-                  method="post"
-                  id="mc-embedded-subscribe-form"
-                  name="mc-embedded-subscribe-form"
-                  className="validate flex space-x-3"
+                <style type="text/css">{`
+                  #mc_embed_signup { background: transparent; clear: left; font: 14px Helvetica,Arial,sans-serif; width: 100%; }
+                `}</style>
+                <form 
+                  action="https://pana-academy.us5.list-manage.com/subscribe/post?u=c3b793e3a53abf91535915fb2&id=6cd696a57a&f_id=00e532e0f0" 
+                  method="post" 
+                  id="mc-embedded-subscribe-form" 
+                  name="mc-embedded-subscribe-form" 
+                  className="validate" 
                   target="_blank"
-                  noValidate
                 >
-                  <div className="mc-field-group flex-grow">
-                    <input
-                      type="email"
-                      name="EMAIL"
-                      className="required email w-full px-3 py-2 bg-white/10 border border-gray-600 text-white placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-pana-gold"
-                      id="mce-EMAIL"
-                      required
-                      placeholder="Enter your email address"
-                    />
-                    <div id="mce-responses" className="hidden">
-                      <div className="response hidden" id="mce-error-response"></div>
-                      <div className="response hidden" id="mce-success-response"></div>
+                  <div id="mc_embed_signup_scroll" className="flex flex-col gap-2">
+                    <div className="indicates-required hidden"><span className="asterisk text-red-500">*</span> indicates required</div>
+                    
+                    <div className="mc-field-group w-full flex flex-col sm:flex-row gap-3">
+                      <label htmlFor="mce-EMAIL" className="sr-only">Email Address <span className="asterisk text-red-500">*</span></label>
+                      <input 
+                        type="email" 
+                        name="EMAIL" 
+                        className="required email flex-grow px-3 py-2 bg-white/10 border border-gray-600 text-white placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-pana-gold h-[42px]" 
+                        id="mce-EMAIL" 
+                        placeholder="Enter your email address"
+                        required 
+                        defaultValue="" 
+                      />
+                      <div className="clear foot flex-shrink-0">
+                        <input 
+                          type="submit" 
+                          name="subscribe" 
+                          id="mc-embedded-subscribe" 
+                          className="button bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-md cursor-pointer transition-colors border-none h-[42px] m-0" 
+                          value="Subscribe" 
+                        />
+                      </div>
                     </div>
+                    
+                    <div id="mce-responses" className="clear foot">
+                      <div className="response text-sm mt-1 text-red-400" id="mce-error-response" style={{ display: 'none' }}></div>
+                      <div className="response text-sm mt-1 text-green-400" id="mce-success-response" style={{ display: 'none' }}></div>
+                    </div>
+                    
                     <div aria-hidden="true" style={{ position: 'absolute', left: '-5000px' }}>
-                      <input type="text" name="b_c3b793e3a53abf91535915fb2_6cd696a57a" tabIndex={-1} value="" readOnly />
+                      <input type="text" name="b_c3b793e3a53abf91535915fb2_6cd696a57a" tabIndex={-1} defaultValue="" />
                     </div>
+                    
+                    <div className="optionalParent mt-1">
+                        <p style={{ margin: '0px' }}>
+                          <a href="http://eepurl.com/jm6Kp6" title="Mailchimp - email marketing made easy and fun">
+                            <span style={{ display: 'inline-block', backgroundColor: 'transparent', borderRadius: '4px' }}>
+                              <img 
+                                className="refferal_badge opacity-70 hover:opacity-100 transition-opacity" 
+                                src="https://digitalasset.intuit.com/render/content/dam/intuit/mc-fe/en_us/images/intuit-mc-rewards-text-dark.svg" 
+                                alt="Intuit Mailchimp" 
+                                style={{ width: '160px', height: 'auto', display: 'block', padding: '0' }} 
+                              />
+                            </span>
+                          </a>
+                        </p>
+                    </div>
+
                   </div>
-                  <Button
-                    type="submit"
-                    name="subscribe"
-                    id="mc-embedded-subscribe"
-                    className="bg-red-600 hover:bg-red-700"
-                  >
-                    Subscribe
-                    <ArrowRight className="w-[clamp(0.875rem,1.75vw,1.25rem)] h-[clamp(0.875rem,1.75vw,1.25rem)] ml-2" />
-                  </Button>
                 </form>
-                <script
-                  src="//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js"
-                  type="text/javascript"
-                  dangerouslySetInnerHTML={{
-                    __html: `
-                      (function($) {
-                        window.fnames = new Array();
-                        window.ftypes = new Array();
-                        fnames[0]='EMAIL';
-                        ftypes[0]='email';
-                        fnames[1]='FNAME';
-                        ftypes[1]='text';
-                        fnames[2]='LNAME';
-                        ftypes[2]='text';
-                        fnames[3]='ADDRESS';
-                        ftypes[3]='address';
-                        fnames[4]='PHONE';
-                        ftypes[4]='phone';
-                        fnames[5]='BIRTHDAY';
-                        ftypes[5]='birthday';
-                        fnames[6]='COMPANY';
-                        ftypes[6]='text';
-                      }(jQuery));
-                      var $mcj = jQuery.noConflict(true);
-                    `
-                  }}
-                />
               </div>
             </div>
           </div>
