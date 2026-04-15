@@ -69,7 +69,10 @@ function isCompleteStats(stats: any): stats is Stats {
     typeof stats.totalTimeSpent === 'number' &&
     typeof stats.weeklyGoalProgress === 'number' &&
     typeof stats.completedCourses === 'number' &&
-    typeof stats.streakDays === 'number'
+    typeof stats.streakDays === 'number' &&
+    typeof stats.level === 'number' &&
+    typeof stats.experiencePoints === 'number' &&
+    typeof stats.totalPoints === 'number'
   );
 }
 
@@ -81,6 +84,9 @@ interface Stats {
   weeklyGoalProgress: number;
   completedCourses: number;
   streakDays: number;
+  level: number;
+  experiencePoints: number;
+  totalPoints: number;
 }
 
 interface StatCardProps {
@@ -168,7 +174,10 @@ export default function StudentDashboard() {
       enrolledCourses: 0,
       certificates: 0,
       totalProgress: 0,
-      totalTimeSpent: 0
+      totalTimeSpent: 0,
+      level: 1,
+      experiencePoints: 0,
+      totalPoints: 0
     }
   } = useStudentData();
 
@@ -179,7 +188,10 @@ export default function StudentDashboard() {
       ...rawStats,
       weeklyGoalProgress: 0,
       completedCourses: 0,
-      streakDays: 0
+      streakDays: 0,
+      level: 1,
+      experiencePoints: 0,
+      totalPoints: 0
     };
 
   const userProfile = profile as UserProfile | null;
@@ -273,7 +285,7 @@ export default function StudentDashboard() {
             </div>
 
             {/* Stats Overview */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <StatCard
                 title="Enrolled"
                 value={stats.enrolledCourses}
@@ -402,7 +414,7 @@ export default function StudentDashboard() {
                 <CardDescription>Access frequently used features and tools</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
                   <ContinueLearning
                     enrolledCourses={enrolledCourses}
                     isLoading={isLoading}

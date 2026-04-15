@@ -34,6 +34,8 @@ import {
 } from 'lucide-react';
 import { EmailTester } from '@/components/admin/EmailTester';
 
+import { useQueryClient } from '@tanstack/react-query';
+
 interface PlatformSettings {
   [key: string]: any;
 }
@@ -41,6 +43,7 @@ interface PlatformSettings {
 export default function Settings() {
   const { toast } = useToast();
   const { profile, user } = useAuth();
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<PlatformSettings>({});
@@ -60,22 +63,23 @@ export default function Settings() {
 
       const settingsMap: PlatformSettings = {};
       data.forEach(item => {
-        try {
-          // Try to parse as JSON if it's a string, otherwise use the value directly
-          if (typeof item.value === 'string') {
+        let value = item.value;
+        
+        // If it's a string, try to parse it as JSON
+        if (typeof value === 'string') {
+          // Handle simple boolean strings efficiently
+          if (value === 'true') value = true;
+          else if (value === 'false') value = false;
+          else {
             try {
-              settingsMap[item.key] = JSON.parse(item.value);
+              value = JSON.parse(value);
             } catch {
-              // If JSON parsing fails, it's likely a plain string value
-              settingsMap[item.key] = item.value;
+              // Keep as original string
             }
-          } else {
-            settingsMap[item.key] = item.value;
           }
-        } catch (error) {
-          console.warn(`Failed to process setting ${item.key}:`, error);
-          settingsMap[item.key] = item.value;
         }
+        
+        settingsMap[item.key] = value;
       });
 
       setSettings(settingsMap);
@@ -92,8 +96,10 @@ export default function Settings() {
   };
 
   useEffect(() => {
-    fetchSettings();
-  }, []);
+    if (user) {
+      fetchSettings();
+    }
+  }, [user]);
 
   const updateSetting = (key: string, value: any) => {
     setSettings(prev => ({ ...prev, [key]: value }));
@@ -152,7 +158,7 @@ export default function Settings() {
           case 'Payment':
             return ['paystack_enabled', 'flutterwave_enabled', 'default_currency', 'platform_fee', 'paystack_public_key', 'paystack_secret_key', 'flutterwave_public_key', 'flutterwave_secret_key', 'bank_details', 'tax_enabled', 'tax_rate', 'tax_type', 'tax_name', 'tax_number', 'manual_enabled'].includes(key);
           case 'Courses':
-            return ['course_auto_approval', 'enable_course_reviews', 'certificate_generation', 'max_enrollment', 'certificate_validity', 'zoom_api_key', 'zoom_api_secret'].includes(key);
+            return ['course_auto_approval', 'enable_course_reviews', 'certificate_generation', 'max_enrollment', 'certificate_validity', 'zoom_api_key', 'zoom_api_secret', 'hide_course_prices'].includes(key);
           case 'Appearance':
             return ['primary_color', 'secondary_color', 'dark_mode_support', 'logo_url', 'favicon_url', 'backend_logo_url'].includes(key);
           default:
@@ -171,7 +177,7 @@ export default function Settings() {
           .from('platform_settings')
           .upsert({
             key,
-            value: JSON.stringify(value),
+            value: value, // Pass directly to Json column
             category: category.toLowerCase(),
             updated_at: new Date().toISOString()
           }, {
@@ -183,6 +189,9 @@ export default function Settings() {
           throw upsertError;
         }
       }
+
+      // Invalidate platform settings query to reflect changes immediately
+      queryClient.invalidateQueries({ queryKey: ['platform-settings'] });
 
       toast({
         title: "Settings updated",
@@ -1030,26 +1039,50 @@ export default function Settings() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-4">
+                  <div className="flex items-center justify-between p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/20 rounded-xl mb-4">
+                    <div>
+                      <Label className="text-base text-amber-900 dark:text-amber-400 font-semibold">Hide Course Prices</Label>
+                      <p className="text-sm text-amber-700/80 dark:text-amber-400/60">When active, course prices will be hidden from the public website.</p>
+                    </div>
+                    <Switch 
+                      checked={settings.hide_course_prices === true || settings.hide_course_prices === 'true'}
+                      onCheckedChange={(checked) => updateSetting('hide_course_prices', checked)}
+                      disabled={saving}
+                    />
+                  </div>
+                  
                   <div className="flex items-center justify-between">
                     <div>
                       <Label className="text-base">Course Auto-Approval</Label>
                       <p className="text-sm text-muted-foreground">Automatically approve new courses from instructors</p>
                     </div>
-                    <Switch />
+                    <Switch 
+                      checked={settings.course_auto_approval === true || settings.course_auto_approval === 'true'}
+                      onCheckedChange={(checked) => updateSetting('course_auto_approval', checked)}
+                      disabled={saving}
+                    />
                   </div>
                   <div className="flex items-center justify-between">
                     <div>
                       <Label className="text-base">Enable Course Reviews</Label>
                       <p className="text-sm text-muted-foreground">Allow students to review and rate courses</p>
                     </div>
-                    <Switch defaultChecked />
+                    <Switch 
+                      checked={settings.enable_course_reviews === true || settings.enable_course_reviews === 'true'}
+                      onCheckedChange={(checked) => updateSetting('enable_course_reviews', checked)}
+                      disabled={saving}
+                    />
                   </div>
                   <div className="flex items-center justify-between">
                     <div>
                       <Label className="text-base">Certificate Generation</Label>
                       <p className="text-sm text-muted-foreground">Generate certificates upon course completion</p>
                     </div>
-                    <Switch defaultChecked />
+                    <Switch 
+                      checked={settings.certificate_generation === true || settings.certificate_generation === 'true'}
+                      onCheckedChange={(checked) => updateSetting('certificate_generation', checked)}
+                      disabled={saving}
+                    />
                   </div>
                 </div>
                 <Separator />
@@ -1102,7 +1135,7 @@ export default function Settings() {
                 </div>
                 <Button onClick={() => handleSave('Courses')} disabled={saving}>
                   <Save className="w-4 h-4 mr-2" />
-                  {loading ? 'Saving...' : 'Save Changes'}
+                  {saving ? 'Saving...' : 'Save Changes'}
                 </Button>
               </CardContent>
             </Card>

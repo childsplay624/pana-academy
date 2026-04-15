@@ -33,8 +33,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
           {/* Main content - Only this part should scroll */}
           <main className="flex-1 overflow-y-auto w-full">
-            <div className="min-h-full w-full p-6 md:p-8">
-              <div className="max-w-5xl mx-auto space-y-8">
+            <div className="min-h-full w-full p-4 sm:p-6 md:p-8">
+              <div className="max-w-screen-2xl mx-auto space-y-6 sm:space-y-8">
                 {children}
               </div>
             </div>

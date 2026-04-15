@@ -115,19 +115,19 @@ export const DeadlinesWidget: React.FC = () => {
                                 >
                                     <div className="flex-1 min-w-0 mr-3">
                                         {/* Type and Urgency Badges */}
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <Badge variant="outline" className="text-xs">
+                                        <div className="flex flex-wrap items-center gap-1.5 mb-2">
+                                            <Badge variant="outline" className="text-[10px] sm:text-xs">
                                                 {getTypeIcon(deadline.type)} {getTypeLabel(deadline.type)}
                                             </Badge>
                                             {!isCompleted && (
-                                                <Badge variant={getUrgencyBadgeVariant(urgency)}>
+                                                <Badge variant={getUrgencyBadgeVariant(urgency)} className="text-[10px] sm:text-xs">
                                                     {urgency === 'overdue' && <AlertCircle className="h-3 w-3 mr-1" />}
                                                     {urgency === 'urgent' && <Clock className="h-3 w-3 mr-1" />}
                                                     {formatDeadlineTime(deadline.daysUntilDue)}
                                                 </Badge>
                                             )}
                                             {isCompleted && (
-                                                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 text-[10px] sm:text-xs">
                                                     <CheckCircle className="h-3 w-3 mr-1" />
                                                     Submitted
                                                 </Badge>

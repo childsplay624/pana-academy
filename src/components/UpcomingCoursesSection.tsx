@@ -24,6 +24,7 @@ import {
 import { enrollInCourse } from '@/services/enrollmentService';
 
 type CourseCategory = 'technology' | 'business' | 'design' | 'marketing' | 'health' | 'language' | 'personal_development' | 'academic' | 'oil_and_gas' | 'renewable_energy' | 'engineering' | 'safety' | 'leadership';
+import { usePlatformSettings } from '@/hooks/usePlatformSettings';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface CourseCardProps {
@@ -33,6 +34,8 @@ interface CourseCardProps {
 }
 
 const CourseCard = ({ course, onEnroll, isEnrolling }: CourseCardProps) => {
+  const { data: settings } = usePlatformSettings();
+  const hidePrices = settings?.hide_course_prices;
   const getCategoryColor = (category: CourseCategory) => {
     const colors = {
       'technology': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
@@ -116,10 +119,12 @@ const CourseCard = ({ course, onEnroll, isEnrolling }: CourseCardProps) => {
 
         </CardContent>
         <CardFooter>
-          <div className="w-full flex justify-between items-center">
-            <div className="text-sm font-medium">
-              {course.price ? `₦${course.price.toLocaleString()}` : 'Free'}
-            </div>
+          <div className={`w-full flex ${hidePrices ? 'justify-end' : 'justify-between'} items-center`}>
+            {!hidePrices && (
+              <div className="text-sm font-medium">
+                {course.price ? `₦${course.price.toLocaleString()}` : 'Free'}
+              </div>
+            )}
             <Button
               variant="ghost"
               className="p-0"

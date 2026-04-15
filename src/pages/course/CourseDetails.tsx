@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { fetchCourseById, formatCourseDate, isStartingSoon, type Course } from '@/services/courseService';
 import { ModuleManager } from '@/components/course-management/ModuleManager';
+import { usePlatformSettings } from '@/hooks/usePlatformSettings';
 import { useAuth } from '@/hooks/useAuth';
 import { checkEnrollment } from '@/services/enrollmentService';
 import { PaymentButton } from '@/components/payment/PaymentButton';
@@ -54,6 +55,8 @@ const CourseDetails: React.FC = () => {
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const { data: settings } = usePlatformSettings();
+  const hidePrices = settings?.hide_course_prices;
   const isInstructor = user?.id === course?.instructor_id;
 
   useEffect(() => {
@@ -206,15 +209,17 @@ const CourseDetails: React.FC = () => {
                 <p className="text-lg text-pana-gray-100 mb-4">{course.description}</p>
 
                 {/* Price Display */}
-                <div className="mb-4">
-                  <div className="text-3xl font-bold text-white">
-                    {course.is_free || course.price === 0 ? (
-                      <span className="text-green-300">Free</span>
-                    ) : (
-                      <span>₦{course.price.toLocaleString()}</span>
-                    )}
+                {!hidePrices && (
+                  <div className="mb-4">
+                    <div className="text-3xl font-bold text-white">
+                      {course.is_free || course.price === 0 ? (
+                        <span className="text-green-300">Free</span>
+                      ) : (
+                        <span>₦{course.price.toLocaleString()}</span>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Course Dates for Onsite/Hybrid Courses */}
                 {(course.course_type === 'onsite' || course.course_type === 'hybrid') && course.start_date && (

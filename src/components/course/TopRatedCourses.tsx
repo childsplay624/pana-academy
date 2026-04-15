@@ -5,6 +5,7 @@ import { fetchAllCourses } from '@/services/courseService';
 import { Course, CourseType } from '@/types/course.types';
 import { Link } from 'react-router-dom';
 import { Star, Clock, Users, BookOpen } from 'lucide-react';
+import { usePlatformSettings } from '@/hooks/usePlatformSettings';
 
 // Extend Course type with additional properties needed for display
 interface DisplayCourse extends Course {
@@ -113,6 +114,8 @@ export function TopRatedCourses() {
   const [courses, setCourses] = useState<DisplayCourse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { data: settings } = usePlatformSettings();
+  const hidePrices = settings?.hide_course_prices;
 
   useEffect(() => {
     const loadRandomCourses = async () => {
@@ -233,9 +236,11 @@ export function TopRatedCourses() {
                       <Clock className="h-4 w-4 mr-1.5" />
                       {course.duration || 8} {course.duration === 1 ? 'hr' : 'hrs'}
                     </span>
-                    <span className="font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
-                      {course.is_free ? 'Free' : `$${course.price || '0'}`}
-                    </span>
+                    {!hidePrices && (
+                      <span className="font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+                        {course.is_free ? 'Free' : `$${course.price || '0'}`}
+                      </span>
+                    )}
                   </div>
                   <div className="flex justify-between items-center pt-3 border-t border-gray-100">
                     <span className="text-sm font-medium text-gray-700 bg-gray-100 px-3 py-1 rounded-full">

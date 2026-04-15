@@ -10,6 +10,7 @@ import { CourseLayout } from '@/components/CourseLayout';
 import { BookOpen, Clock, Users, Star, CheckCircle, PlayCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { calculateTaxAmount } from '@/services/paymentService';
+import { usePlatformSettings } from '@/hooks/usePlatformSettings';
 
 interface Course {
   id: string;
@@ -57,6 +58,8 @@ export default function CourseDetails() {
     taxAmount: number;
     platformFee: number;
   } | null>(null);
+  const { data: settings } = usePlatformSettings();
+  const hidePrices = settings?.hide_course_prices;
 
   useEffect(() => {
     if (courseId) {
@@ -232,7 +235,7 @@ export default function CourseDetails() {
               <>
                 {!isEnrolled ? (
                   <Button onClick={handleEnroll} disabled={enrolling} size="lg" className="w-full sm:w-auto">
-                    {enrolling ? 'Enrolling...' : course.price > 0 ? `Enroll - ₦${taxCalculation?.finalAmount.toLocaleString() || course.price.toLocaleString()}` : 'Enroll for Free'}
+                    {enrolling ? 'Enrolling...' : (hidePrices ? 'Enroll Now' : (course.price > 0 ? `Enroll - ₦${taxCalculation?.finalAmount.toLocaleString() || course.price.toLocaleString()}` : 'Enroll for Free'))}
                   </Button>
                 ) : (
                   <Button onClick={startCourse} size="lg" className="w-full sm:w-auto">
@@ -331,36 +334,38 @@ export default function CourseDetails() {
                 <CardTitle>Course Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {taxCalculation && course.price > 0 ? (
-                  <>
+                {!hidePrices && (
+                  taxCalculation && course.price > 0 ? (
+                    <>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Course Price:</span>
+                        <span className="font-semibold">₦{course.price.toLocaleString()}</span>
+                      </div>
+                      {taxCalculation.taxAmount > 0 && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Tax:</span>
+                          <span className="font-semibold">₦{taxCalculation.taxAmount.toLocaleString()}</span>
+                        </div>
+                      )}
+                      {taxCalculation.platformFee > 0 && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Platform Fee:</span>
+                          <span className="font-semibold">₦{taxCalculation.platformFee.toLocaleString()}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between pt-2 border-t">
+                        <span className="text-muted-foreground font-medium">Total Amount:</span>
+                        <span className="font-bold text-lg">₦{taxCalculation.finalAmount.toLocaleString()}</span>
+                      </div>
+                    </>
+                  ) : (
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Course Price:</span>
-                      <span className="font-semibold">₦{course.price.toLocaleString()}</span>
+                      <span className="text-muted-foreground">Price:</span>
+                      <span className="font-semibold">
+                        {course.price > 0 ? `₦${course.price.toLocaleString()}` : 'Free'}
+                      </span>
                     </div>
-                    {taxCalculation.taxAmount > 0 && (
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Tax:</span>
-                        <span className="font-semibold">₦{taxCalculation.taxAmount.toLocaleString()}</span>
-                      </div>
-                    )}
-                    {taxCalculation.platformFee > 0 && (
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Platform Fee:</span>
-                        <span className="font-semibold">₦{taxCalculation.platformFee.toLocaleString()}</span>
-                      </div>
-                    )}
-                    <div className="flex justify-between pt-2 border-t">
-                      <span className="text-muted-foreground font-medium">Total Amount:</span>
-                      <span className="font-bold text-lg">₦{taxCalculation.finalAmount.toLocaleString()}</span>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Price:</span>
-                    <span className="font-semibold">
-                      {course.price > 0 ? `₦${course.price.toLocaleString()}` : 'Free'}
-                    </span>
-                  </div>
+                  )
                 )}
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Duration:</span>

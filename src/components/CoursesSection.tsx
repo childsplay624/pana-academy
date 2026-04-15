@@ -5,6 +5,7 @@ import { Clock, Users, ArrowRight, Loader2, BookOpen, Calendar } from "lucide-re
 import { Link } from "react-router-dom";
 import { fetchAllCourses, formatCourseDate } from "@/services/courseService";
 import type { Course } from "@/services/courseService";
+import { usePlatformSettings } from "@/hooks/usePlatformSettings";
 
 interface CoursesSectionProps {
   showAll?: boolean;
@@ -20,6 +21,8 @@ const CoursesSection = ({
   error = null
 }: CoursesSectionProps) => {
   const displayCourses = showAll ? courses : courses.slice(0, 4);
+  const { data: settings } = usePlatformSettings();
+  const hidePrices = settings?.hide_course_prices;
 
   return (
     <section className={`py-12 ${!showAll ? 'bg-gray-50' : ''}`}>
@@ -79,10 +82,12 @@ const CoursesSection = ({
 
                   </CardContent>
                   <CardFooter>
-                    <div className="w-full flex justify-between items-center">
-                      <div className="text-sm font-medium">
-                        {course.price ? `₦${course.price.toLocaleString()}` : 'Free'}
-                      </div>
+                    <div className={`w-full flex ${hidePrices ? 'justify-end' : 'justify-between'} items-center`}>
+                      {!hidePrices && (
+                        <div className="text-sm font-medium">
+                          {course.price ? `₦${course.price.toLocaleString()}` : 'Free'}
+                        </div>
+                      )}
                       <Button variant="link" className="p-0">
                         <span className="text-pana-blue hover:text-red-600 transition-colors duration-200 flex items-center">
                           View Details <ArrowRight className="ml-1 h-4 w-4" />

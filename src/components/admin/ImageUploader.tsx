@@ -155,20 +155,20 @@ export function ImageUploader({ onUpload, onUrlUpload, category, disabled, showC
                 !preview ? (
                     <div
                         {...getRootProps()}
-                        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragActive
+                        className={`border-2 border-dashed rounded-lg p-4 sm:p-8 text-center cursor-pointer transition-colors ${isDragActive
                             ? 'border-primary bg-primary/5'
                             : 'border-muted-foreground/25 hover:border-primary/50'
                             } ${disabled || uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                         <input {...getInputProps()} />
-                        <Upload className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                        <p className="text-lg font-medium mb-2">
+                        <Upload className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-4 text-muted-foreground" />
+                        <p className="text-base sm:text-lg font-medium mb-1 sm:mb-2">
                             {isDragActive ? 'Drop image here' : 'Drag & drop an image'}
                         </p>
-                        <p className="text-sm text-muted-foreground mb-4">
+                        <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-4">
                             or click to browse files
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-[10px] sm:text-xs text-muted-foreground">
                             PNG, JPG, JPEG, WebP or SVG (max 5MB)
                         </p>
                     </div>
@@ -178,7 +178,7 @@ export function ImageUploader({ onUpload, onUrlUpload, category, disabled, showC
                             <img
                                 src={preview}
                                 alt="Preview"
-                                className="w-full h-64 object-contain"
+                                className="w-full h-48 sm:h-64 object-contain"
                             />
                             <Button
                                 variant="destructive"
@@ -211,7 +211,7 @@ export function ImageUploader({ onUpload, onUrlUpload, category, disabled, showC
             )}
 
             {(preview || mode === 'url') && (
-                <div className="space-y-4 border p-4 rounded-lg bg-white shadow-sm mt-4">
+                <div className="space-y-3 sm:space-y-4 border p-3 sm:p-4 rounded-lg bg-white shadow-sm mt-4">
                         {showCustomKey && (
                             <div className="space-y-2">
                                 <Label htmlFor="custom-key">Image Key *</Label>

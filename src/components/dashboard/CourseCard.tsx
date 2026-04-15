@@ -157,7 +157,18 @@ export function CourseCard({
             {progress === 100
               ? 'Review Course'
               : progress > 0
-                ? (course_type === 'online' ? `Resume${nextLesson ? `: ${nextLesson.title.slice(0, 20)}${nextLesson.title.length > 20 ? '...' : ''}` : ''}` : 'View Details')
+                ? (course_type === 'online'
+                  ? (
+                    <>
+                      <span>Resume</span>
+                      {nextLesson && (
+                        <span className="hidden md:inline ml-1">
+                          : {nextLesson.title.length > 15 ? `${nextLesson.title.slice(0, 15)}...` : nextLesson.title}
+                        </span>
+                      )}
+                    </>
+                  )
+                  : 'View Details')
                 : (course_type === 'online' ? 'Start Course' : 'View Schedule')
             }
           </Link>

@@ -6,6 +6,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { enrollInCourse } from '@/services/enrollmentService';
 import { useNavigate } from 'react-router-dom';
 
+import { usePlatformSettings } from '@/hooks/usePlatformSettings';
+
 interface PaymentButtonProps {
   courseId: string;
   amount: number;
@@ -23,6 +25,8 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { data: settings } = usePlatformSettings();
+  const hidePrices = settings?.hide_course_prices;
 
   const handleEnroll = async () => {
     if (!user) {
@@ -101,12 +105,12 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
         ) : (
           <>
             <CreditCard className="mr-2 h-4 w-4" />
-            Enroll Now - ₦{amount.toLocaleString()}
+            Enroll Now {hidePrices ? '' : `- ₦${amount.toLocaleString()}`}
           </>
         )}
       </Button>
 
-      {!isFree && (
+      {!isFree && !hidePrices && (
         <p className="text-xs text-muted-foreground text-center">
           🔒 Secure payment • You'll be redirected to complete payment
         </p>
