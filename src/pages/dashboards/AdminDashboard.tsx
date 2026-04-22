@@ -450,7 +450,7 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Button
             variant="outline"
-            onClick={() => navigate('/dashboard/users')}
+            onClick={() => navigate('/dashboard/users?add=true')}
             className="h-20 flex flex-col items-center justify-center gap-2"
           >
             <UserPlus className="h-6 w-6" />

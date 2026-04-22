@@ -7,15 +7,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Users, Search, UserPlus, Shield, User, GraduationCap } from 'lucide-react';
+import { Users, Search, UserPlus, Shield, User, GraduationCap, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { DashboardLayout } from '@/components/DashboardLayout';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 interface UserProfile {
   id: string;
   full_name: string | null;
   role: 'student' | 'instructor' | 'admin';
+  email: string | null;
   avatar_url: string | null;
   created_at: string;
 }
@@ -26,6 +27,9 @@ export default function UserManagement() {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const [newUser, setNewUser] = useState({
     email: '',
     password: '',
@@ -36,6 +40,13 @@ export default function UserManagement() {
 
   useEffect(() => {
     fetchUsers();
+    // Check if we should open the add user dialog automatically
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('add') === 'true') {
+      setIsAddUserOpen(true);
+      // Clear the param without reloading
+      window.history.replaceState({}, '', window.location.pathname);
+    }
   }, []);
 
   const fetchUsers = async () => {
@@ -87,17 +98,40 @@ export default function UserManagement() {
   };
 
   const addUser = async () => {
+    if (!newUser.email || !newUser.password) {
+      toast({
+        title: 'Validation Error',
+        description: 'Email and password are required',
+        variant: 'destructive'
+      });
+      return;
+    }
+
     try {
-      const { data, error } = await supabase.functions.invoke('create-user', {
-        body: {
+      setIsSubmitting(true);
+      
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      const response = await fetch(`${SUPABASE_URL}/functions/v1/create-user`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token}`,
+          'apikey': SUPABASE_PUBLISHABLE_KEY
+        },
+        body: JSON.stringify({
           email: newUser.email,
           password: newUser.password,
           full_name: newUser.full_name,
           role: newUser.role
-        }
+        })
       });
 
-      if (error) throw error;
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create user');
+      }
 
       setIsAddUserOpen(false);
       setNewUser({ email: '', password: '', full_name: '', role: 'student' });
@@ -107,21 +141,40 @@ export default function UserManagement() {
         title: 'Success',
         description: 'User created successfully'
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating user:', error);
       toast({
         title: 'Error',
-        description: 'Failed to create user',
+        description: error.message || 'Failed to create user',
         variant: 'destructive'
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const filteredUsers = users.filter(user => {
-    const matchesSearch = user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) || false;
+    const fullName = user.full_name || '';
+    const email = user.email || '';
+    const search = searchTerm.toLowerCase();
+    const matchesSearch = fullName.toLowerCase().includes(search) || 
+                         email.toLowerCase().includes(search) ||
+                         user.id.toLowerCase().includes(search);
     const matchesRole = roleFilter === 'all' || user.role === roleFilter;
     return matchesSearch && matchesRole;
   });
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  const paginatedUsers = filteredUsers.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Reset to page 1 when search or filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, roleFilter]);
 
   const getRoleIcon = (role: string) => {
     switch (role) {
@@ -226,7 +279,16 @@ export default function UserManagement() {
                 </div>
               </div>
               <DialogFooter>
-                <Button onClick={addUser}>Create User</Button>
+                <Button onClick={addUser} disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                      Creating...
+                    </>
+                  ) : (
+                    'Create User'
+                  )}
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -333,7 +395,8 @@ export default function UserManagement() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredUsers.map((user) => (
+                {paginatedUsers.length > 0 ? (
+                  paginatedUsers.map((user) => (
                   <TableRow key={user.id}>
                     <TableCell>
                       <div className="flex items-center space-x-3">
@@ -342,7 +405,8 @@ export default function UserManagement() {
                         </div>
                         <div>
                           <div className="font-medium">{user.full_name || 'Unnamed User'}</div>
-                          <div className="text-sm text-muted-foreground">{user.id.slice(0, 8)}...</div>
+                          <div className="text-xs text-muted-foreground">{user.email}</div>
+                          <div className="text-[10px] text-muted-foreground opacity-50">{user.id.slice(0, 8)}...</div>
                         </div>
                       </div>
                     </TableCell>
@@ -370,9 +434,62 @@ export default function UserManagement() {
                       </Select>
                     </TableCell>
                   </TableRow>
-                ))}
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={4} className="h-24 text-center">
+                    No users found.
+                  </TableCell>
+                </TableRow>
+              )}
               </TableBody>
             </Table>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between mt-6">
+                <p className="text-sm text-muted-foreground">
+                  Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredUsers.length)} of {filteredUsers.length} users
+                </p>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setCurrentPage(1)}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronsLeft className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <div className="flex items-center justify-center min-w-[100px] text-sm font-medium">
+                    Page {currentPage} of {totalPages}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage === totalPages}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setCurrentPage(totalPages)}
+                    disabled={currentPage === totalPages}
+                  >
+                    <ChevronsRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

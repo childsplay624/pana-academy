@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 export function DashboardSidebar() {
   const { profile, signOut } = useAuth();
@@ -95,28 +96,26 @@ export function DashboardSidebar() {
   const hasActiveItem = navigationItems.some((item) => isActive(item.url));
 
   return (
-    <Sidebar className={collapsed ? "w-14" : "w-64"}>
+    <Sidebar collapsible="icon">
       <SidebarContent className="bg-sidebar border-sidebar-border">
         {/* Header */}
-        <div className="p-4 border-b border-sidebar-border">
-          {!collapsed && (
+        <div className={cn("p-4 border-b border-sidebar-border transition-all duration-200", collapsed && "p-2")}>
+          {!collapsed ? (
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-primary rounded-lg flex-shrink-0 flex items-center justify-center shadow-lg shadow-primary/20">
                 <span className="text-primary-foreground font-bold text-sm">P</span>
               </div>
-              <div className="flex-1">
-                <h2 className="font-semibold text-sidebar-foreground">PANA Academy</h2>
-                <Badge variant="outline" className="text-xs">
+              <div className="flex-1 min-w-0">
+                <h2 className="font-semibold text-sidebar-foreground truncate">PANA Academy</h2>
+                <Badge variant="outline" className="text-[10px] h-4 px-1 leading-none border-primary/30 text-primary">
                   {profile?.role}
                 </Badge>
               </div>
             </div>
-          )}
-
-          {collapsed && (
-            <div className="flex justify-center">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">P</span>
+          ) : (
+            <div className="flex justify-center py-2">
+              <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 ring-2 ring-background">
+                <span className="text-primary-foreground font-extrabold text-base">P</span>
               </div>
             </div>
           )}
@@ -132,21 +131,20 @@ export function DashboardSidebar() {
             <SidebarMenu>
               {navigationItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <NavLink
-                    to={item.url}
-                    end={item.url === "/dashboard"}
-                    className={({ isActive }) => `
-                      flex items-center gap-3 px-3 py-2 rounded-md transition-colors
-                      ${isActive
-                        ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium'
-                        : 'hover:bg-sidebar-accent/50 text-sidebar-foreground'
-                      }
-                      ${collapsed ? 'justify-center px-2' : ''}
-                    `}
+                  <SidebarMenuButton
+                    asChild
+                    isActive={isActive(item.url)}
+                    tooltip={item.title}
+                    className="transition-all duration-200"
                   >
-                    <item.icon className="h-4 w-4 flex-shrink-0" />
-                    {!collapsed && <span>{item.title}</span>}
-                  </NavLink>
+                    <NavLink
+                      to={item.url}
+                      end={item.url === "/dashboard"}
+                    >
+                      <item.icon className="h-4 w-4 shrink-0" />
+                      <span>{item.title}</span>
+                    </NavLink>
+                  </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
@@ -154,19 +152,19 @@ export function DashboardSidebar() {
         </SidebarGroup>
 
         {/* User Profile & Sign Out */}
-        <div className="p-4 border-t border-sidebar-border mt-auto">
-          {!collapsed && (
+        <div className={cn("p-4 border-t border-sidebar-border mt-auto transition-all duration-200", collapsed && "p-2")}>
+          {!collapsed ? (
             <div className="space-y-3">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
-                  <User className="h-4 w-4 text-muted-foreground" />
+              <div className="flex items-center space-x-3 p-1 rounded-lg bg-muted/30">
+                <div className="w-8 h-8 bg-background border rounded-full flex items-center justify-center ring-2 ring-primary/10">
+                  <User className="h-4 w-4 text-primary" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-sidebar-foreground truncate">
+                  <p className="text-xs font-bold text-sidebar-foreground truncate">
                     {profile?.full_name || 'User'}
                   </p>
-                  <p className="text-xs text-sidebar-foreground/70 truncate">
-                    Welcome back!
+                  <p className="text-[10px] text-muted-foreground truncate uppercase tracking-tighter">
+                    Personal Account
                   </p>
                 </div>
               </div>
@@ -175,21 +173,24 @@ export function DashboardSidebar() {
                 variant="outline"
                 size="sm"
                 onClick={signOut}
-                className="w-full justify-start"
+                className="w-full justify-start h-9 border-red-200 hover:bg-red-50 hover:text-red-600 transition-colors"
               >
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
+                <LogOut className="h-3.5 w-3.5 mr-2" />
+                <span className="text-xs font-medium">Sign Out</span>
               </Button>
             </div>
-          )}
-
-          {collapsed && (
-            <div className="flex flex-col items-center space-y-2">
-              <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
-                <User className="h-4 w-4 text-muted-foreground" />
+          ) : (
+            <div className="flex flex-col items-center space-y-3 py-2">
+              <div className="w-10 h-10 bg-muted/50 rounded-full flex items-center justify-center ring-2 ring-primary/5 hover:ring-primary/20 transition-all cursor-pointer">
+                <User className="h-5 w-5 text-muted-foreground" />
               </div>
-              <Button variant="ghost" size="sm" onClick={signOut}>
-                <LogOut className="h-4 w-4" />
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={signOut}
+                className="h-10 w-10 text-muted-foreground hover:text-red-500 hover:bg-red-50 rounded-xl"
+              >
+                <LogOut className="h-5 w-5" />
               </Button>
             </div>
           )}
