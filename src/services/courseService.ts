@@ -44,6 +44,8 @@ export interface Course {
   venue_map_url?: string;
   onsite_schedule?: any;
   venue_id?: string;
+  category_id?: string;
+  category_name?: string;
 }
 
 interface DatabaseCourse {
@@ -104,7 +106,8 @@ export const fetchCourseById = async (id: string): Promise<Course | null> => {
             order_index,
             is_free
           )
-        )
+        ),
+        category_data:course_categories (id, name, slug)
       `)
       .eq('id', id)
       .order('order_index', { foreignTable: 'modules', ascending: true })
@@ -127,7 +130,9 @@ export const fetchCourseById = async (id: string): Promise<Course | null> => {
       instructor_id: dbCourse.instructor_id,
       instructor_name: dbCourse.instructor?.full_name || 'Unknown Instructor',
       instructor_avatar: dbCourse.instructor?.avatar_url,
-      category: dbCourse.category,
+      category: (dbCourse.category_data?.name || dbCourse.category) as CourseCategory,
+      category_id: dbCourse.category_id,
+      category_name: dbCourse.category_data?.name,
       level: dbCourse.level,
       duration_hours: dbCourse.duration_hours,
       students_count: dbCourse.students_count || 0,
@@ -170,7 +175,8 @@ export const fetchAllCourses = async (): Promise<Course[]> => {
       .from('courses')
       .select(`
         *,
-        instructor:instructor_id (id, full_name, avatar_url)
+        instructor:instructor_id (id, full_name, avatar_url),
+        category_data:course_categories (id, name, slug)
       `)
       .order('created_at', { ascending: false });
 
@@ -190,7 +196,10 @@ export const fetchAllCourses = async (): Promise<Course[]> => {
         instructor_id: dbCourse.instructor_id,
         instructor_name: dbCourse.instructor?.full_name || 'Unknown Instructor',
         instructor_avatar: dbCourse.instructor?.avatar_url,
-        category: dbCourse.category,
+        instructor_avatar: dbCourse.instructor?.avatar_url,
+        category: (dbCourse.category_data?.name || dbCourse.category) as CourseCategory,
+        category_id: (dbCourse as any).category_id,
+        category_name: dbCourse.category_data?.name,
         level: dbCourse.level as 'beginner' | 'intermediate' | 'advanced',
         duration_hours: dbCourse.duration_hours,
         students_count: dbCourse.students_count || 0,
@@ -227,7 +236,8 @@ export const fetchUpcomingCourses = async (): Promise<Course[]> => {
       .from('courses')
       .select(`
         *,
-        instructor:instructor_id (id, full_name, avatar_url)
+        instructor:instructor_id (id, full_name, avatar_url),
+        category_data:course_categories (id, name, slug)
       `)
       .eq('status', 'published')
       // Removed course_type filter - now includes both live and self-paced
@@ -252,7 +262,9 @@ export const fetchUpcomingCourses = async (): Promise<Course[]> => {
         instructor_id: dbCourse.instructor_id,
         instructor_name: dbCourse.instructor?.full_name || 'Unknown Instructor',
         instructor_avatar: dbCourse.instructor?.avatar_url,
-        category: dbCourse.category,
+        category: (dbCourse.category_data?.name || dbCourse.category) as CourseCategory,
+        category_id: (dbCourse as any).category_id,
+        category_name: dbCourse.category_data?.name,
         level: dbCourse.level as 'beginner' | 'intermediate' | 'advanced',
         duration_hours: dbCourse.duration_hours,
         students_count: dbCourse.students_count || 0,
@@ -286,7 +298,8 @@ export const fetchOngoingCourses = async (): Promise<Course[]> => {
       .from('courses')
       .select(`
         *,
-        instructor:instructor_id (id, full_name, avatar_url)
+        instructor:instructor_id (id, full_name, avatar_url),
+        category_data:course_categories (id, name, slug)
       `)
       .eq('status', 'published')
       .in('course_type', ['onsite', 'hybrid'])
@@ -312,7 +325,9 @@ export const fetchOngoingCourses = async (): Promise<Course[]> => {
         instructor_id: dbCourse.instructor_id,
         instructor_name: dbCourse.instructor?.full_name || 'Unknown Instructor',
         instructor_avatar: dbCourse.instructor?.avatar_url,
-        category: dbCourse.category,
+        category: (dbCourse.category_data?.name || dbCourse.category) as CourseCategory,
+        category_id: (dbCourse as any).category_id,
+        category_name: dbCourse.category_data?.name,
         level: dbCourse.level as 'beginner' | 'intermediate' | 'advanced',
         duration_hours: dbCourse.duration_hours,
         students_count: dbCourse.students_count || 0,
@@ -402,7 +417,7 @@ export const createCourse = async (courseData: any) => {
         title: courseData.title,
         description: courseData.description,
         instructor_id: courseData.instructorId,
-        category: courseData.categoryId,
+        category_id: courseData.categoryId,
         level: courseData.level,
         course_type: courseData.courseType,
         price: courseData.isFree ? 0 : courseData.price,
@@ -440,3 +455,58 @@ export const createCourse = async (courseData: any) => {
   }
 };
 
+
+/**
+ * COURSES CATEGORIES
+ */
+
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  icon?: string;
+  display_order: number;
+}
+
+export const fetchCategories = async (): Promise<Category[]> => {
+  const { data, error } = await supabase
+    .from('course_categories')
+    .select('*')
+    .order('display_order', { ascending: true });
+
+  if (error) throw error;
+  return data as Category[];
+};
+
+export const createCategory = async (category: Partial<Category>) => {
+  const { data, error } = await supabase
+    .from('course_categories')
+    .insert([category])
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+};
+
+export const updateCategory = async (id: string, category: Partial<Category>) => {
+  const { data, error } = await supabase
+    .from('course_categories')
+    .update(category)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+};
+
+export const deleteCategory = async (id: string) => {
+  const { error } = await supabase
+    .from('course_categories')
+    .delete()
+    .eq('id', id);
+
+  if (error) throw error;
+};

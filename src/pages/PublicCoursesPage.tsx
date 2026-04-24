@@ -12,8 +12,8 @@ import {
 } from '@/components/ui/select';
 import { Search, Filter, ArrowRight } from 'lucide-react';
 import CoursesSection from '@/components/CoursesSection';
-import type { Course } from '@/services/courseService';
-import { fetchAllCourses } from '@/services/courseService';
+import type { Course, Category } from '@/services/courseService';
+import { fetchAllCourses, fetchCategories } from '@/services/courseService';
 import {
   Pagination,
   PaginationContent,
@@ -35,6 +35,7 @@ const PublicCoursesPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState('All');
+  const [categories, setCategories] = useState<Category[]>([]);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -44,20 +45,24 @@ const PublicCoursesPage = () => {
     // Scroll to top when component mounts
     window.scrollTo(0, 0);
 
-    // Fetch all courses
-    const loadCourses = async () => {
+    // Fetch all courses and categories
+    const loadData = async () => {
       try {
-        const courses = await fetchAllCourses();
+        const [courses, cats] = await Promise.all([
+          fetchAllCourses(),
+          fetchCategories()
+        ]);
         setAllCourses(courses);
         setFilteredCourses(courses);
+        setCategories(cats);
       } catch (error) {
-        console.error('Error loading courses:', error);
+        console.error('Error loading data:', error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadCourses();
+    loadData();
   }, []);
 
   // Reset to page 1 when filters change
@@ -218,14 +223,11 @@ const PublicCoursesPage = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="All">All Categories</SelectItem>
-                    <SelectItem value="soft_skills">Soft Skills</SelectItem>
-                    <SelectItem value="safety">Safety</SelectItem>
-                    <SelectItem value="sustainability">Sustainability</SelectItem>
-                    <SelectItem value="general_technical">General Technical</SelectItem>
-                    <SelectItem value="flow_drives">Flow Drives</SelectItem>
-                    <SelectItem value="flow_control">Flow Control</SelectItem>
-                    <SelectItem value="flow_measurement">Flow Measurement</SelectItem>
-                    <SelectItem value="instrumentation_automation">Instrumentation & Automation</SelectItem>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.slug}>
+                        {cat.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

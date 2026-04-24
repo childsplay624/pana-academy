@@ -1,12 +1,28 @@
-import { Mail, Phone, MapPin, ArrowRight, Instagram, Linkedin, Facebook, Twitter, Youtube } from "lucide-react";
-import { useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
+import { Mail, Phone, MapPin, Instagram, Linkedin, Facebook, Twitter } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const [customLinks, setCustomLinks] = useState<{ name: string, href: string }[]>([]);
+
+  useEffect(() => {
+    const fetchFooterPages = async () => {
+      const { data } = await supabase
+        .from('pages')
+        .select('title, slug')
+        .eq('status', 'published')
+        .eq('show_in_footer', true);
+      
+      if (data) {
+        setCustomLinks(data.map(p => ({
+          name: p.title,
+          href: `/p/${p.slug}`
+        })));
+      }
+    };
+    fetchFooterPages();
+  }, []);
 
   const footerLinks = {
     company: [
@@ -19,54 +35,29 @@ const Footer = () => {
     services: [
       { name: "Training Programs", href: "/training-delivery" },
       { name: "Consulting", href: "/consulting-services" },
-      { name: "Research & Development", href: "/research-development" },
-      { name: "Corporate Solutions", href: "/corporate-solutions" }
-    ],
-    programs: [
-      { name: "Energy Sector", href: "/courses?category=energy" },
-      { name: "Digital Transformation", href: "/courses?category=digital-transformation" },
-      { name: "Leadership Development", href: "/courses?category=leadership" },
-      { name: "Technical Excellence", href: "/courses?category=technical" }
+      { name: "Research & Development", href: "/research-development" }
     ],
     support: [
       { name: "Contact Us", href: "/contact" },
-      { name: "Certificate Verification", href: "/verify-certificate" },
       { name: "FAQ", href: "/faq" },
       { name: "Support Center", href: "/support" },
-      { name: "Privacy Policy", href: "/privacy-policy" }
+      ...customLinks
     ]
   };
 
-  // Load Mailchimp script on component mount
+  // Mailchimp setup script
   useEffect(() => {
-    // 1. Load the main Mailchimp validation script
     const mcScript = document.createElement('script');
     mcScript.src = '//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js';
     mcScript.type = 'text/javascript';
     mcScript.async = true;
     document.body.appendChild(mcScript);
 
-    // 2. Load the initialization script for the form fields
     const initScript = document.createElement('script');
     initScript.type = 'text/javascript';
-    initScript.text = `
-      (function($) {
-        window.fnames = new Array(); window.ftypes = new Array();
-        fnames[0]='EMAIL';ftypes[0]='email';
-        fnames[1]='FNAME';ftypes[1]='text';
-        fnames[2]='LNAME';ftypes[2]='text';
-        fnames[3]='ADDRESS';ftypes[3]='address';
-        fnames[4]='PHONE';ftypes[4]='phone';
-        fnames[5]='BIRTHDAY';ftypes[5]='birthday';
-        fnames[6]='COMPANY';ftypes[6]='text';
-      }(jQuery));
-      var $mcj = jQuery.noConflict(true);
-    `;
+    initScript.text = `(function($) { window.fnames = new Array(); window.ftypes = new Array(); fnames[0]='EMAIL';ftypes[0]='email'; }(jQuery)); var $mcj = jQuery.noConflict(true);`;
     
-    // We append the init script after a slight delay to ensure jQuery is loaded by mc-validate
-    setTimeout(() => {
-      document.body.appendChild(initScript);
-    }, 1000);
+    setTimeout(() => { document.body.appendChild(initScript); }, 1000);
 
     return () => {
       if (document.body.contains(mcScript)) document.body.removeChild(mcScript);
@@ -77,213 +68,66 @@ const Footer = () => {
   return (
     <footer className="bg-black text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Main Footer Content */}
         <div className="py-16">
           <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-8">
-            {/* Company Info */}
             <div className="lg:col-span-1">
-              <div className="text-2xl font-bold mb-4">
-                PANA <span className="text-pana-gold">Academy</span>
-              </div>
-              <p className="text-gray-300 mb-6 leading-relaxed">
-                Empowering talent across sectors through world-class training, consulting, and research excellence.
-              </p>
+              <div className="text-2xl font-bold mb-4">PANA <span className="text-red-600">Academy</span></div>
+              <p className="text-gray-400 mb-6 leading-relaxed">Empowering talent across sectors through world-class training, consulting, and research excellence.</p>
               <div className="space-y-3">
-                <div className="flex items-center space-x-3">
-                  <Phone className="w-[clamp(0.75rem,1.5vw,1rem)] h-[clamp(0.75rem,1.5vw,1rem)] text-pana-gold" />
-                  <span className="text-sm">+234 702 600 0119</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Mail className="w-[clamp(0.75rem,1.5vw,1rem)] h-[clamp(0.75rem,1.5vw,1rem)] text-pana-gold" />
-                  <span className="text-sm">info@pana-academy.com</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <MapPin className="w-[clamp(0.75rem,1.5vw,1rem)] h-[clamp(0.75rem,1.5vw,1rem)] text-pana-gold" />
-                  <span className="text-sm">Abuja & Port Harcourt</span>
-                </div>
-
+                <div className="flex items-center space-x-3 text-sm"><Phone className="w-4 h-4 text-red-600" /><span>+234 702 600 0119</span></div>
+                <div className="flex items-center space-x-3 text-sm"><Mail className="w-4 h-4 text-red-600" /><span>info@pana-academy.com</span></div>
+                <div className="flex items-center space-x-3 text-sm"><MapPin className="w-4 h-4 text-red-600" /><span>Abuja & Port Harcourt</span></div>
               </div>
             </div>
 
-            {/* Quick Links */}
-            <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-8 lg:col-span-3">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-8 lg:col-span-3">
               <div>
-                <h4 className="font-semibold text-lg mb-4 text-pana-gold">Company</h4>
+                <h4 className="font-bold text-sm uppercase tracking-widest mb-6 underline decoration-red-600 underline-offset-8">Company</h4>
                 <ul className="space-y-3">
-                  {footerLinks.company.map((link, index) => (
-                    <li key={index}>
-                      <a href={link.href} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm">
-                        {link.name}
-                      </a>
-                    </li>
+                  {footerLinks.company.map((link, i) => (
+                    <li key={i}><a href={link.href} className="text-gray-400 hover:text-white transition-colors text-sm">{link.name}</a></li>
                   ))}
                 </ul>
               </div>
-
               <div>
-                <h4 className="font-semibold text-lg mb-4 text-pana-gold">Services</h4>
+                <h4 className="font-bold text-sm uppercase tracking-widest mb-6 underline decoration-red-600 underline-offset-8">Services</h4>
                 <ul className="space-y-3">
-                  {footerLinks.services.map((link, index) => (
-                    <li key={index}>
-                      <a href={link.href} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm">
-                        {link.name}
-                      </a>
-                    </li>
+                  {footerLinks.services.map((link, i) => (
+                    <li key={i}><a href={link.href} className="text-gray-400 hover:text-white transition-colors text-sm">{link.name}</a></li>
                   ))}
                 </ul>
               </div>
-
               <div>
-                <h4 className="font-semibold text-lg mb-4 text-pana-gold">Programs</h4>
+                <h4 className="font-bold text-sm uppercase tracking-widest mb-6 underline decoration-red-600 underline-offset-8">Quick Links</h4>
                 <ul className="space-y-3">
-                  {footerLinks.programs.map((link, index) => (
-                    <li key={index}>
-                      <a href={link.href} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm">
-                        {link.name}
-                      </a>
-                    </li>
+                  {footerLinks.support.map((link, i) => (
+                    <li key={i}><a href={link.href} className="text-gray-400 hover:text-white transition-colors text-sm">{link.name}</a></li>
                   ))}
                 </ul>
               </div>
             </div>
           </div>
 
-          {/* Newsletter Subscription */}
-          <div className="mt-12 pt-8 border-t border-gray-700">
-            <div className="grid md:grid-cols-2 gap-8 items-center" id="mc_embed_shell">
+          <div className="mt-12 pt-8 border-t border-gray-800">
+            <div className="grid md:grid-cols-2 gap-8 items-center">
               <div>
-                <h4 className="text-xl font-semibold mb-2 text-pana-gold">Stay Updated</h4>
-                <p className="text-gray-300">
-                  Subscribe to our newsletter for the latest insights, training updates, and industry news.
-                </p>
+                <h4 className="text-xl font-semibold mb-2">Stay Updated</h4>
+                <p className="text-gray-400">Subscribe to our newsletter for the latest insights and industry news.</p>
               </div>
-              <div id="mc_embed_signup" className="w-full">
-                <style type="text/css">{`
-                  #mc_embed_signup { background: transparent; clear: left; font: 14px Helvetica,Arial,sans-serif; width: 100%; }
-                `}</style>
-                <form 
-                  action="https://pana-academy.us5.list-manage.com/subscribe/post?u=c3b793e3a53abf91535915fb2&id=6cd696a57a&f_id=00e532e0f0" 
-                  method="post" 
-                  id="mc-embedded-subscribe-form" 
-                  name="mc-embedded-subscribe-form" 
-                  className="validate" 
-                  target="_blank"
-                >
-                  <div id="mc_embed_signup_scroll" className="flex flex-col gap-2">
-                    <div className="indicates-required hidden"><span className="asterisk text-red-500">*</span> indicates required</div>
-                    
-                    <div className="mc-field-group w-full flex flex-col sm:flex-row gap-3">
-                      <label htmlFor="mce-EMAIL" className="sr-only">Email Address <span className="asterisk text-red-500">*</span></label>
-                      <input 
-                        type="email" 
-                        name="EMAIL" 
-                        className="required email flex-grow px-3 py-2 bg-white/10 border border-gray-600 text-white placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-pana-gold h-[42px]" 
-                        id="mce-EMAIL" 
-                        placeholder="Enter your email address"
-                        required 
-                        defaultValue="" 
-                      />
-                      <div className="clear foot flex-shrink-0">
-                        <input 
-                          type="submit" 
-                          name="subscribe" 
-                          id="mc-embedded-subscribe" 
-                          className="button bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-md cursor-pointer transition-colors border-none h-[42px] m-0" 
-                          value="Subscribe" 
-                        />
-                      </div>
-                    </div>
-                    
-                    <div id="mce-responses" className="clear foot">
-                      <div className="response text-sm mt-1 text-red-400" id="mce-error-response" style={{ display: 'none' }}></div>
-                      <div className="response text-sm mt-1 text-green-400" id="mce-success-response" style={{ display: 'none' }}></div>
-                    </div>
-                    
-                    <div aria-hidden="true" style={{ position: 'absolute', left: '-5000px' }}>
-                      <input type="text" name="b_c3b793e3a53abf91535915fb2_6cd696a57a" tabIndex={-1} defaultValue="" />
-                    </div>
-                    
-                    <div className="optionalParent mt-1">
-                        <p style={{ margin: '0px' }}>
-                          <a href="http://eepurl.com/jm6Kp6" title="Mailchimp - email marketing made easy and fun">
-                            <span style={{ display: 'inline-block', backgroundColor: 'transparent', borderRadius: '4px' }}>
-                              <img 
-                                className="refferal_badge opacity-70 hover:opacity-100 transition-opacity" 
-                                src="https://digitalasset.intuit.com/render/content/dam/intuit/mc-fe/en_us/images/intuit-mc-rewards-text-dark.svg" 
-                                alt="Intuit Mailchimp" 
-                                style={{ width: '160px', height: 'auto', display: 'block', padding: '0' }} 
-                              />
-                            </span>
-                          </a>
-                        </p>
-                    </div>
-
-                  </div>
-                </form>
-              </div>
+              <form action="https://pana-academy.us5.list-manage.com/subscribe/post?u=c3b793e3a53abf91535915fb2&id=6cd696a57a&f_id=00e532e0f0" method="post" className="flex gap-2">
+                <input type="email" name="EMAIL" className="flex-grow px-3 py-2 bg-gray-900 border border-gray-800 rounded focus:border-red-600 outline-none" placeholder="Email address" required />
+                <button type="submit" className="bg-red-600 px-6 py-2 rounded font-bold hover:bg-red-700 transition-colors">Subscribe</button>
+              </form>
             </div>
           </div>
-
         </div>
 
-        {/* Bottom Footer */}
-        <div className="py-6 border-t border-gray-700">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="text-sm text-gray-400">
-              © {currentYear} PANA Academy. Designed by WCC Studios. All rights reserved.
-            </div>
-
-            <div className="flex items-center space-x-6">
-              <a href="#privacy" className="text-sm text-gray-400 hover:text-white transition-colors">
-                
-              </a>
-              <a href="#terms" className="text-sm text-gray-400 hover:text-white transition-colors">
-                
-              </a>
-              <a href="#cookies" className="text-sm text-gray-400 hover:text-white transition-colors">
-                
-              </a>
-            </div>
-
-            {/* Social Media */}
-            <div className="flex space-x-4">
-              <a
-                href="https://www.linkedin.com/company/pana-academy/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-[clamp(1.5rem,3vw,2rem)] h-[clamp(1.5rem,3vw,2rem)] bg-white/10 rounded-full flex items-center justify-center hover:bg-pana-gold hover:text-pana-navy transition-colors duration-200"
-                aria-label="LinkedIn"
-              >
-                <Linkedin className="w-[clamp(0.875rem,1.75vw,1.25rem)] h-[clamp(0.875rem,1.75vw,1.25rem)]" />
-              </a>
-              <a
-                href="https://twitter.com/panaacademy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-[clamp(1.5rem,3vw,2rem)] h-[clamp(1.5rem,3vw,2rem)] bg-white/10 rounded-full flex items-center justify-center hover:bg-pana-gold hover:text-pana-navy transition-colors duration-200"
-                aria-label="Twitter"
-              >
-                <Twitter className="w-[clamp(0.875rem,1.75vw,1.25rem)] h-[clamp(0.875rem,1.75vw,1.25rem)]" />
-              </a>
-              <a
-                href="https://www.facebook.com/profile.php?id=61555861660075"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-[clamp(1.5rem,3vw,2rem)] h-[clamp(1.5rem,3vw,2rem)] bg-white/10 rounded-full flex items-center justify-center hover:bg-pana-gold hover:text-pana-navy transition-colors duration-200"
-                aria-label="Facebook"
-              >
-                <Facebook className="w-[clamp(0.875rem,1.75vw,1.25rem)] h-[clamp(0.875rem,1.75vw,1.25rem)]" />
-              </a>
-              <a
-                href="https://www.instagram.com/pana_academy/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-[clamp(1.5rem,3vw,2rem)] h-[clamp(1.5rem,3vw,2rem)] bg-white/10 rounded-full flex items-center justify-center hover:bg-pana-gold hover:text-pana-navy transition-colors duration-200"
-                aria-label="Instagram"
-              >
-                <Instagram className="w-[clamp(0.875rem,1.75vw,1.25rem)] h-[clamp(0.875rem,1.75vw,1.25rem)]" />
-              </a>
-            </div>
+        <div className="py-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="text-xs text-gray-500">© {currentYear} PANA Academy. All rights reserved.</div>
+          <div className="flex space-x-4">
+            {[Linkedin, Twitter, Facebook, Instagram].map((Icon, i) => (
+              <a key={i} href="#" className="w-8 h-8 bg-gray-900 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"><Icon className="w-4 h-4" /></a>
+            ))}
           </div>
         </div>
       </div>

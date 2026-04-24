@@ -181,7 +181,7 @@ const CourseDetails: React.FC = () => {
               <div>
                 <div className="flex gap-2 mb-4">
                   <Badge variant="outline" className="bg-white/10 border-white/20 text-white">
-                    {course.category}
+                    {course.category_name || (course.category as string)?.replace('_', ' ')}
                   </Badge>
                   <Badge variant="outline" className="bg-white/10 border-white/20 text-white">
                     {course.level}

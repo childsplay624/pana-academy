@@ -54,6 +54,7 @@ import ContactPage from "./pages/ContactPage";
 import TrainingCalendarPage from "./pages/TrainingCalendarPage";
 import AuthCallback from "./pages/auth/callback";
 import OurJourney from "./pages/our-journey";
+import PublicPageRenderer from "./pages/PublicPageRenderer";
 
 import AboutPage from "./pages/AboutPage";
 import { PaymentPage } from "./pages/PaymentPage";
@@ -62,6 +63,10 @@ import CareersPage from "./pages/CareersPage";
 import TestimonialsPage from "./pages/TestimonialsPage";
 import TeamManagement from "./pages/admin/TeamManagement";
 import ContactMessages from "./pages/admin/ContactMessages";
+import PageManagement from "./pages/admin/PageManagement";
+import PageEditor from "./pages/admin/PageEditor";
+import CourseCategoryManagement from "./pages/admin/CourseCategoryManagement";
+
 
 const queryClient = new QueryClient();
 
@@ -79,6 +84,7 @@ const App = () => (
                 <MaintenanceGuard>
                   <Routes>
                     <Route path="/" element={<Index />} />
+                    <Route path="/p/:slug" element={<PublicPageRenderer />} />
 
                     <Route path="/about" element={<AboutPage />} />
                     <Route path="/courses" element={<PublicCoursesPage />} />
@@ -251,10 +257,34 @@ const App = () => (
                       }
                     />
                     <Route
+                      path="/dashboard/pages"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <PageManagement />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/pages/edit/:id"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <PageEditor />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
                       path="/dashboard/venues"
                       element={
                         <ProtectedRoute allowedRoles={['admin', 'instructor']}>
                           <VenuesPage />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/course-categories"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <CourseCategoryManagement />
                         </ProtectedRoute>
                       }
                     />

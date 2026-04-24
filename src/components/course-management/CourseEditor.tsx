@@ -10,7 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
+import { fetchCategories, Category } from '@/services/courseService';
 import { ModuleManager } from './ModuleManager';
+
 import { EnrollmentManager } from './EnrollmentManager';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import {
@@ -54,6 +56,7 @@ interface Course {
   features?: string[] | null;
   resources_count?: number | null;
   venue_id?: string | null;
+  category_id?: string | null;
 }
 
 function QuickVenueSelect({ onSelect }: { onSelect: (venue: any) => void }) {
@@ -106,7 +109,10 @@ export function CourseEditor() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [course, setCourse] = useState<Course | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [activeTab, setActiveTab] = useState('details');
+  const [loadingCategories, setLoadingCategories] = useState(true);
+
 
   useEffect(() => {
     if (courseId) {
@@ -119,7 +125,21 @@ export function CourseEditor() {
     if (tab && ['details', 'content', 'students', 'settings'].includes(tab)) {
       setActiveTab(tab);
     }
+
+    fetchCategoriesList();
   }, [courseId]);
+
+  const fetchCategoriesList = async () => {
+    try {
+      setLoadingCategories(true);
+      const data = await fetchCategories();
+      setCategories(data);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    } finally {
+      setLoadingCategories(false);
+    }
+  };
 
   const fetchCourse = async () => {
     if (!courseId) return;
@@ -156,7 +176,7 @@ export function CourseEditor() {
         .update({
           title: course.title,
           description: course.description,
-          category: course.category,
+          category_id: course.category_id,
           price: course.price,
           duration_hours: course.duration_hours,
           level: course.level,
@@ -431,7 +451,7 @@ export function CourseEditor() {
                     {course.status}
                   </Badge>
                   <span className="text-sm text-muted-foreground">
-                    {course.category}
+                    {categories.find(c => c.id === course.category_id)?.name || course.category}
                   </span>
                   <span className="text-sm text-muted-foreground">
                     • {course.duration_hours} hours
@@ -472,22 +492,19 @@ export function CourseEditor() {
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Category</label>
                       <Select
-                        value={course.category}
-                        onValueChange={(value: Course['category']) => setCourse(prev => prev ? { ...prev, category: value } : null)}
-                        disabled={!canEdit}
+                        value={course.category_id || ''}
+                        onValueChange={(value) => setCourse(prev => prev ? { ...prev, category_id: value } : null)}
+                        disabled={!canEdit || loadingCategories}
                       >
                         <SelectTrigger>
-                          <SelectValue />
+                          <SelectValue placeholder={loadingCategories ? "Loading..." : "Select category"} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="soft_skills">Soft Skills</SelectItem>
-                          <SelectItem value="safety">Safety</SelectItem>
-                          <SelectItem value="sustainability">Sustainability</SelectItem>
-                          <SelectItem value="general_technical">General Technical</SelectItem>
-                          <SelectItem value="flow_drives">Flow Drives</SelectItem>
-                          <SelectItem value="flow_control">Flow Control</SelectItem>
-                          <SelectItem value="flow_measurement">Flow Measurement</SelectItem>
-                          <SelectItem value="instrumentation_automation">Instrumentation & Automation</SelectItem>
+                          {categories.map((cat) => (
+                            <SelectItem key={cat.id} value={cat.id}>
+                              {cat.name}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>

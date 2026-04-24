@@ -62,7 +62,9 @@ const CoursesSection = ({
                     <div className="flex justify-between items-start">
                       <div>
                         <CardTitle className="text-xl">{course.title}</CardTitle>
-                        <p className="text-sm text-gray-500 mt-1 capitalize">{course.category?.replace('_', ' ')}</p>
+                        <p className="text-sm text-gray-500 mt-1 capitalize">
+                          {course.category_name || (course.category as string)?.replace('_', ' ')}
+                        </p>
                       </div>
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-pana-gold/20 text-amber-800">
                         {course.level}

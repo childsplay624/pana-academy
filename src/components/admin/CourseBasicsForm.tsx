@@ -14,6 +14,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import { CourseType } from '@/types/course.types';
+import { fetchCategories, Category } from '@/services/courseService';
 import { supabase } from '@/integrations/supabase/client';
 import { ImagePicker } from './ImagePicker';
 import { useAuth } from '@/hooks/useAuth';
@@ -34,6 +35,8 @@ export function CourseBasicsForm({ initialData, onSubmit, onCancel }: CourseBasi
     const isAdmin = profile?.role === 'admin';
     const [instructors, setInstructors] = useState<Instructor[]>([]);
     const [loadingInstructors, setLoadingInstructors] = useState(true);
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [loadingCategories, setLoadingCategories] = useState(true);
 
     const {
         register,
@@ -88,6 +91,21 @@ export function CourseBasicsForm({ initialData, onSubmit, onCancel }: CourseBasi
 
         fetchInstructors();
     }, [isAdmin]);
+
+    useEffect(() => {
+        const loadCategories = async () => {
+            try {
+                setLoadingCategories(true);
+                const data = await fetchCategories();
+                setCategories(data);
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            } finally {
+                setLoadingCategories(false);
+            }
+        };
+        loadCategories();
+    }, []);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -168,24 +186,28 @@ export function CourseBasicsForm({ initialData, onSubmit, onCancel }: CourseBasi
             {/* Category */}
             <div className="space-y-2">
                 <Label htmlFor="categoryId">Category *</Label>
-                <Select
-                    value={watch('categoryId')}
-                    onValueChange={(value) => setValue('categoryId', value)}
-                >
-                    <SelectTrigger>
-                        <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="soft_skills">🤝 Soft Skills</SelectItem>
-                        <SelectItem value="safety">🦺 Safety</SelectItem>
-                        <SelectItem value="sustainability">🌍 Sustainability</SelectItem>
-                        <SelectItem value="general_technical">🔧 General Technical</SelectItem>
-                        <SelectItem value="flow_drives">⚙️ Flow Drives</SelectItem>
-                        <SelectItem value="flow_control">🎛️ Flow Control</SelectItem>
-                        <SelectItem value="flow_measurement">📏 Flow Measurement</SelectItem>
-                        <SelectItem value="instrumentation_automation">🤖 Instrumentation & Automation</SelectItem>
-                    </SelectContent>
-                </Select>
+                {loadingCategories ? (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground italic h-10 border rounded-md px-3 bg-muted/50">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Loading categories...
+                    </div>
+                ) : (
+                    <Select
+                        value={watch('categoryId')}
+                        onValueChange={(value) => setValue('categoryId', value)}
+                    >
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {categories.map((cat) => (
+                                <SelectItem key={cat.id} value={cat.id}>
+                                    {cat.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                )}
                 {errors.categoryId && (
                     <p className="text-sm text-red-500">{String(errors.categoryId.message)}</p>
                 )}

@@ -17,7 +17,9 @@ import {
   ImageIcon,
   MessageSquareText,
   MessageSquare,
-  Mail
+  Mail,
+  Globe,
+  Tag
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -60,12 +62,14 @@ export function DashboardSidebar() {
         { title: "User Management", url: "/dashboard/users", icon: Users },
         { title: "Team Management", url: "/dashboard/team", icon: Users },
         { title: "Course Management", url: "/dashboard/courses", icon: BookOpen },
+        { title: "Course Categories", url: "/dashboard/course-categories", icon: Tag },
         { title: "Support Tickets", url: "/dashboard/support-tickets", icon: MessageSquare },
         { title: "Manage Messages", url: "/dashboard/messages", icon: Mail },
         { title: "Manage Payments", url: "/dashboard/payments", icon: CreditCard },
         { title: "Invoices", url: "/dashboard/invoices", icon: FileText },
         { title: "Manage Venues", url: "/dashboard/venues", icon: MapPin },
         { title: "Manage Images", url: "/dashboard/images", icon: ImageIcon },
+        { title: "Page Builder", url: "/dashboard/pages", icon: Globe },
         { title: "Testimonials", url: "/dashboard/testimonials", icon: MessageSquareText },
         { title: "Analytics", url: "/dashboard/analytics", icon: TrendingUp },
         { title: "Settings", url: "/dashboard/settings", icon: Settings },

@@ -11,6 +11,8 @@ import { DashboardLayout } from '@/components/DashboardLayout';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { fetchCategories, Category } from '@/services/courseService';
+
 
 interface Course {
   id: string;
@@ -26,6 +28,8 @@ interface Course {
     full_name: string | null;
   };
   enrollments?: { count: number }[];
+  category_id?: string;
+  category_data?: { name: string };
 }
 
 export default function CourseManagement() {
@@ -38,7 +42,9 @@ export default function CourseManagement() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const [categories, setCategories] = useState<Category[]>([]);
   const itemsPerPage = 10;
+
   const { toast } = useToast();
 
   const fetchCourses = async (role: string | undefined, userId: string | undefined) => {
@@ -48,7 +54,8 @@ export default function CourseManagement() {
         .select(`
           *,
           profiles:instructor_id (full_name),
-          enrollments (count)
+          enrollments (count),
+          category_data:course_categories (name)
         `)
         .order('created_at', { ascending: false });
 
@@ -75,8 +82,18 @@ export default function CourseManagement() {
   useEffect(() => {
     if (profile?.id) {
       fetchCourses(profile.role, profile.id);
+      loadCategories();
     }
   }, [profile?.id, profile?.role]);
+
+  const loadCategories = async () => {
+    try {
+      const data = await fetchCategories();
+      setCategories(data);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
 
   // Reset to first page when search or filters change
   useEffect(() => {
@@ -114,7 +131,7 @@ export default function CourseManagement() {
     const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       course.description?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || course.status === statusFilter;
-    const matchesCategory = categoryFilter === 'all' || course.category === categoryFilter;
+    const matchesCategory = categoryFilter === 'all' || course.category === categoryFilter || course.category_id === categoryFilter;
     return matchesSearch && matchesStatus && matchesCategory;
   });
 
@@ -133,7 +150,8 @@ export default function CourseManagement() {
     }
   };
 
-  const categories = [...new Set(courses.map(course => course.category))];
+  // Deprecated this line in favor of fetched categories
+  // const categoriesList = [...new Set(courses.map(course => course.category))];
 
   if (loading) {
     return (
@@ -243,8 +261,8 @@ export default function CourseManagement() {
                 <SelectContent>
                   <SelectItem value="all">All Categories</SelectItem>
                   {categories.map(category => (
-                    <SelectItem key={category} value={category}>
-                      {category}
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -310,7 +328,9 @@ export default function CourseManagement() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline">{course.category}</Badge>
+                      <Badge variant="outline">
+                        {course.category_data?.name || course.category}
+                      </Badge>
                     </TableCell>
                     <TableCell>₦{course.price.toLocaleString()}</TableCell>
                     <TableCell>
