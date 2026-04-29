@@ -342,6 +342,8 @@ serve(async (req: Request) => {
     console.log(`Attempting to send ${type || 'custom'} email to:`, to);
 
     // Use Resend REST API directly
+    const fromEmail = Deno.env.get('RESEND_FROM_EMAIL') || 'PANA Academy <noreply@pana-academy.com>';
+    
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -349,7 +351,7 @@ serve(async (req: Request) => {
         'Authorization': `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: 'PANA Academy <noreply@pana-academy.com>',
+        from: fromEmail,
         to: Array.isArray(to) ? to : [to],
         subject,
         html,
