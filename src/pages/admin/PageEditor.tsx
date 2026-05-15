@@ -27,6 +27,17 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { motion, AnimatePresence } from 'framer-motion';
+import {
+  HeroSection,
+  ContentSection,
+  FeaturesSection,
+  TestimonialsSection,
+  FAQSection,
+  CTASection,
+  StatsSection,
+  TeamSection,
+  BannerSection
+} from '@/components/page-builder/SectionRenderer';
 
 // Maps a static page slug to its editable content field definitions
 const STATIC_PAGE_FIELDS: Record<string, { key: string; label: string; type: 'text' | 'textarea' | 'url' }[]> = {
@@ -88,7 +99,32 @@ const SECTION_TEMPLATES = {
     title: 'Ready to Transform Your Career?', 
     description: 'Join thousands of professionals already learning with us.', 
     buttonText: 'Enroll Now' 
-  }
+  },
+  stats: {
+    title: 'Our Impact in Numbers',
+    subtitle: 'Trusted by professionals across Africa',
+    stats: [
+      { value: '5,000+', label: 'Trained Professionals', icon: 'users' },
+      { value: '98%', label: 'Satisfaction Rate', icon: 'star' },
+      { value: '120+', label: 'Courses Delivered', icon: 'award' },
+      { value: '15+', label: 'Years Experience', icon: 'trending' },
+    ]
+  },
+  team: {
+    title: 'Meet Our Expert Team',
+    subtitle: 'Passionate professionals dedicated to your growth.',
+    members: [
+      { name: 'Dr. Ada Obi', role: 'Lead Trainer', bio: 'PhD in Education with 15+ years experience.', avatar: '' },
+      { name: 'Engr. Kola Balogun', role: 'Technical Director', bio: 'Expert in infrastructure & project management.', avatar: '' },
+    ]
+  },
+  banner: {
+    badge: 'New',
+    title: 'Upcoming Training Programme',
+    description: 'Register now to secure your spot in our next cohort.',
+    buttonText: 'Register Now',
+    bgColor: 'linear-gradient(135deg, #1e40af, #7c3aed)',
+  },
 };
 
 export default function PageEditor() {
@@ -102,6 +138,7 @@ export default function PageEditor() {
   const [saving, setSaving] = useState(false);
   const [isAddSectionOpen, setIsAddSectionOpen] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
+  const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -343,51 +380,55 @@ export default function PageEditor() {
             </TabsContent>
           )}
 
-          {/* Dynamic Pages Section Builder */}
+          {/* Dynamic Pages Section Builder (Elementor Style) */}
           {page?.page_type !== 'static' && (
             <TabsContent value="sections" className="mt-0">
-               <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                <div className="lg:col-span-3 space-y-6">
+               <div className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-250px)]">
+                
+                {/* Left Panel: Sidebar Controls (Inspector) */}
+                <div className="w-full lg:w-1/3 flex flex-col gap-4 overflow-y-auto pr-2 custom-scrollbar border-r border-border/50">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">Page Elements</h3>
+                    <Button variant="outline" size="sm" className="h-8" onClick={() => setIsAddSectionOpen(true)}>
+                      <Plus className="w-4 h-4 mr-1" /> Add Section
+                    </Button>
+                  </div>
+
                   {sections.length === 0 ? (
-                    <div className="border-4 border-dashed rounded-[2rem] p-24 text-center group hover:bg-muted/20 hover:border-primary/20 transition-all duration-500 cursor-pointer" onClick={() => setIsAddSectionOpen(true)}>
-                      <div className="w-20 h-20 bg-muted group-hover:bg-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-6 transition-colors">
-                        <Plus className="w-10 h-10 text-muted-foreground group-hover:text-primary" />
-                      </div>
-                      <h3 className="text-2xl font-bold mb-2">Build your page</h3>
-                      <p className="text-muted-foreground max-w-sm mx-auto">Start by adding a Hero section to welcome your visitors.</p>
+                    <div className="text-center p-8 bg-muted/20 rounded-2xl border-2 border-dashed">
+                      <p className="text-sm text-muted-foreground mb-4">No sections added yet.</p>
+                      <Button onClick={() => setIsAddSectionOpen(true)}>Add Your First Section</Button>
                     </div>
                   ) : (
                     <div className="space-y-4">
                       {sections.map((section, index) => {
-                        const isExpanded = expandedSections[section.id];
+                        const isExpanded = activeSectionId === section.id || expandedSections[section.id];
                         return (
-                          <Card key={section.id} className={`group overflow-hidden border-2 transition-all duration-300 ${isExpanded ? 'border-border shadow-md' : 'border-transparent hover:border-muted shadow-none bg-muted/20'}`}>
+                          <Card key={section.id} className={`group overflow-hidden border-2 transition-all duration-300 ${isExpanded ? 'border-primary/50 shadow-md' : 'border-transparent hover:border-muted shadow-none bg-muted/20'}`}>
                             {/* Section Header Bar */}
-                            <div className="px-5 py-3 flex items-center justify-between bg-muted/40 border-b select-none">
-                              <div className="flex items-center gap-4 flex-grow cursor-pointer" onClick={() => toggleSectionExpansion(section.id)}>
-                                <div className="flex items-center gap-2">
-                                  <GripVertical className="w-4 h-4 text-muted-foreground/50 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                  {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                                </div>
-                                <div className="flex items-center gap-3">
-                                  <Badge variant="outline" className="uppercase text-[10px] bg-background font-black tracking-widest px-2 py-0.5 border-primary/20 text-primary">
-                                    {section.section_type}
-                                  </Badge>
-                                  <span className="font-bold text-sm truncate max-w-[200px]">
-                                    {section.content.title || (section.section_type === 'content' ? 'Text Block' : 'Section Untitled')}
-                                  </span>
-                                </div>
+                            <div className={`px-4 py-3 flex items-center justify-between cursor-pointer select-none ${isExpanded ? 'bg-primary/5 border-b border-primary/10' : 'bg-transparent'}`} 
+                                 onClick={() => {
+                                   setActiveSectionId(section.id);
+                                   toggleSectionExpansion(section.id);
+                                 }}>
+                              <div className="flex items-center gap-3">
+                                <GripVertical className="w-4 h-4 text-muted-foreground/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <Badge variant="outline" className="uppercase text-[10px] bg-background font-black tracking-widest px-2 py-0.5 border-primary/20 text-primary">
+                                  {section.section_type}
+                                </Badge>
+                                <span className="font-bold text-xs truncate max-w-[120px]">
+                                  {section.content.title || 'Untitled'}
+                                </span>
                               </div>
-                              <div className="flex items-center gap-1">
-                                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-background" onClick={() => moveSection(index, 'up')} disabled={index === 0}>
-                                  <MoveUp className="w-3.5 h-3.5" />
+                              <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => moveSection(index, 'up')} disabled={index === 0}>
+                                  <MoveUp className="w-3 h-3" />
                                 </Button>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-background" onClick={() => moveSection(index, 'down')} disabled={index === sections.length - 1}>
-                                  <MoveDown className="w-3.5 h-3.5" />
+                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => moveSection(index, 'down')} disabled={index === sections.length - 1}>
+                                  <MoveDown className="w-3 h-3" />
                                 </Button>
-                                <Separator orientation="vertical" className="h-4 mx-2" />
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10" onClick={() => deleteSection(section.id)}>
-                                  <Trash2 className="w-3.5 h-3.5" />
+                                <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => deleteSection(section.id)}>
+                                  <Trash2 className="w-3 h-3" />
                                 </Button>
                               </div>
                             </div>
@@ -396,67 +437,64 @@ export default function PageEditor() {
                             <AnimatePresence>
                               {isExpanded && (
                                 <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                                  <CardContent className="p-6">
-                                    <div className="grid grid-cols-1 gap-6">
+                                  <CardContent className="p-4 bg-muted/5">
+                                    <div className="grid grid-cols-1 gap-4">
                                       {/* Common Logic Based on Type */}
                                       {section.section_type === 'hero' && (
                                         <>
-                                          <div className="space-y-2">
-                                            <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Catchy Headline</Label>
-                                            <Input value={section.content.title || ''} onChange={e => updateSectionContent(section.id, 'title', e.target.value)} placeholder="e.g. Master Your Future" />
+                                          <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Catchy Headline</Label>
+                                            <Input className="h-8 text-sm" value={section.content.title || ''} onChange={e => updateSectionContent(section.id, 'title', e.target.value)} placeholder="e.g. Master Your Future" />
                                           </div>
-                                          <div className="space-y-2">
-                                            <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Sub-description</Label>
-                                            <Textarea value={section.content.description || ''} onChange={e => updateSectionContent(section.id, 'description', e.target.value)} className="h-24" />
+                                          <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Sub-description</Label>
+                                            <Textarea className="h-20 text-sm" value={section.content.description || ''} onChange={e => updateSectionContent(section.id, 'description', e.target.value)} />
                                           </div>
-                                          <div className="grid grid-cols-2 gap-4">
-                                            <div className="space-y-2">
-                                              <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Primary Button</Label>
-                                              <Input value={section.content.buttonText || ''} onChange={e => updateSectionContent(section.id, 'buttonText', e.target.value)} placeholder="Btn Label" />
+                                          <div className="grid grid-cols-2 gap-2">
+                                            <div className="space-y-1.5">
+                                              <Label className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Primary Button</Label>
+                                              <Input className="h-8 text-sm" value={section.content.buttonText || ''} onChange={e => updateSectionContent(section.id, 'buttonText', e.target.value)} placeholder="Btn Label" />
                                             </div>
-                                            <div className="space-y-2">
-                                              <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Secondary Button</Label>
-                                              <Input value={section.content.secondaryButtonText || ''} onChange={e => updateSectionContent(section.id, 'secondaryButtonText', e.target.value)} placeholder="Btn Label" />
+                                            <div className="space-y-1.5">
+                                              <Label className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Secondary Button</Label>
+                                              <Input className="h-8 text-sm" value={section.content.secondaryButtonText || ''} onChange={e => updateSectionContent(section.id, 'secondaryButtonText', e.target.value)} placeholder="Btn Label" />
                                             </div>
                                           </div>
                                         </>
                                       )}
 
                                       {section.section_type === 'content' && (
-                                        <div className="space-y-2">
-                                          <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">HTML / Markdown Content</Label>
-                                          <Textarea value={section.content.body || ''} onChange={e => updateSectionContent(section.id, 'body', e.target.value)} className="min-h-[300px] font-mono text-sm leading-relaxed" />
+                                        <div className="space-y-1.5">
+                                          <Label className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">HTML / Markdown Content</Label>
+                                          <Textarea value={section.content.body || ''} onChange={e => updateSectionContent(section.id, 'body', e.target.value)} className="min-h-[200px] font-mono text-xs leading-relaxed" />
                                         </div>
                                       )}
 
                                       {section.section_type === 'features' && (
                                         <>
-                                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div className="space-y-2">
-                                              <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Section Title</Label>
-                                              <Input value={section.content.title || ''} onChange={e => updateSectionContent(section.id, 'title', e.target.value)} />
-                                            </div>
-                                            <div className="space-y-2">
-                                              <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Section Subtitle</Label>
-                                              <Input value={section.content.subtitle || ''} onChange={e => updateSectionContent(section.id, 'subtitle', e.target.value)} />
-                                            </div>
+                                          <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Section Title</Label>
+                                            <Input className="h-8 text-sm" value={section.content.title || ''} onChange={e => updateSectionContent(section.id, 'title', e.target.value)} />
                                           </div>
-                                          <Separator />
-                                          <div className="space-y-4">
+                                          <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Section Subtitle</Label>
+                                            <Input className="h-8 text-sm" value={section.content.subtitle || ''} onChange={e => updateSectionContent(section.id, 'subtitle', e.target.value)} />
+                                          </div>
+                                          <div className="space-y-3 mt-2">
                                             <div className="flex items-center justify-between">
-                                               <Label className="text-sm font-bold italic">Feature Items</Label>
-                                               <Button variant="outline" size="sm" onClick={() => addArrayItem(section.id, 'features', { title: '', description: '' })}>
-                                                 <Plus className="w-3.5 h-3.5 mr-1" /> Add Item
+                                               <Label className="text-[10px] font-bold uppercase text-muted-foreground">Feature Items</Label>
+                                               <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2" onClick={() => addArrayItem(section.id, 'features', { title: '', description: '' })}>
+                                                 <Plus className="w-3 h-3 mr-1" /> Add
                                                </Button>
                                             </div>
                                             {(section.content.features || []).map((feature: any, fIdx: number) => (
-                                              <div key={fIdx} className="p-4 bg-muted/30 rounded-xl relative group/item border border-transparent hover:border-primary/20 transition-all">
-                                                <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover/item:opacity-100" onClick={() => removeArrayItem(section.id, 'features', fIdx)}>
+                                              <div key={fIdx} className="p-3 bg-background rounded-lg relative group/item border shadow-sm">
+                                                <Button variant="ghost" size="icon" className="absolute -top-2 -right-2 h-5 w-5 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover/item:opacity-100 transition-opacity shadow-sm" onClick={() => removeArrayItem(section.id, 'features', fIdx)}>
                                                   <X className="w-3 h-3" />
                                                 </Button>
-                                                <div className="grid grid-cols-1 gap-3">
-                                                  <Input value={feature.title || ''} onChange={e => handleArrayItemUpdate(section.id, 'features', fIdx, 'title', e.target.value)} placeholder="Feature Title" className="bg-background font-bold text-sm" />
-                                                  <Input value={feature.description || ''} onChange={e => handleArrayItemUpdate(section.id, 'features', fIdx, 'description', e.target.value)} placeholder="Brief description" className="bg-background text-xs" />
+                                                <div className="space-y-2">
+                                                  <Input className="h-7 text-xs font-bold" value={feature.title || ''} onChange={e => handleArrayItemUpdate(section.id, 'features', fIdx, 'title', e.target.value)} placeholder="Title" />
+                                                  <Input className="h-7 text-xs" value={feature.description || ''} onChange={e => handleArrayItemUpdate(section.id, 'features', fIdx, 'description', e.target.value)} placeholder="Description" />
                                                 </div>
                                               </div>
                                             ))}
@@ -466,27 +504,24 @@ export default function PageEditor() {
 
                                       {section.section_type === 'faq' && (
                                         <>
-                                          <div className="space-y-2">
-                                            <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Section Title</Label>
-                                            <Input value={section.content.title || ''} onChange={e => updateSectionContent(section.id, 'title', e.target.value)} />
+                                          <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Section Title</Label>
+                                            <Input className="h-8 text-sm" value={section.content.title || ''} onChange={e => updateSectionContent(section.id, 'title', e.target.value)} />
                                           </div>
-                                          <Separator />
-                                          <div className="space-y-4">
+                                          <div className="space-y-3 mt-2">
                                             <div className="flex items-center justify-between">
-                                               <Label className="text-sm font-bold italic">Questions & Answers</Label>
-                                               <Button variant="outline" size="sm" onClick={() => addArrayItem(section.id, 'faqs', { question: '', answer: '' })}>
-                                                 <Plus className="w-3.5 h-3.5 mr-1" /> Add FAQ
+                                               <Label className="text-[10px] font-bold uppercase text-muted-foreground">Questions</Label>
+                                               <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2" onClick={() => addArrayItem(section.id, 'faqs', { question: '', answer: '' })}>
+                                                 <Plus className="w-3 h-3 mr-1" /> Add FAQ
                                                </Button>
                                             </div>
                                             {(section.content.faqs || []).map((faq: any, fIdx: number) => (
-                                              <div key={fIdx} className="space-y-3 p-4 bg-muted/20 rounded-xl border border-border">
-                                                <div className="flex justify-between gap-4">
-                                                  <Input value={faq.question || ''} onChange={e => handleArrayItemUpdate(section.id, 'faqs', fIdx, 'question', e.target.value)} placeholder="The Question" className="bg-background font-bold" />
-                                                  <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0 text-destructive" onClick={() => removeArrayItem(section.id, 'faqs', fIdx)}>
-                                                    <Trash2 className="w-4 h-4" />
-                                                  </Button>
-                                                </div>
-                                                <Textarea value={faq.answer || ''} onChange={e => handleArrayItemUpdate(section.id, 'faqs', fIdx, 'answer', e.target.value)} placeholder="The Answer" className="bg-background h-20 text-sm" />
+                                              <div key={fIdx} className="space-y-2 p-3 bg-background rounded-lg border shadow-sm relative group/item">
+                                                <Button variant="ghost" size="icon" className="absolute -top-2 -right-2 h-5 w-5 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover/item:opacity-100 transition-opacity shadow-sm" onClick={() => removeArrayItem(section.id, 'faqs', fIdx)}>
+                                                  <X className="w-3 h-3" />
+                                                </Button>
+                                                <Input className="h-7 text-xs font-bold" value={faq.question || ''} onChange={e => handleArrayItemUpdate(section.id, 'faqs', fIdx, 'question', e.target.value)} placeholder="Question" />
+                                                <Textarea className="h-16 text-xs" value={faq.answer || ''} onChange={e => handleArrayItemUpdate(section.id, 'faqs', fIdx, 'answer', e.target.value)} placeholder="Answer" />
                                               </div>
                                             ))}
                                           </div>
@@ -495,17 +530,103 @@ export default function PageEditor() {
 
                                        {section.section_type === 'cta' && (
                                         <>
-                                          <div className="space-y-2">
-                                            <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">CTA Headline</Label>
-                                            <Input value={section.content.title || ''} onChange={e => updateSectionContent(section.id, 'title', e.target.value)} />
+                                          <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">CTA Headline</Label>
+                                            <Input className="h-8 text-sm" value={section.content.title || ''} onChange={e => updateSectionContent(section.id, 'title', e.target.value)} />
                                           </div>
-                                          <div className="space-y-2">
-                                            <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Contextual Text</Label>
-                                            <Input value={section.content.description || ''} onChange={e => updateSectionContent(section.id, 'description', e.target.value)} />
+                                          <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Contextual Text</Label>
+                                            <Input className="h-8 text-sm" value={section.content.description || ''} onChange={e => updateSectionContent(section.id, 'description', e.target.value)} />
                                           </div>
-                                          <div className="space-y-2">
-                                            <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Button label</Label>
-                                            <Input value={section.content.buttonText || ''} onChange={e => updateSectionContent(section.id, 'buttonText', e.target.value)} />
+                                          <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Button label</Label>
+                                            <Input className="h-8 text-sm" value={section.content.buttonText || ''} onChange={e => updateSectionContent(section.id, 'buttonText', e.target.value)} />
+                                          </div>
+                                        </>
+                                      )}
+
+                                      {section.section_type === 'stats' && (
+                                        <>
+                                          <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Section Title</Label>
+                                            <Input className="h-8 text-sm" value={section.content.title || ''} onChange={e => updateSectionContent(section.id, 'title', e.target.value)} />
+                                          </div>
+                                          <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Subtitle</Label>
+                                            <Input className="h-8 text-sm" value={section.content.subtitle || ''} onChange={e => updateSectionContent(section.id, 'subtitle', e.target.value)} />
+                                          </div>
+                                          <div className="space-y-3 mt-2">
+                                            <div className="flex items-center justify-between">
+                                               <Label className="text-[10px] font-bold uppercase text-muted-foreground">Stats</Label>
+                                               <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2" onClick={() => addArrayItem(section.id, 'stats', { value: '0', label: 'Metric', icon: 'trending' })}>
+                                                 <Plus className="w-3 h-3 mr-1" /> Add Stat
+                                               </Button>
+                                            </div>
+                                            {(section.content.stats || []).map((stat: any, sIdx: number) => (
+                                              <div key={sIdx} className="p-3 bg-background rounded-lg border shadow-sm relative group/item space-y-2">
+                                                <Button variant="ghost" size="icon" className="absolute -top-2 -right-2 h-5 w-5 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover/item:opacity-100 transition-opacity shadow-sm" onClick={() => removeArrayItem(section.id, 'stats', sIdx)}>
+                                                  <X className="w-3 h-3" />
+                                                </Button>
+                                                <Input className="h-7 text-sm font-black" value={stat.value || ''} onChange={e => handleArrayItemUpdate(section.id, 'stats', sIdx, 'value', e.target.value)} placeholder="e.g. 5,000+" />
+                                                <Input className="h-7 text-xs" value={stat.label || ''} onChange={e => handleArrayItemUpdate(section.id, 'stats', sIdx, 'label', e.target.value)} placeholder="Label" />
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </>
+                                      )}
+
+                                      {section.section_type === 'team' && (
+                                        <>
+                                          <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Section Title</Label>
+                                            <Input className="h-8 text-sm" value={section.content.title || ''} onChange={e => updateSectionContent(section.id, 'title', e.target.value)} />
+                                          </div>
+                                          <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Subtitle</Label>
+                                            <Input className="h-8 text-sm" value={section.content.subtitle || ''} onChange={e => updateSectionContent(section.id, 'subtitle', e.target.value)} />
+                                          </div>
+                                          <div className="space-y-3 mt-2">
+                                            <div className="flex items-center justify-between">
+                                               <Label className="text-[10px] font-bold uppercase text-muted-foreground">Members</Label>
+                                               <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2" onClick={() => addArrayItem(section.id, 'members', { name: '', role: '', bio: '', avatar: '' })}>
+                                                 <Plus className="w-3 h-3 mr-1" /> Add Member
+                                               </Button>
+                                            </div>
+                                            {(section.content.members || []).map((m: any, mIdx: number) => (
+                                              <div key={mIdx} className="p-3 bg-background rounded-lg border shadow-sm relative group/item space-y-2">
+                                                <Button variant="ghost" size="icon" className="absolute -top-2 -right-2 h-5 w-5 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover/item:opacity-100 transition-opacity shadow-sm" onClick={() => removeArrayItem(section.id, 'members', mIdx)}>
+                                                  <X className="w-3 h-3" />
+                                                </Button>
+                                                <Input className="h-7 text-xs font-bold" value={m.name || ''} onChange={e => handleArrayItemUpdate(section.id, 'members', mIdx, 'name', e.target.value)} placeholder="Full Name" />
+                                                <Input className="h-7 text-xs" value={m.role || ''} onChange={e => handleArrayItemUpdate(section.id, 'members', mIdx, 'role', e.target.value)} placeholder="Role / Title" />
+                                                <Input className="h-7 text-xs text-muted-foreground" value={m.avatar || ''} onChange={e => handleArrayItemUpdate(section.id, 'members', mIdx, 'avatar', e.target.value)} placeholder="Avatar URL (optional)" />
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </>
+                                      )}
+
+                                      {section.section_type === 'banner' && (
+                                        <>
+                                          <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Badge Label</Label>
+                                            <Input className="h-8 text-sm" value={section.content.badge || ''} onChange={e => updateSectionContent(section.id, 'badge', e.target.value)} placeholder="e.g. New, Limited" />
+                                          </div>
+                                          <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Headline</Label>
+                                            <Input className="h-8 text-sm" value={section.content.title || ''} onChange={e => updateSectionContent(section.id, 'title', e.target.value)} />
+                                          </div>
+                                          <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Description</Label>
+                                            <Input className="h-8 text-sm" value={section.content.description || ''} onChange={e => updateSectionContent(section.id, 'description', e.target.value)} />
+                                          </div>
+                                          <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Button Label</Label>
+                                            <Input className="h-8 text-sm" value={section.content.buttonText || ''} onChange={e => updateSectionContent(section.id, 'buttonText', e.target.value)} />
+                                          </div>
+                                          <div className="space-y-1.5">
+                                            <Label className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Background (CSS gradient or hex)</Label>
+                                            <Input className="h-8 text-xs font-mono" value={section.content.bgColor || ''} onChange={e => updateSectionContent(section.id, 'bgColor', e.target.value)} placeholder="linear-gradient(135deg, #1e40af, #7c3aed)" />
                                           </div>
                                         </>
                                       )}
@@ -521,18 +642,10 @@ export default function PageEditor() {
                   )}
 
                   <Dialog open={isAddSectionOpen} onOpenChange={setIsAddSectionOpen}>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" className="w-full border-2 border-dashed h-24 rounded-3xl bg-muted/10 hover:bg-primary/5 hover:border-primary/30 transition-all group">
-                         <div className="flex flex-col items-center">
-                            <Plus className="w-6 h-6 mb-2 text-muted-foreground group-hover:text-primary transition-colors" />
-                            <span className="font-bold text-muted-foreground group-hover:text-primary">Insert New Page Section</span>
-                         </div>
-                      </Button>
-                    </DialogTrigger>
                     <DialogContent className="max-w-3xl sm:rounded-[2rem]">
                       <DialogHeader className="pb-4">
-                        <DialogTitle className="text-2xl font-black italic">Section Library</DialogTitle>
-                        <DialogDescription>Add high-conversion blocks to build your custom page.</DialogDescription>
+                         <DialogTitle className="text-2xl font-black italic">Section Library</DialogTitle>
+                         <DialogDescription>Add high-conversion blocks to build your custom page.</DialogDescription>
                       </DialogHeader>
                       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                         {[
@@ -541,7 +654,10 @@ export default function PageEditor() {
                           { type: 'features', icon: CheckSquare, title: 'Features Grid', desc: 'Value propositions' },
                           { type: 'testimonials', icon: MessageSquare, title: 'User Reviews', desc: 'Social proof' },
                           { type: 'faq', icon: HelpCircle, title: 'FAQ Accordion', desc: 'Common questions' },
-                          { type: 'cta', icon: MousePointer2, title: 'Action Bridge', desc: 'Closing conversion' }
+                          { type: 'cta', icon: MousePointer2, title: 'Action Bridge', desc: 'Closing conversion' },
+                          { type: 'stats', icon: Layout, title: 'Stats Counter', desc: 'Impact numbers' },
+                          { type: 'team', icon: MessageSquare, title: 'Team Grid', desc: 'Team members' },
+                          { type: 'banner', icon: AlertCircle, title: 'Promo Banner', desc: 'Announcement strip' },
                         ].map(item => (
                           <div 
                             key={item.type} 
@@ -560,49 +676,55 @@ export default function PageEditor() {
                   </Dialog>
                 </div>
 
-                {/* Sidebar Controls */}
-                <div className="space-y-6">
-                  <Card className="rounded-3xl shadow-sm border-border overflow-hidden">
-                    <CardHeader className="bg-muted/30 py-4"><CardTitle className="text-xs font-black uppercase tracking-widest italic">Visibility</CardTitle></CardHeader>
-                    <CardContent className="p-6 space-y-6">
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <Label htmlFor="d-nav" className="text-sm font-medium">Show in Navbar</Label>
-                          <Switch id="d-nav" checked={page?.show_in_navbar} onCheckedChange={v => setPage(p => p ? { ...p, show_in_navbar: v } : null)} />
+                {/* Right Panel: Live Visual Canvas */}
+                <div className="w-full lg:w-2/3 bg-muted/10 rounded-2xl border-2 border-border shadow-inner overflow-y-auto relative h-full">
+                  <div className="sticky top-0 left-0 w-full bg-background/80 backdrop-blur-md border-b z-50 p-2 flex items-center justify-between shadow-sm">
+                     <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground ml-2">
+                       <Eye className="w-4 h-4" /> Live Visual Canvas
+                     </div>
+                     <Badge variant="secondary" className="text-[10px]">Updating Real-Time</Badge>
+                  </div>
+                  
+                  <div className="min-h-full pb-32">
+                    {sections.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center h-full pt-32 text-muted-foreground opacity-50">
+                        <Layout className="w-16 h-16 mb-4" />
+                        <p>Canvas is empty.</p>
+                      </div>
+                    ) : (
+                      sections.map((section) => (
+                        <div 
+                          key={section.id} 
+                          className={`relative group/canvas border-2 transition-all cursor-pointer ${activeSectionId === section.id ? 'border-primary ring-4 ring-primary/10 z-10' : 'border-transparent hover:border-primary/50'}`}
+                          onClick={() => setActiveSectionId(section.id)}
+                        >
+                          {/* Active Indicator */}
+                          {activeSectionId === section.id && (
+                            <div className="absolute top-2 right-2 z-20 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-1 rounded shadow-md uppercase tracking-wider">
+                              Editing {section.section_type}
+                            </div>
+                          )}
+                          
+                          {/* Hover Overlay */}
+                          <div className={`absolute inset-0 bg-primary/5 opacity-0 group-hover/canvas:opacity-100 transition-opacity z-10 pointer-events-none ${activeSectionId === section.id ? 'hidden' : ''}`} />
+                          
+                          <div className="relative z-0 pointer-events-none">
+                            {section.section_type === 'hero' && <HeroSection content={section.content} />}
+                            {section.section_type === 'content' && <ContentSection content={section.content} />}
+                            {section.section_type === 'features' && <FeaturesSection content={section.content} />}
+                            {section.section_type === 'testimonials' && <TestimonialsSection content={section.content} />}
+                            {section.section_type === 'faq' && <FAQSection content={section.content} />}
+                            {section.section_type === 'cta' && <CTASection content={section.content} />}
+                            {section.section_type === 'stats' && <StatsSection content={section.content} />}
+                            {section.section_type === 'team' && <TeamSection content={section.content} />}
+                            {section.section_type === 'banner' && <BannerSection content={section.content} />}
+                          </div>
                         </div>
-                        <div className="flex items-center justify-between">
-                          <Label htmlFor="d-footer" className="text-sm font-medium">Show in Footer</Label>
-                          <Switch id="d-footer" checked={page?.show_in_footer} onCheckedChange={v => setPage(p => p ? { ...p, show_in_footer: v } : null)} />
-                        </div>
-                      </div>
-                      <Separator />
-                      <div className="space-y-2">
-                        <Label className="text-xs font-bold text-muted-foreground uppercase">Publish Status</Label>
-                        <Select value={page?.status} onValueChange={(v: any) => setPage(p => p ? { ...p, status: v } : null)}>
-                          <SelectTrigger className="rounded-xl"><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="draft">Draft</SelectItem>
-                            <SelectItem value="published">Published</SelectItem>
-                            <SelectItem value="archived">Archived</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                   <Card className="rounded-3xl shadow-sm border-border overflow-hidden bg-primary/5 border-primary/20">
-                    <CardContent className="p-6">
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="p-2 bg-primary rounded-xl text-white"><Eye className="w-5 h-5" /></div>
-                        <h4 className="font-bold">Live Preview</h4>
-                      </div>
-                      <p className="text-xs text-muted-foreground mb-4 leading-relaxed">Changes are saved to draft locally. Click "Sync Changes" to update the live production page.</p>
-                      <Button variant="outline" className="w-full bg-background font-bold" onClick={() => window.open(`/p/${page?.slug}`, '_blank')}>
-                        Open Page <ChevronRight className="w-4 h-4 ml-1" />
-                      </Button>
-                    </CardContent>
-                  </Card>
+                      ))
+                    )}
+                  </div>
                 </div>
+
               </div>
             </TabsContent>
           )}

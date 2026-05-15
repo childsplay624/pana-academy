@@ -10,6 +10,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { MaintenanceGuard } from "@/components/MaintenanceGuard";
 import { ScrollToTop } from '@/components/ScrollToTop';
+import { AnalyticsTracker } from '@/components/AnalyticsTracker';
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -81,6 +82,7 @@ const App = () => (
               <Sonner />
               <BrowserRouter>
                 <ScrollToTop />
+                <AnalyticsTracker />
                 <MaintenanceGuard>
                   <Routes>
                     <Route path="/" element={<Index />} />

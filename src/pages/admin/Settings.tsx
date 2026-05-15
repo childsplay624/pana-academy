@@ -30,7 +30,8 @@ import {
   Loader2,
   User,
   Wrench,
-  FlaskConical
+  FlaskConical,
+  BarChart
 } from 'lucide-react';
 import { EmailTester } from '@/components/admin/EmailTester';
 
@@ -51,6 +52,8 @@ export default function Settings() {
   const [showFlutterwaveSecret, setShowFlutterwaveSecret] = useState(false);
   const [fullName, setFullName] = useState(profile?.full_name || '');
   const [profileSaving, setProfileSaving] = useState(false);
+  const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
+  const [gaMeasurementId, setGaMeasurementId] = useState('');
 
   const fetchSettings = async () => {
     try {
@@ -83,6 +86,21 @@ export default function Settings() {
       });
 
       setSettings(settingsMap);
+
+      // Fetch analytics settings
+      try {
+        const { data: analyticsData, error: analyticsError } = await supabase
+          .from('analytics_settings')
+          .select('*')
+          .maybeSingle();
+          
+        if (analyticsData) {
+          setAnalyticsEnabled(analyticsData.analytics_enabled || false);
+          setGaMeasurementId(analyticsData.ga_measurement_id || '');
+        }
+      } catch (err) {
+        console.error('Failed to load analytics settings', err);
+      }
     } catch (error) {
       console.error('Failed to fetch settings:', error);
       toast({
@@ -145,6 +163,37 @@ export default function Settings() {
   const handleSave = async (category: string) => {
     try {
       setSaving(true);
+
+      if (category === 'Analytics') {
+        const { data: currentData } = await supabase.from('analytics_settings').select('id').maybeSingle();
+        
+        if (currentData?.id) {
+          const { error: analyticsError } = await supabase
+            .from('analytics_settings')
+            .update({
+              analytics_enabled: analyticsEnabled,
+              ga_measurement_id: gaMeasurementId,
+            })
+            .eq('id', currentData.id);
+            
+          if (analyticsError) throw analyticsError;
+        } else {
+          const { error: insertError } = await supabase
+            .from('analytics_settings')
+            .insert({
+              analytics_enabled: analyticsEnabled,
+              ga_measurement_id: gaMeasurementId,
+            });
+            
+          if (insertError) throw insertError;
+        }
+
+        toast({
+          title: "Settings updated",
+          description: "Analytics settings have been saved successfully.",
+        });
+        return;
+      }
 
       // Get settings for this category
       const categorySettings = Object.entries(settings).filter(([key]) => {
@@ -231,38 +280,43 @@ export default function Settings() {
         </div>
 
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-1 h-auto p-1 mb-6 bg-muted/50 rounded-lg border">
-            <TabsTrigger value="profile" className="flex items-center justify-center text-xs sm:text-sm h-10 px-2 sm:px-3">
+          <TabsList className="flex flex-wrap w-full gap-1 h-auto p-1 mb-6 bg-muted/50 rounded-lg border">
+            <TabsTrigger value="profile" className="flex items-center justify-center text-xs sm:text-sm h-10 px-2 sm:px-3 flex-1 min-w-[100px]">
               <User className="w-4 h-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">Profile</span>
               <span className="sm:hidden">P</span>
             </TabsTrigger>
-            <TabsTrigger value="general" className="flex items-center justify-center text-xs sm:text-sm h-10 px-2 sm:px-3">
+            <TabsTrigger value="general" className="flex items-center justify-center text-xs sm:text-sm h-10 px-2 sm:px-3 flex-1 min-w-[100px]">
               <Globe className="w-4 h-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">General</span>
               <span className="sm:hidden">G</span>
             </TabsTrigger>
-            <TabsTrigger value="security" className="flex items-center justify-center text-xs sm:text-sm h-10 px-2 sm:px-3">
+            <TabsTrigger value="security" className="flex items-center justify-center text-xs sm:text-sm h-10 px-2 sm:px-3 flex-1 min-w-[100px]">
               <Shield className="w-4 h-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">Security</span>
               <span className="sm:hidden">S</span>
             </TabsTrigger>
-            <TabsTrigger value="payment-gateways" className="flex items-center justify-center text-xs sm:text-sm h-10 px-2 sm:px-3">
+            <TabsTrigger value="payment-gateways" className="flex items-center justify-center text-xs sm:text-sm h-10 px-2 sm:px-3 flex-1 min-w-[100px]">
               <CreditCard className="w-4 h-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">Payment</span>
               <span className="sm:hidden">P</span>
             </TabsTrigger>
-            <TabsTrigger value="notifications" className="flex items-center justify-center text-xs sm:text-sm h-10 px-2 sm:px-3">
+            <TabsTrigger value="notifications" className="flex items-center justify-center text-xs sm:text-sm h-10 px-2 sm:px-3 flex-1 min-w-[100px]">
               <Bell className="w-4 h-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">Notifications</span>
               <span className="sm:hidden">N</span>
             </TabsTrigger>
-            <TabsTrigger value="courses" className="flex items-center justify-center text-xs sm:text-sm h-10 px-2 sm:px-3">
+            <TabsTrigger value="courses" className="flex items-center justify-center text-xs sm:text-sm h-10 px-2 sm:px-3 flex-1 min-w-[100px]">
               <BookOpen className="w-4 h-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">Courses</span>
               <span className="sm:hidden">C</span>
             </TabsTrigger>
-            <TabsTrigger value="email-tester" className="flex items-center justify-center text-xs sm:text-sm h-10 px-2 sm:px-3 text-red-600 dark:text-red-400">
+            <TabsTrigger value="analytics" className="flex items-center justify-center text-xs sm:text-sm h-10 px-2 sm:px-3 flex-1 min-w-[100px]">
+              <BarChart className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Analytics</span>
+              <span className="sm:hidden">A</span>
+            </TabsTrigger>
+            <TabsTrigger value="email-tester" className="flex items-center justify-center text-xs sm:text-sm h-10 px-2 sm:px-3 text-red-600 dark:text-red-400 flex-1 min-w-[100px]">
               <FlaskConical className="w-4 h-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">Email Test</span>
               <span className="sm:hidden">T</span>
@@ -1233,6 +1287,60 @@ export default function Settings() {
           {/* Email Testing Tab */}
           <TabsContent value="email-tester">
             <EmailTester />
+          </TabsContent>
+          {/* Analytics Tab */}
+          <TabsContent value="analytics">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <BarChart className="w-5 h-5" />
+                  Google Analytics 4
+                </CardTitle>
+                <CardDescription>Configure Google Analytics tracking for your platform</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex items-center justify-between p-4 bg-muted/30 border rounded-lg">
+                  <div>
+                    <Label className="text-base font-semibold">Enable Google Analytics</Label>
+                    <p className="text-sm text-muted-foreground">Track page views, user sessions, and events globally</p>
+                  </div>
+                  <Switch
+                    checked={analyticsEnabled}
+                    onCheckedChange={setAnalyticsEnabled}
+                    disabled={saving}
+                  />
+                </div>
+                
+                {analyticsEnabled && (
+                  <div className="space-y-2 p-4 border rounded-lg bg-muted/10">
+                    <Label htmlFor="ga-measurement-id">Measurement ID</Label>
+                    <Input
+                      id="ga-measurement-id"
+                      value={gaMeasurementId}
+                      onChange={(e) => setGaMeasurementId(e.target.value)}
+                      placeholder="G-XXXXXXXXXX"
+                      disabled={saving}
+                      className={gaMeasurementId && !gaMeasurementId.startsWith('G-') ? 'border-red-500' : ''}
+                    />
+                    {gaMeasurementId && !gaMeasurementId.startsWith('G-') && (
+                      <p className="text-xs text-red-500">Measurement ID should start with "G-"</p>
+                    )}
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Found in your Google Analytics dashboard under Admin &gt; Data Streams &gt; Measurement ID.
+                    </p>
+                  </div>
+                )}
+                
+                <Button 
+                  onClick={() => handleSave('Analytics')} 
+                  disabled={saving || (analyticsEnabled && !gaMeasurementId.startsWith('G-'))}
+                  className="mt-4"
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  {saving ? 'Saving...' : 'Save Changes'}
+                </Button>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>
