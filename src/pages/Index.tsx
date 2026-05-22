@@ -4,6 +4,7 @@ import HeroSection from "@/components/HeroSection";
 import UpcomingCoursesSection from "@/components/UpcomingCoursesSection";
 import { TopRatedCourses } from "@/components/course/TopRatedCourses";
 import TestimonialsSection from "@/components/TestimonialsSection";
+import LatestNewsSection from "@/components/LatestNewsSection";
 import Footer from "@/components/Footer";
 import SocialMediaIcons from "@/components/SocialMediaIcons";
 import { motion } from "framer-motion";
@@ -335,6 +336,7 @@ const Index = () => {
           </div>
         </section>
         <UpcomingCoursesSection />
+        <LatestNewsSection />
         <TestimonialsSection />
         <Footer />
       </div>

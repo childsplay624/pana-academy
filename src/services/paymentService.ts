@@ -283,19 +283,21 @@ export const uploadReceipt = async (
       const { sendEmail } = await import('./emailService');
 
       // Fetch details for the email
-      const { data: paymentData } = await (supabase as any)
+      const { data: paymentData, error: paymentDataError } = await (supabase as any)
         .from('payments')
-        .select('amount, courses(title), profiles(full_name)')
+        .select('amount, courses(title), profiles:user_id(full_name)')
         .eq('reference', reference)
         .single();
 
-      if (paymentData) {
+      if (paymentDataError) {
+        console.warn('Failed to fetch payment data for admin email:', paymentDataError);
+      } else if (paymentData) {
         await sendEmail({
           to: 'info@pana-academy.com', // Primary admin gateway
           type: 'payment_proof_uploaded',
           payload: {
-            userName: paymentData.profiles?.full_name,
-            courseTitle: paymentData.courses?.title,
+            userName: paymentData.profiles?.full_name || 'Student',
+            courseTitle: paymentData.courses?.title || 'Course',
             amount: paymentData.amount,
             reference: reference
           }
@@ -586,7 +588,7 @@ export const approvePayment = async (paymentId: string): Promise<{ success: bool
     // 1. Get payment details
     const { data: payment, error: fetchError } = await (supabase as any)
       .from('payments')
-      .select('*')
+      .select('*, profiles:user_id(full_name, email), courses(title)')
       .eq('id', paymentId)
       .single();
 
@@ -600,6 +602,24 @@ export const approvePayment = async (paymentId: string): Promise<{ success: bool
       'manual'
     );
 
+    // 3. Send email to student
+    try {
+      if (payment.profiles?.email) {
+        const { sendEmail } = await import('./emailService');
+        await sendEmail({
+          to: payment.profiles.email,
+          type: 'payment_confirmed',
+          payload: {
+            userName: payment.profiles.full_name || 'Student',
+            courseTitle: payment.courses?.title || 'Course',
+            reference: payment.reference
+          }
+        });
+      }
+    } catch (emailError) {
+      console.warn('Failed to send payment approval email:', emailError);
+    }
+
     return result;
   } catch (error) {
     console.error('Error approving payment:', error);
@@ -612,16 +632,46 @@ export const approvePayment = async (paymentId: string): Promise<{ success: bool
  */
 export const rejectPayment = async (paymentId: string, reason?: string): Promise<{ success: boolean; error?: any }> => {
   try {
+    // 1. Get payment details for the email
+    const { data: payment, error: fetchError } = await (supabase as any)
+      .from('payments')
+      .select('*, profiles:user_id(full_name, email), courses(title)')
+      .eq('id', paymentId)
+      .single();
+
+    if (fetchError) throw fetchError;
+
+    // 2. Update payment status to failed
     const { error } = await (supabase as any)
       .from('payments')
       .update({
         status: 'failed',
-        metadata: { rejection_reason: reason },
+        metadata: { ...payment.metadata, rejection_reason: reason },
         updated_at: new Date().toISOString()
       })
       .eq('id', paymentId);
 
     if (error) throw error;
+
+    // 3. Send rejection email to student
+    try {
+      if (payment.profiles?.email) {
+        const { sendEmail } = await import('./emailService');
+        await sendEmail({
+          to: payment.profiles.email,
+          type: 'payment_rejected',
+          payload: {
+            userName: payment.profiles.full_name || 'Student',
+            courseTitle: payment.courses?.title || 'Course',
+            reference: payment.reference,
+            reason: reason || 'Invalid payment receipt. Please upload a valid document or contact support.'
+          }
+        });
+      }
+    } catch (emailError) {
+      console.warn('Failed to send payment rejection email:', emailError);
+    }
+
     return { success: true };
   } catch (error) {
     console.error('Error rejecting payment:', error);

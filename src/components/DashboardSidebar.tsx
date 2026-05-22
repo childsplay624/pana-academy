@@ -70,6 +70,7 @@ export function DashboardSidebar() {
         { title: "Message Management", url: "/dashboard/messages", icon: Mail },
         { title: "Support Tickets", url: "/dashboard/support-tickets", icon: MessageSquare },
         { title: "Page Builder", url: "/dashboard/pages", icon: Globe },
+        { title: "Blog & News", url: "/dashboard/blog", icon: FileText },
         { title: "Analytics", url: "/dashboard/analytics", icon: TrendingUp },
         { title: "Testimonial", url: "/dashboard/testimonials", icon: MessageSquareText },
         { title: "Settings", url: "/dashboard/settings", icon: Settings },

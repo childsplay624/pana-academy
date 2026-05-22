@@ -67,6 +67,10 @@ import ContactMessages from "./pages/admin/ContactMessages";
 import PageManagement from "./pages/admin/PageManagement";
 import PageEditor from "./pages/admin/PageEditor";
 import CourseCategoryManagement from "./pages/admin/CourseCategoryManagement";
+import BlogPage from "./pages/BlogPage";
+import BlogPostPage from "./pages/BlogPostPage";
+import BlogManagement from "./pages/admin/BlogManagement";
+import BlogPostEditor from "./pages/admin/BlogPostEditor";
 
 
 const queryClient = new QueryClient();
@@ -87,6 +91,9 @@ const App = () => (
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/p/:slug" element={<PublicPageRenderer />} />
+
+                    <Route path="/blog" element={<BlogPage />} />
+                    <Route path="/blog/:slug" element={<BlogPostPage />} />
 
                     <Route path="/about" element={<AboutPage />} />
                     <Route path="/courses" element={<PublicCoursesPage />} />
@@ -271,6 +278,30 @@ const App = () => (
                       element={
                         <ProtectedRoute allowedRoles={['admin']}>
                           <PageEditor />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/blog"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <BlogManagement />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/blog/new"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <BlogPostEditor />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/blog/edit/:id"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <BlogPostEditor />
                         </ProtectedRoute>
                       }
                     />
