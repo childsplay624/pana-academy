@@ -13,7 +13,16 @@ import {
   FeaturesSection,
   TestimonialsSection,
   FAQSection,
-  CTASection
+  CTASection,
+  DynamicHeroSection,
+  DynamicStatsSection,
+  DynamicHowItWorksSection,
+  DynamicCategoriesSection,
+  DynamicPlatformFeaturesSection,
+  DynamicTopCoursesSection,
+  DynamicUpcomingCoursesSection,
+  DynamicNewsSection,
+  DynamicTestimonialsSection
 } from '@/components/page-builder/SectionRenderer';
 
 export default function PublicPageRenderer() {
@@ -102,6 +111,15 @@ export default function PublicPageRenderer() {
               case 'testimonials': return <TestimonialsSection key={section.id} content={section.content} />;
               case 'faq': return <FAQSection key={section.id} content={section.content} />;
               case 'cta': return <CTASection key={section.id} content={section.content} />;
+              case 'dynamic_hero': return <DynamicHeroSection key={section.id} />;
+              case 'dynamic_stats': return <DynamicStatsSection key={section.id} />;
+              case 'dynamic_how_it_works': return <DynamicHowItWorksSection key={section.id} />;
+              case 'dynamic_categories': return <DynamicCategoriesSection key={section.id} />;
+              case 'dynamic_features': return <DynamicPlatformFeaturesSection key={section.id} />;
+              case 'dynamic_top_courses': return <DynamicTopCoursesSection key={section.id} />;
+              case 'dynamic_upcoming_courses': return <DynamicUpcomingCoursesSection key={section.id} />;
+              case 'dynamic_news': return <DynamicNewsSection key={section.id} />;
+              case 'dynamic_testimonials': return <DynamicTestimonialsSection key={section.id} />;
               default: return (
                 <div key={section.id} className="py-20 text-center border-y bg-muted/20 italic text-muted-foreground">
                   Section concept: {section.section_type} (Coming soon)

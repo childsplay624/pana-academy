@@ -3,6 +3,19 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { CheckCircle2, ChevronRight, Star, Users, TrendingUp, Award } from 'lucide-react';
 
+// Dynamic Components for Homepage Migration
+import CustomHeroSection from '@/components/HeroSection';
+import { HomeStats } from '@/components/home/HomeStats';
+import { HowItWorks } from '@/components/home/HowItWorks';
+import { LearningCategories } from '@/components/home/LearningCategories';
+import { PlatformFeatures } from '@/components/home/PlatformFeatures';
+import { TopRatedCourses } from '@/components/course/TopRatedCourses';
+import UpcomingCoursesSection from '@/components/UpcomingCoursesSection';
+import LatestNewsSection from '@/components/LatestNewsSection';
+import CustomTestimonialsSection from '@/components/TestimonialsSection';
+
+
+
 export const HeroSection = ({ content }: { content: any }) => (
   <section className="relative py-24 overflow-hidden bg-background">
     <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]" />
@@ -224,3 +237,27 @@ export const BannerSection = ({ content }: { content: any }) => (
     </div>
   </section>
 );
+
+// ── DYNAMIC SECTION WRAPPERS (For mapping complex components to the page builder) ──
+
+export const DynamicHeroSection = () => <CustomHeroSection />;
+export const DynamicStatsSection = () => <HomeStats />;
+export const DynamicHowItWorksSection = () => <HowItWorks />;
+export const DynamicCategoriesSection = () => <LearningCategories />;
+export const DynamicPlatformFeaturesSection = () => <PlatformFeatures />;
+export const DynamicTopCoursesSection = () => (
+  <section className="py-12 bg-gray-50">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="text-center mb-12">
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">Top Rated Courses</h2>
+        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          Explore our highest rated professional development programs
+        </p>
+      </div>
+      <TopRatedCourses />
+    </div>
+  </section>
+);
+export const DynamicUpcomingCoursesSection = () => <UpcomingCoursesSection />;
+export const DynamicNewsSection = () => <LatestNewsSection />;
+export const DynamicTestimonialsSection = () => <CustomTestimonialsSection />;
