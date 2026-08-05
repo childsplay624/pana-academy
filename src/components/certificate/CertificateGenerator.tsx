@@ -351,7 +351,7 @@ export function CertificateGenerator({
                 courseTitle={formData.customTitle || courseData?.title || "[Course Title]"}
                 completionDate={new Date(formData.completionDate).toISOString()}
                 courseDuration={courseData?.duration_hours ? `${Math.ceil(courseData.duration_hours / 8)}-Day` : "3-Day"}
-                instructorName="PANA Academy Instructor"
+                instructorName="PANA Institute Instructor"
                 certificateId="[Certificate Number]"
                 venueName={courseData?.venue_name}
                 venueAddress={courseData?.venue_address}

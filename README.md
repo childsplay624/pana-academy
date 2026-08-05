@@ -1,6 +1,6 @@
-PANA Academy LMS
+PANA Institute LMS
 
-An Educational Management System (EMS) designed for PANA Academy. This platform allows administrators, instructors, and students to manage courses, track progress, and interact in an engaging learning environment.
+An Educational Management System (EMS) designed for PANA Institute. This platform allows administrators, instructors, and students to manage courses, track progress, and interact in an engaging learning environment.
 
 Features
 Authentication & User Management

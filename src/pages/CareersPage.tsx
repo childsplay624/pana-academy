@@ -18,7 +18,7 @@ const CareersPage = () => {
         {
             icon: Target,
             title: "Mission Driven",
-            description: "Every role at PANA Academy contributes directly to our mission of closing competency gaps."
+            description: "Every role at PANA Institute contributes directly to our mission of closing competency gaps."
         },
         {
             icon: Award,
@@ -30,8 +30,8 @@ const CareersPage = () => {
     return (
         <>
             <Helmet>
-                <title>Careers | PANA Academy - Join Our Team</title>
-                <meta name="description" content="Build your career at PANA Academy. Explore opportunities to join a team of experts dedicated to competency cultivation and innovation in the energy sector." />
+                <title>Careers | PANA Institute - Join Our Team</title>
+                <meta name="description" content="Build your career at PANA Institute. Explore opportunities to join a team of experts dedicated to competency cultivation and innovation in the energy sector." />
             </Helmet>
 
             <div className="min-h-screen bg-gradient-subtle">
@@ -44,7 +44,7 @@ const CareersPage = () => {
                             {headerImage ? (
                                 <img
                                     src={headerImage}
-                                    alt="Careers at PANA Academy"
+                                    alt="Careers at PANA Institute"
                                     className="w-full h-full object-cover object-center"
                                     loading="eager"
                                 />
@@ -68,7 +68,7 @@ const CareersPage = () => {
                                 </h1>
 
                                 <p className="text-xl md:text-2xl text-gray-200 max-w-4xl mx-auto">
-                                    At PANA Academy, we are always looking for visionary educators, industry experts, and innovative thinkers.
+                                    At PANA Institute, we are always looking for visionary educators, industry experts, and innovative thinkers.
                                 </p>
 
                                 <div className="flex justify-center mt-8">
@@ -87,7 +87,7 @@ const CareersPage = () => {
                     <section className="py-20 bg-white">
                         <div className="max-w-7xl mx-auto px-6 lg:px-8">
                             <div className="text-center mb-16">
-                                <h2 className="text-4xl font-bold text-pana-navy mb-4">Why PANA Academy?</h2>
+                                <h2 className="text-4xl font-bold text-pana-navy mb-4">Why PANA Institute?</h2>
                                 <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                                     We offer more than just a job; we offer a chance to make a real impact in the energy industry across Africa.
                                 </p>

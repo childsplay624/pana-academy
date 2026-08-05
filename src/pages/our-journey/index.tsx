@@ -42,7 +42,7 @@ export default function OurJourney() {
                 Our Journey of Excellence
               </h1>
               <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto">
-                Discover the story of PANA Academy and our commitment to transforming the energy sector through world-class training and development.
+                Discover the story of PANA Institute and our commitment to transforming the energy sector through world-class training and development.
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-4">
                 <a
@@ -83,7 +83,7 @@ export default function OurJourney() {
                 <div className="w-12 h-1 bg-blue-600 mb-6"></div>
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Our Foundation</h3>
                 <p className="text-gray-600">
-                  PANA Academy Limited, a competency cultivation hub and subsidiary of PANA Holdings Group, began with a bold vision to close critical in-country competency gaps in the oil and gas industry and empower a new generation of professionals.
+                  PANA Institute Limited, a competency cultivation hub and subsidiary of PANA Holdings Group, began with a bold vision to close critical in-country competency gaps in the oil and gas industry and empower a new generation of professionals.
                 </p>
               </motion.div>
 
@@ -98,7 +98,7 @@ export default function OurJourney() {
                 <div className="w-12 h-1 bg-red-500 mb-6"></div>
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Our Growth</h3>
                 <p className="text-gray-600">
-                  PANA Academy has become a trusted training provider for the oil and gas industry. Our training programmes encompass craftsmanship, technician, specialist, professional, engineering, and digital courses designed for all levels of professionals.
+                  PANA Institute has become a trusted training provider for the oil and gas industry. Our training programmes encompass craftsmanship, technician, specialist, professional, engineering, and digital courses designed for all levels of professionals.
                 </p>
               </motion.div>
 
@@ -165,7 +165,7 @@ export default function OurJourney() {
                   Our <span className="text-red-600">Evolution</span> Journey
                 </h2>
                 <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                  Charting the milestones that shaped PANA Academy's path to excellence
+                  Charting the milestones that shaped PANA Institute's path to excellence
                 </p>
                 <div className="w-24 h-1.5 bg-gradient-to-r from-red-500 to-red-500 mx-auto mt-6 rounded-full"></div>
               </motion.div>
@@ -242,11 +242,11 @@ export default function OurJourney() {
                             <ul className="space-y-4 text-gray-700">
                               <li className="flex items-start">
                                 <span className="text-red-500 mr-2">•</span>
-                                <span>CapDAC transforms into PANA Academy (Competency Cultivation Hub), a CAC registered business entity within the PANA Holdings Group.</span>
+                                <span>CapDAC transforms into PANA Institute (Competency Cultivation Hub), a CAC registered business entity within the PANA Holdings Group.</span>
                               </li>
                               <li className="flex items-start">
                                 <span className="text-red-500 mr-2">•</span>
-                                <span>PANA Academy becomes OGTAN Life Member.</span>
+                                <span>PANA Institute becomes OGTAN Life Member.</span>
                               </li>
                               <li className="flex items-start">
                                 <span className="text-red-500 mr-2">•</span>
@@ -314,7 +314,7 @@ export default function OurJourney() {
                               <h3 className="text-xl font-bold">Impact & Growth</h3>
                             </div>
                             <p className="text-red-100 leading-relaxed">
-                              Significant expansion of training programs with proven employment outcomes, establishing PANA Academy as a leader in energy sector education.
+                              Significant expansion of training programs with proven employment outcomes, establishing PANA Institute as a leader in energy sector education.
                             </p>
                             <div className="mt-4 pt-4 border-t border-white/10">
                               <div className="flex items-center">

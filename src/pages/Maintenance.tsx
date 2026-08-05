@@ -63,7 +63,7 @@ export default function Maintenance() {
             </div>
 
             <p className="mt-8 text-slate-400 text-sm font-medium">
-                © {new Date().getFullYear()} PANA Academy. All rights reserved.
+                © {new Date().getFullYear()} PANA Institute. All rights reserved.
             </p>
         </div>
     );

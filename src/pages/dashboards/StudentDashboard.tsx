@@ -337,7 +337,7 @@ export default function StudentDashboard() {
                     : 'Keep it going! 🔥'
                 }
                 icon={Flame}
-                tooltip="Consecutive days you've learned on PANA Academy"
+                tooltip="Consecutive days you've learned on PANA Institute"
                 isLoading={isLoading}
                 className="h-full border-orange-200 bg-orange-50/10"
               />

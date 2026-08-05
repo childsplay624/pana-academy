@@ -265,7 +265,7 @@ export function ImagePicker({ value, onSelect, category = 'other', label = 'Sele
 
                                     {/* Action Bar (Optional but Premium) */}
                                     <div className="p-4 border-t bg-muted/30 flex items-center justify-between backdrop-blur-md">
-                                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Pana Academy Media Library v2.0</p>
+                                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Pana Institute Media Library v2.0</p>
                                         <Button variant="ghost" size="sm" className="h-8 rounded-lg" onClick={() => setIsOpen(false)}>
                                             Close
                                         </Button>

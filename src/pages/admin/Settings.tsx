@@ -900,7 +900,7 @@ export default function Settings() {
                             ...(settings.bank_details || {}),
                             account_name: e.target.value
                           })}
-                          placeholder="e.g. PANA ACADEMY LTD"
+                          placeholder="e.g. PANA INSTITUTE LTD"
                         />
                       </div>
                       <div className="space-y-2 md:col-span-2">

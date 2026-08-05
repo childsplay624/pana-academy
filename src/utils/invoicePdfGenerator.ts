@@ -16,7 +16,7 @@ interface InvoiceData {
     created_at: string;
 }
 
-// PANA Academy brand colors
+// PANA Institute brand colors
 const COLORS = {
     black: '#1a1a1a',
     darkGray: '#333333',
@@ -24,14 +24,14 @@ const COLORS = {
     lightGray: '#999999',
     borderGray: '#e0e0e0',
     bgLight: '#f8f9fa',
-    red: '#b91c1c',       // PANA Academy red
+    red: '#b91c1c',       // PANA Institute red
     darkRed: '#991b1b',
     greenAccent: '#16a34a',
     white: '#ffffff',
 };
 
 /**
- * Converts the PANA Academy logo to a base64 data URL.
+ * Converts the PANA Institute logo to a base64 data URL.
  * We load it at runtime from /logo.png.
  */
 async function loadLogoAsBase64(): Promise<string | null> {
@@ -205,7 +205,7 @@ export async function generateInvoicePdf(invoice: InvoiceData): Promise<void> {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);
     doc.setTextColor(rB, gB, bB);
-    doc.text('PANA Academy', metaRightX + 5, y + 13);
+    doc.text('PANA Institute', metaRightX + 5, y + 13);
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
@@ -339,11 +339,11 @@ export async function generateInvoicePdf(invoice: InvoiceData): Promise<void> {
     doc.setTextColor(rMG, gMG, bMG);
 
     const footerLines = [
-        'Thank you for choosing PANA Academy!',
+        'Thank you for choosing PANA Institute!',
         'This is a computer-generated invoice and does not require a signature.',
         'For questions about this invoice, please contact support@pana-academy.com',
         '',
-        'PANA Academy Limited | Competency Cultivation Hub | Port Harcourt, Rivers State, Nigeria',
+        'PANA Institute Limited | Competency Cultivation Hub | Port Harcourt, Rivers State, Nigeria',
         'www.pana-academy.com',
     ];
 

@@ -129,7 +129,7 @@ export default function Auth() {
               {logoImage ? (
                 <img
                   src={logoImage}
-                  alt="PANA Academy"
+                  alt="PANA Institute"
                   className="h-14 w-auto object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]"
                   onError={(e) => {
                     console.error('Logo image failed to load:', logoImage);
@@ -158,7 +158,7 @@ export default function Auth() {
         </div>
 
         <div className="absolute bottom-6 left-6 right-6 text-center text-[10px] text-white/30 tracking-[0.3em] font-bold uppercase">
-          &copy; {new Date().getFullYear()} PANA Academy &bull; Quality Excellence
+          &copy; {new Date().getFullYear()} PANA Institute &bull; Quality Excellence
         </div>
       </div>
 

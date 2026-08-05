@@ -12,7 +12,7 @@ const RnDServicesPage = () => {
   return (
     <>
       <Helmet>
-        <title>R&D Services | PANA Academy</title>
+        <title>R&D Services | PANA Institute</title>
         <meta name="description" content="Research and Development services for innovation, technology development, and cutting-edge solutions." />
       </Helmet>
 
@@ -87,7 +87,7 @@ const RnDServicesPage = () => {
                 <div>
                   <h2 className="text-3xl font-bold text-pana-navy mb-6">Research and Development (R&D)</h2>
                   <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                    From concept validation to prototype development, PANA Academy bridges critical gaps in research and development. We empower organizations across all sectors to innovate, grow, and transform ideas into impactful, market-ready solutions through practical insights, technical expertise, and a strong talent pipeline.
+                    From concept validation to prototype development, PANA Institute bridges critical gaps in research and development. We empower organizations across all sectors to innovate, grow, and transform ideas into impactful, market-ready solutions through practical insights, technical expertise, and a strong talent pipeline.
                   </p>
 
                   <div className="space-y-4">
@@ -163,7 +163,7 @@ const RnDServicesPage = () => {
             <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
               <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Bring Your Ideas to Life?</h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-                Partner with PANA Academy's R&D experts to transform your concepts into reality.
+                Partner with PANA Institute's R&D experts to transform your concepts into reality.
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <a href="/contact" className="no-underline">

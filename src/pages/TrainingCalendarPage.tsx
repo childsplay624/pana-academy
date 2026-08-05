@@ -70,7 +70,7 @@ const TrainingCalendarPage = () => {
   return (
     <>
       <Helmet>
-        <title>Training Calendar | PANA Academy</title>
+        <title>Training Calendar | PANA Institute</title>
         <meta name="description" content="View and manage upcoming training programs with our interactive training calendar." />
       </Helmet>
       

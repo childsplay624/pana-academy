@@ -40,7 +40,7 @@ export default function BlogPage() {
               Blog & <span className="text-red-500">News</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 font-light max-w-2xl mx-auto leading-relaxed">
-              Stay updated with the latest insights, news, and articles from PANA Academy.
+              Stay updated with the latest insights, news, and articles from PANA Institute.
             </p>
           </div>
         </section>
@@ -79,7 +79,7 @@ export default function BlogPage() {
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-300 font-medium">
-                          PANA Academy
+                          PANA Institute
                         </div>
                       )}
                     </div>

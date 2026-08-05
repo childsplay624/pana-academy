@@ -108,7 +108,7 @@ export default function VerifyCertificate() {
         completion_date: completionDate,
         grade: result?.grade,
         score: result?.score,
-        instructor_name: result?.instructor_name || 'PANA Academy Instructor',
+        instructor_name: result?.instructor_name || 'PANA Institute Instructor',
         course_title: result?.course_title || 'Course',
         course_duration_hours: result?.course_duration_hours,
         certificate_url: result?.certificate_url || (result as any)?.download_url,
@@ -187,7 +187,7 @@ export default function VerifyCertificate() {
               Certificate Verification
             </h1>
             <p className="text-lg text-muted-foreground">
-              Verify the authenticity of certificates issued by PANA Academy
+              Verify the authenticity of certificates issued by PANA Institute
             </p>
           </div>
         </motion.div>
@@ -288,7 +288,7 @@ export default function VerifyCertificate() {
                           Certificate Verified Successfully
                         </h3>
                         <p className="text-green-700 dark:text-green-300 mt-1">
-                          This is a valid certificate issued by PANA Academy
+                          This is a valid certificate issued by PANA Institute
                         </p>
                       </div>
                     </div>

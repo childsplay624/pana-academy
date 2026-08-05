@@ -259,7 +259,7 @@ const TeamManagementContent = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Team Management</h1>
-          <p className="text-muted-foreground">Manage PANA Academy leadership and advisory board</p>
+          <p className="text-muted-foreground">Manage PANA Institute leadership and advisory board</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
           <DialogTrigger asChild>

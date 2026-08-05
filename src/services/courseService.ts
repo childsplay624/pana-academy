@@ -81,6 +81,11 @@ interface DatabaseCourse {
   is_free?: boolean;
   status?: 'draft' | 'review' | 'published' | 'archived';
   modules?: any[];
+  category_data?: {
+    id: string;
+    name: string;
+    slug: string;
+  };
   created_at: string;
   updated_at: string;
 }
@@ -195,7 +200,6 @@ export const fetchAllCourses = async (): Promise<Course[]> => {
         description: dbCourse.description,
         instructor_id: dbCourse.instructor_id,
         instructor_name: dbCourse.instructor?.full_name || 'Unknown Instructor',
-        instructor_avatar: dbCourse.instructor?.avatar_url,
         instructor_avatar: dbCourse.instructor?.avatar_url,
         category: (dbCourse.category_data?.name || dbCourse.category) as CourseCategory,
         category_id: (dbCourse as any).category_id,

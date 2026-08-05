@@ -123,7 +123,7 @@ const Footer = () => {
         </div>
 
         <div className="py-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="text-xs text-gray-500">© {currentYear} PANA Academy. All rights reserved.</div>
+          <div className="text-xs text-gray-500">© {currentYear} PANA Institute. All rights reserved.</div>
           <div className="flex space-x-4">
             {[Linkedin, Twitter, Facebook, Instagram].map((Icon, i) => (
               <a key={i} href="#" className="w-8 h-8 bg-gray-900 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"><Icon className="w-4 h-4" /></a>

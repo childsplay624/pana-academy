@@ -261,7 +261,7 @@ export const progressService = {
         title: `Certificate of Completion - ${course.title}`,
         description: `Awarded for successfully completing the ${course.title} course`,
         enrollment_id: '', // This should be set to the actual enrollment ID if available
-        instructor_name: 'PANA Academy Instructor',
+        instructor_name: 'PANA Institute Instructor',
         // Optional onsite details
         venue_name: (course as any).venue_name,
         venue_address: (course as any).venue_address,

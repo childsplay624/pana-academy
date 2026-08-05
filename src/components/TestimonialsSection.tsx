@@ -100,7 +100,7 @@ const TestimonialsSection = () => {
           >
             <h3 className="text-2xl md:text-3xl font-bold text-white mb-4 uppercase">Join Our Success Stories</h3>
             <p className="text-gray-300 text-lg mb-10 max-w-2xl mx-auto leading-relaxed">
-              Ready to transform your career and/or organization? Get in touch with us to discuss how PANA Academy can facilitate your growth.
+              Ready to transform your career and/or organization? Get in touch with us to discuss how PANA Institute can facilitate your growth.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
               <Button

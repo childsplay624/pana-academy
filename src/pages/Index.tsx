@@ -47,8 +47,8 @@ const Index = () => {
   return (
     <>
       <Helmet>
-        <title>{page?.meta_title || "PANA Academy - Professional Training & Development"}</title>
-        <meta name="description" content={page?.meta_description || "Transform your career with PANA Academy's world-class professional training programs."} />
+        <title>{page?.meta_title || "PANA Institute - Professional Training & Development"}</title>
+        <meta name="description" content={page?.meta_description || "Transform your career with PANA Institute's world-class professional training programs."} />
       </Helmet>
       <div className="min-h-screen relative">
         <Navigation />

@@ -111,7 +111,7 @@ export function DashboardSidebar() {
                 <span className="text-primary-foreground font-bold text-sm">P</span>
               </div>
               <div className="flex-1 min-w-0">
-                <h2 className="font-semibold text-sidebar-foreground truncate">PANA Academy</h2>
+                <h2 className="font-semibold text-sidebar-foreground truncate">PANA Institute</h2>
                 <Badge variant="outline" className="text-[10px] h-4 px-1 leading-none border-primary/30 text-primary">
                   {profile?.role}
                 </Badge>

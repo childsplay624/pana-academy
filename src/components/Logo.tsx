@@ -9,7 +9,7 @@ export function Logo() {
       {imageUrl ? (
         <img
           src={imageUrl}
-          alt={altText || "PANA Academy Logo"}
+          alt={altText || "PANA Institute Logo"}
           className="h-16 w-auto object-contain filter drop-shadow-sm transition-all duration-200 hover:drop-shadow-md"
           style={{ imageRendering: '-webkit-optimize-contrast' }}
           loading="eager"

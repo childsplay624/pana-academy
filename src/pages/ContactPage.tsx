@@ -64,9 +64,9 @@ export const ContactPage = () => {
   return (
     <>
       <Helmet>
-        <title>Contact Us | PANA Academy - Get in Touch</title>
-        <meta name="description" content="Contact PANA Academy for inquiries, support, or partnership opportunities. We're here to help you with your learning and development needs." />
-        <meta name="keywords" content="contact PANA Academy, support, inquiries, partnership, get in touch" />
+        <title>Contact Us | PANA Institute - Get in Touch</title>
+        <meta name="description" content="Contact PANA Institute for inquiries, support, or partnership opportunities. We're here to help you with your learning and development needs." />
+        <meta name="keywords" content="contact PANA Institute, support, inquiries, partnership, get in touch" />
       </Helmet>
 
       <div className="min-h-screen bg-gradient-subtle">
@@ -245,7 +245,7 @@ export const ContactPage = () => {
                 style={{ border: 0 }}
                 allowFullScreen
                 loading="lazy"
-                title="PANA Academy Location - Port Harcourt"
+                title="PANA Institute Location - Port Harcourt"
               ></iframe>
             </div>
           </section>

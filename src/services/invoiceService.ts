@@ -153,7 +153,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
     <body>
       <div class="invoice-container">
         <div class="header">
-          <div class="logo">PANA ACADEMY</div>
+          <div class="logo">PANA INSTITUTE</div>
           <div class="invoice-details">
             <div class="invoice-number">Invoice #${data.invoiceNumber}</div>
             <div class="invoice-date">Date: ${data.paymentDate}</div>
@@ -168,7 +168,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
           </div>
           <div class="bill-from">
             <div class="section-title">Bill From:</div>
-            <div><strong>PANA ACADEMY</strong></div>
+            <div><strong>PANA INSTITUTE</strong></div>
             <div>Online Education Platform</div>
             <div>support@pana-academy.com</div>
           </div>
@@ -258,7 +258,7 @@ export const sendInvoiceEmail = async (
         },
         body: {
           to: studentEmail,
-          subject: `Invoice ${invoiceData.invoiceNumber} - PANA Academy Course Purchase`,
+          subject: `Invoice ${invoiceData.invoiceNumber} - PANA Institute Course Purchase`,
           html: invoiceHTML,
         }
       });

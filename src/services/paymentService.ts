@@ -119,7 +119,7 @@ const initializeFlutterwavePayment = async (
           name: metadata.fullName || 'Customer'
         },
         customizations: {
-          title: 'PANA Academy',
+          title: 'PANA Institute',
           description: `Payment for course: ${metadata.courseId}`,
           logo: `${API_BASE_URL}/logo.png`
         },

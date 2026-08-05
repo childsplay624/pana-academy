@@ -52,7 +52,7 @@ export default function BlogPostPage() {
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans">
       <Helmet>
-        <title>{post.title} | PANA Academy</title>
+        <title>{post.title} | PANA Institute</title>
         <meta name="description" content={post.excerpt || post.title} />
         {post.cover_image && <meta property="og:image" content={post.cover_image} />}
       </Helmet>

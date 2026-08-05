@@ -28,7 +28,7 @@ const AboutSection = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">About PANA Academy</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">About PANA Institute</h2>
           <p className="text-xl text-black max-w-3xl mx-auto">
             Dedicated to empowering talent across sectors through world-class training, consulting, and research excellence.
           </p>
@@ -40,7 +40,7 @@ const AboutSection = () => {
           <div className="relative">
             <img
               src={trainingImage}
-              alt="Professional Training at PANA Academy"
+              alt="Professional Training at PANA Institute"
               className="rounded-2xl shadow-lg w-full h-[40rem] object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-pana-navy/20 to-transparent rounded-2xl"></div>

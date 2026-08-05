@@ -122,7 +122,7 @@ const TeamPage = () => {
   return (
     <>
       <Helmet>
-        <title>Our Leadership Team | PANA Academy</title>
+        <title>Our Leadership Team | PANA Institute</title>
       </Helmet>
 
       <div className="min-h-screen flex flex-col">

@@ -179,7 +179,7 @@ export default function TeamMemberPage() {
                  <div className="p-8 bg-gray-50 rounded-[2rem] space-y-4">
                     <h4 className="font-bold text-gray-900">About the Profile</h4>
                     <p className="text-sm text-gray-500 leading-relaxed">
-                       This profile represents the official leadership data for PANA Academy. All records are verified by our corporate governance board.
+                       This profile represents the official leadership data for PANA Institute. All records are verified by our corporate governance board.
                     </p>
                     <Link to="/team">
                       <Button variant="link" className="px-0 text-red-600 p-0 h-auto font-bold group">

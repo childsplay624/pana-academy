@@ -178,7 +178,7 @@ export function OnsiteCourseForm({
                         <Input
                             id="venueName"
                             {...register('venueName', { required: 'Venue name is required' })}
-                            placeholder="e.g., PANA Academy Training Center"
+                            placeholder="e.g., PANA Institute Training Center"
                         />
                         {errors.venueName && (
                             <p className="text-sm text-red-500">{String(errors.venueName.message)}</p>

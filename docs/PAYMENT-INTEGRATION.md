@@ -1,6 +1,6 @@
 # Payment Integration Guide
 
-This document outlines the payment integration with Paystack and Flutterwave for PANA Academy.
+This document outlines the payment integration with Paystack and Flutterwave for PANA Institute.
 
 ## Setup
 

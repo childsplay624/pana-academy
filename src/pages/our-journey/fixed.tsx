@@ -25,7 +25,7 @@ export default function OurJourney() {
               Our <span className="text-red-400">Journey</span> So Far
             </h1>
             <p className="text-lg md:text-xl text-blue-100 max-w-3xl">
-              From vision to impact: Charting PANA Academy's path in transforming the energy sector through competency development.
+              From vision to impact: Charting PANA Institute's path in transforming the energy sector through competency development.
             </p>
           </div>
         </div>
@@ -52,7 +52,7 @@ export default function OurJourney() {
               <div className="w-12 h-1 bg-blue-600 mb-6"></div>
               <h3 className="text-xl font-bold text-gray-900 mb-4">Our Foundation</h3>
               <p className="text-gray-600">
-                PANA Academy Limited, a competency cultivation hub and subsidiary of PANA Holdings Group, began with a bold vision to close critical in-country competency gaps in the oil and gas industry and empower a new generation of professionals. The focus is on practical, transformative training based on international best practices. Our journey so far is one of growth, impact and transformation of trainees into professional workforce driving excellence across the energy value chain.
+                PANA Institute Limited, a competency cultivation hub and subsidiary of PANA Holdings Group, began with a bold vision to close critical in-country competency gaps in the oil and gas industry and empower a new generation of professionals. The focus is on practical, transformative training based on international best practices. Our journey so far is one of growth, impact and transformation of trainees into professional workforce driving excellence across the energy value chain.
               </p>
             </motion.div>
 
@@ -67,7 +67,7 @@ export default function OurJourney() {
               <div className="w-12 h-1 bg-red-500 mb-6"></div>
               <h3 className="text-xl font-bold text-gray-900 mb-4">Our Growth</h3>
               <p className="text-gray-600">
-                PANA Academy has become a trusted training provider for the energy sector, particularly the oil and gas industry. Our training programmes encompass Soft Skills, Safety, Sustainability, Technical (Flow Drive; Flow Control; Flow Measurement; Instrumentation; Process Automation and Control Courses ), Digital Literacy/Skills; Digitization and Digitalization Courses, among others. </p>
+                PANA Institute has become a trusted training provider for the energy sector, particularly the oil and gas industry. Our training programmes encompass Soft Skills, Safety, Sustainability, Technical (Flow Drive; Flow Control; Flow Measurement; Instrumentation; Process Automation and Control Courses ), Digital Literacy/Skills; Digitization and Digitalization Courses, among others. </p>
             </motion.div>
 
             {/* Impact Card */}

@@ -35,7 +35,7 @@ const emailLayout = (content: string, previewText: string) => `
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PANA Academy</title>
+  <title>PANA Institute</title>
   <style>
     body { background-color: ${BRAND_COLORS.bg}; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
     .wrapper { width: 100%; table-layout: fixed; padding: 40px 0; }
@@ -63,7 +63,7 @@ const emailLayout = (content: string, previewText: string) => `
         ${content}
       </div>
       <div class="footer">
-        <p>&copy; ${new Date().getFullYear()} PANA Academy. All rights reserved.</p>
+        <p>&copy; ${new Date().getFullYear()} PANA Institute. All rights reserved.</p>
         <p>Competency Cultivation Hub | Port Harcourt &amp; Abuja, Nigeria</p>
         <p><a href="mailto:support@pana-academy.com" style="color: #64748b;">support@pana-academy.com</a></p>
       </div>
@@ -75,16 +75,16 @@ const emailLayout = (content: string, previewText: string) => `
 
 const templates: Record<string, (payload: any) => { subject: string; html: string }> = {
   welcome: (payload: any) => ({
-    subject: `Welcome to PANA Academy, ${payload.name}!`,
+    subject: `Welcome to PANA Institute, ${payload.name}!`,
     html: emailLayout(`
       <h1>Welcome Aboard, ${payload.name}!</h1>
-      <p>We're thrilled to have you join our learning community. PANA Academy is dedicated to your professional growth and competency cultivation.</p>
+      <p>We're thrilled to have you join our learning community. PANA Institute is dedicated to your professional growth and competency cultivation.</p>
       <p>Your account is now active. You can start exploring our catalog of specialized courses and resources.</p>
       <div style="text-align: center;">
         <a href="${payload.appUrl}/dashboard" class="btn">Access Your Dashboard</a>
       </div>
       <p style="margin-top: 30px;">If you have any questions, our support team is always here to help.</p>
-    `, "Welcome to PANA Academy - Your professional growth starts here.")
+    `, "Welcome to PANA Institute - Your professional growth starts here.")
   }),
   enrollment: (payload: any) => ({
     subject: `Enrollment Confirmed: ${payload.courseTitle}`,
@@ -160,11 +160,11 @@ const templates: Record<string, (payload: any) => { subject: string; html: strin
     `, `Important update about your payment for ${payload.courseTitle}.`)
   }),
   verification: (payload: any) => ({
-    subject: 'Verify your email address - PANA Academy',
+    subject: 'Verify your email address - PANA Institute',
     html: emailLayout(`
       <h1>Verify Your Email</h1>
       <p>Hello ${payload.name},</p>
-      <p>Thank you for joining PANA Academy! To ensure the security of your account, please verify your email address by clicking the button below:</p>
+      <p>Thank you for joining PANA Institute! To ensure the security of your account, please verify your email address by clicking the button below:</p>
       <div style="text-align: center;">
         <a href="${payload.verificationLink}" class="btn">Verify Email Address</a>
       </div>
@@ -175,14 +175,14 @@ const templates: Record<string, (payload: any) => { subject: string; html: strin
       <p style="font-size: 12px; color: #94a3b8; margin-top: 20px;">
         This link will expire in 24 hours.
       </p>
-    `, "Verify your email to get started with PANA Academy.")
+    `, "Verify your email to get started with PANA Institute.")
   }),
   reset_password: (payload: any) => ({
-    subject: 'Reset Your Password - PANA Academy',
+    subject: 'Reset Your Password - PANA Institute',
     html: emailLayout(`
       <h1>Password Reset Request</h1>
       <p>Hello ${payload.name},</p>
-      <p>We received a request to reset the password for your PANA Academy account. Click the button below to set a new password:</p>
+      <p>We received a request to reset the password for your PANA Institute account. Click the button below to set a new password:</p>
       <div style="text-align: center;">
         <a href="${payload.resetLink}" class="btn">Reset Password</a>
       </div>
@@ -193,7 +193,7 @@ const templates: Record<string, (payload: any) => { subject: string; html: strin
         Button not working? Use this link instead:<br>
         <span style="word-break: break-all; color: ${BRAND_COLORS.red};">${payload.resetLink}</span>
       </p>
-    `, "Reset your PANA Academy password.")
+    `, "Reset your PANA Institute password.")
   }),
   level_up: (payload: any) => ({
     subject: `LEVEL UP! You've reached Level ${payload.newLevel} 🏆`,
@@ -209,7 +209,7 @@ const templates: Record<string, (payload: any) => { subject: string; html: strin
       <div style="text-align: center; margin-top: 30px;">
         <a href="${payload.appUrl}/dashboard" class="btn">View Your Achievements</a>
       </div>
-    `, `Amazing! You've reached Level ${payload.newLevel} on PANA Academy.`)
+    `, `Amazing! You've reached Level ${payload.newLevel} on PANA Institute.`)
   }),
   streak_reminder: (payload: any) => ({
     subject: `🔥 ${payload.streakDays} Day Streak at Risk!`,
@@ -246,7 +246,7 @@ const templates: Record<string, (payload: any) => { subject: string; html: strin
     `, `New payment proof uploaded for ${payload.reference}`)
   }),
   invoice: (payload: any) => ({
-    subject: `Invoice ${payload.invoiceNumber} - PANA Academy`,
+    subject: `Invoice ${payload.invoiceNumber} - PANA Institute`,
     html: emailLayout(`
       <div style="text-align: right; color: #64748b; font-size: 14px; margin-bottom: 20px;">
         Invoice Date: ${payload.date}
@@ -342,7 +342,7 @@ serve(async (req: Request) => {
     console.log(`Attempting to send ${type || 'custom'} email to:`, to);
 
     // Use Resend REST API directly
-    const fromEmail = Deno.env.get('RESEND_FROM_EMAIL') || 'PANA Academy <noreply@pana-academy.com>';
+    const fromEmail = Deno.env.get('RESEND_FROM_EMAIL') || 'PANA Institute <noreply@pana-academy.com>';
     
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',

@@ -314,7 +314,7 @@ export function PaymentPage() {
                                 <div className="flex-1">
                                     <h3 className="font-semibold text-lg text-gray-900">{course.title}</h3>
                                     <p className="text-sm text-gray-600 mt-1">
-                                        By {course.instructor_name || 'PANA Academy'}
+                                        By {course.instructor_name || 'PANA Institute'}
                                     </p>
                                     {course.duration_hours && (
                                         <p className="text-sm text-gray-500 mt-2">

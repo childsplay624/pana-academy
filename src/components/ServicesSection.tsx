@@ -144,7 +144,7 @@ const ServicesSection = () => {
         <div className="text-center mt-16">
           <h3 className="text-2xl font-bold text-black mb-4">Ready to Transform Your Career and/or Organization?</h3>
           <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Get in touch with us to discuss how PANA Academy can help you achieve your training, performance improvement, and research and development goals.
+            Get in touch with us to discuss how PANA Institute can help you achieve your training, performance improvement, and research and development goals.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="/contact">

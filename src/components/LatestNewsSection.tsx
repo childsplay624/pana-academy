@@ -56,7 +56,7 @@ export default function LatestNewsSection() {
               News & <span className="text-red-600">Insights</span>
             </h2>
             <p className="text-lg text-gray-600">
-              Stay updated with the latest industry trends, expert insights, and PANA Academy news.
+              Stay updated with the latest industry trends, expert insights, and PANA Institute news.
             </p>
           </motion.div>
           <motion.div
@@ -96,7 +96,7 @@ export default function LatestNewsSection() {
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-300 font-medium">
-                      PANA Academy
+                      PANA Institute
                     </div>
                   )}
                 </div>

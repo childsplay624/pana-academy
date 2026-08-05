@@ -11,9 +11,9 @@ const TrainingDelivery = () => {
   return (
     <>
       <Helmet>
-        <title>Training Delivery | PANA Academy - Excellence in Learning</title>
-        <meta name="description" content="Discover PANA Academy's comprehensive training delivery methods, modern technology platforms, and international standard learning environments designed for maximum impact." />
-        <meta name="keywords" content="training delivery, learning management system, virtual classroom, training methods, PANA Academy" />
+        <title>Training Delivery | PANA Institute - Excellence in Learning</title>
+        <meta name="description" content="Discover PANA Institute's comprehensive training delivery methods, modern technology platforms, and international standard learning environments designed for maximum impact." />
+        <meta name="keywords" content="training delivery, learning management system, virtual classroom, training methods, PANA Institute" />
       </Helmet>
 
       <div className="min-h-screen bg-gradient-subtle">
@@ -64,7 +64,7 @@ const TrainingDelivery = () => {
               <div className="space-y-8 animate-fade-in">
                 <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full text-white/90 text-sm font-medium border border-white/20">
                   <Zap className="w-5 h-5 text-pana-gold" />
-                  <span className="text-red-500">PANA Academy</span>
+                  <span className="text-red-500">PANA Institute</span>
                   <ArrowRight className="w-4 h-4" />
                 </div>
 

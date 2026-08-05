@@ -51,7 +51,7 @@ export const emailTemplates = {
   welcome: (name: string) => ({
     type: 'welcome' as const,
     payload: { name },
-    subject: 'Welcome to PANA Academy!', // Fallback
+    subject: 'Welcome to PANA Institute!', // Fallback
     html: '', // Handled by Edge Function
   }),
 

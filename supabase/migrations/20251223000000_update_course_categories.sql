@@ -1,4 +1,4 @@
--- Update course_category enum to use PANA Academy categories
+-- Update course_category enum to use PANA Institute categories
 -- This migration updates the course_category enum type to match the new category system
 
 -- First, add the new enum values

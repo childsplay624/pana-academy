@@ -58,10 +58,10 @@ const AboutPage = () => {
     return (
         <>
             <Helmet>
-                <title>About Us | PANA Academy - Our Mission & Vision</title>
+                <title>About Us | PANA Institute - Our Mission & Vision</title>
                 <meta
                     name="description"
-                    content="Learn about PANA Academy's mission to empower Oil & Gas professionals. Discover our vision, values, and commitment to excellence in training and development."
+                    content="Learn about PANA Institute's mission to empower Oil & Gas professionals. Discover our vision, values, and commitment to excellence in training and development."
                 />
             </Helmet>
 
@@ -75,7 +75,7 @@ const AboutPage = () => {
                         {headerImage ? (
                             <img
                                 src={headerImage}
-                                alt="About PANA Academy"
+                                alt="About PANA Institute"
                                 className="w-full h-full object-cover object-top"
                                 loading="eager"
                             />
@@ -110,7 +110,7 @@ const AboutPage = () => {
                             <h1 className="text-6xl md:text-8xl font-bold mb-6 leading-tight">
                                 <span className="text-white">About</span>
                                 <span className="block text-red-600">
-                                    PANA Academy
+                                    PANA Institute
                                 </span>
                             </h1>
 
@@ -145,14 +145,14 @@ const AboutPage = () => {
                                 {trainingImg ? (
                                     <img
                                         src={trainingImg}
-                                        alt="Professional Training at PANA Academy"
+                                        alt="Professional Training at PANA Institute"
                                         className="rounded-2xl shadow-lg w-full h-[40rem] object-cover object-center"
                                         loading="lazy"
                                     />
                                 ) : (
                                     <img
                                         src={heroTraining}
-                                        alt="Professional Training at PANA Academy"
+                                        alt="Professional Training at PANA Institute"
                                         className="rounded-2xl shadow-lg w-full h-[40rem] object-cover object-center"
                                         loading="lazy"
                                     />
@@ -213,7 +213,7 @@ const AboutPage = () => {
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-12">
                             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                                Why Choose PANA Academy
+                                Why Choose PANA Institute
                             </h2>
                             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                                 Committed to excellence in every aspect of our training delivery
@@ -251,7 +251,7 @@ const AboutPage = () => {
                             Ready to Start Your Learning Journey?
                         </h2>
                         <p className="text-xl text-red-100 mb-8 max-w-2xl mx-auto">
-                            Join thousands of professionals advancing their careers with PANA Academy
+                            Join thousands of professionals advancing their careers with PANA Institute
                         </p>
                         <div className="flex flex-wrap gap-4 justify-center">
                             <Link to="/courses">

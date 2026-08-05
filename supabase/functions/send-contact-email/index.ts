@@ -118,7 +118,7 @@ serve(async (req: Request) => {
             },
             body: JSON.stringify({
                 // NOTE: Use 'onboarding@resend.dev' if your domain is not yet verified in Resend.
-                // Once verified, change back to 'PANA Academy <info@pana-academy.com>'
+                // Once verified, change back to 'PANA Institute <info@pana-academy.com>'
                 from: 'onboarding@resend.dev', 
                 to: ['info@pana-academy.com'],
                 reply_to: email,
@@ -129,7 +129,7 @@ serve(async (req: Request) => {
               <h1 style="color: white; margin: 0; font-size: 24px;">New Contact Inquiry</h1>
             </div>
             <div style="padding: 30px;">
-              <p style="font-size: 16px; color: #374151;">You have received a new message from the PANA Academy contact form.</p>
+              <p style="font-size: 16px; color: #374151;">You have received a new message from the PANA Institute contact form.</p>
               <div style="background-color: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
                 <p style="margin: 0 0 10px 0;"><strong>Name:</strong> ${name}</p>
                 <p style="margin: 0 0 10px 0;"><strong>Email:</strong> ${email}</p>
@@ -141,7 +141,7 @@ serve(async (req: Request) => {
               </div>
             </div>
             <div style="background-color: #f3f4f6; padding: 15px; text-align: center; color: #6b7280; font-size: 12px;">
-              Sent from PANA Academy Contact Form • ${new Date().toLocaleString()}
+              Sent from PANA Institute Contact Form • ${new Date().toLocaleString()}
             </div>
           </div>
         `,

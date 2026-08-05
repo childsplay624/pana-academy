@@ -90,7 +90,7 @@ export default function PublicPageRenderer() {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>{page.meta_title || `${page.title} | Pana Academy`}</title>
+        <title>{page.meta_title || `${page.title} | Pana Institute`}</title>
         <meta name="description" content={page.meta_description || page.description || ''} />
       </Helmet>
 

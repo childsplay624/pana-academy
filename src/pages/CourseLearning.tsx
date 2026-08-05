@@ -253,7 +253,7 @@ export default function CourseLearning() {
             _enrollment_id: enrollment.id,
             _title: `${course.title} Completion Certificate`,
             _course_title: course.title,
-            _instructor_name: course.profiles?.full_name || 'PANA Academy Instructor',
+            _instructor_name: course.profiles?.full_name || 'PANA Institute Instructor',
             _course_duration_hours: course.duration_hours || 0,
             _completion_date: new Date().toISOString(),
             _score: 100, // Default score for completion

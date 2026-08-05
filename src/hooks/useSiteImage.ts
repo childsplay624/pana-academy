@@ -78,7 +78,7 @@ export function useSiteImage(key: string): UseSiteImageReturn {
     };
 
     const imageUrl = data?.url || getFallbackImage(key);
-    const altText = data?.alt_text || 'PANA Academy Image';
+    const altText = data?.alt_text || 'PANA Institute Image';
 
     return {
         imageUrl,

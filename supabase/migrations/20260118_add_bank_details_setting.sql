@@ -22,7 +22,7 @@ VALUES (
     '{
         "bank_name": "PANA Bank PLC",
         "account_number": "1234567890",
-        "account_name": "PANA ACADEMY LIMITED"
+        "account_name": "PANA INSTITUTE LIMITED"
     }'::jsonb,
     'payment'
 )

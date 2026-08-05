@@ -56,7 +56,7 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				// PANA Academy Brand Colors
+				// PANA Institute Brand Colors
 				pana: {
 					navy: 'hsl(var(--pana-navy))',
 					red: 'hsl(var(--pana-red))',

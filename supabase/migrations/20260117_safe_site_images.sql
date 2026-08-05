@@ -87,8 +87,8 @@ INSERT INTO public.site_images (key, category, url, alt_text, description, displ
   ('team_ifeyinwa_eucharia', 'team', '/team/Ifeyinwa-Eucharia.jpg', 'Ifeyinwa Eucharia', 'Profile photo of Ifeyinwa Eucharia', 5),
   
   -- Main logos
-  ('logo_main', 'logo', '/logo.png', 'PANA Academy Logo', 'Main company logo', 1),
-  ('logo_pana_why', 'logo', '/panawhy.png', 'PANA Academy Why', 'PANA Academy why logo', 2),
+  ('logo_main', 'logo', '/logo.png', 'PANA Institute Logo', 'Main company logo', 1),
+  ('logo_pana_why', 'logo', '/panawhy.png', 'PANA Institute Why', 'PANA Institute why logo', 2),
   
   -- Partner/Client logos
   ('logo_shell', 'logo', '/shell.png', 'Shell', 'Shell company logo', 10),
@@ -99,8 +99,8 @@ INSERT INTO public.site_images (key, category, url, alt_text, description, displ
   ('logo_mtn', 'logo', '/mtn.png', 'MTN', 'MTN company logo', 15),
   
   -- Values images
-  ('values_sands', 'values', '/values/sands.PNG', 'SANDS Values', 'PANA Academy SANDS values image', 1),
-  ('values_maxims', 'values', '/values/maxims.jpg', 'Company Maxims', 'PANA Academy maxims image', 2),
+  ('values_sands', 'values', '/values/sands.PNG', 'SANDS Values', 'PANA Institute SANDS values image', 1),
+  ('values_maxims', 'values', '/values/maxims.jpg', 'Company Maxims', 'PANA Institute maxims image', 2),
   ('values_log', 'values', '/values/log.jpg', 'Values Background', 'Values section background image', 3),
   
   -- Header/Banner images

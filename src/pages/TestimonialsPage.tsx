@@ -46,10 +46,10 @@ const TestimonialsPage = () => {
   return (
     <div className="min-h-screen bg-slate-50">
       <Helmet>
-        <title>Success Stories | PANA Academy - Client Testimonials</title>
+        <title>Success Stories | PANA Institute - Client Testimonials</title>
         <meta
           name="description"
-          content="Hear from our clients who have transformed their careers and improved their organizational performance through PANA Academy's Solutions and Services."
+          content="Hear from our clients who have transformed their careers and improved their organizational performance through PANA Institute's Solutions and Services."
         />
       </Helmet>
 
@@ -87,7 +87,7 @@ const TestimonialsPage = () => {
             </h1>
 
             <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-10 leading-relaxed">
-              Discover how PANA Academy has empowered professionals and organizations across the globe to achieve unprecedented growth and technical mastery.
+              Discover how PANA Institute has empowered professionals and organizations across the globe to achieve unprecedented growth and technical mastery.
             </p>
 
             {/* Quick Stats */}
@@ -161,7 +161,7 @@ const TestimonialsPage = () => {
             <div className="text-center py-20 bg-white rounded-3xl shadow-sm border border-slate-100">
               <MessageSquare className="w-16 h-16 text-slate-200 mx-auto mb-4" />
               <h3 className="text-2xl font-bold text-slate-800 mb-2">No testimonials yet</h3>
-              <p className="text-slate-500">Be the first to share your PANA Academy success story!</p>
+              <p className="text-slate-500">Be the first to share your PANA Institute success story!</p>
               <Button className="mt-8 bg-red-600 hover:bg-red-700">Contact Us to Share</Button>
             </div>
           )}

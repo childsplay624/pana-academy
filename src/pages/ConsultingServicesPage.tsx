@@ -12,7 +12,7 @@ const ConsultingServicesPage = () => {
   return (
     <>
       <Helmet>
-        <title>Consulting Services | PANA Academy</title>
+        <title>Consulting Services | PANA Institute</title>
         <meta name="description" content="Professional consulting services for oil & gas, power, and technology industries. Expert guidance from seasoned industry professionals." />
       </Helmet>
 
@@ -94,7 +94,7 @@ const ConsultingServicesPage = () => {
                 <div>
                   <h2 className="text-3xl font-bold text-pana-navy mb-6">Our Approach</h2>
                   <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                    At PANA Academy, we go beyond offering advice, we work  with you to drive meaningful transformation. Our consultancy services are designed to help businesses  navigate complexity, unlock growth opportunities, and create strategies that are strong and innovative. Whether you are a startup exploring market entry, an NGO strengthening its impact model, or a government agency advancing policy innovation, PANA Academy provides practical solutions. We turn challenges into opportunities and ideas into measurable results.
+                    At PANA Institute, we go beyond offering advice, we work  with you to drive meaningful transformation. Our consultancy services are designed to help businesses  navigate complexity, unlock growth opportunities, and create strategies that are strong and innovative. Whether you are a startup exploring market entry, an NGO strengthening its impact model, or a government agency advancing policy innovation, PANA Institute provides practical solutions. We turn challenges into opportunities and ideas into measurable results.
                   </p>
 
                   <div className="space-y-6">
@@ -188,7 +188,7 @@ const ConsultingServicesPage = () => {
             <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
               <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Transform Your Organization?</h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-                Partner with PANA Academy's expert consultants to turn your challenges into opportunities.
+                Partner with PANA Institute's expert consultants to turn your challenges into opportunities.
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <a href="/contact" className="no-underline">

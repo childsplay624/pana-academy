@@ -6,9 +6,9 @@ const TrainingDelivery = () => {
   return (
     <>
       <Helmet>
-        <title>Training Delivery | PANA Academy - Excellence in Learning</title>
-        <meta name="description" content="Discover PANA Academy's comprehensive training delivery methods, modern technology platforms, and international standard learning environments designed for maximum impact." />
-        <meta name="keywords" content="training delivery, learning management system, virtual classroom, training methods, PANA Academy" />
+        <title>Training Delivery | PANA Institute - Excellence in Learning</title>
+        <meta name="description" content="Discover PANA Institute's comprehensive training delivery methods, modern technology platforms, and international standard learning environments designed for maximum impact." />
+        <meta name="keywords" content="training delivery, learning management system, virtual classroom, training methods, PANA Institute" />
       </Helmet>
       
       <div className="min-h-screen bg-background">
@@ -35,7 +35,7 @@ const TrainingDelivery = () => {
               <div className="max-w-4xl mx-auto">
                 <div className="prose prose-lg mx-auto">
                   <p className="text-lg text-muted-foreground mb-12 leading-relaxed">
-                    At PANA Academy, training delivery refers to the methods and approaches we use to present learning content and facilitate competency/skill development. We carefully choose our training delivery methods to maximize the impact and effectiveness of our training programs for improved employee performance and organizational success and sustainability.
+                    At PANA Institute, training delivery refers to the methods and approaches we use to present learning content and facilitate competency/skill development. We carefully choose our training delivery methods to maximize the impact and effectiveness of our training programs for improved employee performance and organizational success and sustainability.
                   </p>
 
                   <div className="space-y-16">
