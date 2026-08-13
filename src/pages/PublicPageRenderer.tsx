@@ -14,6 +14,9 @@ import {
   TestimonialsSection,
   FAQSection,
   CTASection,
+  StatsSection,
+  TeamSection,
+  BannerSection,
   DynamicHeroSection,
   DynamicStatsSection,
   DynamicHowItWorksSection,
@@ -111,6 +114,9 @@ export default function PublicPageRenderer() {
               case 'testimonials': return <TestimonialsSection key={section.id} content={section.content} />;
               case 'faq': return <FAQSection key={section.id} content={section.content} />;
               case 'cta': return <CTASection key={section.id} content={section.content} />;
+              case 'stats': return <StatsSection key={section.id} content={section.content} />;
+              case 'team': return <TeamSection key={section.id} content={section.content} />;
+              case 'banner': return <BannerSection key={section.id} content={section.content} />;
               case 'dynamic_hero': return <DynamicHeroSection key={section.id} />;
               case 'dynamic_stats': return <DynamicStatsSection key={section.id} />;
               case 'dynamic_how_it_works': return <DynamicHowItWorksSection key={section.id} />;

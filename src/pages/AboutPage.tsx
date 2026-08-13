@@ -5,14 +5,20 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Users, Globe, BookOpen, ChevronRight, Award, Target, Heart, TrendingUp, Zap, ArrowRight } from "lucide-react";
 import { useSiteImage } from "@/hooks/useSiteImage";
+import { usePageContent } from "@/hooks/usePageContent";
 import ValuesSection from "@/components/ValuesSection";
 import ServicesSection from "@/components/ServicesSection";
+import { DynamicPageSections } from "@/components/page-builder/DynamicPageSections";
 import heroTraining from "@/assets/hero-training.jpg";
 
 const AboutPage = () => {
     // Fetch images from centralized system
-    const { imageUrl: headerImage } = useSiteImage('header_about');
+    const { imageUrl: defaultHeaderImage } = useSiteImage('header_about');
     const { imageUrl: trainingImg } = useSiteImage('training_main');
+
+    // Fetch CMS content overrides (falls back to hardcoded defaults)
+    const { get } = usePageContent('about');
+    const headerImage = get('header_image') || defaultHeaderImage;
 
     const highlights = [
         {
@@ -58,10 +64,10 @@ const AboutPage = () => {
     return (
         <>
             <Helmet>
-                <title>About Us | PANA Institute - Our Mission & Vision</title>
+                <title>{get('title', 'About Us | PANA Institute - Our Mission & Vision')}</title>
                 <meta
                     name="description"
-                    content="Learn about PANA Institute's mission to empower Oil & Gas professionals. Discover our vision, values, and commitment to excellence in training and development."
+                    content={get('meta_description', 'Learn about PANA Institute\'s mission to empower Oil & Gas professionals. Discover our vision, values, and commitment to excellence in training and development.')}
                 />
             </Helmet>
 
@@ -103,19 +109,19 @@ const AboutPage = () => {
                         <div className="space-y-8 animate-fade-in">
                             <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full text-white/90 text-sm font-medium border border-white/20">
                                 <Zap className="w-5 h-5 text-pana-gold" />
-                                <span>Africa's Leading Oil & Gas Competency Hub</span>
+                                <span>{get('hero_badge', "Africa's Leading Oil & Gas Competency Hub")}</span>
                                 <ArrowRight className="w-4 h-4" />
                             </div>
 
                             <h1 className="text-6xl md:text-8xl font-bold mb-6 leading-tight">
-                                <span className="text-white">About</span>
+                                <span className="text-white">{get('hero_title', 'About')}</span>
                                 <span className="block text-red-600">
-                                    PANA Institute
+                                    {get('hero_subtitle', 'PANA Institute')}
                                 </span>
                             </h1>
 
                             <p className="text-xl md:text-2xl text-gray-200 max-w-4xl mx-auto">
-                                Dedicated to empowering talent across sectors through world-class training, consulting, and research excellence.
+                                {get('hero_description', 'Dedicated to empowering talent across sectors through world-class training, consulting, and research excellence.')}
                             </p>
 
                             <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
@@ -165,29 +171,24 @@ const AboutPage = () => {
                                 <div>
                                     <h3 className="text-2xl font-bold text-pana-navy mb-4">Our Vision</h3>
                                     <p className="text-black leading-relaxed">
-                                        To be Africa's leading Competency Hub for the Oil and Gas Industry.
+                                        {get('vision_body', "To be Africa's leading Competency Hub for the Oil and Gas Industry.")}
                                     </p>
                                 </div>
                                 <div>
                                     <h3 className="text-2xl font-bold text-pana-navy mb-4">Our Mission</h3>
                                     <p className="text-black leading-relaxed">
-                                        To empower individuals and organizations with the knowledge, skills, and capabilities
-                                        needed to excel in today's dynamic business environment. We bridge the gap between
-                                        theoretical knowledge and practical application through innovative training methodologies.
+                                        {get('mission_body', "To empower individuals and organizations with the knowledge, skills, and capabilities needed to excel in today's dynamic business environment. We bridge the gap between theoretical knowledge and practical application through innovative training methodologies.")}
                                     </p>
                                 </div>
 
                                 <p className="text-black leading-relaxed">
-                                    To holistically develop and upskill Oil and Gas Industry workforce by providing training
-                                    opportunities that facilitate the cultivation of real-world practical competences/skills
-                                    directly applicable to relevant job roles in the industry.
+                                    {get('mission_body_2', 'To holistically develop and upskill Oil and Gas Industry workforce by providing training opportunities that facilitate the cultivation of real-world practical competences/skills directly applicable to relevant job roles in the industry.')}
                                 </p>
 
                                 <div>
                                     <h3 className="text-2xl font-bold text-pana-navy mb-4">Purpose</h3>
                                     <p className="text-black leading-relaxed">
-                                        To drive competency development to create a pool of relevant workforce for the
-                                        oil and gas industry.
+                                        {get('purpose_body', "To drive competency development to create a pool of relevant workforce for the oil and gas industry.")}
                                     </p>
                                 </div>
 
@@ -213,10 +214,10 @@ const AboutPage = () => {
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-12">
                             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                                Why Choose PANA Institute
+                                {get('highlights_title', 'Why Choose PANA Institute')}
                             </h2>
                             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                                Committed to excellence in every aspect of our training delivery
+                                {get('highlights_subtitle', 'Committed to excellence in every aspect of our training delivery')}
                             </p>
                         </div>
 
@@ -248,10 +249,10 @@ const AboutPage = () => {
                 <section className="py-20 bg-gradient-to-r from-red-600 to-red-700 text-white">
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                         <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                            Ready to Start Your Learning Journey?
+                            {get('cta_title', 'Ready to Start Your Learning Journey?')}
                         </h2>
                         <p className="text-xl text-red-100 mb-8 max-w-2xl mx-auto">
-                            Join thousands of professionals advancing their careers with PANA Institute
+                            {get('cta_subtitle', 'Join thousands of professionals advancing their careers with PANA Institute')}
                         </p>
                         <div className="flex flex-wrap gap-4 justify-center">
                             <Link to="/courses">

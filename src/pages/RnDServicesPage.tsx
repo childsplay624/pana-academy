@@ -4,10 +4,14 @@ import Footer from "@/components/Footer";
 import { ArrowRight, Zap, CheckCircle, Target, TrendingUp, Lightbulb, Users, Globe, Rocket, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSiteImage } from "@/hooks/useSiteImage";
+import { usePageContent } from "@/hooks/usePageContent";
+import { DynamicPageSections } from "@/components/page-builder/DynamicPageSections";
 
 const RnDServicesPage = () => {
   // Fetch header image from centralized system
-  const { imageUrl: headerImage } = useSiteImage('header_rnd');
+  const { imageUrl: defaultHeaderImage } = useSiteImage('header_rnd');
+  const { get } = usePageContent('rnd-services');
+  const headerImage = get('header_image') || defaultHeaderImage;
 
   return (
     <>
@@ -58,14 +62,14 @@ const RnDServicesPage = () => {
                 </div>
 
                 <h1 className="text-6xl md:text-8xl font-bold mb-6 leading-tight">
-                  <span className="text-white">Research</span>
+                  <span className="text-white">{get('hero_title', 'Research')}</span>
                   <span className="block text-red-600">
-                    & Development
+                    {get('hero_subtitle', '& Development')}
                   </span>
                 </h1>
 
                 <p className="text-xl md:text-2xl text-gray-200 max-w-4xl mx-auto">
-                  Transform your ideas into market-ready solutions with our comprehensive R&D services.
+                  {get('hero_description', 'Transform your ideas into market-ready solutions with our comprehensive R&D services.')}
                 </p>
 
                 <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">

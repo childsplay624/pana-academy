@@ -3,12 +3,15 @@ import { Helmet } from "react-helmet-async";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Mail, MapPin, Phone } from "lucide-react";
+import { DynamicPageSections } from "@/components/page-builder/DynamicPageSections";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { usePageContent } from "@/hooks/usePageContent";
 
 export const ContactPage = () => {
   const { toast } = useToast();
+  const { get } = usePageContent('contact');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -76,9 +79,9 @@ export const ContactPage = () => {
           {/* Hero Section */}
           <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 bg-pana-navy text-white">
             <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">Contact Us</h1>
+              <h1 className="text-4xl md:text-6xl font-bold mb-6">{get('hero_title', 'Contact Us')}</h1>
               <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto">
-                We'd love to hear from you. Reach out to us with any questions or inquiries.
+                {get('hero_subtitle', "We'd love to hear from you. Reach out to us with any questions or inquiries.")}
               </p>
             </div>
           </section>
@@ -98,7 +101,7 @@ export const ContactPage = () => {
                       </div>
                       <div>
                         <h3 className="text-xl font-semibold text-gray-800 mb-2">Port Harcourt - Center of Excellence</h3>
-                        <p className="text-gray-600">Plot 94 Rivoc Road, Trans Amadi Industrial Layout</p>
+                        <p className="text-gray-600">{get('address_ph_coe', 'Plot 94 Rivoc Road, Trans Amadi Industrial Layout')}</p>
                         <p className="text-gray-600">Port Harcourt, Rivers State, Nigeria</p>
                       </div>
                     </div>
@@ -110,7 +113,7 @@ export const ContactPage = () => {
                       </div>
                       <div>
                         <h3 className="text-xl font-semibold text-gray-800 mb-2">Port Harcourt - D-Line Office</h3>
-                        <p className="text-gray-600">No 54 Emekuku Street, D-Line</p>
+                        <p className="text-gray-600">{get('address_ph_dline', 'No 54 Emekuku Street, D-Line')}</p>
                         <p className="text-gray-600">Port Harcourt, Rivers State, Nigeria</p>
                       </div>
                     </div>
@@ -122,7 +125,7 @@ export const ContactPage = () => {
                       </div>
                       <div>
                         <h3 className="text-xl font-semibold text-gray-800 mb-2">Abuja Office</h3>
-                        <p className="text-gray-600">No. 5 Vattern Street, off Amazon Street</p>
+                        <p className="text-gray-600">{get('address_abuja', 'No. 5 Vattern Street, off Amazon Street')}</p>
                         <p className="text-gray-600">Maitama, Abuja, FCT, Nigeria</p>
                       </div>
                     </div>
@@ -136,9 +139,7 @@ export const ContactPage = () => {
                           </div>
                           <div>
                             <h3 className="text-xl font-semibold text-gray-800 mb-2">Phone</h3>
-                            <p className="text-gray-600">Port Harcourt: +234 702 600 0116</p>
-                            <p className="text-gray-600">Abuja: +234 702 600 0119</p>
-                            <p className="text-gray-600">Mobile: 08032790852</p>
+                            <p className="text-gray-600">{get('phone', 'Port Harcourt: +234 702 600 0116 | Abuja: +234 702 600 0119 | Mobile: 08032790852')}</p>
                           </div>
                         </div>
 
@@ -148,7 +149,7 @@ export const ContactPage = () => {
                           </div>
                           <div>
                             <h3 className="text-xl font-semibold text-gray-800 mb-2">Email</h3>
-                            <p className="text-gray-600">Info@pana-academy.com</p>
+                            <p className="text-gray-600">{get('email', 'Info@pana-academy.com')}</p>
                           </div>
                         </div>
                       </div>

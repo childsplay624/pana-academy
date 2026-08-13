@@ -26,27 +26,42 @@ const HeroSection = () => {
     }
   ];
 
-  // Build slides with custom video support
-  const slides = heroImages.map((img, index) => {
-      const fallback = fallbackSlides[index % fallbackSlides.length];
-      const isVideo = img.url?.toLowerCase().endsWith('.mp4') || img.url?.toLowerCase().endsWith('.webm');
-      const isYouTube = img.url?.includes('youtube.com') || img.url?.includes('youtu.be');
-      
-      let finalUrl = img.url;
-      if (isYouTube) {
-        const videoId = img.url.split('/').pop()?.split('?')[0].replace('watch?v=', '');
-        finalUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}&rel=0&showinfo=0`;
-      }
+  const defaultImages = [
+    "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=1920&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1920&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1920&auto=format&fit=crop"
+  ];
 
-      return {
+  // Build slides with custom video/image support
+  const slides = heroImages.length > 0
+    ? heroImages.map((img, index) => {
+        const fallback = fallbackSlides[index % fallbackSlides.length];
+        const isVideo = img.url?.toLowerCase().endsWith('.mp4') || img.url?.toLowerCase().endsWith('.webm');
+        const isYouTube = img.url?.includes('youtube.com') || img.url?.includes('youtu.be');
+        
+        let finalUrl = img.url;
+        if (isYouTube) {
+          const videoId = img.url.split('/').pop()?.split('?')[0].replace('watch?v=', '');
+          finalUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}&rel=0&showinfo=0`;
+        }
+
+        return {
+          id: index + 1,
+          mediaUrl: finalUrl,
+          type: isYouTube ? 'youtube' : isVideo ? 'video' : 'image',
+          title: img.alt_text?.includes(' - ') ? img.alt_text.split(' - ')[0] : fallback.title,
+          highlight: img.alt_text?.includes(' - ') ? img.alt_text.split(' - ')[1] : fallback.highlight,
+          subtitle: (img.description && img.description.length > 5 && !img.description.includes("Empowering") && !img.description.toLowerCase().includes("hero slide")) ? img.description : fallback.subtitle,
+        };
+      })
+    : fallbackSlides.map((fallback, index) => ({
         id: index + 1,
-        mediaUrl: finalUrl,
-        type: isYouTube ? 'youtube' : isVideo ? 'video' : 'image',
-        title: img.alt_text?.includes(' - ') ? img.alt_text.split(' - ')[0] : fallback.title,
-        highlight: img.alt_text?.includes(' - ') ? img.alt_text.split(' - ')[1] : fallback.highlight,
-        subtitle: (img.description && img.description.length > 5 && !img.description.includes("Empowering") && !img.description.toLowerCase().includes("hero slide")) ? img.description : fallback.subtitle,
-      };
-    });
+        mediaUrl: defaultImages[index % defaultImages.length],
+        type: 'image' as const,
+        title: fallback.title,
+        highlight: fallback.highlight,
+        subtitle: fallback.subtitle,
+      }));
 
   // Auto-play
   useEffect(() => {
@@ -65,15 +80,13 @@ const HeroSection = () => {
     );
   }
 
-  if (slides.length === 0) return null;
-
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
 
   const current = slides[currentSlide];
 
   return (
-    <section className="relative h-[75vh] flex items-center overflow-hidden mt-10">
+    <section className="relative min-h-[85vh] flex items-center overflow-hidden pt-20 mt-0">
       {/* Background with smooth scroll */}
       <div className="absolute inset-0 overflow-hidden">
         <AnimatePresence mode="wait">
@@ -115,7 +128,7 @@ const HeroSection = () => {
       </div>
 
       {/* Minimal Centered Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center w-full px-6 md:px-12 h-full text-center">
+      <div className="relative z-10 flex flex-col items-center justify-center w-full px-6 md:px-12 h-full text-center pt-16 pb-12">
         <motion.div
           key={current.id + "-text"}
           initial={{ opacity: 0, y: 20 }}

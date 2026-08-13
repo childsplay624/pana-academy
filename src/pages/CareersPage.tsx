@@ -4,10 +4,14 @@ import Footer from "@/components/Footer";
 import { ArrowRight, Zap, Target, Users, Globe, Rocket, BookOpen, Briefcase, Heart, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSiteImage } from "@/hooks/useSiteImage";
+import { usePageContent } from "@/hooks/usePageContent";
+import { DynamicPageSections } from "@/components/page-builder/DynamicPageSections";
 
 const CareersPage = () => {
     // Fetch header image from centralized system
-    const { imageUrl: headerImage } = useSiteImage('header_careers');
+    const { imageUrl: defaultHeaderImage } = useSiteImage('header_careers');
+    const { get } = usePageContent('careers');
+    const headerImage = get('header_image') || defaultHeaderImage;
 
     const values = [
         {
@@ -39,7 +43,7 @@ const CareersPage = () => {
 
                 <main>
                     {/* Hero Section */}
-                    <section className="relative pt-0 pb-20 md:pb-28 overflow-hidden mt-20">
+                    <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
                         <div className="absolute inset-0">
                             {headerImage ? (
                                 <img
@@ -63,12 +67,12 @@ const CareersPage = () => {
                                 </div>
 
                                 <h1 className="text-6xl md:text-8xl font-bold mb-6 leading-tight">
-                                    <span className="text-white">Build Your</span>
-                                    <span className="block text-red-600">Future With Us</span>
+                                    <span className="text-white">{get('hero_title', 'Build Your')}</span>
+                                    <span className="block text-red-600">{get('hero_subtitle', 'Future With Us')}</span>
                                 </h1>
 
                                 <p className="text-xl md:text-2xl text-gray-200 max-w-4xl mx-auto">
-                                    At PANA Institute, we are always looking for visionary educators, industry experts, and innovative thinkers.
+                                    {get('hero_description', 'At PANA Institute, we are always looking for visionary educators, industry experts, and innovative thinkers.')}
                                 </p>
 
                                 <div className="flex justify-center mt-8">

@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { CheckCircle2, ChevronRight, Star, Users, TrendingUp, Award } from 'lucide-react';
+import DOMPurify from 'dompurify';
 
 // Dynamic Components for Homepage Migration
 import CustomHeroSection from '@/components/HeroSection';
@@ -16,38 +17,64 @@ import CustomTestimonialsSection from '@/components/TestimonialsSection';
 
 
 
-export const HeroSection = ({ content }: { content: any }) => (
-  <section className="relative py-24 overflow-hidden bg-background">
-    <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]" />
-    <div className="container px-4 mx-auto text-center relative z-10">
-      <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/70">
-        {content.title || 'Hero Title'}
-      </h1>
-      <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed">
-        {content.description || 'Add a compelling description here.'}
-      </p>
-      <div className="flex items-center justify-center gap-4">
-        {content.buttonText && (
-          <Button size="lg" className="rounded-full px-8 h-12 text-base shadow-lg shadow-primary/20">
-            {content.buttonText}
-          </Button>
+export const HeroSection = ({ content }: { content: any }) => {
+  const bgImage = content.bgImage;
+  const overlayOpacity = content.overlayOpacity ?? (bgImage ? 60 : 0);
+
+  return (
+    <section className="relative py-24 md:py-32 overflow-hidden bg-background min-h-[450px] flex items-center justify-center">
+      {bgImage ? (
+        <div className="absolute inset-0 z-0">
+          <img src={bgImage} alt={content.title || 'Hero'} className="w-full h-full object-cover object-center" />
+          <div 
+            className="absolute inset-0 bg-black" 
+            style={{ opacity: overlayOpacity / 100 }}
+          />
+        </div>
+      ) : (
+        <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]" />
+      )}
+
+      <div className={`container px-4 mx-auto relative z-10 ${bgImage ? 'text-white' : ''} text-center`}>
+        {content.badge && (
+          <span className="inline-block bg-primary/20 text-primary px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-6 backdrop-blur-sm border border-primary/30">
+            {content.badge}
+          </span>
         )}
-        {content.secondaryButtonText && (
-          <Button size="lg" variant="outline" className="rounded-full px-8 h-12 text-base">
-            {content.secondaryButtonText}
-          </Button>
-        )}
+        <h1 className={`text-5xl md:text-7xl font-bold tracking-tight mb-6 ${bgImage ? 'text-white' : 'bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/70'}`}>
+          {content.title || 'Hero Title'}
+        </h1>
+        <p className={`text-xl ${bgImage ? 'text-gray-200' : 'text-muted-foreground'} max-w-3xl mx-auto mb-10 leading-relaxed`}>
+          {content.description || 'Add a compelling description here.'}
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          {content.buttonText && (
+            <Button size="lg" className="rounded-full px-8 h-12 text-base shadow-lg shadow-primary/20">
+              {content.buttonText}
+            </Button>
+          )}
+          {content.secondaryButtonText && (
+            <Button size="lg" variant="outline" className={`rounded-full px-8 h-12 text-base ${bgImage ? 'bg-transparent border-white text-white hover:bg-white/20' : ''}`}>
+              {content.secondaryButtonText}
+            </Button>
+          )}
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 export const ContentSection = ({ content }: { content: any }) => (
   <section className="py-20 bg-muted/30">
-    <div className="container px-4 mx-auto max-w-4xl">
+    <div className="container px-4 mx-auto max-w-5xl">
+      {content.imageUrl && (
+        <div className="mb-10 overflow-hidden rounded-3xl shadow-xl max-h-[450px]">
+          <img src={content.imageUrl} alt="Content visual" className="w-full h-full object-cover" />
+        </div>
+      )}
       <div 
         className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-bold prose-a:text-primary"
-        dangerouslySetInnerHTML={{ __html: content.body || '<p>Edit this content in the page builder.</p>' }} 
+        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content.body || '<p>Edit this content in the page builder.</p>') }} 
       />
     </div>
   </section>
@@ -212,31 +239,40 @@ export const TeamSection = ({ content }: { content: any }) => (
   </section>
 );
 
-export const BannerSection = ({ content }: { content: any }) => (
-  <section
-    className="py-16 relative overflow-hidden"
-    style={{ background: content.bgColor || 'linear-gradient(135deg, #1e40af, #7c3aed)' }}
-  >
-    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/10 to-transparent" />
-    <div className="container px-4 mx-auto relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-      <div className="text-white text-center md:text-left">
-        {content.badge && (
-          <span className="inline-block bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full mb-4 uppercase tracking-widest">
-            {content.badge}
-          </span>
-        )}
-        <h2 className="text-3xl md:text-4xl font-black mb-3">{content.title || 'Announcement Title'}</h2>
-        <p className="text-white/80 text-lg max-w-xl">{content.description || 'Add a description for this banner.'}</p>
-      </div>
-      {content.buttonText && (
-        <Button size="lg" variant="secondary" className="flex-shrink-0 rounded-full px-8 h-12 font-bold shadow-xl hover:scale-105 transition-transform">
-          {content.buttonText}
-          <ChevronRight className="w-4 h-4 ml-2" />
-        </Button>
+export const BannerSection = ({ content }: { content: any }) => {
+  const bgImage = content.bgImage;
+  return (
+    <section
+      className="py-16 relative overflow-hidden"
+      style={{ background: bgImage ? undefined : (content.bgColor || 'linear-gradient(135deg, #1e40af, #7c3aed)') }}
+    >
+      {bgImage && (
+        <div className="absolute inset-0 z-0">
+          <img src={bgImage} alt={content.title || 'Banner'} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-black/60" />
+        </div>
       )}
-    </div>
-  </section>
-);
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/10 to-transparent pointer-events-none" />
+      <div className="container px-4 mx-auto relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="text-white text-center md:text-left">
+          {content.badge && (
+            <span className="inline-block bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full mb-4 uppercase tracking-widest">
+              {content.badge}
+            </span>
+          )}
+          <h2 className="text-3xl md:text-4xl font-black mb-3">{content.title || 'Announcement Title'}</h2>
+          <p className="text-white/80 text-lg max-w-xl">{content.description || 'Add a description for this banner.'}</p>
+        </div>
+        {content.buttonText && (
+          <Button size="lg" variant="secondary" className="flex-shrink-0 rounded-full px-8 h-12 font-bold shadow-xl hover:scale-105 transition-transform">
+            {content.buttonText}
+            <ChevronRight className="w-4 h-4 ml-2" />
+          </Button>
+        )}
+      </div>
+    </section>
+  );
+};
 
 // ── DYNAMIC SECTION WRAPPERS (For mapping complex components to the page builder) ──
 
@@ -261,3 +297,29 @@ export const DynamicTopCoursesSection = () => (
 export const DynamicUpcomingCoursesSection = () => <UpcomingCoursesSection />;
 export const DynamicNewsSection = () => <LatestNewsSection />;
 export const DynamicTestimonialsSection = () => <CustomTestimonialsSection />;
+
+export const SectionRenderer = ({ section }: { section: any }) => {
+  if (!section || !section.is_active) return null;
+
+  switch (section.section_type) {
+    case 'hero': return <HeroSection content={section.content} />;
+    case 'content': return <ContentSection content={section.content} />;
+    case 'features': return <FeaturesSection content={section.content} />;
+    case 'testimonials': return <TestimonialsSection content={section.content} />;
+    case 'faq': return <FAQSection content={section.content} />;
+    case 'cta': return <CTASection content={section.content} />;
+    case 'stats': return <StatsSection content={section.content} />;
+    case 'team': return <TeamSection content={section.content} />;
+    case 'banner': return <BannerSection content={section.content} />;
+    case 'dynamic_hero': return <DynamicHeroSection />;
+    case 'dynamic_stats': return <DynamicStatsSection />;
+    case 'dynamic_how_it_works': return <DynamicHowItWorksSection />;
+    case 'dynamic_categories': return <DynamicCategoriesSection />;
+    case 'dynamic_features': return <DynamicPlatformFeaturesSection />;
+    case 'dynamic_top_courses': return <DynamicTopCoursesSection />;
+    case 'dynamic_upcoming_courses': return <DynamicUpcomingCoursesSection />;
+    case 'dynamic_news': return <DynamicNewsSection />;
+    case 'dynamic_testimonials': return <DynamicTestimonialsSection />;
+    default: return null;
+  }
+};

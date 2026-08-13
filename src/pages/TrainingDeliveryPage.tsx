@@ -2,11 +2,17 @@ import { Helmet } from "react-helmet-async";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { BookOpen, Monitor, Users, Award, ArrowRight, CheckCircle, Zap, Globe, Target, TrendingUp } from "lucide-react";
+import { DynamicPageSections } from "@/components/page-builder/DynamicPageSections";
 import { useSiteImage } from "@/hooks/useSiteImage";
+import { usePageContent } from "@/hooks/usePageContent";
 
 const TrainingDelivery = () => {
   // Fetch header image from centralized system
-  const { imageUrl: headerImage } = useSiteImage('header_training');
+  const { imageUrl: defaultHeaderImage } = useSiteImage('header_training');
+
+  // Fetch CMS content overrides (falls back to hardcoded defaults)
+  const { get } = usePageContent('training-delivery');
+  const headerImage = get('header_image') || defaultHeaderImage;
 
   return (
     <>
@@ -76,7 +82,7 @@ const TrainingDelivery = () => {
                 </h1>
 
                 <p className="text-xl md:text-2xl text-white/80 max-w-4xl mx-auto leading-relaxed">
-                  Innovative training delivery methods, strategies, and approaches designed to maximize learning impact and drive career and organizational transformation
+                  {get('hero_subtitle', 'Innovative training delivery methods, strategies, and approaches designed to maximize learning impact and drive career and organizational transformation')}
                 </p>
 
                 {/* Stats Bar */}
@@ -121,7 +127,7 @@ const TrainingDelivery = () => {
 
                 <div className="prose prose-lg max-w-none text-center">
                   <p className="text-xl text-muted-foreground leading-relaxed">
-                    Our training delivery encompasses methods, strategies, and approaches we use to present learning content and hands-on practical sessions to facilitate competency cultivation. We meticulously design our training delivery methods to maximise impact, effectiveness, and measurable outcomes for enhanced performance and sustainable career and organisational success.
+                    {get('intro_body', 'Our training delivery encompasses methods, strategies, and approaches we use to present learning content and hands-on practical sessions to facilitate competency cultivation. We meticulously design our training delivery methods to maximise impact, effectiveness, and measurable outcomes for enhanced performance and sustainable career and organisational success.')}
                   </p>
                 </div>
 

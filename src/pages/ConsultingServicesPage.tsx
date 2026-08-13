@@ -4,10 +4,14 @@ import Footer from "@/components/Footer";
 import { ArrowRight, Zap, CheckCircle, Target, TrendingUp, Lightbulb, BarChart2, Users, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSiteImage } from "@/hooks/useSiteImage";
+import { usePageContent } from "@/hooks/usePageContent";
+import { DynamicPageSections } from "@/components/page-builder/DynamicPageSections";
 
 const ConsultingServicesPage = () => {
   // Fetch header image from centralized system
-  const { imageUrl: headerImage } = useSiteImage('header_consultancy');
+  const { imageUrl: defaultHeaderImage } = useSiteImage('header_consultancy');
+  const { get } = usePageContent('consulting-services');
+  const headerImage = get('header_image') || defaultHeaderImage;
 
   return (
     <>
@@ -59,14 +63,14 @@ const ConsultingServicesPage = () => {
                 </div>
 
                 <h1 className="text-6xl md:text-8xl font-bold mb-6 leading-tight">
-                  <span className="text-white">Consulting</span>
+                  <span className="text-white">{get('hero_title', 'Consulting')}</span>
                   <span className="block text-red-600">
-                    Services
+                    {get('hero_subtitle', 'Services')}
                   </span>
                 </h1>
 
                 <p className="text-xl md:text-2xl text-gray-200 max-w-4xl mx-auto">
-                  Transform your organization with our expert consulting services designed to drive growth, innovation, and sustainable success.
+                  {get('hero_description', 'Transform your organization with our expert consulting services designed to drive growth, innovation, and sustainable success.')}
                 </p>
 
                 <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">

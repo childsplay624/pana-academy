@@ -23,18 +23,45 @@ export interface PageSection {
   section_type: string;
   content: any;
   order_index: number;
-  is_active: boolean;
 }
+
+export const DEFAULT_PAGES: Partial<Page>[] = [
+  { title: 'Home Page', slug: 'home', page_type: 'dynamic', status: 'published', show_in_navbar: true, show_in_footer: true, description: 'Homepage with hero banner, top courses, and stats.' },
+  { title: 'About Us', slug: 'about', page_type: 'static', status: 'published', show_in_navbar: true, show_in_footer: true, description: 'Company vision, mission, and highlights.' },
+  { title: 'Contact Us', slug: 'contact', page_type: 'static', status: 'published', show_in_navbar: true, show_in_footer: true, description: 'Office locations, email, phone numbers, and inquiry form.' },
+  { title: 'Careers', slug: 'careers', page_type: 'static', status: 'published', show_in_navbar: true, show_in_footer: true, description: 'Career opportunities and vision.' },
+  { title: 'Consulting Services', slug: 'consulting-services', page_type: 'static', status: 'published', show_in_navbar: true, show_in_footer: true, description: 'Expert consulting services.' },
+  { title: 'Research & Development', slug: 'rnd-services', page_type: 'static', status: 'published', show_in_navbar: true, show_in_footer: true, description: 'R&D services and methodologies.' },
+  { title: 'Training Delivery', slug: 'training-delivery', page_type: 'static', status: 'published', show_in_navbar: true, show_in_footer: true, description: 'Training methodologies and delivery options.' },
+];
 
 export const pageService = {
   // Page CRUD
   async getPages() {
-    const { data, error } = await supabase
+    const { data: existing, error } = await supabase
       .from('pages')
       .select('*')
       .order('created_at', { ascending: false });
     if (error) throw error;
-    return data as Page[];
+
+    const existingSlugs = new Set((existing || []).map(p => p.slug));
+    const missingDefaults = DEFAULT_PAGES.filter(p => !existingSlugs.has(p.slug!));
+
+    if (missingDefaults.length > 0) {
+      try {
+        const { data: inserted, error: insertErr } = await supabase
+          .from('pages')
+          .insert(missingDefaults)
+          .select();
+        if (!insertErr && inserted) {
+          return [...(existing || []), ...inserted] as Page[];
+        }
+      } catch (err) {
+        console.warn('Default pages seed warning:', err);
+      }
+    }
+
+    return (existing || []) as Page[];
   },
 
   async getPageById(id: string) {
@@ -100,14 +127,28 @@ export const pageService = {
   },
 
   async saveSections(pageId: string, sections: Partial<PageSection>[]) {
-    // Delete existing sections to replace them, or update based on ID
-    // For simplicity in a builder, we can delete and re-insert or use upsert
-    // We'll use a transaction logic via an edge function for complex operations, 
-    // but here we can use upsert if they have IDs.
-    
+    // Delete existing sections first, then insert the full new set.
+    // This prevents "zombie rows" when sections are removed or reordered.
+    const { error: deleteError } = await supabase
+      .from('page_sections')
+      .delete()
+      .eq('page_id', pageId);
+    if (deleteError) throw deleteError;
+
+    if (sections.length === 0) return [];
+
+    // Strip existing IDs so Supabase generates fresh ones on insert
+    const rows = sections.map((s, idx) => ({
+      page_id: pageId,
+      section_type: s.section_type,
+      content: s.content,
+      order_index: idx,
+      is_active: s.is_active ?? true,
+    }));
+
     const { data, error } = await supabase
       .from('page_sections')
-      .upsert(sections.map(s => ({ ...s, page_id: pageId })))
+      .insert(rows)
       .select();
     
     if (error) throw error;

@@ -71,6 +71,7 @@ import BlogPage from "./pages/BlogPage";
 import BlogPostPage from "./pages/BlogPostPage";
 import BlogManagement from "./pages/admin/BlogManagement";
 import BlogPostEditor from "./pages/admin/BlogPostEditor";
+import FindAndReplaceManagement from "./pages/admin/FindAndReplaceManagement";
 
 
 const queryClient = new QueryClient();
@@ -278,6 +279,14 @@ const App = () => (
                       element={
                         <ProtectedRoute allowedRoles={['admin']}>
                           <PageEditor />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/find-replace"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <FindAndReplaceManagement />
                         </ProtectedRoute>
                       }
                     />
