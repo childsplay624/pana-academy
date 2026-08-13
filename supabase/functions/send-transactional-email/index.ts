@@ -65,7 +65,7 @@ const emailLayout = (content: string, previewText: string) => `
       <div class="footer">
         <p>&copy; ${new Date().getFullYear()} PANA Institute. All rights reserved.</p>
         <p>Competency Cultivation Hub | Port Harcourt &amp; Abuja, Nigeria</p>
-        <p><a href="mailto:support@pana-academy.com" style="color: #64748b;">support@pana-academy.com</a></p>
+        <p><a href="mailto:support@pana-institute.com" style="color: #64748b;">support@pana-institute.com</a></p>
       </div>
     </div>
   </div>
@@ -342,7 +342,7 @@ serve(async (req: Request) => {
     console.log(`Attempting to send ${type || 'custom'} email to:`, to);
 
     // Use Resend REST API directly
-    const fromEmail = Deno.env.get('RESEND_FROM_EMAIL') || 'PANA Institute <noreply@pana-academy.com>';
+    const fromEmail = Deno.env.get('RESEND_FROM_EMAIL') || 'PANA Institute <noreply@pana-institute.com>';
     
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',

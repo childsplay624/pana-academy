@@ -64,7 +64,7 @@ serve(async (req: Request) => {
         'Authorization': `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: from || 'PANA Institute <noreply@pana-academy.com>',
+        from: from || 'PANA Institute <noreply@pana-institute.com>',
         to: [to],
         subject: subject,
         html: html,

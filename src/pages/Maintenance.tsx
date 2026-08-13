@@ -54,7 +54,7 @@ export default function Maintenance() {
                         </Button>
                         <Button
                             className="rounded-full px-8"
-                            onClick={() => window.location.href = "mailto:support@pana-academy.com"}
+                            onClick={() => window.location.href = "mailto:support@pana-institute.com"}
                         >
                             Contact Support
                         </Button>

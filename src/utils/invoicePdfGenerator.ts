@@ -103,7 +103,7 @@ export async function generateInvoicePdf(invoice: InvoiceData): Promise<void> {
     const [rG, gG, bG] = hexToRgb(COLORS.mediumGray);
     doc.setTextColor(rG, gG, bG);
     doc.text('Competency Cultivation Hub', rightX, y + 14, { align: 'right' });
-    doc.text('support@pana-academy.com', rightX, y + 18, { align: 'right' });
+    doc.text('support@pana-institute.com', rightX, y + 18, { align: 'right' });
     doc.text('www.pana-academy.com', rightX, y + 22, { align: 'right' });
     doc.text('Port Harcourt, Rivers State, Nigeria', rightX, y + 26, { align: 'right' });
 
@@ -211,7 +211,7 @@ export async function generateInvoicePdf(invoice: InvoiceData): Promise<void> {
     doc.setFontSize(9);
     doc.setTextColor(rMG, gMG, bMG);
     doc.text('Competency Cultivation Hub', metaRightX + 5, y + 19);
-    doc.text('support@pana-academy.com', metaRightX + 5, y + 24);
+    doc.text('support@pana-institute.com', metaRightX + 5, y + 24);
 
     y += 36;
 
@@ -341,7 +341,7 @@ export async function generateInvoicePdf(invoice: InvoiceData): Promise<void> {
     const footerLines = [
         'Thank you for choosing PANA Institute!',
         'This is a computer-generated invoice and does not require a signature.',
-        'For questions about this invoice, please contact support@pana-academy.com',
+        'For questions about this invoice, please contact support@pana-institute.com',
         '',
         'PANA Institute Limited | Competency Cultivation Hub | Port Harcourt, Rivers State, Nigeria',
         'www.pana-academy.com',

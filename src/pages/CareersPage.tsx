@@ -130,7 +130,7 @@ const CareersPage = () => {
                                         <p className="text-gray-300 mb-6">
                                             Send your resume and a brief introduction to our talent acquisition team.
                                         </p>
-                                        <a href="mailto:careers@pana-academy.com" className="text-pana-gold text-xl font-bold hover:underline">
+                                        <a href="mailto:careers@pana-institute.com" className="text-pana-gold text-xl font-bold hover:underline">
                                             info@pana-institute.com
                                         </a>
                                     </div>

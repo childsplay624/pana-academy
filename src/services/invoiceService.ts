@@ -170,7 +170,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
             <div class="section-title">Bill From:</div>
             <div><strong>PANA INSTITUTE</strong></div>
             <div>Online Education Platform</div>
-            <div>support@pana-academy.com</div>
+            <div>support@pana-institute.com</div>
           </div>
         </div>
 
@@ -211,7 +211,7 @@ export const generateInvoiceHTML = (data: InvoiceData): string => {
         <div class="footer">
           <div class="thank-you">Thank you for your purchase!</div>
           <div>This is a computer-generated invoice and does not require a signature.</div>
-          <div>For any questions, please contact support@pana-academy.com</div>
+          <div>For any questions, please contact support@pana-institute.com</div>
         </div>
       </div>
     </body>
@@ -294,7 +294,7 @@ export const createAndSendInvoice = async (
 
     // Get the user's email from Supabase auth metadata
     const { data: { user: authUser } } = await supabase.auth.getUser();
-    const userEmail = authUser?.email || 'student@pana-academy.com';
+    const userEmail = authUser?.email || 'student@pana-institute.com';
 
     // Get course details
     const { data: courseData, error: courseError } = await supabase

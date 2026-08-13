@@ -10,14 +10,14 @@ const ContactSection = () => {
       city: "Abuja (Headquarters)",
       address: "Plot 123, Central Business District, Abuja, Nigeria",
       phone: "+234 702 600 0119",
-      email: "abuja@pana-academy.com",
+      email: "abuja@pana-institute.com",
       hours: "Mon - Fri: 8:00 AM - 6:00 PM"
     },
     {
       city: "Port Harcourt",
       address: "15 Trans Amadi Industrial Layout, Port Harcourt, Nigeria",
       phone: "+234 808 765 4321",
-      email: "phc@pana-academy.com",
+      email: "phc@pana-institute.com",
       hours: "Mon - Fri: 8:00 AM - 6:00 PM"
     }
   ];
