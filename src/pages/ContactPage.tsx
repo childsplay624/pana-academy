@@ -149,7 +149,7 @@ export const ContactPage = () => {
                           </div>
                           <div>
                             <h3 className="text-xl font-semibold text-gray-800 mb-2">Email</h3>
-                            <p className="text-gray-600">{get('email', 'Info@pana-academy.com')}</p>
+                            <p className="text-gray-600">{get('email', 'info@pana-institute.com')}</p>
                           </div>
                         </div>
                       </div>

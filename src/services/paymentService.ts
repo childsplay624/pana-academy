@@ -293,7 +293,7 @@ export const uploadReceipt = async (
         console.warn('Failed to fetch payment data for admin email:', paymentDataError);
       } else if (paymentData) {
         await sendEmail({
-          to: 'info@pana-academy.com', // Primary admin gateway
+          to: 'info@pana-institute.com', // Primary admin gateway
           type: 'payment_proof_uploaded',
           payload: {
             userName: paymentData.profiles?.full_name || 'Student',

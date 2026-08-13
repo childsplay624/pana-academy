@@ -160,7 +160,7 @@ const ContactSection = () => {
                   </div>
                   <div className="flex items-center space-x-3">
                     <Mail className="w-4 h-4 text-pana-gold" />
-                    <p className="text-base">info@pana-academy.com</p>
+                    <p className="text-base">info@pana-institute.com</p>
                   </div>
                 </div>
                 <Button className="w-full mt-4 bg-red-600 text-white hover:bg-white hover:text-red-600 transition-colors">

@@ -118,9 +118,9 @@ serve(async (req: Request) => {
             },
             body: JSON.stringify({
                 // NOTE: Use 'onboarding@resend.dev' if your domain is not yet verified in Resend.
-                // Once verified, change back to 'PANA Institute <info@pana-academy.com>'
+                // Once verified, change back to 'PANA Institute <info@pana-institute.com>'
                 from: 'onboarding@resend.dev', 
-                to: ['info@pana-academy.com'],
+                to: ['info@pana-institute.com'],
                 reply_to: email,
                 subject: `Contact Form: ${subject}`,
                 html: `

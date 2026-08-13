@@ -115,7 +115,7 @@ const Footer = () => {
               <p className="text-gray-400 mb-6 leading-relaxed">Empowering talent across sectors through world-class training, consulting, and research excellence.</p>
               <div className="space-y-3">
                 <div className="flex items-center space-x-3 text-sm"><Phone className="w-4 h-4 text-red-600" /><span>+234 702 600 0119</span></div>
-                <div className="flex items-center space-x-3 text-sm"><Mail className="w-4 h-4 text-red-600" /><span>info@pana-academy.com</span></div>
+                <div className="flex items-center space-x-3 text-sm"><Mail className="w-4 h-4 text-red-600" /><span>info@pana-institute.com</span></div>
                 <div className="flex items-center space-x-3 text-sm"><MapPin className="w-4 h-4 text-red-600" /><span>Abuja & Port Harcourt</span></div>
               </div>
             </div>
