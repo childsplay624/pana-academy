@@ -39,88 +39,104 @@ export function Navigation() {
   const navigate = useNavigate();
   const closeTimerRef = useRef<NodeJS.Timeout | null>(null);
   const navRef = useRef<HTMLDivElement>(null);
-  const [customPages, setCustomPages] = useState<{ name: string; href: string }[]>([]);
+  const [navItems, setNavItems] = useState<any[]>([]);
 
-  // ─── Fetch dynamic pages for navbar ───
+  // ─── Fetch dynamic pages and navbar structure ───
   useEffect(() => {
-    const fetchNavPages = async () => {
+    const fetchNavData = async () => {
       try {
-        const { data } = await supabase
+        // Fetch custom pages for the "More" dropdown fallback
+        const { data: pageData } = await supabase
           .from('pages')
           .select('title, slug')
           .eq('status', 'published')
           .eq('show_in_navbar', true);
-        if (data) {
-          setCustomPages(data.map(p => ({ name: p.title, href: `/p/${p.slug}` })));
+          
+        let customPagesDropdown: any[] = [];
+        if (pageData && pageData.length > 0) {
+          customPagesDropdown = pageData.map(p => ({ name: p.title, href: `/p/${p.slug}`, icon: FileText }));
         }
+
+        // Fetch dynamic navbar
+        const { data: settingData } = await supabase
+          .from('platform_settings')
+          .select('value')
+          .eq('key', 'navbar_layout')
+          .maybeSingle();
+
+        if (settingData && settingData.value) {
+          let parsed = settingData.value;
+          if (typeof parsed === 'string') parsed = JSON.parse(parsed);
+          setNavItems(parsed);
+          return;
+        }
+
+        // Fallback default navigation if no custom layout exists
+        const defaultItems = [
+          { name: "Home", href: "/" },
+          {
+            name: "About",
+            href: "/about",
+            megaMenu: true,
+            columns: [
+              {
+                heading: "Company",
+                links: [
+                  { name: "About Us", href: "/about", desc: "Our mission, vision & values", icon: Sparkles },
+                  { name: "Leadership Team", href: "/team", desc: "Meet our industry experts", icon: Users },
+                  { name: "Our Journey", href: "/our-journey", desc: "Milestones & history", icon: Compass },
+                  { name: "Testimonials", href: "/testimonials", desc: "Client success stories", icon: Award },
+                ]
+              }
+            ],
+            callout: {
+              title: "About PANA Institute",
+              desc: "Africa's leading competency hub for Oil & Gas professionals.",
+              cta: "Learn More",
+              href: "/about",
+            }
+          },
+          {
+            name: "Solutions",
+            href: "/training-delivery",
+            megaMenu: true,
+            columns: [
+              {
+                heading: "Our Services",
+                links: [
+                  { name: "Training Delivery", href: "/training-delivery", desc: "Competency-based programs", icon: BookOpen },
+                  { name: "Consulting", href: "/consulting-services", desc: "Strategic energy advisory", icon: Layers },
+                  { name: "R&D Services", href: "/research-development", desc: "Innovation & technical R&D", icon: Zap },
+                ]
+              }
+            ],
+            callout: {
+              title: "Capacity Building",
+              desc: "Customized workforce training and manpower development programs.",
+              cta: "Explore Solutions",
+              href: "/training-delivery",
+            }
+          },
+          { name: "Courses", href: "/courses" },
+          { name: "Contact", href: "/contact" },
+        ];
+
+        if (customPagesDropdown.length > 0) {
+          defaultItems.push({
+            name: "More",
+            href: "#",
+            dropdown: customPagesDropdown,
+            megaMenu: false,
+          } as any);
+        }
+
+        setNavItems(defaultItems);
       } catch (err) {
-        console.error("Error fetching navbar pages:", err);
+        console.error("Error fetching navbar data:", err);
       }
     };
-    fetchNavPages();
+    fetchNavData();
   }, []);
-
-  // ─── Navigation structure ───
-  const navItems = useMemo(() => {
-    const items: any[] = [
-      { name: "Home", href: "/" },
-      {
-        name: "About",
-        href: "/about",
-        megaMenu: true,
-        columns: [
-          {
-            heading: "Company",
-            links: [
-              { name: "About Us", href: "/about", desc: "Our mission, vision & values", icon: Sparkles },
-              { name: "Leadership Team", href: "/team", desc: "Meet our industry experts", icon: Users },
-              { name: "Our Journey", href: "/our-journey", desc: "Milestones & history", icon: Compass },
-              { name: "Testimonials", href: "/testimonials", desc: "Client success stories", icon: Award },
-            ]
-          }
-        ],
-        callout: {
-          title: "About PANA Institute",
-          desc: "Africa's leading competency hub for Oil & Gas professionals.",
-          cta: "Learn More",
-          href: "/about",
-        }
-      },
-      {
-        name: "Solutions",
-        href: "/training-delivery",
-        megaMenu: true,
-        columns: [
-          {
-            heading: "Our Services",
-            links: [
-              { name: "Training Delivery", href: "/training-delivery", desc: "Competency-based programs", icon: BookOpen },
-              { name: "Consulting", href: "/consulting-services", desc: "Strategic energy advisory", icon: Layers },
-              { name: "R&D Services", href: "/research-development", desc: "Innovation & technical R&D", icon: Zap },
-            ]
-          }
-        ],
-        callout: {
-          title: "Capacity Building",
-          desc: "Customized workforce training and manpower development programs.",
-          cta: "Explore Solutions",
-          href: "/training-delivery",
-        }
-      },
-      { name: "Courses", href: "/courses" },
-      { name: "Contact", href: "/contact" },
-    ];
-
-    if (customPages.length > 0) {
-      items.push({
-        name: "More",
-        href: "#",
-        dropdown: customPages.map(cp => ({ name: cp.name, href: cp.href, icon: FileText })),
-      });
-    }
-
-    return items;
-  }, [customPages]);
 
   // ─── Scroll handler ───
   useEffect(() => {
@@ -401,21 +417,6 @@ export function Navigation() {
                       className="text-[13px] font-semibold text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white rounded-lg px-4"
                     >
                       Sign In
-                    </Button>
-                  </Link>
-                  <Link to="/courses">
-                    <Button 
-                      size="sm"
-                      className="relative overflow-hidden bg-red-600 hover:bg-red-700 text-white text-[13px] font-semibold rounded-lg px-5 shadow-sm hover:shadow-md transition-all active:scale-[0.98] group/cta"
-                    >
-                      <span className="relative z-10">Explore Courses</span>
-                      <span 
-                        className="absolute inset-0 z-0 opacity-0 group-hover/cta:opacity-100" 
-                        style={{
-                          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)',
-                          animation: 'nav-shimmer 1.5s ease-in-out infinite',
-                        }}
-                      />
                     </Button>
                   </Link>
                 </div>
