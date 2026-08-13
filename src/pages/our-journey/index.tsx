@@ -268,7 +268,7 @@ export default function OurJourney() {
                               <h3 className="text-xl font-bold">Transformation</h3>
                             </div>
                             <p className="text-red-100 leading-relaxed">
-                              Evolved into a full-fledged academy with industry recognition, expanding our training programs and industry partnerships.
+                              Evolved into a full-fledged institute with industry recognition, expanding our training programs and industry partnerships.
                             </p>
                           </div>
                         </div>

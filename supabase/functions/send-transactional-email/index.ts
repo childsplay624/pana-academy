@@ -55,7 +55,7 @@ const emailLayout = (content: string, previewText: string) => `
     <div class="container">
       <div class="header">
         <div style="font-size: 24px; font-weight: bold; color: white; letter-spacing: 2px;">
-          PANA <span style="color: ${BRAND_COLORS.red};">ACADEMY</span>
+          PANA <span style="color: ${BRAND_COLORS.red};">INSTITUTE</span>
         </div>
       </div>
       <div class="gold-bar"></div>

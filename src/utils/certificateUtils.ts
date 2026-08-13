@@ -233,7 +233,7 @@ export const generateCertificateHtml = (certificate: Certificate, studentName: s
             <svg class="lion-logo" viewBox="0 0 100 100" fill="#000">
                 <path d="M50 10 L40 30 L60 30 Z M30 40 Q20 40 20 60 L80 60 Q80 40 70 40 M45 70 L55 70 L50 90 Z" />
             </svg>
-            <div class="brand-name">PANA <span>Academy</span></div>
+            <div class="brand-name">PANA <span>Institute</span></div>
             <div class="brand-tagline">Competency Cultivation Hub</div>
         </div>
 

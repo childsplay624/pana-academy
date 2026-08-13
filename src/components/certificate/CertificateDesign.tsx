@@ -63,7 +63,7 @@ export function CertificateDesign({
           </div>
           <div className="text-center">
             <h2 className="text-xl font-medium tracking-[0.2em] uppercase text-gray-800">
-              PANA <span className="text-red-800">Academy</span>
+              PANA <span className="text-red-800">Institute</span>
             </h2>
             <p className="text-[10px] tracking-[0.4em] uppercase text-gray-600 font-semibold">
               Competency Cultivation Hub

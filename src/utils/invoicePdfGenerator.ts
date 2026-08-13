@@ -96,7 +96,7 @@ export async function generateInvoicePdf(invoice: InvoiceData): Promise<void> {
     doc.setFont('helvetica', 'bold');
     const [rR, gR, bR] = hexToRgb(COLORS.red);
     doc.setTextColor(rR, gR, bR);
-    doc.text('Academy', rightX - 23, y + 8);
+    doc.text('Institute', rightX - 23, y + 8);
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(7);

@@ -72,6 +72,7 @@ import BlogPostPage from "./pages/BlogPostPage";
 import BlogManagement from "./pages/admin/BlogManagement";
 import BlogPostEditor from "./pages/admin/BlogPostEditor";
 import FindAndReplaceManagement from "./pages/admin/FindAndReplaceManagement";
+import NavigationManagement from "./pages/admin/NavigationManagement";
 
 
 const queryClient = new QueryClient();
@@ -231,6 +232,14 @@ const App = () => (
                       element={
                         <ProtectedRoute allowedRoles={['admin']}>
                           <TeamManagement />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/navigation"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <NavigationManagement />
                         </ProtectedRoute>
                       }
                     />
