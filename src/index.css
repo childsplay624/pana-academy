@@ -135,11 +135,26 @@ All colors MUST be HSL.
 
   img {
     image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
-    image-rendering: pixelated;
     backface-visibility: hidden;
     transform: translateZ(0);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer utilities {
+  .scale {
+    height: 14px;
+    width: 100%;
+    background-image: repeating-linear-gradient(90deg, #E3DDD2 0 1px, transparent 1px 22px);
+    border-bottom: 1px solid #E3DDD2;
+  }
+  .scale.tall {
+    height: 22px;
+    background-image: repeating-linear-gradient(90deg, #6E1D2B 0 1.5px, transparent 1.5px 30px);
+    opacity: 0.5;
+  }
+  .anchor-head {
+    scroll-margin-top: 90px;
   }
 }

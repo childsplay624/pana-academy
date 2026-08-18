@@ -75,48 +75,83 @@ export function Navigation() {
         const defaultItems = [
           { name: "Home", href: "/" },
           {
-            name: "About",
-            href: "/about",
+            name: "Our Institute",
+            href: "/our-institute",
             megaMenu: true,
             columns: [
               {
-                heading: "Company",
+                heading: "Overview & Leadership",
                 links: [
-                  { name: "About Us", href: "/about", desc: "Our mission, vision & values", icon: Sparkles },
-                  { name: "Leadership Team", href: "/team", desc: "Meet our industry experts", icon: Users },
-                  { name: "Our Journey", href: "/our-journey", desc: "Milestones & history", icon: Compass },
-                  { name: "Testimonials", href: "/testimonials", desc: "Client success stories", icon: Award },
+                  { name: "Our Journey", href: "/our-institute#our-journey", desc: "From Academy to Institute", icon: Compass },
+                  { name: "Governing Council", href: "/our-institute#gov-council", desc: "Supreme oversight", icon: ShieldCheck },
+                  { name: "Executive Management", href: "/our-institute#exec-team", desc: "Operations & strategy leads", icon: Users },
+                  { name: "Inaugural Faculties", href: "/our-institute#faculties", desc: "Technical domain experts", icon: Award },
+                ]
+              },
+              {
+                heading: "Culture & Safety",
+                links: [
+                  { name: "Safety at PANA Institute", href: "/our-institute#safety", desc: "ISO 14001 & ISO 45001", icon: ShieldCheck },
+                  { name: "Careers", href: "/our-institute#careers", desc: "Build the Institute with us", icon: Sparkles },
+                  { name: "Our People & Culture", href: "/our-institute#culture", desc: "The five operating Ps", icon: Users },
                 ]
               }
             ],
             callout: {
-              title: "About PANA Institute",
-              desc: "Africa's leading competency hub for Oil & Gas professionals.",
+              title: "PANA Institute",
+              desc: "Building the standard against which competence is measured.",
               cta: "Learn More",
-              href: "/about",
+              href: "/our-institute",
             }
           },
           {
-            name: "Solutions",
-            href: "/training-delivery",
+            name: "Competency",
+            href: "/competency",
             megaMenu: true,
             columns: [
               {
-                heading: "Our Services",
+                heading: "Assessment & Development",
                 links: [
-                  { name: "Training Delivery", href: "/training-delivery", desc: "Competency-based programs", icon: BookOpen },
-                  { name: "Consulting", href: "/consulting-services", desc: "Strategic energy advisory", icon: Layers },
-                  { name: "R&D Services", href: "/research-development", desc: "Innovation & technical R&D", icon: Zap },
+                  { name: "Programmes", href: "/competency#programmes", desc: "13 categories of training", icon: BookOpen },
+                  { name: "Faculty", href: "/competency#faculty", desc: "Industry-leading instructors", icon: Users },
+                  { name: "Labs", href: "/competency#labs", desc: "Experiential facilities", icon: Zap },
+                  { name: "Roar Club", href: "/competency#roar-club", desc: "Alumni network & fellowship", icon: Award },
                 ]
               }
             ],
             callout: {
-              title: "Capacity Building",
-              desc: "Customized workforce training and manpower development programs.",
-              cta: "Explore Solutions",
-              href: "/training-delivery",
+              title: "Competency Vertical",
+              desc: "Assess, then cultivate practical competencies.",
+              cta: "Explore Programmes",
+              href: "/competency",
             }
           },
+          {
+            name: "Research & R&D",
+            href: "/research",
+            megaMenu: true,
+            columns: [
+              {
+                heading: "Centres of Excellence",
+                links: [
+                  { name: "Oil & Gas Technology", href: "/research#coe-oilgas", desc: "Upstream & process safety", icon: Layers },
+                  { name: "Sustainability & Environment", href: "/research#coe-sustainability", desc: "Emissions & ESG reporting", icon: Sparkles },
+                  { name: "Energy & Power", href: "/research#coe-energy", desc: "Grid modernisation & renewables", icon: Zap },
+                  { name: "Digital Innovation & AI", href: "/research#coe-digital", desc: "Industrial data & OT security", icon: Layers },
+                  { name: "Smart Agriculture", href: "/research#coe-agric", desc: "Agri processing & climate risk", icon: Compass },
+                ]
+              }
+            ],
+            callout: {
+              title: "5 Centres of Excellence",
+              desc: "Supplying subject authority and driving applied research.",
+              cta: "Discover R&D",
+              href: "/research",
+            }
+          },
+          { name: "Consultancy", href: "/consultancy" },
+          { name: "Sustainability", href: "/sustainability" },
+          { name: "Global Engagements", href: "/global" },
           { name: "Courses", href: "/courses" },
           { name: "Contact", href: "/contact" },
         ];
