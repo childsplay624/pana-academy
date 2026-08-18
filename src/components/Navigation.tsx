@@ -458,22 +458,37 @@ export function Navigation() {
               )}
             </div>
 
-            {/* ─── Mobile Trigger ─── */}
-            <div className="lg:hidden flex items-center gap-2">
+            {/* ─── Mobile Trigger (PANA Institute Editorial 3-Bar Burger) ─── */}
+            <div className="lg:hidden flex items-center gap-3">
               {user && <NotificationBell />}
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="h-10 w-10 flex items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                className="group relative h-10 w-10 flex flex-col justify-center items-center gap-[5px] bg-paper-soft hover:bg-line/40 border border-line rounded-md transition-colors p-2.5"
                 aria-label="Toggle menu"
+                aria-expanded={isOpen}
               >
-                {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                <span 
+                  className={`w-5 h-[2px] bg-ink transition-transform duration-300 origin-center ${
+                    isOpen ? 'translate-y-[7px] rotate-45' : ''
+                  }`} 
+                />
+                <span 
+                  className={`w-5 h-[2px] bg-ink transition-opacity duration-200 ${
+                    isOpen ? 'opacity-0' : 'opacity-100'
+                  }`} 
+                />
+                <span 
+                  className={`w-5 h-[2px] bg-ink transition-transform duration-300 origin-center ${
+                    isOpen ? '-translate-y-[7px] -rotate-45' : ''
+                  }`} 
+                />
               </button>
             </div>
           </div>
         </div>
       </header>
 
-      {/* ─── Mobile Overlay & Drawer ─── */}
+      {/* ─── Mobile Drawer Overlay ─── */}
       <AnimatePresence>
         {isOpen && (
           <>
@@ -482,32 +497,34 @@ export function Navigation() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden"
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-40 bg-ink/40 backdrop-blur-xs lg:hidden"
               onClick={() => setIsOpen(false)}
             />
 
-            {/* Slide-over panel */}
+            {/* Slide-Down Mobile Drawer */}
             <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: "spring", damping: 28, stiffness: 260 }}
-              className="fixed top-0 right-0 bottom-0 w-full max-w-sm bg-white dark:bg-zinc-900 shadow-2xl z-50 lg:hidden flex flex-col"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed top-[70px] left-0 right-0 z-50 bg-paper border-b border-line shadow-2xl lg:hidden max-h-[calc(100vh-70px)] flex flex-col"
             >
-              {/* Mobile header */}
-              <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-100 dark:border-zinc-800">
-                <Logo />
+              <div className="flex items-center justify-between px-6 py-4 border-b border-line bg-paper-soft">
+                <span className="font-mono text-xs font-semibold text-oxblood uppercase tracking-[0.2em]">
+                  PANA Institute Menu
+                </span>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="h-9 w-9 flex items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                  className="text-xs font-mono text-muted-foreground hover:text-oxblood uppercase tracking-wider"
                 >
-                  <X className="w-5 h-5" />
+                  Close [×]
                 </button>
               </div>
 
               {/* Mobile links */}
-              <div className="flex-1 overflow-y-auto px-4 py-5">
-                <div className="space-y-1">
+              <div className="flex-1 overflow-y-auto px-6 py-5 divide-y divide-line">
+                <div className="space-y-1 pb-4">
                   {navItems.map((item: any) => {
                     const active = isActive(item.href);
                     const hasChildren = item.columns || item.dropdown;
@@ -517,13 +534,13 @@ export function Navigation() {
                       : item.dropdown || [];
 
                     return (
-                      <div key={item.name}>
+                      <div key={item.name} className="py-1">
                         <a
                           href={item.href}
-                          className={`flex items-center justify-between w-full px-4 py-3 rounded-xl text-[15px] font-semibold transition-colors ${
+                          className={`flex items-center justify-between w-full py-2.5 text-[15px] font-medium transition-colors ${
                             active
-                              ? 'bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400'
-                              : 'text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800'
+                              ? 'text-oxblood font-semibold'
+                              : 'text-ink-soft hover:text-oxblood'
                           }`}
                           onClick={(e) => {
                             if (hasChildren) {
@@ -534,9 +551,9 @@ export function Navigation() {
                             }
                           }}
                         >
-                          {item.name}
+                          <span className="font-sans">{item.name}</span>
                           {hasChildren && (
-                            <ChevronDown className={`w-4 h-4 text-zinc-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+                            <ChevronDown className={`w-4 h-4 text-oxblood opacity-70 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
                           )}
                         </a>
 
@@ -550,15 +567,15 @@ export function Navigation() {
                               transition={{ duration: 0.2 }}
                               className="overflow-hidden"
                             >
-                              <div className="ml-4 pl-4 border-l-2 border-zinc-100 dark:border-zinc-800 py-1 space-y-0.5">
+                              <div className="ml-3 pl-3 border-l border-line py-2 space-y-1.5 bg-paper-soft/50 rounded-sm my-1">
                                 {allLinks.map((link: any) => (
                                   <a
                                     key={link.name}
                                     href={link.href}
-                                    className={`block px-3 py-2.5 rounded-lg text-[14px] font-medium transition-colors ${
+                                    className={`block px-3 py-2 text-[13.5px] transition-colors ${
                                       isActive(link.href)
-                                        ? 'text-red-700 dark:text-red-400 bg-red-50/50 dark:bg-red-950/20'
-                                        : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/50'
+                                        ? 'text-oxblood font-semibold'
+                                        : 'text-muted-foreground hover:text-ink'
                                     }`}
                                     onClick={(e) => handleNavigation(e, link.href)}
                                   >
@@ -575,8 +592,8 @@ export function Navigation() {
                 </div>
               </div>
 
-              {/* Mobile footer */}
-              <div className="px-5 py-5 border-t border-zinc-100 dark:border-zinc-800 space-y-3">
+              {/* Mobile footer actions */}
+              <div className="px-6 py-5 border-t border-line bg-paper-soft space-y-3">
                 {!user ? (
                   <div className="space-y-2">
                     <Link to="/courses" onClick={() => setIsOpen(false)}>
