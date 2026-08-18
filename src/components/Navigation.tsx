@@ -30,6 +30,16 @@ const shimmerKeyframes = `
 }
 `;
 
+const ICON_MAP: Record<string, any> = {
+  Compass, ShieldCheck, Users, Award, Sparkles, BookOpen, Zap, Layers, FileText
+};
+
+const getIconComponent = (icon: any) => {
+  if (typeof icon === 'string' && ICON_MAP[icon]) return ICON_MAP[icon];
+  if (typeof icon === 'function' || (typeof icon === 'object' && icon !== null)) return icon;
+  return FileText;
+};
+
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -67,8 +77,11 @@ export function Navigation() {
         if (settingData && settingData.value) {
           let parsed = settingData.value;
           if (typeof parsed === 'string') parsed = JSON.parse(parsed);
-          setNavItems(parsed);
-          return;
+          const hasNewInstituteNav = Array.isArray(parsed) && parsed.some((item: any) => item.href === '/our-institute' || item.href === '/competency');
+          if (hasNewInstituteNav) {
+            setNavItems(parsed);
+            return;
+          }
         }
 
         // Fallback default navigation if no custom layout exists
@@ -238,7 +251,7 @@ export function Navigation() {
                 <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-zinc-400 dark:text-zinc-500 mb-3 px-1">{col.heading}</p>
                 <div className="space-y-0.5">
                   {col.links.map((link: any) => {
-                    const Icon = link.icon || FileText;
+                    const Icon = getIconComponent(link.icon);
                     const active = isActive(link.href);
                     return (
                       <a
