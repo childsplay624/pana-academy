@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { 
   Menu, X, ChevronDown, User, LogOut, LayoutDashboard, Settings, 
   FileText, Sparkles, BookOpen, Users, Compass, Award,
-  Layers, ArrowRight, Zap, ChevronRight
+  Layers, ArrowRight, Zap, ChevronRight, ShieldCheck
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
