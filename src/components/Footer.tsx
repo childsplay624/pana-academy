@@ -2,7 +2,7 @@ import { Mail, Phone, MapPin, Instagram, Linkedin, Facebook, Twitter } from "luc
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-const Footer = () => {
+export const Footer = () => {
   const currentYear = new Date().getFullYear();
   const [footerColumns, setFooterColumns] = useState<any[]>([]);
 
