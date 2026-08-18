@@ -238,18 +238,18 @@ export function Navigation() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 6 }}
       transition={{ duration: 0.18, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className="absolute top-full left-1/2 -translate-x-1/2 pt-3 z-50"
+      className="absolute top-full left-1/2 -translate-x-1/2 pt-2 z-50"
       onMouseEnter={() => { if (closeTimerRef.current) clearTimeout(closeTimerRef.current); }}
       onMouseLeave={handleDropdownLeave}
     >
-      <div className="w-[520px] bg-white dark:bg-zinc-900 rounded-2xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] border border-zinc-200/80 dark:border-zinc-700/60 overflow-hidden">
-        <div className="grid grid-cols-5">
-          {/* Links column */}
-          <div className="col-span-3 p-5">
+      <div className="w-[760px] max-w-[90vw] bg-paper rounded-sm shadow-2xl border border-line overflow-hidden p-6">
+        <div className="grid grid-cols-5 gap-6">
+          {/* Links columns */}
+          <div className="col-span-3 space-y-6">
             {item.columns?.map((col: any, ci: number) => (
               <div key={ci}>
-                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-zinc-400 dark:text-zinc-500 mb-3 px-1">{col.heading}</p>
-                <div className="space-y-0.5">
+                <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-oxblood mb-3">{col.heading}</p>
+                <div className="space-y-1">
                   {col.links.map((link: any) => {
                     const Icon = getIconComponent(link.icon);
                     const active = isActive(link.href);
@@ -258,25 +258,21 @@ export function Navigation() {
                         key={link.name}
                         href={link.href}
                         onClick={(e) => { e.preventDefault(); handleNavigation(e, link.href); }}
-                        className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-150 ${
+                        className={`group flex items-start gap-3 p-2.5 rounded-xs transition-colors ${
                           active 
-                            ? 'bg-red-50 dark:bg-red-950/40' 
-                            : 'hover:bg-zinc-50 dark:hover:bg-zinc-800/60'
+                            ? 'bg-paper-soft text-oxblood font-medium' 
+                            : 'hover:bg-paper-soft text-ink-soft hover:text-oxblood'
                         }`}
                       >
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors shrink-0 ${
-                          active
-                            ? 'bg-red-600 text-white'
-                            : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 group-hover:bg-red-600 group-hover:text-white'
-                        }`}>
-                          <Icon className="w-4 h-4" />
+                        <div className="w-7 h-7 rounded-xs flex items-center justify-center bg-paper-soft text-oxblood group-hover:bg-oxblood group-hover:text-white transition-colors shrink-0 mt-0.5">
+                          <Icon className="w-3.5 h-3.5" />
                         </div>
                         <div className="min-w-0">
-                          <p className={`text-[13px] font-semibold leading-tight ${active ? 'text-red-700 dark:text-red-400' : 'text-zinc-800 dark:text-zinc-200'}`}>
+                          <p className={`text-[13.5px] leading-tight ${active ? 'font-semibold text-oxblood' : 'font-medium text-ink'}`}>
                             {link.name}
                           </p>
                           {link.desc && (
-                            <p className="text-[11px] text-zinc-400 dark:text-zinc-500 leading-snug mt-0.5 truncate">{link.desc}</p>
+                            <p className="text-xs text-muted-foreground leading-snug mt-0.5">{link.desc}</p>
                           )}
                         </div>
                       </a>
@@ -287,20 +283,21 @@ export function Navigation() {
             ))}
           </div>
 
-          {/* Callout side panel */}
+          {/* Featured Callout Card */}
           {item.callout && (
-            <div className="col-span-2 bg-zinc-50 dark:bg-zinc-800/50 p-5 flex flex-col justify-between border-l border-zinc-100 dark:border-zinc-700/50">
+            <div className="col-span-2 bg-paper-soft p-5 border border-line rounded-xs flex flex-col justify-between">
               <div>
-                <h4 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 leading-snug">{item.callout.title}</h4>
-                <p className="text-[12px] text-zinc-500 dark:text-zinc-400 leading-relaxed mt-2">{item.callout.desc}</p>
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-brass font-semibold block mb-2">Featured</span>
+                <h4 className="font-serif text-lg font-medium text-ink mb-2 leading-tight">{item.callout.title}</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">{item.callout.desc}</p>
               </div>
               <a
                 href={item.callout.href}
-                onClick={(e) => { e.preventDefault(); handleNavigation(e, item.callout.href); }}
-                className="mt-4 inline-flex items-center gap-1.5 text-[12px] font-bold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors group/cta"
+                onClick={(e) => handleNavigation(e, item.callout.href)}
+                className="mt-6 inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-oxblood hover:text-oxblood-deep font-semibold transition-colors group/cta"
               >
                 {item.callout.cta}
-                <ArrowRight className="w-3.5 h-3.5 group-hover/cta:translate-x-0.5 transition-transform" />
+                <ArrowRight className="w-3.5 h-3.5 group-hover/cta:translate-x-1 transition-transform" />
               </a>
             </div>
           )}
@@ -316,24 +313,24 @@ export function Navigation() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 6 }}
       transition={{ duration: 0.18, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className="absolute top-full left-0 pt-3 z-50"
+      className="absolute top-full left-0 pt-2 z-50"
       onMouseEnter={() => { if (closeTimerRef.current) clearTimeout(closeTimerRef.current); }}
       onMouseLeave={handleDropdownLeave}
     >
-      <div className="w-56 bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-zinc-200/80 dark:border-zinc-700/60 p-2 space-y-0.5">
+      <div className="w-56 bg-paper rounded-xs shadow-xl border border-line p-2 space-y-0.5">
         {item.dropdown.map((link: any) => {
           const active = isActive(link.href);
-          const Icon = link.icon || FileText;
+          const Icon = getIconComponent(link.icon);
           return (
             <a
               key={link.name}
               href={link.href}
               onClick={(e) => { e.preventDefault(); handleNavigation(e, link.href); }}
-              className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium transition-colors ${
-                active ? 'bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-400' : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800'
+              className={`flex items-center gap-2.5 px-3 py-2 rounded-xs text-[13px] font-medium transition-colors ${
+                active ? 'bg-paper-soft text-oxblood font-semibold' : 'text-ink-soft hover:bg-paper-soft hover:text-oxblood'
               }`}
             >
-              <Icon className="w-4 h-4 text-zinc-400" />
+              <Icon className="w-4 h-4 text-oxblood" />
               {link.name}
             </a>
           );
@@ -346,24 +343,24 @@ export function Navigation() {
     <>
       <style>{shimmerKeyframes}</style>
 
-      {/* ─── Header ─── */}
+      {/* ─── Header (Full-width PANA Institute Header) ─── */}
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
-            ? 'bg-white dark:bg-zinc-950 backdrop-blur-xl border-b border-zinc-200/80 dark:border-zinc-800/80 shadow-md'
-            : 'bg-white/95 dark:bg-zinc-950/95 backdrop-blur-lg border-b border-zinc-200/40 dark:border-zinc-800/40'
+            ? 'bg-paper/95 backdrop-blur-md border-b border-line shadow-sm'
+            : 'bg-paper/90 backdrop-blur-md border-b border-line'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
+        <div className="w-full max-w-[1320px] mx-auto px-6">
+          <div className="flex items-center justify-between h-[70px]">
 
-            {/* Logo */}
-            <Link to="/" className="shrink-0 relative z-10">
+            {/* Logo / Brand */}
+            <Link to="/" className="shrink-0 relative z-10 flex items-center gap-2">
               <Logo />
             </Link>
 
-            {/* ─── Desktop Navigation ─── */}
-            <nav className="hidden lg:flex items-center gap-1" ref={navRef} role="navigation" aria-label="Main">
+            {/* ─── Desktop Main Navigation (Full-width spread) ─── */}
+            <nav className="hidden lg:flex items-center gap-1.5 flex-1 justify-center" ref={navRef} role="navigation" aria-label="Main">
               {navItems.map((item: any) => {
                 const active = isActive(item.href);
                 const hasPanel = item.megaMenu || item.dropdown;
@@ -383,26 +380,17 @@ export function Navigation() {
                         handleNavigation(e, item.href);
                       }}
                       className={`
-                        relative flex items-center gap-1 px-4 py-2 text-[13px] font-semibold tracking-wide transition-colors duration-200 rounded-lg
+                        relative flex items-center gap-1 px-3 py-2 text-[13.5px] font-medium tracking-tight transition-colors duration-150 rounded-xs
                         ${active
-                          ? 'text-red-700 dark:text-red-400'
-                          : 'text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white'
+                          ? 'text-oxblood font-semibold border-b-2 border-oxblood'
+                          : 'text-ink-soft hover:text-oxblood'
                         }
                       `}
                       aria-current={active ? 'page' : undefined}
                     >
                       {item.name}
                       {hasPanel && (
-                        <ChevronDown className={`w-3.5 h-3.5 text-zinc-400 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
-                      )}
-
-                      {/* Active underline */}
-                      {active && (
-                        <motion.span
-                          layoutId="nav-active-line"
-                          className="absolute -bottom-0.5 left-3 right-3 h-[2px] bg-red-600 dark:bg-red-500 rounded-full"
-                          transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                        />
+                        <ChevronDown className={`w-3.5 h-3.5 text-oxblood opacity-60 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
                       )}
                     </a>
 
