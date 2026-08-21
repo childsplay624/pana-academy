@@ -41,31 +41,34 @@ export const Footer = () => {
         layout = [
           {
             id: 'col-1',
-            title: 'Company',
+            title: 'Our Institute',
             links: [
-              { name: "About Us", href: "/about" },
-              { name: "Leadership Team", href: "/team" },
-              { name: "Testimonials", href: "/testimonials" },
-              { name: "Certificate Verification", href: "/verify-certificate" },
-              { name: "Careers", href: "/careers" }
+              { name: "About PANA Institute", href: "/about" },
+              { name: "Leadership & Faculty", href: "/team" },
+              { name: "Client Testimonials", href: "/testimonials" },
+              { name: "Verify Certificate", href: "/verify-certificate" },
+              { name: "Careers & Culture", href: "/careers" }
             ]
           },
           {
             id: 'col-2',
-            title: 'Services',
+            title: 'Five Mandate Verticals',
             links: [
-              { name: "Training Programs", href: "/training-delivery" },
-              { name: "Consulting", href: "/consulting-services" },
-              { name: "Research & Development", href: "/research-development" }
+              { name: "01 · Competency & Training", href: "/competency" },
+              { name: "02 · Research & R&D", href: "/research" },
+              { name: "03 · Consultancy & Advisory", href: "/consultancy" },
+              { name: "04 · Sustainability & Climate", href: "/sustainability" },
+              { name: "05 · Global Engagements", href: "/global" }
             ]
           },
           {
             id: 'col-3',
-            title: 'Quick Links',
+            title: 'Quick Resources',
             links: [
-              { name: "Contact Us", href: "/contact" },
-              { name: "FAQ", href: "/faq" },
-              { name: "Support Center", href: "/support" }
+              { name: "Course Catalogue", href: "/courses" },
+              { name: "Training Calendar", href: "/training-calendar" },
+              { name: "Publications & Blog", href: "/blog" },
+              { name: "Contact Us", href: "/contact" }
             ]
           }
         ];
@@ -106,8 +109,8 @@ export const Footer = () => {
   }, []);
 
   return (
-    <footer className="bg-black text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <footer className="bg-ink text-paper border-t border-zinc-800">
+      <div className="max-w-[1320px] mx-auto px-7">
         <div className="py-16">
           <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-8">
             <div className="lg:col-span-1">

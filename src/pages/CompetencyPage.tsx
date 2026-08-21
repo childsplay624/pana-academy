@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 export const CompetencyPage: React.FC = () => {
   useEffect(() => {
@@ -11,25 +12,25 @@ export const CompetencyPage: React.FC = () => {
     <div className="min-h-screen bg-paper text-ink font-sans antialiased selection:bg-oxblood selection:text-white">
       <Navigation />
 
-      <main className="pt-6">
-        {/* HERO SECTION */}
-        <section className="py-16 bg-paper-soft border-b border-line">
-          <div className="max-w-[1200px] mx-auto px-7">
-            <span className="font-mono text-xs tracking-[0.22em] uppercase text-oxblood font-semibold block mb-3">
-              Vertical 01 · Competency Assessment & Development
+      <main className="flex-1 w-full">
+        {/* HERO SECTION - DARK LUXURY EDITORIAL */}
+        <section className="pt-36 pb-24 bg-ink text-paper border-b border-zinc-800 relative overflow-hidden">
+          <div className="max-w-[1320px] mx-auto px-7 relative z-10">
+            <span className="font-mono text-xs tracking-[0.22em] uppercase text-brass font-semibold block mb-3">
+              VERTICAL 01 · COMPETENCY ASSESSMENT & DEVELOPMENT
             </span>
-            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-medium text-ink max-w-3xl mb-6">
+            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-normal text-paper max-w-4xl mb-6">
               Competency Assessment and Development
             </h1>
-            <p className="font-serif text-xl text-ink-soft max-w-3xl leading-relaxed">
-              A capability development hub delivering training, leadership development and practical skills aligned with real operational needs, and an assessment function that judges competence on evidence alone.
+            <p className="font-serif text-lg sm:text-xl text-zinc-300 max-w-3xl leading-relaxed">
+              A capability development hub delivering accredited training, leadership development and practical skills aligned with real operational needs, and an assessment function that judges competence on evidence alone.
             </p>
           </div>
         </section>
 
         {/* CONTENT BLOCK */}
-        <section className="py-16">
-          <div className="max-w-[1200px] mx-auto px-7">
+        <section className="py-24 bg-paper">
+          <div className="max-w-[1320px] mx-auto px-7">
             {/* SUBNAV */}
             <div className="flex flex-wrap gap-2 pb-6 mb-12 border-b border-line">
               <a href="#programmes" className="font-mono text-xs uppercase tracking-wider px-3.5 py-2 border border-line rounded-sm text-muted-foreground hover:border-oxblood hover:text-oxblood transition-colors">Programmes</a>
@@ -39,15 +40,17 @@ export const CompetencyPage: React.FC = () => {
             </div>
 
             {/* PROGRAMMES */}
-            <div className="anchor-head mb-8" id="programmes">
-              <span className="font-mono text-xs tracking-[0.22em] uppercase text-oxblood font-semibold block mb-2">
-                Competency · Programmes
-              </span>
-              <h2 className="font-serif text-3xl font-medium text-ink mb-4">Programmes</h2>
-              <p className="text-sm text-muted-foreground max-w-2xl leading-relaxed">
-                We train for performance, prevention and sustainability, across tailored, product specific and NCDMB stipulated Human Capital Development programmes. Thirteen categories of training solution sit under the pillar.
-              </p>
-            </div>
+            <ScrollReveal direction="up" delay={0.1}>
+              <div className="anchor-head mb-8" id="programmes">
+                <span className="font-mono text-xs tracking-[0.22em] uppercase text-oxblood font-semibold block mb-2">
+                  Competency · Programmes
+                </span>
+                <h2 className="font-serif text-3xl font-medium text-ink mb-4">Programmes</h2>
+                <p className="text-sm text-muted-foreground max-w-2xl leading-relaxed">
+                  We train for performance, prevention and sustainability, across tailored, product specific and NCDMB stipulated Human Capital Development programmes. Thirteen categories of training solution sit under the pillar.
+                </p>
+              </div>
+            </ScrollReveal>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-line border border-line mb-16">
               <div className="bg-paper p-6">

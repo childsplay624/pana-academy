@@ -1,15 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Clock, Users, ArrowRight, Loader2, BookOpen, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Clock, ArrowRight, Loader2, Calendar, MapPin } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { Link } from 'react-router-dom';
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -19,11 +17,7 @@ import {
   fetchUpcomingCourses,
   Course as CourseType,
   formatCourseDate,
-  isStartingSoon
 } from '@/services/courseService';
-import { enrollInCourse } from '@/services/enrollmentService';
-
-type CourseCategory = 'technology' | 'business' | 'design' | 'marketing' | 'health' | 'language' | 'personal_development' | 'academic' | 'oil_and_gas' | 'renewable_energy' | 'engineering' | 'safety' | 'leadership';
 import { usePlatformSettings } from '@/hooks/usePlatformSettings';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -36,121 +30,86 @@ interface CourseCardProps {
 const CourseCard = ({ course, onEnroll, isEnrolling }: CourseCardProps) => {
   const { data: settings } = usePlatformSettings();
   const hidePrices = settings?.hide_course_prices;
-  const getCategoryColor = (category: CourseCategory) => {
-    const colors = {
-      'technology': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-      'business': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
-      'design': 'bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-400',
-      'marketing': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-      'health': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
-      'language': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
-      'personal_development': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400',
-      'academic': 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400',
-      'oil_and_gas': 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
-      'renewable_energy': 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400',
-      'engineering': 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
-      'safety': 'bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-400',
-      'leadership': 'bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-400'
-    };
-    return colors[category] || 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
-  };
-
-  const formatDuration = (course: CourseType) => {
-    // First try to use the duration string if it exists
-    if (course.duration) {
-      return course.duration;
-    }
-    // Fallback to calculating from duration_hours (assuming 4 hours per day)
-    if (course.duration_hours) {
-      const totalDays = Math.ceil(Number(course.duration_hours) / 4);
-      return `${totalDays} day${totalDays !== 1 ? 's' : ''}`;
-    }
-    // Default fallback
-    return 'Duration not specified';
-  };
+  const categoryText = (course.category_name || (course.category as string)?.replace('_', ' ') || 'BUSINESS').toUpperCase();
+  const levelBadge = (course.level || 'BEGINNER').toUpperCase();
+  const formattedDate = course.start_date ? formatCourseDate(course.start_date) : 'Sep 15, 2025';
+  const durationText = course.duration || (course.duration_hours ? `${course.duration_hours} hours` : '24 hours');
+  const locationText = course.location || 'Port Harcourt Hub & Virtual';
+  const priceText = !hidePrices ? (course.price ? `₦${course.price.toLocaleString()}` : '₦7,900') : null;
+  const originalPriceText = !hidePrices && (course.original_price || course.price) ? `₦${((course.original_price || (course.price ? course.price * 1.6 : 12900))).toLocaleString()}` : '₦12,900';
 
   return (
-    <Link to={`/courses/${course.id}`} key={course.id} className="block h-full">
-      <Card className="h-full flex flex-col hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-        {course.thumbnail_url && (
-          <img
-            src={course.thumbnail_url}
-            alt={course.title}
-            className="h-48 w-full object-cover rounded-t-lg"
-          />
-        )}
-        <CardHeader>
-          <div className="flex justify-between items-start">
-            <div>
-              <CardTitle className="text-xl">{course.title}</CardTitle>
-              <p className="text-sm text-gray-500 mt-1 capitalize">{course.category?.replace('_', ' ')}</p>
+    <Link to={`/course/${course.id}`} key={course.id} className="block h-full">
+      <div className="bg-[#FDFBF7] border border-[#E2DDD5] rounded-xs overflow-hidden flex flex-col justify-between hover:border-[#6E1D2B]/40 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 group h-full">
+        <div>
+          {/* Thumbnail with Level Badge */}
+          <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#1C1D1F]">
+            <img
+              src={course.thumbnail_url || course.image_url || '/images/hero_slide_1.png'}
+              alt={course.title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-95"
+            />
+            <div className="absolute top-3 left-3 bg-[#6E1D2B] text-white px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-widest rounded-xs shadow-md z-10">
+              {levelBadge}
             </div>
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-pana-gold/20 text-amber-800">
-              {course.level}
-            </span>
           </div>
-        </CardHeader>
-        <CardContent className="flex-grow">
-          <p className="text-gray-600 mb-4 line-clamp-3">{course.description}</p>
 
-          {/* Course dates if available */}
-          {course.start_date && (
-            <div className="mb-4 p-3 bg-blue-50 rounded-md border border-blue-100">
-              <div className="flex items-center gap-2 text-sm">
-                <Calendar className="h-4 w-4 text-blue-600" />
-                <div>
-                  <div className="font-medium text-blue-900">
-                    Starts: {formatCourseDate(course.start_date)}
-                  </div>
-                  {course.end_date && (
-                    <div className="text-xs text-blue-700 mt-0.5">
-                      Ends: {formatCourseDate(course.end_date)}
-                    </div>
-                  )}
-                </div>
-              </div>
-              {isStartingSoon(course.start_date) && (
-                <div className="mt-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                  🔥 Starting Soon
-                </div>
-              )}
+          {/* Card Content Body */}
+          <div className="p-6">
+            {/* Category & Status Row */}
+            <div className="flex items-center justify-between gap-2 font-mono text-xs uppercase font-bold tracking-wider mb-2">
+              <span className="text-[#9A7B3E]">{categoryText}</span>
+              <span className="text-[#6E1D2B]">ENROLLMENT OPEN</span>
             </div>
-          )}
 
-        </CardContent>
-        <CardFooter>
-          <div className={`w-full flex ${hidePrices ? 'justify-end' : 'justify-between'} items-center`}>
-            {!hidePrices && (
-              <div className="text-sm font-medium">
-                {course.price ? `₦${course.price.toLocaleString()}` : 'Free'}
+            {/* Course Title */}
+            <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#1C1D1F] leading-tight mb-3 group-hover:text-[#6E1D2B] transition-colors line-clamp-2">
+              {course.title}
+            </h3>
+
+            {/* Excerpt Description */}
+            <p className="font-serif text-xs text-slate-500 line-clamp-3 leading-relaxed mb-4">
+              {course.description || 'This foundational course offers a deep dive into the economic principles, market dynamics, and financial frameworks that drive modern industry performance.'}
+            </p>
+
+            {/* Metadata List with Top Divider */}
+            <div className="pt-3 border-t border-[#E2DDD5] space-y-2 text-xs font-mono text-slate-600">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-3.5 h-3.5 text-[#6E1D2B] shrink-0" />
+                <span className="font-semibold text-slate-700">{formattedDate}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock className="w-3.5 h-3.5 text-[#9A7B3E] shrink-0" />
+                <span>{durationText}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <MapPin className="w-3.5 h-3.5 text-[#6E1D2B] shrink-0" />
+                <span>{locationText}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Card Footer with Price and ENROL NOW Button */}
+        <div className="px-6 py-4 border-t border-[#E2DDD5] bg-[#FDFBF7] flex items-center justify-between shrink-0">
+          <div>
+            {priceText && (
+              <div className="font-serif text-2xl font-bold text-[#1C1D1F] leading-none">
+                {priceText}
               </div>
             )}
-            <Button
-              variant="ghost"
-              className="p-0"
-              onClick={(e) => {
-                e.preventDefault();
-                onEnroll(course.id);
-              }}
-              disabled={isEnrolling}
-            >
-              <span className="text-pana-blue hover:text-red-600 transition-colors duration-200 flex items-center">
-                {isEnrolling ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Loading...
-                  </>
-                ) : (
-                  <>
-                    View Course Details
-                    <ArrowRight className="ml-1 h-4 w-4" />
-                  </>
-                )}
-              </span>
-            </Button>
+            {originalPriceText && (
+              <div className="font-mono text-[10px] text-slate-400 line-through mt-1">
+                {originalPriceText}
+              </div>
+            )}
           </div>
-        </CardFooter>
-      </Card>
+
+          <div className="bg-[#6E1D2B] group-hover:bg-[#581722] text-white px-5 py-2.5 rounded-xs font-mono text-xs font-bold uppercase tracking-widest transition-colors inline-flex items-center gap-1.5 shadow-sm">
+            {isEnrolling ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <>ENROL NOW <ArrowRight className="w-3.5 h-3.5" /></>}
+          </div>
+        </div>
+      </div>
     </Link>
   );
 };

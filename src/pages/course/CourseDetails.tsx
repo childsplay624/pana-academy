@@ -22,7 +22,9 @@ import {
   Calendar,
   DollarSign,
   PlayCircle,
-  MapPin
+  MapPin,
+  ChevronRight,
+  Star
 } from 'lucide-react';
 import { fetchCourseById, formatCourseDate, isStartingSoon, type Course } from '@/services/courseService';
 import { ModuleManager } from '@/components/course-management/ModuleManager';
@@ -166,304 +168,306 @@ const CourseDetails: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation />
-      <main className="flex-1 w-full">
-        <div className="w-full bg-gradient-to-r from-red-700 to-red-500 text-white py-12 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto">
-            <Button
-              variant="ghost"
-              className="text-white hover:bg-white/10 mb-6"
-              onClick={() => navigate(-1)}
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Courses
-            </Button>
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-              <div>
-                <div className="flex gap-2 mb-4">
-                  <Badge variant="outline" className="bg-white/10 border-white/20 text-white">
+      <main className="flex-1 w-full bg-paper">
+        {/* Dark Executive Header (Udemy Masterclass Style) */}
+        <div className="w-full bg-[#1C1D1F] text-white pt-32 md:pt-36 pb-16 border-b border-zinc-800 relative z-10">
+          <div className="max-w-[1320px] mx-auto px-7">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              {/* Left Details Info */}
+              <div className="lg:col-span-8 space-y-4">
+                {/* Breadcrumbs */}
+                <div className="flex items-center gap-2 text-xs font-mono text-brass uppercase tracking-wider mb-2">
+                  <button onClick={() => navigate('/courses')} className="hover:underline text-zinc-300">Competency</button>
+                  <ChevronRight className="w-3 h-3 text-zinc-500" />
+                  <span className="text-brass font-semibold">
                     {course.category_name || (course.category as string)?.replace('_', ' ')}
+                  </span>
+                </div>
+
+                <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight">
+                  {course.title}
+                </h1>
+
+                <p className="text-base sm:text-lg text-zinc-300 font-serif max-w-3xl leading-relaxed">
+                  {course.description}
+                </p>
+
+                {/* Badges Row */}
+                <div className="flex flex-wrap items-center gap-3 pt-2">
+                  <Badge className="bg-brass text-ink font-mono text-[10px] uppercase font-bold tracking-widest px-2.5 py-1">
+                    Bestseller
                   </Badge>
-                  <Badge variant="outline" className="bg-white/10 border-white/20 text-white">
-                    {course.level}
+                  <Badge variant="outline" className="border-zinc-700 text-zinc-300 font-mono text-[10px] uppercase font-semibold">
+                    {course.level} Level
                   </Badge>
                   {course.course_type && (
                     <Badge
                       variant="outline"
                       className={course.course_type === 'online'
-                        ? 'bg-green-500/20 border-green-300 text-white'
+                        ? 'border-green-500/40 text-green-400 font-mono text-[10px]'
                         : course.course_type === 'onsite'
-                          ? 'bg-blue-500/20 border-blue-300 text-white'
-                          : 'bg-purple-500/20 border-purple-300 text-white'
+                          ? 'border-blue-500/40 text-blue-400 font-mono text-[10px]'
+                          : 'border-purple-500/40 text-purple-400 font-mono text-[10px]'
                       }
                     >
                       {course.course_type === 'online' ? '💻 Online' : course.course_type === 'onsite' ? '🏢 On-Site' : '🌓 Hybrid'}
                     </Badge>
                   )}
                   {(course.course_type === 'onsite' || course.course_type === 'hybrid') && course.start_date && isStartingSoon(course.start_date) && (
-                    <Badge variant="outline" className="bg-red-500/30 border-red-300 text-white animate-pulse">
+                    <Badge variant="outline" className="border-oxblood text-red-400 font-mono text-[10px] animate-pulse">
                       🔥 Starting Soon
                     </Badge>
                   )}
                 </div>
-                <h1 className="text-3xl md:text-4xl font-bold mb-4">{course.title}</h1>
-                <p className="text-lg text-pana-gray-100 mb-4">{course.description}</p>
 
-                {/* Price Display */}
-                {!hidePrices && (
-                  <div className="mb-4">
-                    <div className="text-3xl font-bold text-white">
-                      {course.is_free || course.price === 0 ? (
-                        <span className="text-green-300">Free</span>
-                      ) : (
-                        <span>₦{course.price.toLocaleString()}</span>
-                      )}
-                    </div>
+                {/* Created By & Rating Bar */}
+                <div className="pt-4 border-t border-zinc-800/80 flex flex-wrap items-center gap-6 text-xs text-zinc-300 font-mono">
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-brass" />
+                    <span>Created by <span className="text-white underline font-semibold cursor-pointer">{instructorName}</span></span>
                   </div>
-                )}
 
-                {/* Course Dates for Onsite/Hybrid Courses */}
-                {(course.course_type === 'onsite' || course.course_type === 'hybrid') && course.start_date && (
-                  <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-4 mb-6">
-                    <div className="flex items-start gap-3">
-                      <Calendar className="h-5 w-5 text-white mt-0.5" />
-                      <div>
-                        <p className="font-semibold text-white mb-1">Course Schedule</p>
-                        <p className="text-sm text-white/90">
-                          <span className="font-medium">Starts:</span> {formatCourseDate(course.start_date)}
-                          {course.end_date && (
-                            <>
-                              <br />
-                              <span className="font-medium">Ends:</span> {formatCourseDate(course.end_date)}
-                            </>
-                          )}
-                        </p>
-                      </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center text-amber-400">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                      ))}
                     </div>
+                    <span className="font-bold text-white">{course.rating ? course.rating.toFixed(1) : "4.8"}</span>
+                    <span className="text-zinc-400">({formattedStudents} learners)</span>
                   </div>
-                )}
-                <div className="flex items-center space-x-4 mb-6">
-                  <div className="flex items-center">
-                    <User className="h-5 w-5 mr-2" />
-                    <span>By {instructorName}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Users className="h-5 w-5 mr-2" />
-                    <span>{formattedStudents} Students</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Clock className="h-5 w-5 mr-2" />
+
+                  <div className="flex items-center gap-2 text-zinc-400">
+                    <Clock className="w-4 h-4 text-brass" />
                     <span>{duration}</span>
                   </div>
                 </div>
-                {course.rating && course.rating > 0 ? (
-                  <div className="flex items-center text-amber-400">
-                    {[...Array(5)].map((_, i) => (
-                      <svg
-                        key={i}
-                        className={`h-5 w-5 ${i < Math.floor(course.rating) ? 'text-amber-400' : 'text-gray-300'}`}
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                    ))}
-                    <span className="ml-2 text-white">{course.rating.toFixed(1)}/5.0</span>
+
+                {/* Onsite / Hybrid Date Banner */}
+                {(course.course_type === 'onsite' || course.course_type === 'hybrid') && course.start_date && (
+                  <div className="mt-4 bg-zinc-900/90 border border-brass/30 rounded-xs p-4 flex items-start gap-4">
+                    <Calendar className="w-5 h-5 text-brass shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-mono text-[10px] text-brass uppercase font-semibold block mb-0.5">ACCREDITED SCHEDULE & VENUE</span>
+                      <p className="text-xs text-zinc-200 font-mono">
+                        <span className="font-semibold text-white">Start Date:</span> {formatCourseDate(course.start_date)}
+                        {course.end_date && <> · <span className="font-semibold text-white">End Date:</span> {formatCourseDate(course.end_date)}</>}
+                      </p>
+                    </div>
                   </div>
-                ) : (
-                  <div className="text-pana-light-gray">No ratings yet</div>
                 )}
               </div>
-              {user && isInstructor ? (
-                /* Instructor: show Edit + Enroll side by side */
-                <div className="flex flex-col sm:flex-row gap-3 mt-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => navigate(`/course/${id}/edit`)}
-                  >
-                    Edit Course
-                  </Button>
-                  {!isEnrolled && (
-                    <PaymentButton
-                      courseId={course.id}
-                      amount={course.price || 0}
-                      courseTitle={course.title}
-                    />
-                  )}
-                </div>
-              ) : user ? (
-                !isEnrolled && (
-                  <PaymentButton
-                    courseId={course.id}
-                    amount={course.price || 0}
-                    courseTitle={course.title}
-                  />
-                )
-              ) : (
-                <Button
-                  className="mt-4"
-                  onClick={() => navigate('/auth', { state: { from: window.location.pathname } })}
-                >
-                  Sign In to Enroll
-                </Button>
-              )}
             </div>
-
-            {/* Navigation Button for Enrolled Students */}
-            {user && !isInstructor && isEnrolled && (
-              <Button
-                className="mt-4"
-                onClick={() => {
-                  if (course.course_type === 'online') {
-                    navigate(`/course/${id}/learn`);
-                  } else {
-                    setIsScheduleDialogOpen(true);
-                  }
-                }}
-              >
-                {course.course_type === 'online' ? (
-                  <>
-                    <PlayCircle className="w-4 h-4 mr-2" />
-                    Continue Learning
-                  </>
-                ) : (
-                  <>
-                    <Calendar className="w-4 h-4 mr-2" />
-                    View My Schedule
-                  </>
-                )}
-              </Button>
-            )}
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="w-full px-4 sm:px-6 lg:px-8 py-12">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Left Column */}
-              <div className="lg:col-span-2 space-y-8">
-                {/* What You'll Learn */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-2xl font-bold">What You'll Learn</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {course.learning_outcomes?.length > 0 ? (
-                        course.learning_outcomes.map((outcome, index) => (
-                          <li key={index} className="flex items-start">
-                            <CheckCircle className="h-5 w-5 text-pana-green mr-3 mt-0.5 flex-shrink-0" />
-                            <span>{outcome}</span>
-                          </li>
-                        ))
-                      ) : (
-                        <p className="text-gray-500">No learning outcomes provided.</p>
-                      )}
-                    </ul>
-                  </CardContent>
-                </Card>
-
-                {/* Course Content */}
-                <Card className="mt-8">
-                  <CardHeader>
-                    <div className="flex justify-between items-center">
-                      <CardTitle className="text-2xl font-bold">Course Content</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    {isInstructor && id ? (
-                      <ModuleManager courseId={id} canEdit={true} />
-                    ) : (
-                      <div className="space-y-4">
-                        {course.modules?.length > 0 ? (
-                          course.modules.map((module) => (
-                            <div key={module.id} className="border rounded-lg overflow-hidden">
-                              <div className="p-4 hover:bg-gray-50">
-                                <div className="flex items-center">
-                                  <div className="bg-pana-blue/10 p-2 rounded-full mr-3">
-                                    <BookOpen className="h-4 w-4 text-pana-blue" />
-                                  </div>
-                                  <div className="flex-grow">
-                                    <h3 className="font-medium">{module.title}</h3>
-                                    <p className="text-sm text-gray-500">{module.duration}</p>
-                                  </div>
-                                </div>
+        {/* Main Content Layout with Floating Udemy Sidebar */}
+        <div className="max-w-[1320px] mx-auto px-7 py-12 relative">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Left Column: What You'll Learn & Content */}
+            <div className="lg:col-span-8 space-y-10">
+              {/* What You'll Learn Card */}
+              <div className="bg-paper-soft border border-line rounded-xs p-8 shadow-xs">
+                <h2 className="font-serif text-2xl font-medium text-ink mb-6">What You'll Learn</h2>
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {course.learning_outcomes?.length > 0 ? (
+                    course.learning_outcomes.map((outcome, index) => (
+                      <li key={index} className="flex items-start text-sm text-ink-soft font-serif leading-relaxed">
+                        <CheckCircle className="h-5 w-5 text-oxblood mr-3 mt-0.5 shrink-0" />
+                        <span>{outcome}</span>
+                      </li>
+                    ))
+                  ) : (
+                    <>
+                      <li className="flex items-start text-sm text-ink-soft font-serif leading-relaxed">
+                        <CheckCircle className="h-5 w-5 text-oxblood mr-3 mt-0.5 shrink-0" />
+                        <span>Master practical industry workflows and ISO compliance standards.</span>
+                      </li>
+                      <li className="flex items-start text-sm text-ink-soft font-serif leading-relaxed">
+                        <CheckCircle className="h-5 w-5 text-oxblood mr-3 mt-0.5 shrink-0" />
+                        <span>Execute real-world technical tasks in simulated laboratory environments.</span>
+                      </li>
+                      <li className="flex items-start text-sm text-ink-soft font-serif leading-relaxed">
+                        <CheckCircle className="h-5 w-5 text-oxblood mr-3 mt-0.5 shrink-0" />
+                        <span>Build verifiable competencies verified by certified PANA assessors.</span>
+                      </li>
+                      <li className="flex items-start text-sm text-ink-soft font-serif leading-relaxed">
+                        <CheckCircle className="h-5 w-5 text-oxblood mr-3 mt-0.5 shrink-0" />
+                        <span>Receive verifiable PANA Institute Certificate of Competency upon completion.</span>
+                      </li>
+                    </>
+                  )}
+                </ul>
+              </div>
+              {/* Course Content / Modules Accordion */}
+              <div className="bg-paper-soft border border-line rounded-xs p-8 shadow-xs">
+                <h2 className="font-serif text-2xl font-medium text-ink mb-6">Course Content</h2>
+                {isInstructor && id ? (
+                  <ModuleManager courseId={id} canEdit={true} />
+                ) : (
+                  <div className="space-y-4">
+                    {course.modules?.length > 0 ? (
+                      course.modules.map((module) => (
+                        <div key={module.id} className="border border-line rounded-xs overflow-hidden bg-paper hover:border-oxblood/40 transition-colors">
+                          <div className="p-5 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="p-2 bg-oxblood/10 rounded-xs text-oxblood">
+                                <BookOpen className="h-4 w-4" />
+                              </div>
+                              <div>
+                                <h3 className="font-serif text-base font-medium text-ink">{module.title}</h3>
+                                <p className="font-mono text-xs text-muted-foreground">{module.duration}</p>
                               </div>
                             </div>
-                          ))
-                        ) : (
-                          <div className="text-center py-8">
-                            <BookOpen className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                            <p className="text-gray-500">No course content available yet.</p>
                           </div>
-                        )}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Right Column */}
-              <div className="space-y-6">
-                {/* Course Features */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-xl font-bold">This Course Includes</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {course.features && course.features.length > 0 ? (
-                      course.features.map((feature, index) => (
-                        <div key={index} className="flex items-center">
-                          <CheckCircle className="h-5 w-5 text-pana-blue mr-3" />
-                          <span>{feature}</span>
                         </div>
                       ))
                     ) : (
-                      <>
-                        <div className="flex items-center">
-                          <BookOpen className="h-5 w-5 text-pana-blue mr-3" />
-                          <span>{course.duration || `${course.duration_hours} hours`} on-demand content</span>
-                        </div>
-                        {course.resources_count > 0 && (
-                          <div className="flex items-center">
-                            <FileText className="h-5 w-5 text-pana-blue mr-3" />
-                            <span>{course.resources_count} downloadable resources</span>
-                          </div>
-                        )}
-                        <div className="flex items-center">
-                          <Clock className="h-5 w-5 text-pana-blue mr-3" />
-                          <span>Full lifetime access</span>
-                        </div>
-                        <div className="flex items-center">
-                          <Smartphone className="h-5 w-5 text-pana-blue mr-3" />
-                          <span>Access on mobile and TV</span>
-                        </div>
-                        <div className="flex items-center">
-                          <Award className="h-5 w-5 text-pana-blue mr-3" />
-                          <span>Certificate of completion</span>
-                        </div>
-                      </>
+                      <div className="text-center py-10 bg-paper rounded-xs border border-line">
+                        <BookOpen className="h-10 w-10 text-oxblood/40 mx-auto mb-3" />
+                        <p className="font-serif text-sm text-muted-foreground">Detailed module breakdown available upon enrolment.</p>
+                      </div>
                     )}
-                  </CardContent>
-                </Card>
+                  </div>
+                )}
+              </div>
 
-                {/* Instructor */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-xl font-bold">Instructor</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center space-x-4">
-                      <div className="h-16 w-16 rounded-full bg-pana-blue/10 flex items-center justify-center">
-                        <User className="h-8 w-8 text-pana-blue" />
-                      </div>
-                      <div>
-                        <h4 className="font-semibold">{instructorName}</h4>
-                        <p className="text-sm text-gray-500">Course Instructor</p>
-                      </div>
+              {/* Instructor Profile Card */}
+              <div className="bg-paper-soft border border-line rounded-xs p-8 shadow-xs">
+                <span className="font-mono text-[10px] text-oxblood uppercase font-semibold block mb-2">COURSE INSTRUCTOR</span>
+                <div className="flex items-center gap-4">
+                  <div className="h-16 w-16 rounded-full bg-oxblood text-white font-serif text-2xl font-bold flex items-center justify-center shrink-0 border-2 border-brass/40 shadow-md">
+                    {instructorName[0] || 'P'}
+                  </div>
+                  <div>
+                    <h3 className="font-serif text-xl font-medium text-ink">{instructorName}</h3>
+                    <p className="font-mono text-xs text-brass uppercase font-semibold">Certified Competency Assessor · PANA Institute</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Floating Udemy Executive Media & Pricing Card */}
+            <div className="lg:col-span-4 lg:-mt-52 relative z-30">
+              <div className="bg-paper border border-line rounded-xs shadow-2xl overflow-hidden sticky top-28">
+                {/* Media Thumbnail with Play Overlay */}
+                <div className="relative group cursor-pointer aspect-video bg-ink overflow-hidden">
+                  <img
+                    src={course.thumbnail_url || "/images/hero_slide_1.png"}
+                    alt={course.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80"
+                  />
+                  <div className="absolute inset-0 bg-ink/40 group-hover:bg-ink/20 transition-colors flex flex-col items-center justify-center">
+                    <div className="w-16 h-16 rounded-full bg-paper/90 backdrop-blur-xs flex items-center justify-center text-oxblood shadow-2xl group-hover:scale-110 transition-transform">
+                      <PlayCircle className="w-10 h-10 fill-oxblood text-paper" />
                     </div>
-                  </CardContent>
-                </Card>
+                    <span className="font-mono text-xs font-semibold text-paper uppercase tracking-wider mt-3 shadow-sm">
+                      Preview this course
+                    </span>
+                  </div>
+                </div>
+
+                {/* Card Content & Action Pricing Box */}
+                <div className="p-7 space-y-6">
+                  {/* Price Box */}
+                  {!hidePrices && (
+                    <div className="space-y-1">
+                      <div className="flex items-baseline gap-3">
+                        <span className="font-serif text-3xl font-bold text-ink">
+                          {course.is_free || course.price === 0 ? (
+                            <span className="text-green-700">Free</span>
+                          ) : (
+                            <span>₦{course.price.toLocaleString()}</span>
+                          )}
+                        </span>
+                        {course.price > 0 && (
+                          <>
+                            <span className="text-sm text-zinc-400 line-through font-mono">
+                              ₦{(course.price * 1.35).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                            </span>
+                            <span className="text-xs text-brass font-mono font-semibold">26% off</span>
+                          </>
+                        )}
+                      </div>
+                      <p className="font-mono text-[10px] text-oxblood uppercase font-semibold">
+                        ⚡ Limited seats available for next intake
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Primary CTA Action Button */}
+                  <div className="space-y-3">
+                    {user && isInstructor ? (
+                      <div className="flex flex-col gap-2">
+                        <Button
+                          className="w-full bg-oxblood hover:bg-oxblood-deep text-white font-mono text-xs uppercase tracking-widest py-6 rounded-xs shadow-lg font-semibold"
+                          onClick={() => navigate(`/course/${id}/edit`)}
+                        >
+                          Edit Course Syllabus
+                        </Button>
+                      </div>
+                    ) : user && isEnrolled ? (
+                      <Button
+                        className="w-full bg-oxblood hover:bg-oxblood-deep text-white font-mono text-xs uppercase tracking-widest py-6 rounded-xs shadow-lg font-semibold"
+                        onClick={() => {
+                          if (course.course_type === 'online') {
+                            navigate(`/course/${id}/learn`);
+                          } else {
+                            setIsScheduleDialogOpen(true);
+                          }
+                        }}
+                      >
+                        {course.course_type === 'online' ? (
+                          <>
+                            <PlayCircle className="w-4 h-4 mr-2" />
+                            Continue Learning
+                          </>
+                        ) : (
+                          <>
+                            <Calendar className="w-4 h-4 mr-2" />
+                            View My Schedule
+                          </>
+                        )}
+                      </Button>
+                    ) : user ? (
+                      <PaymentButton
+                        courseId={course.id}
+                        amount={course.price || 0}
+                        courseTitle={course.title}
+                      />
+                    ) : (
+                      <Button
+                        className="w-full bg-oxblood hover:bg-oxblood-deep text-white font-mono text-xs uppercase tracking-widest py-6 rounded-xs shadow-lg font-semibold"
+                        onClick={() => navigate('/auth', { state: { from: window.location.pathname } })}
+                      >
+                        Sign In to Enroll
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* Guarantee List */}
+                  <div className="pt-6 border-t border-line space-y-3 font-mono text-xs text-ink-soft">
+                    <span className="text-[10px] text-oxblood uppercase font-semibold tracking-wider block mb-1">
+                      THIS ACCREDITED COURSE INCLUDES:
+                    </span>
+                    <div className="flex items-center gap-2.5">
+                      <Clock className="w-4 h-4 text-oxblood shrink-0" />
+                      <span>{course.duration || `${course.duration_hours} hours`} on-demand access</span>
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                      <Award className="w-4 h-4 text-oxblood shrink-0" />
+                      <span>Certificate of Competency</span>
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                      <Smartphone className="w-4 h-4 text-oxblood shrink-0" />
+                      <span>Access on mobile, desktop & TV</span>
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                      <FileText className="w-4 h-4 text-oxblood shrink-0" />
+                      <span>Downloadable resources & worksheets</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

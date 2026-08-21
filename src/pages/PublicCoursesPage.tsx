@@ -176,32 +176,33 @@ const PublicCoursesPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-paper text-ink">
       <Navigation />
-      {/* Hero Section with Background Image */}
-      <div className="relative min-h-[500px] bg-cover bg-center mt-20">
-        {headerImage ? (
+      {/* Dark Executive Hero Section with Editorial Styling */}
+      <div className="relative pt-36 pb-24 bg-ink text-paper border-b border-zinc-800 overflow-hidden">
+        {headerImage && (
           <img
             src={headerImage}
             alt="Training Programs"
-            className="absolute inset-0 w-full h-full object-cover z-0"
+            className="absolute inset-0 w-full h-full object-cover opacity-30 z-0 pointer-events-none"
           />
-        ) : (
-          <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-pana-navy to-pana-red z-0"></div>
         )}
-        <div className="absolute inset-0 bg-black/70 bg-blend-multiply z-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/80 to-transparent z-10"></div>
 
         {/* Search Form Overlay */}
-        <div className="relative z-20 flex flex-col justify-center min-h-[500px] px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">
-              Explore Our Courses
+        <div className="relative z-20 max-w-[1320px] mx-auto px-7">
+          <div className="max-w-4xl space-y-6">
+            <span className="font-mono text-xs text-brass uppercase tracking-[0.22em] font-semibold block">
+              ACCREDITED PROGRAMMES · COMPETENCY CATALOGUE
+            </span>
+            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-normal text-paper">
+              Explore Our Course Catalogue
             </h1>
-            <p className="text-xl text-gray-200 max-w-3xl mx-auto mb-10">
-              Explore our Training Solutions designed to advance your career and organization
+            <p className="font-serif text-lg sm:text-xl text-zinc-300 max-w-3xl leading-relaxed">
+              Discover accredited training solutions and experiential programs designed to build verifiable competence for energy and technology professionals.
             </p>
 
-            <div className="max-w-2xl mx-auto">
+            <div className="max-w-2xl pt-2">
               <div className="flex gap-3">
                 {/* Search Input */}
                 <div className="relative flex-1">
@@ -237,7 +238,7 @@ const PublicCoursesPage = () => {
       </div>
 
       {/* Courses Section */}
-      <div className="py-12">
+      <div className="py-24 bg-paper max-w-[1320px] mx-auto px-7">
         {isLoading ? (
           <div className="flex justify-center items-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pana-blue"></div>

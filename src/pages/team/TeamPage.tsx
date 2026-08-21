@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Users, Award, Globe, Briefcase } from "lucide-react";
+import { ArrowRight, Users, Award, Globe, Briefcase, ChevronRight } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";
@@ -10,8 +10,9 @@ import { useSiteImage } from "@/hooks/useSiteImage";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { TeamMember } from "@/types/team.types";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
-// Team member card component
+// Executive Team member card component
 const TeamMemberCard = ({ member, index }: { member: TeamMember; index: number }) => {
   const { imageUrl } = useSiteImage(member.image_key || '');
 
@@ -23,62 +24,59 @@ const TeamMemberCard = ({ member, index }: { member: TeamMember; index: number }
     .substring(0, 2);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="h-full"
-    >
-      <Card className="h-full hover:shadow-2xl transition-all duration-300 overflow-hidden group border-0 shadow-lg">
-        <div className="relative h-96 overflow-hidden bg-gray-100">
-          {imageUrl ? (
-            <img
-              src={imageUrl}
-              alt={member.name}
-              className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-102"
-            />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center">
-              <span className="text-6xl font-bold text-red-400">{initials}</span>
-            </div>
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        </div>
-
-        <CardContent className="p-6">
-          <div className="space-y-3">
-            <div>
-              <h3 className="text-xl font-bold text-gray-900 leading-tight mb-2">
-                {member.name}
-              </h3>
-              <p className="text-red-600 font-semibold text-base">
-                {member.title}
-              </p>
-              {member.subtitle && (
-                <p className="text-gray-600 text-sm mt-1">
-                  {member.subtitle}
-                </p>
-              )}
-            </div>
-
-            <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">
-              {member.description}
-            </p>
-
-            <div className="pt-4">
-              <Link
-                to={`/team/${member.slug}`}
-                className="inline-flex items-center text-red-600 hover:text-red-700 font-medium text-sm group/link transition-colors"
-              >
-                View Full Profile
-                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/link:translate-x-1" />
-              </Link>
+    <ScrollReveal direction="up" delay={index * 0.08} className="h-full">
+      <div className="bg-paper border border-line rounded-xs overflow-hidden flex flex-col justify-between hover:border-oxblood/40 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 group h-full">
+        <div>
+          {/* Member Image / Initial Canvas */}
+          <div className="relative aspect-[4/5] w-full overflow-hidden bg-ink">
+            {imageUrl ? (
+              <img
+                src={imageUrl}
+                alt={member.name}
+                className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105 opacity-95"
+              />
+            ) : (
+              <div className="w-full h-full bg-oxblood text-white font-serif text-5xl font-bold flex items-center justify-center">
+                {initials}
+              </div>
+            )}
+            <div className="absolute top-3 left-3 bg-oxblood text-white px-2.5 py-1 font-mono text-[10px] uppercase font-bold tracking-widest rounded-xs shadow-md">
+              {member.category ? member.category.toUpperCase() : 'LEADERSHIP'}
             </div>
           </div>
-        </CardContent>
-      </Card>
-    </motion.div >
+
+          {/* Member Info */}
+          <div className="p-6 space-y-3">
+            <div>
+              <span className="font-mono text-[11px] text-brass uppercase font-semibold block mb-1">
+                {member.subtitle || 'PANA INSTITUTE ASSESSOR'}
+              </span>
+              <h3 className="font-serif text-2xl font-bold text-ink group-hover:text-oxblood transition-colors leading-snug">
+                {member.name}
+              </h3>
+              <p className="font-mono text-xs text-oxblood uppercase font-semibold mt-1">
+                {member.title}
+              </p>
+            </div>
+
+            <p className="font-serif text-xs text-muted-foreground line-clamp-3 leading-relaxed">
+              {member.description}
+            </p>
+          </div>
+        </div>
+
+        {/* Action Link Footer */}
+        <div className="px-6 py-4 border-t border-line bg-paper-soft shrink-0 flex items-center justify-between">
+          <Link
+            to={`/team/${member.slug}`}
+            className="font-mono text-xs uppercase tracking-widest text-oxblood hover:text-oxblood-deep font-semibold inline-flex items-center gap-1.5 group/link"
+          >
+            View Profile
+            <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-1" />
+          </Link>
+        </div>
+      </div>
+    </ScrollReveal>
   );
 };
 
@@ -110,92 +108,107 @@ const TeamPage = () => {
   const boardMembers = members.filter(m => m.category === 'board');
   const advisoryMembers = members.filter(m => m.category === 'advisory');
 
-  const stats = [
-    { icon: Users, value: "200+", label: "trained professionals" },
-    { icon: Briefcase, value: "50+", label: "Industry Experts" },
-    { icon: Globe, value: "20+", label: "Training programs" },
-    { icon: Award, value: "4+", label: "Years of Excellence" }
-  ];
-
-  const { imageUrl: headerImageUrl } = useSiteImage('header_team');
-
   return (
     <>
       <Helmet>
-        <title>Our Leadership Team | PANA Institute</title>
+        <title>Leadership & Faculty | PANA Institute</title>
       </Helmet>
 
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen bg-paper text-ink flex flex-col">
         <Navigation />
 
-        <main className="flex-1">
-          <section className="relative w-full h-[500px] md:h-[600px] overflow-hidden mt-100">
-            <div className="absolute inset-0">
-              {headerImageUrl ? (
-                <img
-                  src={headerImageUrl}
-                  alt=""
-                  className="w-full h-[110%] object-cover object-top -translate-y-4 md:-translate-y-8"
-                />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-pana-navy to-pana-red"></div>
-              )}
-              <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/70" />
-            </div>
-
-            <div className="relative h-full flex items-center justify-center px-4 mt-5">
-              <div className="text-center max-w-4xl">
-                <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
-                  Meet Our <span className="text-red-500">Leadership Team</span>
-                </h1>
-                <p className="text-xl text-gray-200 mx-auto max-w-3xl">
-                  Visionary leaders driving innovation and excellence across all our business units
-                </p>
-              </div>
+        <main className="flex-1 w-full">
+          {/* Executive Dark Editorial Hero Header */}
+          <section className="pt-36 pb-24 bg-ink text-paper border-b border-zinc-800 relative overflow-hidden">
+            <div className="max-w-[1320px] mx-auto px-7 relative z-10">
+              <span className="font-mono text-xs text-brass uppercase tracking-[0.22em] font-semibold block mb-3">
+                INDEPENDENT GOVERNANCE · DOMAIN EXPERTS & ASSESSORS
+              </span>
+              <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-normal text-paper mb-6">
+                Governing Council & Executive Faculty
+              </h1>
+              <p className="font-serif text-lg sm:text-xl text-zinc-300 max-w-3xl leading-relaxed">
+                Meet the visionary leaders, industry directors, and certified assessors driving competency standards and research innovation across energy and technology disciplines.
+              </p>
             </div>
           </section>
 
           {loading ? (
-            <div className="py-20 text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto"></div>
+            <div className="py-24 text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-oxblood mx-auto"></div>
             </div>
           ) : (
-            <>
-              {boardMembers.length > 0 && (
-                <section className="py-20 bg-white">
-                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-3xl font-bold text-center mb-12">Board of Directors</h2>
+            <div className="py-24 bg-paper">
+              <div className="max-w-[1320px] mx-auto px-7 space-y-24">
+                {boardMembers.length > 0 && (
+                  <section>
+                    <ScrollReveal direction="up" delay={0.1}>
+                      <div className="mb-12 border-b border-line pb-6">
+                        <span className="font-mono text-xs text-brass uppercase tracking-[0.22em] font-semibold block mb-2">
+                          01 · EXECUTIVE LEADERSHIP
+                        </span>
+                        <h2 className="font-serif text-3xl sm:text-4xl text-ink font-medium">Board of Directors & Council</h2>
+                      </div>
+                    </ScrollReveal>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                       {boardMembers.map((member, idx) => (
                         <TeamMemberCard key={member.id} member={member} index={idx} />
                       ))}
                     </div>
-                  </div>
-                </section>
-              )}
+                  </section>
+                )}
 
-              {advisoryMembers.length > 0 && (
-                <section className="py-20 bg-gray-50">
-                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-3xl font-bold text-center mb-12">Advisory Board</h2>
+                {advisoryMembers.length > 0 && (
+                  <section>
+                    <ScrollReveal direction="up" delay={0.1}>
+                      <div className="mb-12 border-b border-line pb-6">
+                        <span className="font-mono text-xs text-brass uppercase tracking-[0.22em] font-semibold block mb-2">
+                          02 · DOMAIN AUTHORITY
+                        </span>
+                        <h2 className="font-serif text-3xl sm:text-4xl text-ink font-medium">Advisory Board & Subject Experts</h2>
+                      </div>
+                    </ScrollReveal>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                       {advisoryMembers.map((member, idx) => (
                         <TeamMemberCard key={member.id} member={member} index={idx} />
                       ))}
                     </div>
-                  </div>
-                </section>
-              )}
-            </>
+                  </section>
+                )}
+
+                {/* Fallback Grid if no specific categories */}
+                {boardMembers.length === 0 && advisoryMembers.length === 0 && members.length > 0 && (
+                  <section>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                      {members.map((member, idx) => (
+                        <TeamMemberCard key={member.id} member={member} index={idx} />
+                      ))}
+                    </div>
+                  </section>
+                )}
+              </div>
+            </div>
           )}
 
-          <section className="py-20 bg-red-600 text-white text-center">
-            <h2 className="text-3xl font-bold mb-6">Join Our Growing Team</h2>
-            <Link to="/careers">
-              <Button size="lg" className="bg-white text-red-600 hover:bg-gray-100">
-                View Open Positions
-              </Button>
-            </Link>
+          {/* Join Team CTA */}
+          <section className="py-20 bg-ink text-paper border-t border-zinc-800">
+            <div className="max-w-[1320px] mx-auto px-7 text-center space-y-6">
+              <span className="font-mono text-xs text-brass uppercase tracking-[0.22em] font-semibold block">
+                TALENT RECRUITMENT · PANA INSTITUTE
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl text-paper font-normal">Join Our Faculty & Research Panel</h2>
+              <p className="font-serif text-lg text-zinc-300 max-w-2xl mx-auto leading-relaxed">
+                Explore career opportunities to contribute to competency assessment, curriculum design, and live-plant training delivery.
+              </p>
+              <div className="pt-2">
+                <Link to="/careers">
+                  <Button className="bg-oxblood hover:bg-oxblood-deep text-white font-mono text-xs uppercase tracking-widest px-8 py-4 rounded-xs font-semibold shadow-xl border border-oxblood-light">
+                    View Open Positions
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </section>
         </main>
 

@@ -1,11 +1,11 @@
 import { Helmet } from "react-helmet-async";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import { ArrowRight, Zap, Target, Users, Globe, Rocket, BookOpen, Briefcase, Heart, Award } from "lucide-react";
+import { ArrowRight, Target, Rocket, Heart, Award, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSiteImage } from "@/hooks/useSiteImage";
 import { usePageContent } from "@/hooks/usePageContent";
-import { DynamicPageSections } from "@/components/page-builder/DynamicPageSections";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 const CareersPage = () => {
     // Fetch header image from centralized system
@@ -17,69 +17,52 @@ const CareersPage = () => {
         {
             icon: Heart,
             title: "Passionate Culture",
-            description: "We are a team of dedicated professionals who are passionate about transforming the energy sector."
+            description: "We are a team of dedicated professionals passionate about transforming energy and technology competency standards."
         },
         {
             icon: Target,
             title: "Mission Driven",
-            description: "Every role at PANA Institute contributes directly to our mission of closing competency gaps."
+            description: "Every role at PANA Institute contributes directly to our mandate of closing technical competency gaps."
         },
         {
             icon: Award,
-            title: "Excellence",
-            description: "We strive for excellence in everything we do, from training delivery to research innovation."
+            title: "Excellence & Governance",
+            description: "We uphold supreme standards in everything we do, from curriculum design to live-plant assessment delivery."
         }
     ];
 
     return (
         <>
             <Helmet>
-                <title>Careers | PANA Institute - Join Our Team</title>
+                <title>Careers & Talent | PANA Institute</title>
                 <meta name="description" content="Build your career at PANA Institute. Explore opportunities to join a team of experts dedicated to competency cultivation and innovation in the energy sector." />
             </Helmet>
 
-            <div className="min-h-screen bg-gradient-subtle">
+            <div className="min-h-screen bg-paper text-ink flex flex-col">
                 <Navigation />
 
-                <main>
-                    {/* Hero Section */}
-                    <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
-                        <div className="absolute inset-0">
-                            {headerImage ? (
-                                <img
-                                    src={headerImage}
-                                    alt="Careers at PANA Institute"
-                                    className="w-full h-full object-cover object-center"
-                                    loading="eager"
-                                />
-                            ) : (
-                                <div className="w-full h-full bg-gradient-to-br from-pana-gold to-pana-red"></div>
-                            )}
-                        </div>
-                        <div className="absolute inset-0 bg-black/60"></div>
+                <main className="flex-1 w-full">
+                    {/* Editorial Dark Hero Section */}
+                    <section className="relative pt-36 pb-24 bg-ink text-paper border-b border-zinc-800 overflow-hidden">
+                        <div className="max-w-[1320px] mx-auto px-7 relative z-10">
+                            <div className="max-w-4xl space-y-6">
+                                <span className="font-mono text-xs text-brass uppercase tracking-[0.22em] font-semibold block">
+                                    CAREERS & TALENT RECRUITMENT · PANA INSTITUTE
+                                </span>
 
-                        <div className="relative max-w-7xl mx-auto px-6 lg:px-8 text-center z-10 mt-16">
-                            <div className="space-y-8 animate-fade-in">
-                                <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full text-white/90 text-sm font-medium border border-white/20">
-                                    <Briefcase className="w-5 h-5 text-pana-gold" />
-                                    <span>Join Our Growing Team</span>
-                                    <ArrowRight className="w-4 h-4" />
-                                </div>
-
-                                <h1 className="text-6xl md:text-8xl font-bold mb-6 leading-tight">
-                                    <span className="text-white">{get('hero_title', 'Build Your')}</span>
-                                    <span className="block text-red-600">{get('hero_subtitle', 'Future With Us')}</span>
+                                <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-normal text-paper leading-tight">
+                                    Build the Future of Industrial Competency With Us
                                 </h1>
 
-                                <p className="text-xl md:text-2xl text-gray-200 max-w-4xl mx-auto">
-                                    {get('hero_description', 'At PANA Institute, we are always looking for visionary educators, industry experts, and innovative thinkers.')}
+                                <p className="font-serif text-lg sm:text-xl text-zinc-300 max-w-3xl leading-relaxed">
+                                    Join a world-class team of certified assessors, researchers, and technical educators defining the standards against which competence is measured across Africa and global markets.
                                 </p>
 
-                                <div className="flex justify-center mt-8">
+                                <div className="flex flex-wrap gap-4 pt-4">
                                     <a href="#open-positions">
-                                        <Button className="bg-pana-gold hover:bg-pana-gold/90 text-pana-navy px-8 py-6 text-lg font-semibold group">
-                                            View Opportunities
-                                            <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                                        <Button className="bg-oxblood hover:bg-oxblood-deep text-white font-mono text-xs uppercase tracking-widest px-8 py-4 rounded-none border border-oxblood-light font-semibold shadow-xl">
+                                            View Open Positions
+                                            <ArrowRight className="ml-2 h-4 w-4" />
                                         </Button>
                                     </a>
                                 </div>
@@ -88,71 +71,91 @@ const CareersPage = () => {
                     </section>
 
                     {/* Why PANA section */}
-                    <section className="py-20 bg-white">
-                        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-                            <div className="text-center mb-16">
-                                <h2 className="text-4xl font-bold text-pana-navy mb-4">Why PANA Institute?</h2>
-                                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                                    We offer more than just a job; we offer a chance to make a real impact in the energy industry across Africa.
-                                </p>
-                            </div>
+                    <section className="py-24 bg-paper">
+                        <div className="max-w-[1320px] mx-auto px-7">
+                            <ScrollReveal direction="up" delay={0.1}>
+                                <div className="mb-16 border-b border-line pb-6">
+                                    <span className="font-mono text-xs text-brass uppercase tracking-[0.22em] font-semibold block mb-2">
+                                        01 · OUR WORK CULTURE
+                                    </span>
+                                    <h2 className="font-serif text-3xl sm:text-4xl text-ink font-medium">Why Join PANA Institute?</h2>
+                                    <p className="font-serif text-base text-muted-foreground max-w-2xl mt-2 leading-relaxed">
+                                        We offer more than just a role; we offer the opportunity to shape industrial standards and research innovation across global energy sectors.
+                                    </p>
+                                </div>
+                            </ScrollReveal>
 
                             <div className="grid md:grid-cols-3 gap-8">
                                 {values.map((value, index) => (
-                                    <div key={index} className="p-8 bg-gray-50 rounded-2xl border border-gray-100 hover:shadow-lg transition-shadow duration-300">
-                                        <div className="p-3 bg-red-600/10 rounded-xl w-fit mb-6">
-                                            <value.icon className="h-8 w-8 text-red-600" />
+                                    <ScrollReveal key={index} direction="up" delay={index * 0.1}>
+                                        <div className="p-8 bg-paper-soft border border-line rounded-none hover:border-oxblood/40 hover:shadow-xl transition-all duration-300 h-full flex flex-col justify-between">
+                                            <div>
+                                                <div className="w-12 h-12 rounded-none bg-paper border border-line flex items-center justify-center text-oxblood mb-6">
+                                                    <value.icon className="h-6 w-6" />
+                                                </div>
+                                                <h3 className="font-serif text-2xl font-bold text-ink mb-3">{value.title}</h3>
+                                                <p className="font-serif text-xs text-muted-foreground leading-relaxed">{value.description}</p>
+                                            </div>
                                         </div>
-                                        <h3 className="text-2xl font-bold text-pana-navy mb-4">{value.title}</h3>
-                                        <p className="text-gray-600 leading-relaxed">{value.description}</p>
-                                    </div>
+                                    </ScrollReveal>
                                 ))}
                             </div>
                         </div>
                     </section>
 
                     {/* Opportunities Section */}
-                    <section id="open-positions" className="py-20 bg-gray-50">
-                        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-                            <div className="bg-white rounded-3xl p-12 shadow-sm border border-gray-100 text-center">
-                                <div className="max-w-3xl mx-auto">
-                                    <Rocket className="h-16 w-16 text-pana-gold mx-auto mb-8" />
-                                    <h2 className="text-4xl font-bold text-pana-navy mb-6">Current Opportunities</h2>
-                                    <p className="text-xl text-gray-600 mb-8">
-                                        While we may not have specific openings listed at this moment, we are always eager to meet talented individuals who share our vision.
-                                    </p>
-                                    <p className="text-lg text-gray-600 mb-12">
-                                        Are you an industry expert in Oil & Gas, Digital Transformation, or Leadership Development? We want to hear from you.
-                                    </p>
-
-                                    <div className="bg-pana-navy p-8 rounded-2xl text-white">
-                                        <h3 className="text-2xl font-bold mb-4">Send Us Your CV</h3>
-                                        <p className="text-gray-300 mb-6">
-                                            Send your resume and a brief introduction to our talent acquisition team.
+                    <section id="open-positions" className="py-24 bg-paper-soft border-t border-line">
+                        <div className="max-w-[1320px] mx-auto px-7">
+                            <ScrollReveal direction="up" delay={0.1}>
+                                <div className="bg-paper rounded-none p-8 md:p-14 border border-line shadow-sm space-y-8">
+                                    <div className="max-w-3xl">
+                                        <span className="font-mono text-xs text-brass uppercase tracking-[0.22em] font-semibold block mb-3">
+                                            02 · TALENT DIRECTORY
+                                        </span>
+                                        <h2 className="font-serif text-3xl sm:text-4xl font-normal text-ink mb-4">Current Opportunities & Assessor Panel</h2>
+                                        <p className="font-serif text-base text-muted-foreground leading-relaxed mb-4">
+                                            We are continuously seeking domain experts, certified assessors, and research directors in Oil & Gas Engineering, Digital Transformation, and Sustainability.
                                         </p>
-                                        <a href="mailto:careers@pana-institute.com" className="text-pana-gold text-xl font-bold hover:underline">
-                                            info@pana-institute.com
-                                        </a>
+                                        <p className="font-serif text-sm text-muted-foreground leading-relaxed mb-8">
+                                            If your area of expertise aligns with our 5 Mandate Verticals, we invite you to submit your credentials to our Talent Acquisition Directorate.
+                                        </p>
+
+                                        <div className="bg-ink text-paper p-8 rounded-none border border-zinc-800 space-y-4">
+                                            <div className="flex items-center gap-3">
+                                                <Mail className="w-5 h-5 text-brass" />
+                                                <h3 className="font-serif text-xl font-medium text-paper">Submit Your Credentials / CV</h3>
+                                            </div>
+                                            <p className="font-serif text-xs text-zinc-300 leading-relaxed">
+                                                Send your executive bio and detailed CV directly to our institutional recruitment team:
+                                            </p>
+                                            <a href="mailto:info@pana-institute.com" className="font-mono text-sm text-brass font-semibold hover:underline block pt-2">
+                                                info@pana-institute.com
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </ScrollReveal>
                         </div>
                     </section>
 
                     {/* CTA Section */}
-                    <section className="py-20 bg-pana-navy text-white overflow-hidden relative">
-                        <div className="absolute top-0 right-0 w-1/3 h-full bg-red-600 skew-x-12 transform translate-x-20 opacity-10"></div>
-                        <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 text-center">
-                            <h2 className="text-3xl md:text-5xl font-bold mb-8">Ready to Shape the Future?</h2>
-                            <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
-                                Join a community of professionals dedicated to creating excellence through knowledge and innovation.
+                    <section className="py-20 bg-ink text-paper border-t border-zinc-800 text-center">
+                        <div className="max-w-[1320px] mx-auto px-7 space-y-6">
+                            <span className="font-mono text-xs text-brass uppercase tracking-[0.22em] font-semibold block">
+                                TALENT ACQUISITION · PANA INSTITUTE
+                            </span>
+                            <h2 className="font-serif text-3xl sm:text-4xl font-normal text-paper">Ready to Shape Technical Excellence?</h2>
+                            <p className="font-serif text-lg text-zinc-300 max-w-2xl mx-auto leading-relaxed">
+                                Join an elite network of educators and researchers dedicated to advancing competency standards.
                             </p>
-                            <a href="/contact">
-                                <Button className="bg-red-600 hover:bg-red-700 text-white px-10 py-7 text-xl font-bold rounded-full">
-                                    Contact Talent Acquisition
-                                    <ArrowRight className="ml-2 h-6 w-6" />
-                                </Button>
-                            </a>
+                            <div className="pt-2">
+                                <a href="/contact">
+                                    <Button className="bg-oxblood hover:bg-oxblood-deep text-white font-mono text-xs uppercase tracking-widest px-8 py-4 rounded-none font-semibold border border-oxblood-light shadow-xl">
+                                        Contact Talent Directorate
+                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Button>
+                                </a>
+                            </div>
                         </div>
                     </section>
                 </main>

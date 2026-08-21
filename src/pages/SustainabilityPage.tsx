@@ -11,25 +11,25 @@ export const SustainabilityPage: React.FC = () => {
     <div className="min-h-screen bg-paper text-ink font-sans antialiased selection:bg-oxblood selection:text-white">
       <Navigation />
 
-      <main className="pt-6">
-        {/* HERO SECTION - DARK THEME */}
-        <section className="py-20 bg-ink text-paper border-b border-zinc-800">
-          <div className="max-w-[1200px] mx-auto px-7">
+      <main className="flex-1 w-full">
+        {/* HERO SECTION - DARK THEME EDITORIAL */}
+        <section className="pt-36 pb-24 bg-ink text-paper border-b border-zinc-800">
+          <div className="max-w-[1320px] mx-auto px-7">
             <span className="font-mono text-xs tracking-[0.22em] uppercase text-brass font-semibold block mb-3">
-              Vertical 04 · Sustainability Solutions & Climate Services
+              VERTICAL 04 · SUSTAINABILITY SOLUTIONS & CLIMATE SERVICES
             </span>
-            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-medium max-w-3xl mb-6">
+            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-normal max-w-4xl mb-6">
               Sustainability Solutions and Climate Services
             </h1>
-            <p className="font-serif text-xl text-zinc-300 max-w-3xl leading-relaxed">
+            <p className="font-serif text-lg sm:text-xl text-zinc-300 max-w-3xl leading-relaxed">
               Driving value through decarbonisation, ESG and green innovation. A move from compliance to execution, delivering measurable environmental and financial value.
             </p>
           </div>
         </section>
 
         {/* CONTENT BLOCK */}
-        <section className="py-16">
-          <div className="max-w-[1200px] mx-auto px-7">
+        <section className="py-24 bg-paper">
+          <div className="max-w-[1320px] mx-auto px-7">
             <div className="anchor-head mb-8">
               <span className="font-mono text-xs tracking-[0.22em] uppercase text-oxblood font-semibold block mb-2">
                 Sustainability · Why now

@@ -23,7 +23,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 
 // ─── Styles injected via CSS-in-JS for the shimmer effect ───
-const shimmerKeyframes = `
+export const shimmerKeyframes = `
 @keyframes nav-shimmer {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
@@ -34,7 +34,7 @@ const ICON_MAP: Record<string, any> = {
   Compass, ShieldCheck, Users, Award, Sparkles, BookOpen, Zap, Layers, FileText
 };
 
-const getIconComponent = (icon: any) => {
+export const getIconComponent = (icon: any) => {
   if (typeof icon === 'string' && ICON_MAP[icon]) return ICON_MAP[icon];
   if (typeof icon === 'function' || (typeof icon === 'object' && icon !== null)) return icon;
   return FileText;
@@ -95,18 +95,19 @@ export function Navigation() {
               {
                 heading: "Overview & Leadership",
                 links: [
-                  { name: "Our Journey", href: "/our-institute#our-journey", desc: "From Academy to Institute", icon: Compass },
+                  { name: "About PANA Institute", href: "/about", desc: "Our mandate & heritage", icon: Compass },
+                  { name: "Leadership & Faculty", href: "/team", desc: "Council & domain experts", icon: Users },
+                  { name: "Our Journey", href: "/our-institute#our-journey", desc: "From Academy to Institute", icon: Layers },
                   { name: "Governing Council", href: "/our-institute#gov-council", desc: "Supreme oversight", icon: ShieldCheck },
-                  { name: "Executive Management", href: "/our-institute#exec-team", desc: "Operations & strategy leads", icon: Users },
-                  { name: "Inaugural Faculties", href: "/our-institute#faculties", desc: "Technical domain experts", icon: Award },
                 ]
               },
               {
-                heading: "Culture & Safety",
+                heading: "Culture & Trust",
                 links: [
+                  { name: "Client Testimonials", href: "/testimonials", desc: "Industry endorsements", icon: Award },
                   { name: "Safety at PANA Institute", href: "/our-institute#safety", desc: "ISO 14001 & ISO 45001", icon: ShieldCheck },
-                  { name: "Careers", href: "/our-institute#careers", desc: "Build the Institute with us", icon: Sparkles },
-                  { name: "Our People & Culture", href: "/our-institute#culture", desc: "The five operating Ps", icon: Users },
+                  { name: "Careers", href: "/careers", desc: "Build the Institute with us", icon: Sparkles },
+                  { name: "People & Culture", href: "/our-institute#culture", desc: "The five operating Ps", icon: Users },
                 ]
               }
             ],
@@ -125,10 +126,10 @@ export function Navigation() {
               {
                 heading: "Assessment & Development",
                 links: [
+                  { name: "Course Catalogue", href: "/courses", desc: "Full list of active courses", icon: BookOpen },
+                  { name: "Training Calendar", href: "/training-calendar", desc: "Schedules & key dates", icon: Zap },
                   { name: "Programmes", href: "/competency#programmes", desc: "13 categories of training", icon: BookOpen },
-                  { name: "Faculty", href: "/competency#faculty", desc: "Industry-leading instructors", icon: Users },
-                  { name: "Labs", href: "/competency#labs", desc: "Experiential facilities", icon: Zap },
-                  { name: "Roar Club", href: "/competency#roar-club", desc: "Alumni network & fellowship", icon: Award },
+                  { name: "Faculty & Assessors", href: "/team", desc: "Certified instructors", icon: Users },
                 ]
               }
             ],
@@ -151,7 +152,7 @@ export function Navigation() {
                   { name: "Sustainability & Environment", href: "/research#coe-sustainability", desc: "Emissions & ESG reporting", icon: Sparkles },
                   { name: "Energy & Power", href: "/research#coe-energy", desc: "Grid modernisation & renewables", icon: Zap },
                   { name: "Digital Innovation & AI", href: "/research#coe-digital", desc: "Industrial data & OT security", icon: Layers },
-                  { name: "Smart Agriculture", href: "/research#coe-agric", desc: "Agri processing & climate risk", icon: Compass },
+                  { name: "Publications & Blog", href: "/blog", desc: "Think tank research articles", icon: FileText },
                 ]
               }
             ],
@@ -166,6 +167,8 @@ export function Navigation() {
           { name: "Sustainability", href: "/sustainability" },
           { name: "Global Engagements", href: "/global" },
           { name: "Courses", href: "/courses" },
+          { name: "Calendar", href: "/training-calendar" },
+          { name: "Blog", href: "/blog" },
           { name: "Contact", href: "/contact" },
         ];
 
@@ -203,15 +206,37 @@ export function Navigation() {
 
   // ─── Navigation helpers ───
   const handleNavigation = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    if (href === '#') { e.preventDefault(); return; }
+    if (!href || href === '#') {
+      e.preventDefault();
+      return;
+    }
+
     e.preventDefault();
-    if (href.startsWith('#')) {
-      if (location.pathname !== '/') { navigate(`/${href}`); }
-      else {
-        const el = document.querySelector(href);
-        if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); window.history.pushState({}, '', href); }
+
+    if (href.includes('#')) {
+      const parts = href.split('#');
+      const targetPath = parts[0] || '/';
+      const targetHash = parts[1];
+
+      const currentPath = location.pathname;
+      const isSamePage = currentPath === targetPath ||
+        (targetPath === '/our-institute' && (currentPath === '/' || currentPath === '/our-institute'));
+
+      if (isSamePage) {
+        const el = document.getElementById(targetHash);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          window.history.pushState({}, '', `#${targetHash}`);
+        } else {
+          navigate(href);
+        }
+      } else {
+        navigate(href);
       }
-    } else { navigate(href); }
+    } else {
+      navigate(href);
+    }
+
     setIsOpen(false);
     setActiveDropdown(null);
   }, [location.pathname, navigate]);
@@ -351,7 +376,7 @@ export function Navigation() {
             : 'bg-paper/90 backdrop-blur-md border-b border-line'
         }`}
       >
-        <div className="w-full max-w-[1320px] mx-auto px-6">
+        <div className="w-full px-6 sm:px-8 lg:px-12">
           <div className="flex items-center justify-between h-[70px]">
 
             {/* Logo / Brand */}
@@ -359,112 +384,61 @@ export function Navigation() {
               <Logo />
             </Link>
 
-            {/* ─── Desktop Main Navigation (Full-width spread) ─── */}
-            <nav className="hidden lg:flex items-center gap-1.5 flex-1 justify-center" ref={navRef} role="navigation" aria-label="Main">
-              {navItems.map((item: any) => {
-                const active = isActive(item.href);
-                const hasPanel = item.megaMenu || item.dropdown;
-                const isDropdownOpen = activeDropdown === item.name;
+            {/* ─── Header Actions (Contact Us CTA + User Profile + Hamburger Button for Desktop & Mobile) ─── */}
+            <div className="flex items-center gap-4">
+              {/* Contact Us CTA (HTML Prototype signature button) */}
+              <Link to="/contact" className="hidden sm:inline-block bg-oxblood hover:bg-oxblood-deep text-white font-mono text-[11px] font-medium tracking-widest uppercase px-4 py-2 rounded-xs transition-colors">
+                Contact us
+              </Link>
 
-                return (
-                  <div
-                    key={item.name}
-                    className="relative"
-                    onMouseEnter={hasPanel ? () => handleDropdownEnter(item.name) : undefined}
-                    onMouseLeave={hasPanel ? handleDropdownLeave : undefined}
-                  >
-                    <a
-                      href={item.href}
-                      onClick={(e) => {
-                        if (hasPanel && item.href === '#') { e.preventDefault(); return; }
-                        handleNavigation(e, item.href);
-                      }}
-                      className={`
-                        relative flex items-center gap-1 px-3 py-2 text-[13.5px] font-medium tracking-tight transition-colors duration-150 rounded-xs
-                        ${active
-                          ? 'text-oxblood font-semibold border-b-2 border-oxblood'
-                          : 'text-ink-soft hover:text-oxblood'
-                        }
-                      `}
-                      aria-current={active ? 'page' : undefined}
-                    >
-                      {item.name}
-                      {hasPanel && (
-                        <ChevronDown className={`w-3.5 h-3.5 text-oxblood opacity-60 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
-                      )}
-                    </a>
-
-                    {/* Dropdown / Mega Panel */}
-                    <AnimatePresence>
-                      {isDropdownOpen && item.megaMenu && renderMegaPanel(item)}
-                      {isDropdownOpen && item.dropdown && !item.megaMenu && renderSimpleDropdown(item)}
-                    </AnimatePresence>
-                  </div>
-                );
-              })}
-            </nav>
-
-            {/* ─── Right Actions ─── */}
-            <div className="hidden lg:flex items-center gap-3">
               {user ? (
                 <div className="flex items-center gap-2">
                   <NotificationBell />
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="relative h-9 w-9 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 transition-shadow hover:shadow-md">
+                      <button className="relative h-9 w-9 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-oxblood focus-visible:ring-offset-2 transition-shadow hover:shadow-md">
                         <Avatar className="h-9 w-9">
                           <AvatarImage src={profile?.avatar_url || ""} />
-                          <AvatarFallback className="bg-red-600 text-white text-xs font-bold">
+                          <AvatarFallback className="bg-oxblood text-white text-xs font-bold font-serif">
                             {profile?.full_name ? profile.full_name[0].toUpperCase() : 'U'}
                           </AvatarFallback>
                         </Avatar>
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56 rounded-xl p-1.5 shadow-xl" align="end" sideOffset={8}>
+                    <DropdownMenuContent className="w-56 rounded-xs p-1.5 shadow-xl bg-paper border border-line" align="end" sideOffset={8}>
                       <DropdownMenuLabel className="px-3 py-2">
-                        <p className="text-sm font-semibold truncate">{profile?.full_name || 'My Account'}</p>
+                        <p className="text-sm font-semibold truncate text-ink">{profile?.full_name || 'My Account'}</p>
                         <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       {profile?.role === 'admin' && (
-                        <DropdownMenuItem onClick={() => navigate('/dashboard')} className="rounded-lg cursor-pointer gap-2 font-medium">
-                          <LayoutDashboard className="h-4 w-4 text-red-600" /> Dashboard
+                        <DropdownMenuItem onClick={() => navigate('/dashboard')} className="rounded-xs cursor-pointer gap-2 font-medium">
+                          <LayoutDashboard className="h-4 w-4 text-oxblood" /> Dashboard
                         </DropdownMenuItem>
                       )}
-                      <DropdownMenuItem onClick={() => navigate('/student/profile')} className="rounded-lg cursor-pointer gap-2 font-medium">
+                      <DropdownMenuItem onClick={() => navigate('/student/profile')} className="rounded-xs cursor-pointer gap-2 font-medium">
                         <User className="h-4 w-4" /> Profile
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => navigate('/dashboard/settings')} className="rounded-lg cursor-pointer gap-2 font-medium">
+                      <DropdownMenuItem onClick={() => navigate('/dashboard/settings')} className="rounded-xs cursor-pointer gap-2 font-medium">
                         <Settings className="h-4 w-4" /> Settings
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => signOut()} className="rounded-lg cursor-pointer gap-2 font-medium text-red-600 focus:text-red-600">
+                      <DropdownMenuItem onClick={() => signOut()} className="rounded-xs cursor-pointer gap-2 font-medium text-oxblood focus:text-oxblood">
                         <LogOut className="h-4 w-4" /> Sign out
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
               ) : (
-                <div className="flex items-center gap-2">
-                  <Link to="/auth?mode=login">
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      className="text-[13px] font-semibold text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white rounded-lg px-4"
-                    >
-                      Sign In
-                    </Button>
-                  </Link>
-                </div>
+                <Link to="/auth?mode=login" className="hidden sm:inline-block text-xs font-mono font-medium text-ink-soft hover:text-oxblood px-2 py-1 transition-colors">
+                  Sign In
+                </Link>
               )}
-            </div>
 
-            {/* ─── Mobile Trigger (PANA Institute Editorial 3-Bar Burger) ─── */}
-            <div className="lg:hidden flex items-center gap-3">
-              {user && <NotificationBell />}
+              {/* ─── PANA Institute 3-Bar Hamburger Trigger (Active for Desktop & Mobile) ─── */}
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="group relative h-10 w-10 flex flex-col justify-center items-center gap-[5px] bg-paper-soft hover:bg-line/40 border border-line rounded-md transition-colors p-2.5"
+                className="group relative h-10 w-10 flex flex-col justify-center items-center gap-[5px] bg-paper-soft hover:bg-line/40 border border-line rounded-xs transition-colors p-2.5"
                 aria-label="Toggle menu"
                 aria-expanded={isOpen}
               >
@@ -489,146 +463,158 @@ export function Navigation() {
         </div>
       </header>
 
-      {/* ─── Mobile Drawer Overlay ─── */}
+      {/* ─── Executive Right-Side Navigation Sidebar Drawer ─── */}
       <AnimatePresence>
         {isOpen && (
           <>
-            {/* Backdrop */}
+            {/* Dark Translucent Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40 bg-ink/40 backdrop-blur-xs lg:hidden"
+              transition={{ duration: 0.25 }}
+              className="fixed inset-0 z-50 bg-ink/60 backdrop-blur-xs"
               onClick={() => setIsOpen(false)}
             />
 
-            {/* Slide-Down Mobile Drawer */}
+            {/* Slide-Over Right Sidebar Drawer */}
             <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-[70px] left-0 right-0 z-50 bg-paper border-b border-line shadow-2xl lg:hidden max-h-[calc(100vh-70px)] flex flex-col"
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 28, stiffness: 220 }}
+              className="fixed top-0 right-0 w-full sm:w-[480px] md:w-[520px] h-full z-50 bg-paper border-l border-line shadow-2xl flex flex-col justify-between overflow-hidden"
             >
-              <div className="flex items-center justify-between px-6 py-4 border-b border-line bg-paper-soft">
-                <span className="font-mono text-xs font-semibold text-oxblood uppercase tracking-[0.2em]">
-                  PANA Institute Menu
-                </span>
+              {/* Sidebar Header */}
+              <div className="bg-paper-soft border-b border-line px-6 py-5 flex items-center justify-between shrink-0">
+                <div className="flex items-center gap-3">
+                  <Logo />
+                </div>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="text-xs font-mono text-muted-foreground hover:text-oxblood uppercase tracking-wider"
+                  className="w-9 h-9 rounded-xs bg-paper border border-line flex items-center justify-center text-ink hover:text-oxblood hover:border-oxblood/40 transition-colors"
+                  aria-label="Close menu"
                 >
-                  Close [×]
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
-              {/* Mobile links */}
-              <div className="flex-1 overflow-y-auto px-6 py-5 divide-y divide-line">
-                <div className="space-y-1 pb-4">
-                  {navItems.map((item: any) => {
-                    const active = isActive(item.href);
-                    const hasChildren = item.columns || item.dropdown;
-                    const isExpanded = activeDropdown === item.name;
-                    const allLinks = item.columns
-                      ? item.columns.flatMap((c: any) => c.links)
-                      : item.dropdown || [];
-
-                    return (
-                      <div key={item.name} className="py-1">
-                        <a
-                          href={item.href}
-                          className={`flex items-center justify-between w-full py-2.5 text-[15px] font-medium transition-colors ${
-                            active
-                              ? 'text-oxblood font-semibold'
-                              : 'text-ink-soft hover:text-oxblood'
-                          }`}
-                          onClick={(e) => {
-                            if (hasChildren) {
-                              e.preventDefault();
-                              setActiveDropdown(isExpanded ? null : item.name);
-                            } else {
-                              handleNavigation(e, item.href);
-                            }
-                          }}
-                        >
-                          <span className="font-sans">{item.name}</span>
-                          {hasChildren && (
-                            <ChevronDown className={`w-4 h-4 text-oxblood opacity-70 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
-                          )}
-                        </a>
-
-                        {/* Expandable sub-links */}
-                        <AnimatePresence>
-                          {hasChildren && isExpanded && allLinks.length > 0 && (
-                            <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: 'auto', opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              transition={{ duration: 0.2 }}
-                              className="overflow-hidden"
-                            >
-                              <div className="ml-3 pl-3 border-l border-line py-2 space-y-1.5 bg-paper-soft/50 rounded-sm my-1">
-                                {allLinks.map((link: any) => (
-                                  <a
-                                    key={link.name}
-                                    href={link.href}
-                                    className={`block px-3 py-2 text-[13.5px] transition-colors ${
-                                      isActive(link.href)
-                                        ? 'text-oxblood font-semibold'
-                                        : 'text-muted-foreground hover:text-ink'
-                                    }`}
-                                    onClick={(e) => handleNavigation(e, link.href)}
-                                  >
-                                    {link.name}
-                                  </a>
-                                ))}
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
-                    );
-                  })}
-                </div>
+              {/* Sidebar Subheader Badge */}
+              <div className="bg-ink text-paper px-6 py-2.5 flex items-center justify-between text-xs font-mono border-b border-zinc-800">
+                <span className="text-brass uppercase tracking-[0.2em] font-semibold">PANA INSTITUTE DIRECTORY</span>
+                <span className="text-zinc-400">SELECT SECTION</span>
               </div>
 
-              {/* Mobile footer actions */}
-              <div className="px-6 py-5 border-t border-line bg-paper-soft space-y-3">
+              {/* Scrollable Navigation Sections */}
+              <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+                {navItems.map((item: any, idx: number) => {
+                  const active = isActive(item.href);
+                  const hasChildren = item.columns || item.dropdown;
+                  const allLinks = item.columns
+                    ? item.columns.flatMap((c: any) => c.links)
+                    : item.dropdown || [];
+
+                  return (
+                    <div key={item.name} className="bg-paper-soft border border-line rounded-xs p-5 hover:border-oxblood/30 transition-colors">
+                      <div className="flex items-center justify-between pb-3 border-b border-line mb-3">
+                        <span className="font-mono text-[10px] text-oxblood uppercase tracking-widest font-semibold">
+                          0{idx + 1} · {item.name}
+                        </span>
+                        {hasChildren && (
+                          <span className="font-mono text-[10px] text-brass uppercase font-semibold">
+                            {allLinks.length} SECTIONS
+                          </span>
+                        )}
+                      </div>
+
+                      <a
+                        href={item.href}
+                        onClick={(e) => handleNavigation(e, item.href)}
+                        className={`flex items-center justify-between text-xl font-serif font-medium transition-colors ${
+                          active ? 'text-oxblood font-semibold' : 'text-ink hover:text-oxblood'
+                        }`}
+                      >
+                        <span>{item.name}</span>
+                        <ChevronRight className="w-4 h-4 text-oxblood opacity-80" />
+                      </a>
+
+                      {/* Sub-navigation Links */}
+                      {hasChildren && allLinks.length > 0 && (
+                        <div className="mt-4 pt-3 border-t border-line/60 space-y-2">
+                          {allLinks.map((link: any) => {
+                            const Icon = getIconComponent(link.icon);
+                            const linkActive = isActive(link.href);
+                            return (
+                              <a
+                                key={link.name}
+                                href={link.href}
+                                onClick={(e) => handleNavigation(e, link.href)}
+                                className={`flex items-start gap-3 p-2 rounded-xs transition-colors group ${
+                                  linkActive
+                                    ? 'bg-paper text-oxblood font-semibold'
+                                    : 'hover:bg-paper text-ink-soft hover:text-oxblood'
+                                }`}
+                              >
+                                <div className="w-6 h-6 rounded-xs bg-paper border border-line flex items-center justify-center text-oxblood shrink-0 mt-0.5 group-hover:border-oxblood/40">
+                                  <Icon className="w-3.5 h-3.5" />
+                                </div>
+                                <div>
+                                  <div className="text-xs font-medium text-ink group-hover:text-oxblood">
+                                    {link.name}
+                                  </div>
+                                  {link.desc && (
+                                    <div className="text-[11px] text-muted-foreground leading-tight mt-0.5">
+                                      {link.desc}
+                                    </div>
+                                  )}
+                                </div>
+                              </a>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Sidebar Footer Actions */}
+              <div className="p-6 bg-paper-soft border-t border-line space-y-3 shrink-0">
+                <Link
+                  to="/contact"
+                  onClick={() => setIsOpen(false)}
+                  className="w-full bg-oxblood hover:bg-oxblood-deep text-white font-mono text-xs uppercase tracking-widest py-3.5 rounded-xs font-semibold text-center block shadow-md border border-oxblood-light"
+                >
+                  Contact Us / Executive Advisory
+                </Link>
+
                 {!user ? (
-                  <div className="space-y-2">
-                    <Link to="/courses" onClick={() => setIsOpen(false)}>
-                      <Button className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl h-11">
-                        Explore Courses
-                      </Button>
-                    </Link>
-                    <Link to="/auth?mode=login" onClick={() => setIsOpen(false)}>
-                      <Button variant="outline" className="w-full font-semibold rounded-xl h-11 mt-2">
-                        Sign In
-                      </Button>
-                    </Link>
-                  </div>
+                  <Link
+                    to="/auth?mode=login"
+                    onClick={() => setIsOpen(false)}
+                    className="w-full bg-paper hover:bg-paper-soft text-ink border border-line font-mono text-xs uppercase tracking-widest py-3 rounded-xs font-semibold text-center block"
+                  >
+                    Sign In to Portal
+                  </Link>
                 ) : (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3 px-1 py-2">
-                      <Avatar className="h-10 w-10">
+                  <div className="flex items-center justify-between pt-2">
+                    <div className="flex items-center gap-2.5">
+                      <Avatar className="h-8 w-8">
                         <AvatarImage src={profile?.avatar_url || ""} />
-                        <AvatarFallback className="bg-red-600 text-white text-sm font-bold">
+                        <AvatarFallback className="bg-oxblood text-white text-xs font-serif font-bold">
                           {profile?.full_name ? profile.full_name[0].toUpperCase() : 'U'}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">{profile?.full_name}</p>
-                        <p className="text-xs text-zinc-500 truncate">{user.email}</p>
-                      </div>
+                      <span className="text-xs font-medium text-ink truncate max-w-[180px]">
+                        {profile?.full_name || user.email}
+                      </span>
                     </div>
-                    <Button
-                      variant="outline"
+                    <button
                       onClick={() => { signOut(); setIsOpen(false); }}
-                      className="w-full text-red-600 border-red-200 hover:bg-red-50 font-semibold rounded-xl h-11"
+                      className="font-mono text-xs text-oxblood hover:underline flex items-center gap-1 font-semibold"
                     >
-                      <LogOut className="w-4 h-4 mr-2" /> Sign Out
-                    </Button>
+                      <LogOut className="w-3.5 h-3.5" /> Sign Out
+                    </button>
                   </div>
                 )}
               </div>

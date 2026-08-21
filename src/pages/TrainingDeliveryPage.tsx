@@ -22,91 +22,41 @@ const TrainingDelivery = () => {
         <meta name="keywords" content="training delivery, learning management system, virtual classroom, training methods, PANA Institute" />
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-subtle">
+      <div className="min-h-screen bg-paper text-ink">
         <Navigation />
 
-        <main>
-          {/* Hero Section with Visual Impact */}
-          <section className="relative pt-32 pb-24 md:pt-48 md:pb-32 overflow-hidden min-h-[400px] md:min-h-[500px]">
-            {/* Background Image */}
-            <div className="absolute inset-0">
-              {headerImage ? (
-                <img
-                  src={headerImage}
-                  alt="Training Delivery"
-                  className="w-full h-full object-cover object-top"
-                  loading="eager"
-                />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-pana-navy via-pana-blue to-pana-red relative">
-                  {/* Animated gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-pana-navy/80 via-pana-blue/40 to-transparent"></div>
-                  {/* Decorative elements */}
-                  <div className="absolute inset-0">
-                    <div className="absolute top-10 left-10 w-32 h-32 bg-pana-gold/20 rounded-full blur-2xl animate-pulse"></div>
-                    <div className="absolute bottom-10 right-10 w-48 h-48 bg-white/10 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
-                    <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-pana-red/20 rounded-full blur-xl animate-pulse animation-delay-500"></div>
-                  </div>
-                </div>
-              )}
-            </div>
-            {/* Black overlay */}
-            <div className="absolute inset-0 bg-black/60"></div>
+        <main className="flex-1 w-full">
+          {/* Editorial Dark Hero Section */}
+          <section className="relative pt-36 pb-24 bg-ink text-paper border-b border-zinc-800 overflow-hidden">
+            <div className="max-w-[1320px] mx-auto px-7 relative z-10">
+              <div className="max-w-4xl space-y-6">
+                <span className="font-mono text-xs text-brass uppercase tracking-[0.22em] font-semibold block">
+                  CAPABILITY DEVELOPMENT · TRAINING DELIVERY
+                </span>
 
-            {/* Subtle animated elements */}
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-pana-gold/30 rounded-full blur-3xl animate-pulse"></div>
-              <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-white/20 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
-            </div>
-
-            {/* Floating Elements */}
-            <div className="absolute inset-0 pointer-events-none">
-              <div className="absolute top-20 left-20 w-6 h-6 bg-pana-gold/40 rounded-full animate-bounce"></div>
-              <div className="absolute top-40 right-32 w-4 h-4 bg-white/30 rounded-full animate-ping"></div>
-              <div className="absolute bottom-32 left-1/3 w-8 h-8 bg-pana-blue/30 rounded-full animate-pulse"></div>
-            </div>
-
-            <div className="relative max-w-7xl mx-auto px-6 lg:px-8 text-center z-10 mt-16">
-              <div className="space-y-8 animate-fade-in">
-                <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full text-white/90 text-sm font-medium border border-white/20">
-                  <Zap className="w-5 h-5 text-pana-gold" />
-                  <span className="text-red-500">PANA Institute</span>
-                  <ArrowRight className="w-4 h-4" />
-                </div>
-
-                <h1 className="text-6xl md:text-8xl font-bold mb-6 leading-tight">
-                  <span className="text-red-500">Training</span>
-                  <span className="block bg-gradient-to-r from-pana-gold to-red-300 bg-clip-text text-transparent">
-                    <span className="text-red-500">Delivery</span>
-                  </span>
+                <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-normal text-paper">
+                  Multimodal Experiential Training Delivery
                 </h1>
 
-                <p className="text-xl md:text-2xl text-white/80 max-w-4xl mx-auto leading-relaxed">
-                  {get('hero_subtitle', 'Innovative training delivery methods, strategies, and approaches designed to maximize learning impact and drive career and organizational transformation')}
+                <p className="font-serif text-lg sm:text-xl text-zinc-300 max-w-3xl leading-relaxed">
+                  Innovative training delivery methods, strategies, and approaches designed to maximize learning impact and drive career and organizational transformation.
                 </p>
 
                 {/* Stats Bar */}
-                <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto mt-12">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-pana-gold">200+</div>
-                    <div className="text-white/70 text-sm">Professionals Trained</div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t border-zinc-800">
+                  <div>
+                    <div className="font-serif text-3xl font-bold text-brass">200+</div>
+                    <div className="font-mono text-xs text-zinc-400 uppercase tracking-wider">Professionals Trained</div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-pana-gold">95%</div>
-                    <div className="text-white/70 text-sm">Success Rate</div>
+                  <div>
+                    <div className="font-serif text-3xl font-bold text-brass">95%</div>
+                    <div className="font-mono text-xs text-zinc-400 uppercase tracking-wider">Success Rate</div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-pana-gold">20+</div>
-                    <div className="text-white/70 text-sm">Direct and Indirect Global Partners</div>
+                  <div>
+                    <div className="font-serif text-3xl font-bold text-brass">20+</div>
+                    <div className="font-mono text-xs text-zinc-400 uppercase tracking-wider">Global Partners</div>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Scroll Indicator */}
-            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-              <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
-                <div className="w-1 h-3 bg-white/60 rounded-full mt-2 animate-pulse"></div>
               </div>
             </div>
           </section>

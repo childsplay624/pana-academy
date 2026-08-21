@@ -11,25 +11,25 @@ export const ConsultancyPage: React.FC = () => {
     <div className="min-h-screen bg-paper text-ink font-sans antialiased selection:bg-oxblood selection:text-white">
       <Navigation />
 
-      <main className="pt-6">
-        {/* HERO SECTION */}
-        <section className="py-16 bg-paper-soft border-b border-line">
-          <div className="max-w-[1200px] mx-auto px-7">
-            <span className="font-mono text-xs tracking-[0.22em] uppercase text-oxblood font-semibold block mb-3">
-              Vertical 03 · Consultancy and Advisory
+      <main className="flex-1 w-full">
+        {/* HERO SECTION - DARK LUXURY EDITORIAL */}
+        <section className="pt-36 pb-24 bg-ink text-paper border-b border-zinc-800 relative overflow-hidden">
+          <div className="max-w-[1320px] mx-auto px-7 relative z-10">
+            <span className="font-mono text-xs tracking-[0.22em] uppercase text-brass font-semibold block mb-3">
+              VERTICAL 03 · CONSULTANCY & ADVISORY
             </span>
-            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-medium text-ink max-w-3xl mb-6">
+            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-normal text-paper max-w-4xl mb-6">
               Consultancy and Advisory
             </h1>
-            <p className="font-serif text-xl text-ink-soft max-w-3xl leading-relaxed">
+            <p className="font-serif text-lg sm:text-xl text-zinc-300 max-w-3xl leading-relaxed">
               Technical advisory and consulting for industry and government clients, built on the same competence frameworks and evidence the Institute uses to assess people.
             </p>
           </div>
         </section>
 
         {/* CONTENT BLOCK */}
-        <section className="py-16">
-          <div className="max-w-[1200px] mx-auto px-7 grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+        <section className="py-24 bg-paper">
+          <div className="max-w-[1320px] mx-auto px-7 grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
             <div>
               <span className="font-mono text-xs tracking-[0.22em] uppercase text-oxblood font-semibold block mb-4">
                 What we deliver
