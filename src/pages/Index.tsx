@@ -5,8 +5,12 @@ import Footer from "@/components/Footer";
 import SocialMediaIcons from "@/components/SocialMediaIcons";
 import { Loader2 } from "lucide-react";
 import { pageService, Page, PageSection } from "@/services/pageService";
-import { SectionRenderer } from "@/components/page-builder/SectionRenderer";
-import { OurInstitutePage } from "./OurInstitutePage";
+import {
+  SectionRenderer,
+  DynamicHeroSection, DynamicStatsSection, DynamicHowItWorksSection,
+  DynamicCategoriesSection, DynamicPlatformFeaturesSection, DynamicTopCoursesSection,
+  DynamicUpcomingCoursesSection, DynamicNewsSection, DynamicTestimonialsSection
+} from "@/components/page-builder/SectionRenderer";
 
 const Index = () => {
   const [pageData, setPageData] = useState<{ page: Page, sections: PageSection[] } | null>(null);
@@ -30,34 +34,43 @@ const Index = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-paper">
-        <Loader2 className="w-12 h-12 animate-spin text-oxblood" />
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Loader2 className="w-12 h-12 animate-spin text-primary" />
       </div>
     );
   }
 
   const sections = pageData?.sections || [];
-  const activeSections = sections.filter((s: any) => s && s.is_active !== false);
   const page = pageData?.page;
-
-  if (activeSections.length === 0) {
-    return <OurInstitutePage />;
-  }
 
   return (
     <>
       <Helmet>
-        <title>{page?.meta_title || "PANA Institute - Building the standard against which competence is measured"}</title>
-        <meta name="description" content={page?.meta_description || "PANA Institute develops and assesses competence for the petroleum, energy and power, and digital industries."} />
+        <title>{page?.meta_title || "PANA Institute - Professional Training & Development"}</title>
+        <meta name="description" content={page?.meta_description || "Transform your career with PANA Institute's world-class professional training programs."} />
       </Helmet>
-      <div className="min-h-screen relative bg-paper text-ink">
+      <div className="min-h-screen relative">
         <Navigation />
         <SocialMediaIcons />
         
         <main>
-          {activeSections.map((section) => (
-            <SectionRenderer key={section.id} section={section} />
-          ))}
+          {sections.length === 0 ? (
+            <>
+              <DynamicHeroSection />
+              <DynamicStatsSection />
+              <DynamicHowItWorksSection />
+              <DynamicCategoriesSection />
+              <DynamicPlatformFeaturesSection />
+              <DynamicTopCoursesSection />
+              <DynamicUpcomingCoursesSection />
+              <DynamicNewsSection />
+              <DynamicTestimonialsSection />
+            </>
+          ) : (
+            sections.map((section) => (
+              <SectionRenderer key={section.id} section={section} />
+            ))
+          )}
         </main>
 
         <Footer />

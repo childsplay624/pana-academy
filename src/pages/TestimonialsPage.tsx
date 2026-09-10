@@ -55,35 +55,48 @@ const TestimonialsPage = () => {
 
       <Navigation />
 
-      <Navigation />
+      {/* Hero Section */}
+      <section className="relative pt-32 pb-20 overflow-hidden bg-pana-navy">
+        <div className="absolute inset-0 opacity-20">
+          {heroImage ? (
+            <img src={heroImage} alt="" className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-pana-navy via-slate-900 to-red-900" />
+          )}
+        </div>
 
-      {/* Editorial Dark Hero Section */}
-      <section className="relative pt-36 pb-24 bg-ink text-paper border-b border-zinc-800 overflow-hidden">
-        <div className="max-w-[1320px] mx-auto px-7 relative z-10">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-red-600/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-pana-gold/10 rounded-full blur-3xl animate-pulse" />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <span className="font-mono text-xs text-brass uppercase tracking-[0.22em] font-semibold block mb-3">
-              CLIENT ENDORSEMENTS · INDUSTRY TRUST
-            </span>
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full text-pana-gold text-sm font-medium border border-white/20 mb-6">
+              <MessageSquare className="w-4 h-4" />
+              <span>Real Stories, Real Results</span>
+            </div>
 
-            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-normal text-paper mb-6">
-              Voices of Excellence & Endorsements
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
+              Voices of <span className="text-red-600">Excellence</span>
             </h1>
 
-            <p className="font-serif text-lg sm:text-xl text-zinc-300 max-w-3xl leading-relaxed mb-10">
-              Discover how PANA Institute has empowered professionals and organizations across energy and technology sectors to achieve unprecedented growth and technical mastery.
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-10 leading-relaxed">
+              Discover how PANA Institute has empowered professionals and organizations across the globe to achieve unprecedented growth and technical mastery.
             </p>
 
-            {/* Quick Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl pt-6 border-t border-zinc-800">
+            {/* Quick Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mt-16">
               {stats.map((stat, idx) => (
-                <div key={idx} className="bg-zinc-900/80 border border-brass/20 p-6 rounded-xs">
-                  <stat.icon className="w-8 h-8 text-brass mb-3" />
-                  <div className="font-serif text-3xl font-bold text-paper mb-1">{stat.value}</div>
-                  <div className="font-mono text-[10px] text-zinc-400 uppercase tracking-widest">{stat.label}</div>
+                <div key={idx} className="bg-white/5 backdrop-blur-sm border border-white/10 p-6 rounded-2xl">
+                  <stat.icon className="w-8 h-8 text-pana-gold mx-auto mb-3" />
+                  <div className="text-3xl font-bold text-white mb-1">{stat.value}</div>
+                  <div className="text-sm text-gray-400 uppercase tracking-wider">{stat.label}</div>
                 </div>
               ))}
             </div>
@@ -182,9 +195,9 @@ const TestimonialsPage = () => {
               </ul>
 
               <div className="mt-12">
-                <Link to="/courses">
-                  <Button size="lg" className="bg-pana-navy hover:bg-slate-800 group font-bold">
-                    Explore Our Programs
+                <Link to="/courses" className="no-underline">
+                  <Button size="lg" className="bg-red-600 hover:bg-red-700 text-white group font-bold shadow-lg">
+                    Explore Programmes
                     <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>

@@ -2,32 +2,37 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
-import { useCertificates } from '@/hooks/useCertificates';
+import { useCertificates, Certificate } from '@/hooks/useCertificates';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { motion } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { 
   ShieldCheck, 
   Search, 
   Award,
   Download,
+  Copy,
+  Check,
+  ExternalLink,
   Hash,
   BookOpen,
   UserCheck,
+  AlertTriangle,
+  FileText,
+  User,
   Calendar,
-  ShieldX,
-  Check,
-  ExternalLink,
-  User
+  Clock,
+  Lock,
+  ShieldX
 } from 'lucide-react';
-import ScrollReveal from '@/components/ui/ScrollReveal';
+import { Separator } from '@/components/ui/separator';
 
 export default function VerifyCertificate() {
   const [searchParams] = useSearchParams();
   const [verificationCode, setVerificationCode] = useState('');
-  
+  // Define the certificate type based on the database schema and API response
   interface VerifiedCertificate {
     id: string;
     user_id: string;
@@ -50,12 +55,14 @@ export default function VerifyCertificate() {
     is_valid: boolean;
     created_at: string;
     updated_at: string;
+    // Allow any other properties that might come from the API
     [key: string]: any;
   }
   
   const [certificate, setCertificate] = useState<VerifiedCertificate | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [copied, setCopied] = useState(false);
   const { verifyCertificate } = useCertificates();
   const { toast } = useToast();
 
@@ -84,41 +91,49 @@ export default function VerifyCertificate() {
       const result = await verifyCertificate(codeToVerify.trim());
       const now = new Date().toISOString();
       
+      // Handle both issued_at and issued_date fields for backward compatibility
       const issuedAt = (result as any)?.issued_at || (result as any)?.issued_date || now;
       const completionDate = (result as any)?.completion_date || now;
       
+      // Create a properly typed certificate object with all required fields
       const certificateData: VerifiedCertificate = {
         id: result?.id || `cert_${Date.now()}`,
         user_id: result?.user_id || '',
         course_id: result?.course_id || '',
         enrollment_id: result?.enrollment_id || '',
-        certificate_number: result?.certificate_number || codeToVerify,
-        title: result?.title || result?.course_title || 'Certificate of Competency',
+        certificate_number: result?.certificate_number || `CERT-${Date.now()}`,
+        title: result?.title || 'Certificate of Completion',
         description: result?.description,
         issued_at: issuedAt,
         completion_date: completionDate,
         grade: result?.grade,
         score: result?.score,
-        instructor_name: result?.instructor_name || 'Governing Council Board',
-        course_title: result?.course_title || result?.title || 'Professional Training',
+        instructor_name: result?.instructor_name || 'PANA Institute Instructor',
+        course_title: result?.course_title || 'Course',
         course_duration_hours: result?.course_duration_hours,
-        certificate_url: result?.certificate_url,
-        download_url: result?.download_url,
-        verification_code: codeToVerify,
-        metadata: result?.metadata,
-        is_valid: result?.is_valid !== undefined ? result.is_valid : true,
+        certificate_url: result?.certificate_url || (result as any)?.download_url,
+        download_url: (result as any)?.download_url,
+        verification_code: result?.verification_code || codeToVerify.trim().toUpperCase(),
+        metadata: result?.metadata ? { ...(result.metadata as Record<string, any>) } : {},
+        is_valid: result?.is_valid !== false, // Default to true if not specified
         created_at: result?.created_at || now,
-        updated_at: result?.updated_at || now,
-        ...result
+        updated_at: result?.updated_at || now
       };
 
+      // Include any additional fields from the result
+      if (result) {
+        Object.entries(result).forEach(([key, value]) => {
+          if (!(key in certificateData) && value !== undefined) {
+            (certificateData as any)[key] = value;
+          }
+        });
+      }
       setCertificate(certificateData);
       toast({
         title: 'Success',
         description: 'Certificate verified successfully',
       });
     } catch (error: any) {
-      console.error('Certificate verification error:', error);
       setCertificate(null);
       toast({
         title: 'Verification Failed',
@@ -130,6 +145,20 @@ export default function VerifyCertificate() {
     }
   };
 
+  const handleCopyCode = () => {
+    if (!verificationCode) return;
+    
+    navigator.clipboard.writeText(verificationCode);
+    setCopied(true);
+    
+    toast({
+      title: 'Copied!',
+      description: 'Verification code copied to clipboard',
+    });
+    
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleVerification();
@@ -137,145 +166,268 @@ export default function VerifyCertificate() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-paper text-ink font-serif">
+    <div className="flex flex-col min-h-screen">
       <Navigation />
-      
-      <main className="flex-grow w-full">
-        {/* Executive Dark Editorial Header */}
-        <section className="bg-ink text-paper pt-36 pb-20 border-b border-zinc-800">
-          <div className="max-w-[1320px] mx-auto px-7">
-            <span className="font-mono text-xs text-brass uppercase tracking-[0.22em] font-semibold block mb-3">
-              PUBLIC VERIFICATION PORTAL · ISO STANDARDS & GOVERNANCE
-            </span>
-            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-normal text-paper mb-4">
-              Certificate of Competency Verification
+      <main className="flex-grow bg-gradient-to-br from-pana-navy/5 to-pana-blue/5 pt-24 pb-12 px-4">
+        <div className="max-w-4xl mx-auto space-y-8">
+        {/* Header */}
+        <motion.div 
+          className="text-center space-y-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="flex justify-center">
+            <div className="bg-pana-blue/10 p-4 rounded-2xl">
+              <ShieldCheck className="h-12 w-12 text-pana-blue" />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-4xl font-bold tracking-tight text-pana-navy">
+              Certificate Verification
             </h1>
-            <p className="font-serif text-lg text-zinc-300 max-w-3xl leading-relaxed">
-              Verify the official authenticity, validity status, and accredited transcript of credentials issued by PANA Institute.
+            <p className="text-lg text-muted-foreground">
+              Verify the authenticity of certificates issued by PANA Institute
             </p>
           </div>
-        </section>
+        </motion.div>
 
-        {/* Verification Form Body */}
-        <section className="py-20 bg-paper">
-          <div className="max-w-[1320px] mx-auto px-7 space-y-12">
-            <ScrollReveal direction="up" delay={0.1}>
-              <div className="max-w-3xl mx-auto bg-paper-soft border border-line rounded-none p-8 md:p-12 shadow-sm space-y-6">
-                <div className="flex items-center gap-3 pb-4 border-b border-line">
-                  <div className="p-2.5 bg-paper border border-line text-oxblood rounded-none shrink-0">
-                    <Search className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h2 className="font-serif text-2xl font-bold text-ink">Lookup Certificate ID</h2>
-                    <p className="font-serif text-xs text-muted-foreground">Enter the unique verification code printed on your official document</p>
-                  </div>
+        {/* Verification Form */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <Card className="max-w-3xl mx-auto border-0 shadow-lg">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-3 text-xl">
+                <div className="p-2 bg-pana-blue/10 rounded-lg">
+                  <Search className="h-6 w-6 text-pana-blue" />
                 </div>
-
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <div className="relative flex-1">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Hash className="h-4 w-4 text-oxblood" />
-                    </div>
-                    <Input
-                      placeholder="e.g. PANA-2026-EX-8901"
-                      value={verificationCode}
-                      onChange={(e) => setVerificationCode(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      className="pl-10 h-12 bg-paper border-line rounded-none focus:outline-none focus:border-oxblood font-mono text-sm uppercase"
-                    />
+                Verify Certificate
+              </CardTitle>
+              <CardDescription>
+                Enter the verification code found on your certificate
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Hash className="h-5 w-5 text-muted-foreground" />
                   </div>
-                  <Button 
-                    onClick={() => handleVerification()} 
-                    disabled={isLoading}
-                    className="h-12 bg-oxblood hover:bg-oxblood-deep text-white font-mono text-xs uppercase tracking-widest px-8 rounded-none font-semibold border border-oxblood-light"
-                  >
-                    {isLoading ? 'Verifying...' : 'Verify Certificate'}
-                  </Button>
+                  <Input
+                    placeholder="Enter verification code"
+                    value={verificationCode}
+                    onChange={(e) => setVerificationCode(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    className="pl-10 h-12 text-base"
+                  />
+                  {verificationCode && (
+                    <button 
+                      onClick={handleCopyCode}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground transition-colors"
+                      aria-label="Copy verification code"
+                    >
+                      {copied ? (
+                        <Check className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </button>
+                  )}
                 </div>
+                <Button 
+                  onClick={() => handleVerification()}
+                  disabled={isLoading || !verificationCode.trim()}
+                  className="h-12 px-6 text-base bg-pana-blue hover:bg-pana-navy transition-colors"
+                >
+                  {isLoading ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Verifying...
+                    </>
+                  ) : (
+                    <>
+                      <Search className="h-4 w-4 mr-2" />
+                      Verify Now
+                    </>
+                  )}
+                </Button>
               </div>
-            </ScrollReveal>
+              <p className="text-sm text-muted-foreground flex items-center gap-1.5">
+                <FileText className="h-4 w-4" />
+                The verification code can be found at the bottom of your certificate
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-            {/* Verification Results */}
-            {hasSearched && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="max-w-4xl mx-auto"
-              >
-                {certificate ? (
-                  <div className="bg-paper-soft border border-line rounded-none overflow-hidden shadow-xl space-y-6 p-8">
-                    {/* Success Banner */}
-                    <div className="bg-paper border border-oxblood/30 p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                      <div className="flex items-start gap-4">
-                        <div className="p-2.5 bg-oxblood text-white rounded-none shrink-0">
-                          <ShieldCheck className="h-6 w-6" />
-                        </div>
+        {/* Verification Results */}
+        {hasSearched && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="max-w-4xl mx-auto"
+          >
+            {certificate ? (
+              <>
+                {/* Success Banner */}
+                <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-xl p-6 mb-6">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="flex items-start gap-4">
+                      <div className="mt-1 p-2 bg-green-100 dark:bg-green-800/50 rounded-lg">
+                        <ShieldCheck className="h-6 w-6 text-green-600 dark:text-green-400" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-green-800 dark:text-green-200">
+                          Certificate Verified Successfully
+                        </h3>
+                        <p className="text-green-700 dark:text-green-300 mt-1">
+                          This is a valid certificate issued by PANA Institute
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-3 mt-4 md:mt-0">
+                      <Button variant="outline" className="gap-2">
+                        <Download className="h-4 w-4" />
+                        Download PDF
+                      </Button>
+                      <Button className="gap-2 bg-pana-blue hover:bg-pana-navy">
+                        <ExternalLink className="h-4 w-4" />
+                        View Full Certificate
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Certificate Details */}
+                <Card className="overflow-hidden">
+                  <CardHeader className="bg-pana-navy/5 border-b">
+                    <div className="flex items-center gap-2">
+                      <Check className="h-4 w-4 text-green-500" />
+                      <span className="text-sm text-green-700">Certificate is valid and verified</span>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x">
+                      {/* Left Column */}
+                      <div className="p-6 space-y-6">
                         <div>
-                          <span className="font-mono text-[10px] text-brass uppercase font-semibold block mb-0.5">ACCREDITED REGISTRY RECORD</span>
-                          <h3 className="font-serif text-xl font-bold text-ink">
-                            Certificate Verified Successfully
+                          <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+                            <UserCheck className="h-4 w-4" />
+                            LEARNER INFORMATION
                           </h3>
-                          <p className="font-serif text-xs text-muted-foreground mt-0.5">
-                            This document is an authentic credential officially issued by PANA Institute.
-                          </p>
+                          <div className="space-y-4">
+                            <div>
+                              <h3 className="text-lg font-semibold text-foreground">{certificate.title || 'Professional Certificate'}</h3>
+                              <p className="text-sm text-muted-foreground">Issued on: {new Date(certificate.issued_at).toLocaleDateString()}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-muted-foreground">Instructor</p>
+                              <p className="font-medium">{certificate.instructor_name || 'N/A'}</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+                            <BookOpen className="h-4 w-4" />
+                            COURSE DETAILS
+                          </h3>
+                          <div className="space-y-4">
+                            <div>
+                              <p className="text-sm text-muted-foreground">Course Title</p>
+                              <p className="font-medium">{certificate.course_title || 'N/A'}</p>
+                            </div>
+                            {certificate.instructor_name && (
+                              <div className="flex items-center gap-2">
+                                <User className="h-4 w-4 text-muted-foreground" />
+                                <div>
+                                  <p className="text-sm font-medium">Recipient</p>
+                                  <p className="text-sm text-muted-foreground">
+                                    {certificate.title || 'N/A'}
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+                            {certificate.course_duration_hours && (
+                              <div>
+                                <p className="text-sm text-muted-foreground">Duration</p>
+                                <p className="font-medium">{certificate.course_duration_hours} hours</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right Column */}
+                      <div className="p-6 space-y-6">
+                        <div>
+                          <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+                            <Award className="h-4 w-4" />
+                            CERTIFICATE DETAILS
+                          </h3>
+                          <div className="space-y-4">
+                            <div>
+                              <p className="text-sm font-medium">Issued On</p>
+                              <Calendar className="h-4 w-4" />
+                              <span>Issued: {new Date(certificate.issued_at || certificate.issued_date || '').toLocaleDateString()}</span>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium">Verification Code</p>
+                              <p className="font-mono text-sm text-muted-foreground">
+                                {certificate.verification_code}
+                              </p>
+                            </div>
+                            {certificate.course_duration_hours && (
+                              <div>
+                                <p className="text-sm font-medium">Course Duration</p>
+                                <p className="text-sm text-muted-foreground">
+                                  {certificate.course_duration_hours} hours
+                                </p>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
-
-                    {/* Certificate Details */}
-                    <Card className="bg-paper border border-line rounded-none overflow-hidden">
-                      <CardHeader className="bg-paper-soft border-b border-line p-5">
-                        <div className="flex items-center gap-2">
-                          <Check className="h-4 w-4 text-oxblood" />
-                          <span className="font-mono text-xs text-oxblood uppercase tracking-wider font-semibold">VALIDATED IN PANA GOVERNANCE DIRECTORY</span>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="p-8 space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 font-serif">
-                          <div className="space-y-3">
-                            <span className="font-mono text-[10px] text-brass uppercase font-semibold block">COURSE / PROGRAMME</span>
-                            <h4 className="text-xl font-bold text-ink">{certificate.course_title || certificate.title}</h4>
-                            <p className="text-xs text-muted-foreground">Issued to Candidate ID: {certificate.user_id || 'REGISTERED FELLOW'}</p>
-                          </div>
-                          <div className="space-y-3 font-mono text-xs">
-                            <span className="text-brass uppercase font-semibold block text-[10px]">DOCUMENT METADATA</span>
-                            <div>
-                              <span className="text-muted-foreground block text-[10px]">VERIFICATION CODE:</span>
-                              <span className="font-semibold text-oxblood">{certificate.verification_code}</span>
-                            </div>
-                            <div>
-                              <span className="text-muted-foreground block text-[10px]">DATE OF ISSUANCE:</span>
-                              <span className="font-semibold text-ink">{new Date(certificate.issued_at).toLocaleDateString()}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+                  </CardContent>
+                </Card>
+              </>
+            ) : (
+              <Card className="border-red-200 bg-red-50/50 dark:border-red-800 dark:bg-red-950/20">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-red-700 dark:text-red-300">
+                    <ShieldX className="h-6 w-6" />
+                    Certificate Not Found
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    The verification code you entered is either invalid, expired, or the certificate 
+                    has been revoked. Please check the code and try again.
+                  </p>
+                  <div className="mt-4 p-4 bg-muted/50 rounded-lg">
+                    <p className="text-sm font-medium">Common issues:</p>
+                    <ul className="text-sm text-muted-foreground space-y-1">
+                      <li>• Verification code was entered incorrectly</li>
+                      <li>• Certificate has been revoked or expired</li>
+                      <li>• Code is from a different verification system</li>
+                    </ul>
                   </div>
-                ) : (
-                  <Card className="border border-oxblood/40 bg-paper-soft rounded-none p-8 text-center space-y-4">
-                    <CardHeader className="p-0">
-                      <div className="w-12 h-12 bg-oxblood text-white rounded-none flex items-center justify-center mx-auto mb-2">
-                        <ShieldX className="h-6 w-6" />
-                      </div>
-                      <CardTitle className="font-serif text-2xl font-bold text-ink">
-                        Certificate Record Not Found
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-0 space-y-3">
-                      <p className="font-serif text-xs text-muted-foreground max-w-lg mx-auto leading-relaxed">
-                        The verification code you entered is invalid or does not match active records in the PANA Institute governance registry. Please check the code and try again.
-                      </p>
-                    </CardContent>
-                  </Card>
-                )}
-              </motion.div>
+                </CardContent>
+              </Card>
             )}
-          </div>
-        </section>
+          </motion.div>
+        )}
+        </div>
       </main>
       <Footer />
     </div>
   );
-}
+};

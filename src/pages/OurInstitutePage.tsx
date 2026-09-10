@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Navigation } from '@/components/Navigation';
-import { Footer } from '@/components/Footer';
+import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Calendar, Clock, MapPin, ArrowRight, BookOpen, Tag, Quote, Star } from 'lucide-react';
 import { supabase } from "@/integrations/supabase/client";
+import { Card3D } from '@/components/ui/Card3D';
 
 const heroSlides = [
   {
@@ -188,7 +189,7 @@ export const OurInstitutePage: React.FC = () => {
         }
 
         if (courseData && courseData.length > 0) {
-          const mappedCourses = courseData.map((c, idx) => {
+          const mappedCourses = courseData.map((c: any, idx: number) => {
             const startTs = c.start_date ? new Date(c.start_date).getTime() : Date.now() + idx * 86400000 * 14;
             return {
               id: c.id,
@@ -208,7 +209,7 @@ export const OurInstitutePage: React.FC = () => {
           });
 
           // Ensure sorted chronologically by start date ascending (earliest starting course first)
-          mappedCourses.sort((a, b) => a.startDateTimestamp - b.startDateTimestamp);
+          mappedCourses.sort((a: any, b: any) => a.startDateTimestamp - b.startDateTimestamp);
           setDbCourses(mappedCourses);
         }
 
@@ -219,7 +220,7 @@ export const OurInstitutePage: React.FC = () => {
           .order('published_at', { ascending: false })
           .limit(3);
         if (postData && postData.length > 0) {
-          setDbArticles(postData.map(p => ({
+          setDbArticles(postData.map((p: any) => ({
             id: p.id,
             slug: p.slug,
             title: p.title,
@@ -288,7 +289,7 @@ export const OurInstitutePage: React.FC = () => {
     { name: 'Dr Daere Afonya-a Akobo', role: 'Chairman and Chief Executive', badge: 'Board Chair', initial: 'DA' },
     { name: 'Iyenemi Akobo', role: 'Executive Director, Research & Advisory', badge: 'Executive Director', initial: 'IA' },
     { name: 'Callista Azogu', role: 'Global Business Services', badge: 'Board Member', initial: 'CA' },
-    { name: 'Kennedy Dike', role: 'GM, Global Business Services', badge: 'General Manager', initial: 'KD' }
+    { name: 'Kennedy Dike', role: 'Acting Vice President (VP) - HR, Talent Management & Business Services', badge: 'Acting VP', initial: 'KD' }
   ];
 
   const committeesList = [
@@ -423,27 +424,22 @@ export const OurInstitutePage: React.FC = () => {
           <div className="border-t border-line bg-paper w-full relative z-10">
             <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 divide-y sm:divide-y-0 sm:divide-x divide-line">
               <Link to="/competency" className="p-7 hover:bg-paper-soft transition-colors group">
-                <span className="font-mono text-[11px] text-oxblood tracking-widest block mb-2 font-medium">Vertical 01</span>
                 <div className="font-serif text-xl font-medium text-ink group-hover:text-oxblood transition-colors leading-tight mb-2">Competency Assessment</div>
                 <div className="text-xs text-muted-foreground">Assess, then cultivate.</div>
               </Link>
               <Link to="/research" className="p-7 hover:bg-paper-soft transition-colors group">
-                <span className="font-mono text-[11px] text-oxblood tracking-widest block mb-2 font-medium">Vertical 02</span>
                 <div className="font-serif text-xl font-medium text-ink group-hover:text-oxblood transition-colors leading-tight mb-2">Research & Development</div>
                 <div className="text-xs text-muted-foreground">Five centres of excellence.</div>
               </Link>
               <Link to="/consultancy" className="p-7 hover:bg-paper-soft transition-colors group">
-                <span className="font-mono text-[11px] text-oxblood tracking-widest block mb-2 font-medium">Vertical 03</span>
                 <div className="font-serif text-lg font-medium text-ink group-hover:text-oxblood transition-colors leading-tight mb-2">Consultancy & Advisory</div>
                 <div className="text-xs text-muted-foreground">Industry and government.</div>
               </Link>
               <Link to="/sustainability" className="p-7 hover:bg-paper-soft transition-colors group">
-                <span className="font-mono text-[11px] text-oxblood tracking-widest block mb-2 font-medium">Vertical 04</span>
                 <div className="font-serif text-lg font-medium text-ink group-hover:text-oxblood transition-colors leading-tight mb-2">Sustainability & Climate</div>
                 <div className="text-xs text-muted-foreground">Decarbonisation and ESG.</div>
               </Link>
               <Link to="/global" className="p-7 hover:bg-paper-soft transition-colors group">
-                <span className="font-mono text-[11px] text-oxblood tracking-widest block mb-2 font-medium">Vertical 05</span>
                 <div className="font-serif text-lg font-medium text-ink group-hover:text-oxblood transition-colors leading-tight mb-2">Global Engagements</div>
                 <div className="text-xs text-muted-foreground">Partnerships and reach.</div>
               </Link>
@@ -566,31 +562,37 @@ export const OurInstitutePage: React.FC = () => {
               </div>
             </div>
 
-            {/* Vision, Mission, Purpose Dark Luxury Cards */}
+            {/* Vision, Mission, Purpose Dark Luxury Cards with 3D Spatial Depth */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-              <div className="bg-ink text-paper p-8 rounded-xs border border-brass/30 relative group overflow-hidden shadow-xl">
-                <span className="font-mono text-xs text-brass uppercase tracking-[0.2em] block mb-4">01 · VISION</span>
-                <h3 className="font-serif text-2xl font-medium mb-3">Africa's Competency Partner</h3>
-                <p className="text-sm text-zinc-300 leading-relaxed">
-                  To be Africa's premier competency solutions partner for the petroleum, energy, power, and digital industries.
-                </p>
-              </div>
+              <Card3D intensity={14} depth={20} glowColor="rgba(220, 38, 38, 0.15)">
+                <div className="bg-ink text-paper p-8 rounded-xs border border-brass/30 relative group overflow-hidden shadow-3d-dark h-full preserve-3d">
+                  <span className="font-mono text-xs text-brass uppercase tracking-[0.2em] block mb-4 translate-z-10">01 · VISION</span>
+                  <h3 className="font-serif text-2xl font-medium mb-3 translate-z-10">Africa's Competency Partner</h3>
+                  <p className="text-sm text-zinc-300 leading-relaxed translate-z-10">
+                    To be Africa's premier competency solutions partner for the petroleum, energy, power, and digital industries.
+                  </p>
+                </div>
+              </Card3D>
 
-              <div className="bg-ink text-paper p-8 rounded-xs border border-brass/30 relative group overflow-hidden shadow-xl">
-                <span className="font-mono text-xs text-brass uppercase tracking-[0.2em] block mb-4">02 · MISSION</span>
-                <h3 className="font-serif text-2xl font-medium mb-3">Practical Upskilling</h3>
-                <p className="text-sm text-zinc-300 leading-relaxed">
-                  To develop and upskill the workforce through experiential training that cultivates competencies directly applicable to real job roles.
-                </p>
-              </div>
+              <Card3D intensity={14} depth={20} glowColor="rgba(220, 38, 38, 0.15)">
+                <div className="bg-ink text-paper p-8 rounded-xs border border-brass/30 relative group overflow-hidden shadow-3d-dark h-full preserve-3d">
+                  <span className="font-mono text-xs text-brass uppercase tracking-[0.2em] block mb-4 translate-z-10">02 · MISSION</span>
+                  <h3 className="font-serif text-2xl font-medium mb-3 translate-z-10">Practical Upskilling</h3>
+                  <p className="text-sm text-zinc-300 leading-relaxed translate-z-10">
+                    To develop and upskill the workforce through experiential training that cultivates competencies directly applicable to real job roles.
+                  </p>
+                </div>
+              </Card3D>
 
-              <div className="bg-ink text-paper p-8 rounded-xs border border-brass/30 relative group overflow-hidden shadow-xl">
-                <span className="font-mono text-xs text-brass uppercase tracking-[0.2em] block mb-4">03 · PURPOSE</span>
-                <h3 className="font-serif text-2xl font-medium mb-3">Talent Pool Creation</h3>
-                <p className="text-sm text-zinc-300 leading-relaxed">
-                  To drive competency assessment and development, building a pool of certified talent across energy, power, and digital domains.
-                </p>
-              </div>
+              <Card3D intensity={14} depth={20} glowColor="rgba(220, 38, 38, 0.15)">
+                <div className="bg-ink text-paper p-8 rounded-xs border border-brass/30 relative group overflow-hidden shadow-3d-dark h-full preserve-3d">
+                  <span className="font-mono text-xs text-brass uppercase tracking-[0.2em] block mb-4 translate-z-10">03 · PURPOSE</span>
+                  <h3 className="font-serif text-2xl font-medium mb-3 translate-z-10">Talent Pool Creation</h3>
+                  <p className="text-sm text-zinc-300 leading-relaxed translate-z-10">
+                    To drive competency assessment and development, building a pool of certified talent across energy, power, and digital domains.
+                  </p>
+                </div>
+              </Card3D>
             </div>
 
             {/* Accreditations & Legacy Contracts Showcase */}

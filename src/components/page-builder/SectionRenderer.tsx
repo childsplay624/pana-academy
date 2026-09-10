@@ -41,7 +41,7 @@ export const HeroSection = ({ content }: { content: any }) => {
             {content.badge}
           </span>
         )}
-        <h1 className={`text-5xl md:text-7xl font-bold tracking-tight mb-6 ${bgImage ? 'text-white' : 'bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/70'}`}>
+        <h1 className={`text-5xl md:text-7xl font-bold tracking-tight mb-6 ${bgImage ? 'text-white' : 'text-foreground'}`}>
           {content.title || 'Hero Title'}
         </h1>
         <p className={`text-xl ${bgImage ? 'text-gray-200' : 'text-muted-foreground'} max-w-3xl mx-auto mb-10 leading-relaxed`}>

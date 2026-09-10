@@ -51,6 +51,9 @@ import ImageManagement from "./pages/admin/ImageManagement";
 import SupportTickets from "./pages/admin/SupportTickets";
 import ConsultingServicesPage from "./pages/ConsultingServicesPage";
 import RnDServicesPage from "./pages/RnDServicesPage";
+import SustainabilitySolutionsPage from "./pages/SustainabilitySolutionsPage";
+import GlobalEngagementsPage from "./pages/GlobalEngagementsPage";
+import SafetyPage from "./pages/SafetyPage";
 import ContactPage from "./pages/ContactPage";
 import TrainingCalendarPage from "./pages/TrainingCalendarPage";
 import AuthCallback from "./pages/auth/callback";
@@ -58,12 +61,6 @@ import OurJourney from "./pages/our-journey";
 import PublicPageRenderer from "./pages/PublicPageRenderer";
 
 import AboutPage from "./pages/AboutPage";
-import { OurInstitutePage } from "./pages/OurInstitutePage";
-import { CompetencyPage } from "./pages/CompetencyPage";
-import { ResearchPage } from "./pages/ResearchPage";
-import { ConsultancyPage } from "./pages/ConsultancyPage";
-import { SustainabilityPage } from "./pages/SustainabilityPage";
-import { GlobalEngagementsPage } from "./pages/GlobalEngagementsPage";
 import { PaymentPage } from "./pages/PaymentPage";
 import { PaymentCallbackPage } from "./pages/PaymentCallbackPage";
 import CareersPage from "./pages/CareersPage";
@@ -98,15 +95,12 @@ const App = () => (
                 <MaintenanceGuard>
                   <Routes>
                     <Route path="/" element={<Index />} />
-                    <Route path="/our-institute" element={<OurInstitutePage />} />
-                    <Route path="/competency" element={<CompetencyPage />} />
-                    <Route path="/research" element={<ResearchPage />} />
-                    <Route path="/consultancy" element={<ConsultancyPage />} />
-                    <Route path="/sustainability" element={<SustainabilityPage />} />
-                    <Route path="/global" element={<GlobalEngagementsPage />} />
                     <Route path="/p/:slug" element={<PublicPageRenderer />} />
 
                     <Route path="/blog" element={<BlogPage />} />
+                    <Route path="/media" element={<BlogPage />} />
+                    <Route path="/news" element={<BlogPage />} />
+                    <Route path="/resources" element={<BlogPage />} />
                     <Route path="/blog/:slug" element={<BlogPostPage />} />
 
                     <Route path="/about" element={<AboutPage />} />
@@ -145,6 +139,11 @@ const App = () => (
                     <Route path="/training-delivery" element={<TrainingDeliveryPage />} />
                     <Route path="/consulting-services" element={<ConsultingServicesPage />} />
                     <Route path="/research-development" element={<RnDServicesPage />} />
+                    <Route path="/sustainability-solutions" element={<SustainabilitySolutionsPage />} />
+                    <Route path="/sustainability" element={<SustainabilitySolutionsPage />} />
+                    <Route path="/global-engagements" element={<GlobalEngagementsPage />} />
+                    <Route path="/safety" element={<SafetyPage />} />
+                    <Route path="/safety-standards" element={<SafetyPage />} />
                     <Route path="/contact" element={<ContactPage />} />
                     <Route path="/training-calendar" element={<TrainingCalendarPage />} />
                     <Route path="/our-journey" element={<OurJourney />} />

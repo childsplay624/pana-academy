@@ -1,28 +1,41 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, CheckCircle, Star, ArrowRight } from 'lucide-react';
+import { FontAwesomeIcon } from '@/components/ui/FontAwesomeIcon';
 import { Link } from 'react-router-dom';
 import { useSiteImages } from '@/hooks/useSiteImage';
+
+const formatPanaInstituteName = (text: string) => {
+  if (!text) return text;
+  return text
+    .replace(/\bPANA INSTITUTE\b/g, 'PANA Institute')
+    .replace(/\bPANA ACADEMY\b/g, 'PANA Institute')
+    .replace(/\bPana Academy\b/g, 'PANA Institute')
+    .replace(/\bPana Institute\b/g, 'PANA Institute');
+};
+
 const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const { images: heroImages, isLoading, error } = useSiteImages('hero');
+  const { images: heroImages, isLoading } = useSiteImages('hero');
 
   const fallbackSlides = [
     {
-      title: "Leading Competency Hub",
-      highlight: "for Global Professionals",
-      subtitle: "Empowering individuals and organizations with world-class training and practical competencies to excel in any industry."
+      kicker: "PANA Institute · Competency & Advisory",
+      title: "Africa's Premier Competency Hub",
+      highlight: "for Energy & Industry Solutions",
+      subtitle: "Delivering accredited technical training, operational consultancy, R&D excellence, and climate services across global markets."
     },
     {
-      title: "Elevate Your Career",
-      highlight: "With Expert-Led Training",
-      subtitle: "Join industry leaders and gain the practical skills needed to thrive in today's competitive landscape."
+      kicker: "Human Capital Development",
+      title: "Elevate Operational Performance",
+      highlight: "Through Evidence-Based Assessment",
+      subtitle: "Hands-on instruction on live equipment, practical workforce development, and NCDMB-aligned competence frameworks."
     },
     {
-      title: "Transform Your Future",
-      highlight: "Through Innovative Learning",
-      subtitle: "Discover cutting-edge courses designed to bridge the gap between theoretical knowledge and practical application."
+      kicker: "Research & Climate Innovation",
+      title: "Pioneering Sustainable Transition",
+      highlight: "Driven by 5 Centres of Excellence",
+      subtitle: "Connecting laboratory insights directly to corporate decarbonisation, smart grid tech, and ESG strategy."
     }
   ];
 
@@ -49,33 +62,35 @@ const HeroSection = () => {
           id: index + 1,
           mediaUrl: finalUrl,
           type: isYouTube ? 'youtube' : isVideo ? 'video' : 'image',
-          title: img.alt_text?.includes(' - ') ? img.alt_text.split(' - ')[0] : fallback.title,
-          highlight: img.alt_text?.includes(' - ') ? img.alt_text.split(' - ')[1] : fallback.highlight,
-          subtitle: (img.description && img.description.length > 5 && !img.description.includes("Empowering") && !img.description.toLowerCase().includes("hero slide")) ? img.description : fallback.subtitle,
+          kicker: formatPanaInstituteName(fallback.kicker),
+          title: formatPanaInstituteName(img.alt_text?.includes(' - ') ? img.alt_text.split(' - ')[0] : fallback.title),
+          highlight: formatPanaInstituteName(img.alt_text?.includes(' - ') ? img.alt_text.split(' - ')[1] : fallback.highlight),
+          subtitle: formatPanaInstituteName((img.description && img.description.length > 5 && !img.description.includes("Empowering") && !img.description.toLowerCase().includes("hero slide")) ? img.description : fallback.subtitle),
         };
       })
     : fallbackSlides.map((fallback, index) => ({
         id: index + 1,
         mediaUrl: defaultImages[index % defaultImages.length],
         type: 'image' as const,
-        title: fallback.title,
-        highlight: fallback.highlight,
-        subtitle: fallback.subtitle,
+        kicker: formatPanaInstituteName(fallback.kicker),
+        title: formatPanaInstituteName(fallback.title),
+        highlight: formatPanaInstituteName(fallback.highlight),
+        subtitle: formatPanaInstituteName(fallback.subtitle),
       }));
 
-  // Auto-play
+  // Auto-play timer
   useEffect(() => {
     if (slides.length <= 1) return;
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 10000); // 10 seconds for video content
+    }, 9000);
     return () => clearInterval(timer);
   }, [slides.length]);
 
   if (isLoading) {
     return (
-      <div className="h-[75vh] bg-black/10 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="h-[85vh] bg-zinc-950 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
       </div>
     );
   }
@@ -86,16 +101,16 @@ const HeroSection = () => {
   const current = slides[currentSlide];
 
   return (
-    <section className="relative min-h-[85vh] flex items-center overflow-hidden pt-20 mt-0">
-      {/* Background with smooth scroll */}
+    <section className="relative min-h-screen h-screen w-full flex items-center justify-center overflow-hidden bg-zinc-950 pt-20">
+      {/* Background Media Container */}
       <div className="absolute inset-0 overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.div
             key={current.id}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.2 }}
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
             className="absolute inset-0"
           >
             {current.type === 'youtube' ? (
@@ -122,66 +137,137 @@ const HeroSection = () => {
                 className="w-full h-full object-cover object-center"
               />
             )}
-            <div className="absolute inset-0 bg-black/50"></div>
+
+            {/* Gradient Overlays for Contrast */}
+            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-black/40"></div>
+            <div className="absolute inset-0 bg-radial-gradient from-transparent via-black/40 to-black/80 pointer-events-none"></div>
           </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* Minimal Centered Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center w-full px-6 md:px-12 h-full text-center pt-16 pb-12">
-        <motion.div
-          key={current.id + "-text"}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="max-w-4xl mx-auto"
-        >
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-light tracking-tight text-white drop-shadow-md">
-            {current.title}{" "}
-            <span className="block font-bold text-white mt-1">{current.highlight}</span>
-          </h1>
+      {/* Ambient 3D Depth Grid Matrix */}
+      <div className="absolute inset-0 bg-grid-3d opacity-25 pointer-events-none z-[5] [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black_80%)]"></div>
 
-          <p className="mt-8 text-lg md:text-2xl text-gray-200 opacity-90 font-light max-w-2xl mx-auto leading-relaxed drop-shadow-sm">
-            {current.subtitle}
-          </p>
+      {/* Hero Foreground Content with 3D Perspective */}
+      <div className="relative z-10 flex flex-col items-center justify-center w-full px-6 md:px-12 max-w-7xl mx-auto text-center py-20 perspective-1000 preserve-3d">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={current.id + "-text"}
+            initial={{ opacity: 0, y: 30, rotateX: 10 }}
+            animate={{ opacity: 1, y: 0, rotateX: 0 }}
+            exit={{ opacity: 0, y: -20, rotateX: -10 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="max-w-5xl mx-auto flex flex-col items-center preserve-3d"
+          >
+            {/* Top Glass 3D Badge */}
+            <motion.div
+              whileHover={{ translateZ: 30, scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+              className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold tracking-wider mb-8 shadow-3d-dark preserve-3d cursor-default"
+            >
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_#ef4444]"></span>
+              <span className="translate-z-10">{current.kicker}</span>
+            </motion.div>
 
-          {/* Simple Clean CTA */}
-          <div className="mt-12 flex justify-center">
-            <Link to="/courses">
-              <Button
-                size="lg"
-                className="bg-red-600 text-white hover:bg-red-700 border-none px-10 py-7 text-lg rounded-full shadow-2xl transition-all hover:scale-105 font-medium"
+            {/* Main 3D Perspective Headline */}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.15] drop-shadow-2xl preserve-3d">
+              <span className="inline-block transition-transform duration-300 hover:translate-z-20">
+                {current.title}
+              </span>{" "}
+              <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-red-600 to-amber-500 drop-shadow-[0_10px_20px_rgba(220,38,38,0.4)]">
+                {current.highlight}
+              </span>
+            </h1>
+
+            {/* Subtitle */}
+            <p className="mt-6 text-base sm:text-lg md:text-xl text-zinc-200 font-normal max-w-2xl mx-auto leading-relaxed drop-shadow-md">
+              {current.subtitle}
+            </p>
+
+            {/* Value Pillar Chips - 3D Floating Glass Cards */}
+            <div className="flex flex-wrap justify-center gap-4 mt-8 text-xs font-semibold text-white/90 preserve-3d">
+              <motion.div
+                whileHover={{ translateZ: 25, scale: 1.05, y: -4 }}
+                transition={{ type: "spring", stiffness: 350, damping: 20 }}
+                className="flex items-center gap-2 bg-gradient-to-br from-zinc-900/90 to-zinc-950/90 px-4 py-2.5 rounded-xl border border-white/15 shadow-3d-glass backdrop-blur-md cursor-default"
               >
-                Explore Courses
-              </Button>
-            </Link>
-          </div>
-        </motion.div>
+                <FontAwesomeIcon name="fa-solid fa-shield-halved" className="text-red-500 text-sm" />
+                <span>NCDMB & OGTAN Accredited</span>
+              </motion.div>
+              <motion.div
+                whileHover={{ translateZ: 25, scale: 1.05, y: -4 }}
+                transition={{ type: "spring", stiffness: 350, damping: 20 }}
+                className="flex items-center gap-2 bg-gradient-to-br from-zinc-900/90 to-zinc-950/90 px-4 py-2.5 rounded-xl border border-white/15 shadow-3d-glass backdrop-blur-md cursor-default"
+              >
+                <FontAwesomeIcon name="fa-solid fa-wand-magic-sparkles" className="text-amber-400 text-sm" />
+                <span>5 R&D Centres of Excellence</span>
+              </motion.div>
+              <motion.div
+                whileHover={{ translateZ: 25, scale: 1.05, y: -4 }}
+                transition={{ type: "spring", stiffness: 350, damping: 20 }}
+                className="flex items-center gap-2 bg-gradient-to-br from-zinc-900/90 to-zinc-950/90 px-4 py-2.5 rounded-xl border border-white/15 shadow-3d-glass backdrop-blur-md cursor-default"
+              >
+                <FontAwesomeIcon name="fa-solid fa-award" className="text-emerald-400 text-sm" />
+                <span>ISO 14001 & ISO 45001 Aligned</span>
+              </motion.div>
+            </div>
+
+            {/* Dual CTAs with 3D Depth */}
+            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center w-full max-w-md preserve-3d">
+              <Link to="/courses" className="no-underline w-full sm:w-auto">
+                <motion.div whileHover={{ translateZ: 30, scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+                  <Button
+                    size="lg"
+                    className="w-full sm:w-auto bg-gradient-to-r from-red-600 via-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white border-none px-8 py-7 text-base font-bold rounded-xl shadow-3d-red transition-all group flex items-center justify-center gap-2.5"
+                  >
+                    <span>Explore Programmes</span>
+                    <FontAwesomeIcon name="fa-solid fa-arrow-right" className="text-sm transition-transform group-hover:translate-x-1.5" />
+                  </Button>
+                </motion.div>
+              </Link>
+
+              <Link to="/about" className="no-underline w-full sm:w-auto">
+                <motion.div whileHover={{ translateZ: 20, scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="w-full sm:w-auto bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border-white/30 px-8 py-7 text-base font-semibold rounded-xl transition-all shadow-3d-glass"
+                  >
+                    Our Institute
+                  </Button>
+                </motion.div>
+              </Link>
+            </div>
+          </motion.div>
+        </AnimatePresence>
       </div>
 
-      {/* Navigation */}
+      {/* Navigation Arrow Buttons */}
       <button
         onClick={prevSlide}
-        className="absolute left-6 top-1/2 -translate-y-1/2 z-20 p-3 bg-red-600 rounded-full text-white hover:bg-red-700"
+        aria-label="Previous Slide"
+        className="absolute left-6 top-1/2 -translate-y-1/2 z-20 p-3.5 bg-black/40 hover:bg-red-600 backdrop-blur-md rounded-full text-white border border-white/20 transition-all shadow-xl hover:scale-110 hidden sm:flex items-center justify-center"
       >
-        <ChevronLeft className="w-6 h-6" />
+        <FontAwesomeIcon name="fa-solid fa-chevron-left" className="text-lg" />
       </button>
       <button
         onClick={nextSlide}
-        className="absolute right-6 top-1/2 -translate-y-1/2 z-20 p-3 bg-red-600 rounded-full text-white hover:bg-red-700"
+        aria-label="Next Slide"
+        className="absolute right-6 top-1/2 -translate-y-1/2 z-20 p-3.5 bg-black/40 hover:bg-red-600 backdrop-blur-md rounded-full text-white border border-white/20 transition-all shadow-xl hover:scale-110 hidden sm:flex items-center justify-center"
       >
-        <ChevronRight className="w-6 h-6" />
+        <FontAwesomeIcon name="fa-solid fa-chevron-right" className="text-lg" />
       </button>
 
-      {/* Dots */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-3">
+      {/* Modern Slide Progress Indicators */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center space-x-3 z-20">
         {slides.map((_, i) => (
           <button
             key={i}
             onClick={() => setCurrentSlide(i)}
-            className={`w-3 h-3 rounded-full transition-all ${i === currentSlide ? "bg-red-600 scale-125" : "bg-white/50"
-              }`}
+            aria-label={`Go to slide ${i + 1}`}
+            className={`h-2 rounded-full transition-all duration-500 ${
+              i === currentSlide ? "w-10 bg-red-600 shadow-lg shadow-red-600/50" : "w-3 bg-white/40 hover:bg-white/70"
+            }`}
           />
         ))}
       </div>

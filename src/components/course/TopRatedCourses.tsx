@@ -6,6 +6,7 @@ import { Course, CourseType } from '@/types/course.types';
 import { Link } from 'react-router-dom';
 import { Star, Clock, Users, BookOpen } from 'lucide-react';
 import { usePlatformSettings } from '@/hooks/usePlatformSettings';
+import { Card3D } from '@/components/ui/Card3D';
 
 // Extend Course type with additional properties needed for display
 interface DisplayCourse extends Course {
@@ -131,7 +132,7 @@ export function TopRatedCourses() {
 
         // Shuffle and pick first 4 courses
         const shuffled = [...allCourses].sort(() => 0.5 - Math.random());
-        const selectedCourses = shuffled.slice(0, 5);
+        const selectedCourses = shuffled.slice(0, 4);
 
         // Add some default values for display
         const coursesWithDefaults = selectedCourses.map(course => ({
@@ -149,7 +150,7 @@ export function TopRatedCourses() {
       } catch (err) {
         console.error('Error loading courses:', err);
         setError('Failed to load courses. Using sample data instead.');
-        setCourses(sampleCourses);
+        setCourses(sampleCourses.slice(0, 4));
       } finally {
         setIsLoading(false);
       }
@@ -160,8 +161,8 @@ export function TopRatedCourses() {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-        {[...Array(5)].map((_, i) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[...Array(4)].map((_, i) => (
           <Card key={i} className="h-full">
             <Skeleton className="w-full h-32 rounded-t-lg" />
             <CardHeader className="p-4">
@@ -196,8 +197,8 @@ export function TopRatedCourses() {
             Explore our trending courses and competences/skill-based programs shaping today’s workforce.
           </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-          {sampleCourses.map((course) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {sampleCourses.slice(0, 4).map((course) => (
             <div key={course.id} className="h-full transform transition-all duration-300 hover:scale-[1.02]">
               <Card className="h-full hover:shadow-xl transition-all duration-300 border-gray-200 overflow-hidden">
                 <div className="relative">
@@ -229,11 +230,7 @@ export function TopRatedCourses() {
                 <CardContent className="p-5 pt-0">
                   <div className="flex items-center justify-between text-sm text-gray-600 mb-4 space-x-2">
                     <span className="flex items-center bg-gray-50 px-3 py-1 rounded-full">
-                      <Users className="h-4 w-4 mr-1.5" />
-                      {course.students_count?.toLocaleString() || '0'}
-                    </span>
-                    <span className="flex items-center bg-gray-50 px-3 py-1 rounded-full">
-                      <Clock className="h-4 w-4 mr-1.5" />
+                      <Clock className="h-4 w-4 mr-1.5 text-red-600" />
                       {course.duration || 8} {course.duration === 1 ? 'hr' : 'hrs'}
                     </span>
                     {!hidePrices && (
@@ -264,48 +261,45 @@ export function TopRatedCourses() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {courses.map((course) => (
-          <Link to={`/courses/${course.id}`} key={course.id} className="block h-full">
-            <Card className="h-full hover:shadow-md transition-shadow">
-              {course.thumbnail_url ? (
-                <img
-                  src={course.thumbnail_url}
-                  alt={course.title}
-                  className="w-full h-32 object-cover rounded-t-lg"
-                />
-              ) : (
-                <div className="w-full h-32 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-lg" />
-              )}
-              <CardHeader className="p-4">
-                <CardTitle className="text-base font-semibold line-clamp-2 h-12">
-                  {course.title}
-                </CardTitle>
-                <div className="flex items-center justify-between mt-2">
-                  <div className="flex items-center">
-                    <div className="flex items-center text-amber-400">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <svg
-                          key={star}
-                          className={`h-4 w-4 ${(course.rating || 0) >= star ? 'text-amber-400' : 'text-gray-300'}`}
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                      ))}
+          <Card3D key={course.id} intensity={12} depth={15} glowColor="rgba(220, 38, 38, 0.12)">
+            <Link to={`/courses/${course.id}`} className="block h-full no-underline">
+              <Card className="h-full hover:shadow-3d-dark transition-all border border-gray-200/80 overflow-hidden bg-white/95 preserve-3d">
+                {course.thumbnail_url ? (
+                  <div className="relative h-44 overflow-hidden">
+                    <img
+                      src={course.thumbnail_url}
+                      alt={course.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full text-xs font-bold text-white flex items-center shadow-md">
+                      <Star className="h-3.5 w-3.5 text-amber-400 mr-1 fill-amber-400" />
+                      {course.rating ? course.rating.toFixed(1) : '4.5'}
                     </div>
-                    <span className="ml-1 text-sm font-medium text-gray-700">
-                      {course.rating ? course.rating.toFixed(1) : 'N/A'}
+                  </div>
+                ) : (
+                  <div className="w-full h-44 bg-gradient-to-br from-zinc-900 to-zinc-950 flex items-center justify-center">
+                    <BookOpen className="h-12 w-12 text-zinc-600" />
+                  </div>
+                )}
+                <CardHeader className="p-5">
+                  <CardTitle className="text-base font-bold text-gray-900 line-clamp-2 min-h-[3rem] leading-snug translate-z-10">
+                    {course.title}
+                  </CardTitle>
+                  <div className="flex items-center justify-between mt-3 text-xs text-gray-500 font-medium translate-z-10">
+                    <span className="flex items-center text-gray-500">
+                      <Clock className="h-3.5 w-3.5 mr-1 text-red-600" />
+                      {course.duration || 8} hrs
+                    </span>
+                    <span className="bg-red-50 text-red-600 px-2.5 py-1 rounded-full font-bold">
+                      {course.category || 'Technical'}
                     </span>
                   </div>
-                  <span className="text-sm text-gray-500">
-                    {course.students_count || 0} students
-                  </span>
-                </div>
-              </CardHeader>
-            </Card>
-          </Link>
+                </CardHeader>
+              </Card>
+            </Link>
+          </Card3D>
         ))}
       </div>
     </div>

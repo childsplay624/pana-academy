@@ -321,6 +321,7 @@ const TeamManagementContent = () => {
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="governing">Governing Council</SelectItem>
                       <SelectItem value="board">Board of Directors</SelectItem>
                       <SelectItem value="advisory">Advisory Board</SelectItem>
                     </SelectContent>

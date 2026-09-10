@@ -411,6 +411,31 @@ export const getCourseStatus = (course: Course): {
 };
 
 /**
+ * Helper to check if a course date has passed and enrollment should be closed
+ */
+export const isCourseDatePassed = (course: { start_date?: string | null; end_date?: string | null; course_type?: string | null }): boolean => {
+  if (!course) return false;
+
+  const now = new Date();
+
+  // If end_date is provided, check if end_date (end of day) has passed
+  if (course.end_date) {
+    const endDate = new Date(course.end_date);
+    endDate.setHours(23, 59, 59, 999);
+    if (endDate < now) return true;
+  }
+
+  // If start_date is provided (for onsite/hybrid or scheduled courses)
+  if (course.start_date) {
+    const startDate = new Date(course.start_date);
+    startDate.setHours(23, 59, 59, 999);
+    if (startDate < now) return true;
+  }
+
+  return false;
+};
+
+/**
  * Create a new course
  */
 export const createCourse = async (courseData: any) => {

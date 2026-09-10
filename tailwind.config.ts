@@ -65,20 +65,6 @@ export default {
 					gray: 'hsl(var(--pana-gray))',
 					'light-gray': 'hsl(var(--pana-light-gray))'
 				},
-				oxblood: {
-					DEFAULT: '#6E1D2B',
-					deep: '#511420',
-				},
-				brass: '#A67C34',
-				paper: {
-					DEFAULT: '#FBFAF7',
-					soft: '#F1EDE5',
-				},
-				ink: {
-					DEFAULT: '#17130F',
-					soft: '#2A2420',
-				},
-				line: '#E3DDD2',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -89,11 +75,6 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				}
-			},
-			fontFamily: {
-				serif: ['Fraunces', 'Georgia', 'serif'],
-				sans: ['IBM Plex Sans', 'system-ui', 'sans-serif'],
-				mono: ['IBM Plex Mono', 'monospace'],
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

@@ -53,7 +53,7 @@ export default function LatestNewsSection() {
             className="max-w-2xl"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              News & <span className="text-red-600">Insights</span>
+              Media & <span className="text-red-600">Resources</span>
             </h2>
             <p className="text-lg text-gray-600">
               Stay updated with the latest industry trends, expert insights, and PANA Institute news.

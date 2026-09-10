@@ -5,6 +5,8 @@ import { BookOpen, Monitor, Users, Award, ArrowRight, CheckCircle, Zap, Globe, T
 import { DynamicPageSections } from "@/components/page-builder/DynamicPageSections";
 import { useSiteImage } from "@/hooks/useSiteImage";
 import { usePageContent } from "@/hooks/usePageContent";
+import { Button } from "@/components/ui/button";
+import { Card3D } from "@/components/ui/Card3D";
 
 const TrainingDelivery = () => {
   // Fetch header image from centralized system
@@ -22,319 +24,285 @@ const TrainingDelivery = () => {
         <meta name="keywords" content="training delivery, learning management system, virtual classroom, training methods, PANA Institute" />
       </Helmet>
 
-      <div className="min-h-screen bg-paper text-ink">
+      <div className="min-h-screen bg-gradient-subtle">
         <Navigation />
 
-        <main className="flex-1 w-full">
-          {/* Editorial Dark Hero Section */}
-          <section className="relative pt-36 pb-24 bg-ink text-paper border-b border-zinc-800 overflow-hidden">
-            <div className="max-w-[1320px] mx-auto px-7 relative z-10">
-              <div className="max-w-4xl space-y-6">
-                <span className="font-mono text-xs text-brass uppercase tracking-[0.22em] font-semibold block">
-                  CAPABILITY DEVELOPMENT · TRAINING DELIVERY
-                </span>
+        <main>
+          {/* Hero Section */}
+          <section className="relative pt-32 pb-24 md:pt-48 md:pb-32 overflow-hidden min-h-[400px] md:min-h-[500px]">
+            <div className="absolute inset-0">
+              {headerImage ? (
+                <img
+                  src={headerImage}
+                  alt="Competency Assessment & Development"
+                  className="w-full h-full object-cover object-top"
+                  loading="eager"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-pana-navy via-pana-blue to-pana-red relative">
+                  <div className="absolute inset-0 bg-gradient-to-t from-pana-navy/80 via-pana-blue/40 to-transparent"></div>
+                </div>
+              )}
+            </div>
+            <div className="absolute inset-0 bg-black/60"></div>
 
-                <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-normal text-paper">
-                  Multimodal Experiential Training Delivery
+            <div className="relative max-w-7xl mx-auto px-6 lg:px-8 text-center z-10 mt-16">
+              <div className="space-y-8 animate-fade-in">
+                <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full text-white/90 text-sm font-medium border border-white/20">
+                  <Zap className="w-5 h-5 text-pana-gold" />
+                  <span>Competency Assessment & Development</span>
+                  <ArrowRight className="w-4 h-4" />
+                </div>
+
+                <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight text-white">
+                  Competency Assessment <span className="text-red-600">& Development</span>
                 </h1>
 
-                <p className="font-serif text-lg sm:text-xl text-zinc-300 max-w-3xl leading-relaxed">
-                  Innovative training delivery methods, strategies, and approaches designed to maximize learning impact and drive career and organizational transformation.
+                <p className="text-xl md:text-2xl text-gray-200 max-w-4xl mx-auto leading-relaxed">
+                  A capability development hub delivering training, leadership development and practical skills aligned with real operational needs, and an assessment function that judges competence on evidence alone.
                 </p>
 
-                {/* Stats Bar */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t border-zinc-800">
-                  <div>
-                    <div className="font-serif text-3xl font-bold text-brass">200+</div>
-                    <div className="font-mono text-xs text-zinc-400 uppercase tracking-wider">Professionals Trained</div>
-                  </div>
-                  <div>
-                    <div className="font-serif text-3xl font-bold text-brass">95%</div>
-                    <div className="font-mono text-xs text-zinc-400 uppercase tracking-wider">Success Rate</div>
-                  </div>
-                  <div>
-                    <div className="font-serif text-3xl font-bold text-brass">20+</div>
-                    <div className="font-mono text-xs text-zinc-400 uppercase tracking-wider">Global Partners</div>
-                  </div>
+                {/* Sub-navigation Pills */}
+                <div className="flex flex-wrap justify-center gap-3 mt-8">
+                  <a href="#programmes" className="px-6 py-2.5 rounded-full bg-red-600 hover:bg-red-700 text-white font-medium text-sm transition-colors shadow-lg">
+                    Programmes
+                  </a>
+                  <a href="#faculty" className="px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-sm border border-white/20 transition-colors">
+                    Faculty
+                  </a>
+                  <a href="#labs" className="px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-sm border border-white/20 transition-colors">
+                    Labs
+                  </a>
+                  <a href="#roar-club" className="px-6 py-2.5 rounded-full bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-medium text-sm border border-amber-500/30 transition-colors">
+                    Roar Club
+                  </a>
                 </div>
               </div>
             </div>
           </section>
 
-          {/* Value Proposition Section */}
-          <section className="py-20 relative">
+          {/* Section 01: Competency · Programmes */}
+          <section id="programmes" className="py-20 bg-white">
             <div className="max-w-7xl mx-auto px-6 lg:px-8">
-              <div className="max-w-5xl mx-auto bg-white dark:bg-card rounded-3xl shadow-2xl p-10 md:p-16 -mt-20 relative z-10 border border-gray-100 dark:border-gray-800">
-                <div className="text-center mb-12">
-                  <div className="inline-flex items-center gap-2 bg-pana-gold/10 px-4 py-2 rounded-full text-pana-gold font-medium mb-4">
-                    <Target className="w-4 h-4" />
+              <div className="text-center max-w-3xl mx-auto mb-16">
+                <span className="text-red-600 font-bold text-xs uppercase tracking-wider block mb-2">Competency · Programmes</span>
+                <h2 className="text-4xl font-bold text-gray-900 mb-4">Training Solution Categories</h2>
+                <p className="text-lg text-gray-600 leading-relaxed">
+                  We train for performance, prevention and sustainability, across tailored, product specific and NCDMB stipulated Human Capital Development programmes. Thirteen categories of training solution sit under the pillar.
+                </p>
+              </div>
 
-                  </div>
-                  <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-                    Transforming Learning Through Innovation
-                  </h2>
-                </div>
-
-                <div className="prose prose-lg max-w-none text-center">
-                  <p className="text-xl text-muted-foreground leading-relaxed">
-                    {get('intro_body', 'Our training delivery encompasses methods, strategies, and approaches we use to present learning content and hands-on practical sessions to facilitate competency cultivation. We meticulously design our training delivery methods to maximise impact, effectiveness, and measurable outcomes for enhanced performance and sustainable career and organisational success.')}
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                <div className="p-8 bg-gray-50 rounded-2xl border border-gray-100 border-t-4 border-t-red-600 hover:shadow-md transition-shadow">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">Technical, operations and maintenance</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    Power and drives, valves and actuation, measurement and management, instrumentation and automation, welding and NDT, marine and subsea, exploration and production, renewable energy.
                   </p>
                 </div>
-
-                {/* Key Benefits */}
-                <div className="grid md:grid-cols-3 gap-8 mt-12">
-                  <div className="text-center group">
-                    <div className="w-16 h-16 bg-gradient-to-br from-pana-blue to-pana-navy rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-102 transition-transform duration-300">
-                      <Globe className="w-8 h-8 text-white" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-foreground mb-2">Global Standards</h3>
-                    <p className="text-muted-foreground text-sm">International best practices and certifications</p>
-                  </div>
-
-                  <div className="text-center group">
-                    <div className="w-16 h-16 bg-gradient-to-br from-pana-gold to-red-400 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-102 transition-transform duration-300">
-                      <TrendingUp className="w-8 h-8 text-white" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-foreground mb-2">Proven Results</h3>
-                    <p className="text-muted-foreground text-sm">Measurable impact on performance metrics</p>
-                  </div>
-
-                  <div className="text-center group">
-                    <div className="w-16 h-16 bg-gradient-to-br from-pana-navy to-pana-blue rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-102 transition-transform duration-300">
-                      <Zap className="w-8 h-8 text-white" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-foreground mb-2">Innovation Focus</h3>
-                    <p className="text-muted-foreground text-sm">Latest technology and methodologies</p>
-                  </div>
+                <div className="p-8 bg-gray-50 rounded-2xl border border-gray-100 border-t-4 border-t-purple-600 hover:shadow-md transition-shadow">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">Digitalisation and transformation</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    Smart grid, SCADA, artificial intelligence, the internet of things, and drones.
+                  </p>
                 </div>
+                <div className="p-8 bg-gray-50 rounded-2xl border border-gray-100 border-t-4 border-t-emerald-600 hover:shadow-md transition-shadow">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">Safety and sustainability</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    Industrial safety, environmental compliance and sustainable practice.
+                  </p>
+                </div>
+                <div className="p-8 bg-gray-50 rounded-2xl border border-gray-100 border-t-4 border-t-blue-600 hover:shadow-md transition-shadow">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">Project management</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    Project management and project development for capital and operational work.
+                  </p>
+                </div>
+                <div className="p-8 bg-gray-50 rounded-2xl border border-gray-100 border-t-4 border-t-indigo-600 hover:shadow-md transition-shadow">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">Leadership and management</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    Leadership, management and professional development courses.
+                  </p>
+                </div>
+                <div className="p-8 bg-gray-50 rounded-2xl border border-gray-100 border-t-4 border-t-amber-500 hover:shadow-md transition-shadow">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">Trades and site skills</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    Scaffolding, rigging and lifting, welding and pipe fitting.
+                  </p>
+                </div>
+                <div className="p-8 bg-gray-50 rounded-2xl border border-gray-100 border-t-4 border-t-rose-600 hover:shadow-md transition-shadow">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">Human capital development</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    Nigerian Content HCD, collaborative HCD, project based HCD, remedial HCD, and community and industry impact work.
+                  </p>
+                </div>
+                <div className="p-8 bg-gray-50 rounded-2xl border border-gray-100 border-t-4 border-t-cyan-600 hover:shadow-md transition-shadow">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">Digital literacy and social impact</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    Digital literacy, IT skills, youth and host community development, and career fairs.
+                  </p>
+                </div>
+                <div className="p-8 bg-gray-50 rounded-2xl border border-gray-100 border-t-4 border-t-zinc-700 hover:shadow-md transition-shadow">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">Customised and specialist</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    Customer specific, product specific and specialist courses, onboarding and orientation, sales, and asset management.
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-red-50 border-l-4 border-red-600 p-6 rounded-r-2xl max-w-4xl mx-auto text-center">
+                <p className="text-red-900 font-medium text-base">
+                  Delivery covers qualification and specialisation courses, certificate courses, scalable digital learning, and assessment against published competence frameworks.
+                </p>
               </div>
             </div>
           </section>
 
-          {/* Training Excellence Pillars */}
-          <section className="py-20 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-background">
+          {/* Section 02: Competency · Faculty */}
+          <section id="faculty" className="py-20 bg-gray-50">
             <div className="max-w-7xl mx-auto px-6 lg:px-8">
-              <div className="text-center mb-16">
-                <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-                  Four Pillars of Excellence
-                </h2>
-                <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                  Our comprehensive training delivery framework is built on four fundamental pillars that ensure exceptional learning outcomes
+              <div className="text-center max-w-3xl mx-auto mb-16">
+                <span className="text-red-600 font-bold text-xs uppercase tracking-wider block mb-2">Competency · Faculty</span>
+                <h2 className="text-4xl font-bold text-gray-900 mb-4">How Delivery is Put Together</h2>
+                <p className="text-lg text-gray-600 leading-relaxed">
+                  Programmes are led by instructors who have run the jobs they teach, connected to academic partners and to the subject authority held in the centres.
                 </p>
               </div>
 
-              <div className="grid lg:grid-cols-2 gap-10">
-                {/* Pillar 1: Training Methods */}
-                <article className="group relative">
-                  <div className="bg-white dark:bg-card rounded-3xl shadow-xl p-10 h-full transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-gray-100 dark:border-gray-800 overflow-hidden">
-                    {/* Background Pattern */}
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-pana-gold/10 to-transparent rounded-bl-3xl"></div>
-
-                    <div className="relative">
-                      <div className="flex items-start gap-6 mb-8">
-                        <div className="w-20 h-20 bg-gradient-to-br from-pana-gold to-red-400 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-102 transition-transform duration-300">
-                          <BookOpen className="w-10 h-10 text-white" />
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-3 mb-2">
-                            <span className="text-lg font-bold text-pana-gold bg-pana-gold/10 px-3 py-1 rounded-lg">01</span>
-                            <div className="w-12 h-px bg-gradient-to-r from-pana-gold to-transparent"></div>
-                          </div>
-                          <h3 className="text-2xl md:text-3xl font-bold text-foreground">Training Methods</h3>
-                        </div>
-                      </div>
-
-                      <p className="text-muted-foreground leading-relaxed mb-6 text-lg">
-                        Our comprehensive training methods are meticulously designed to accommodate diverse learning styles and professional requirements, employing a sophisticated blend of traditional and innovative approaches.
-                      </p>
-
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3">
-                          <CheckCircle className="w-5 h-5 text-pana-gold" />
-                          <span className="text-foreground font-medium">Interactive Learning Modules</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <CheckCircle className="w-5 h-5 text-pana-gold" />
-                          <span className="text-foreground font-medium">Hands-on Practical Sessions</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <CheckCircle className="w-5 h-5 text-pana-gold" />
-                          <span className="text-foreground font-medium">Case Study Analysis</span>
-                        </div>
-                      </div>
-                    </div>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <Card3D intensity={12} depth={15} glowColor="rgba(220, 38, 38, 0.15)">
+                  <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-3d-glass h-full preserve-3d">
+                    <div className="text-xs font-bold text-red-600 uppercase tracking-wider mb-1 translate-z-10">People</div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 translate-z-10">Industry leading faculty</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed translate-z-10">Guided by experts who help shape industry standards.</p>
                   </div>
-                </article>
-
-                {/* Pillar 2: Training Approach */}
-                <article className="group relative">
-                  <div className="bg-white dark:bg-card rounded-3xl shadow-xl p-10 h-full transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-gray-100 dark:border-gray-800 overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-pana-blue/10 to-transparent rounded-bl-3xl"></div>
-
-                    <div className="relative">
-                      <div className="flex items-start gap-6 mb-8">
-                        <div className="w-20 h-20 bg-gradient-to-br from-pana-blue to-pana-navy rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-102 transition-transform duration-300">
-                          <Users className="w-10 h-10 text-white" />
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-3 mb-2">
-                            <span className="text-lg font-bold text-pana-blue bg-pana-blue/10 px-3 py-1 rounded-lg">02</span>
-                            <div className="w-12 h-px bg-gradient-to-r from-pana-blue to-transparent"></div>
-                          </div>
-                          <h3 className="text-2xl md:text-3xl font-bold text-foreground">Training Approach</h3>
-                        </div>
-                      </div>
-
-                      <p className="text-muted-foreground leading-relaxed mb-6 text-lg">
-                        We adopt a revolutionary learner-centered approach that emphasizes practical application, interactive engagement, and continuous assessment to ensure immediate real-world application.
-                      </p>
-
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3">
-                          <CheckCircle className="w-5 h-5 text-pana-blue" />
-                          <span className="text-foreground font-medium">Personalized Learning Paths</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <CheckCircle className="w-5 h-5 text-pana-blue" />
-                          <span className="text-foreground font-medium">Continuous Assessment</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <CheckCircle className="w-5 h-5 text-pana-blue" />
-                          <span className="text-foreground font-medium">Real-world Application</span>
-                        </div>
-                      </div>
-                    </div>
+                </Card3D>
+                <Card3D intensity={12} depth={15} glowColor="rgba(37, 99, 235, 0.15)">
+                  <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-3d-glass h-full preserve-3d">
+                    <div className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1 translate-z-10">Partners</div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 translate-z-10">Global partnerships</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed translate-z-10">Connected to leading organisations, innovators and original equipment manufacturers worldwide.</p>
                   </div>
-                </article>
-
-                {/* Pillar 3: Technology & Platforms */}
-                <article className="group relative">
-                  <div className="bg-white dark:bg-card rounded-3xl shadow-xl p-10 h-full transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-gray-100 dark:border-gray-800 overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-pana-navy/10 to-transparent rounded-bl-3xl"></div>
-
-                    <div className="relative">
-                      <div className="flex items-start gap-6 mb-8">
-                        <div className="w-20 h-20 bg-gradient-to-br from-pana-navy to-slate-800 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-102 transition-transform duration-300">
-                          <Monitor className="w-10 h-10 text-white" />
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-3 mb-2">
-                            <span className="text-lg font-bold text-pana-navy bg-pana-navy/10 px-3 py-1 rounded-lg">03</span>
-                            <div className="w-12 h-px bg-gradient-to-r from-pana-navy to-transparent"></div>
-                          </div>
-                          <h3 className="text-2xl md:text-3xl font-bold text-foreground">Technology & Platforms</h3>
-                        </div>
-                      </div>
-
-                      <p className="text-muted-foreground leading-relaxed mb-6 text-lg">
-                        Advanced digital ecosystem featuring cutting-edge Learning Management Systems, immersive virtual classrooms, and mobile-first applications for flexible, accessible learning experiences.
-                      </p>
-
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3">
-                          <CheckCircle className="w-5 h-5 text-pana-navy" />
-                          <span className="text-foreground font-medium">AI-Powered LMS</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <CheckCircle className="w-5 h-5 text-pana-navy" />
-                          <span className="text-foreground font-medium">Virtual Reality Training</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <CheckCircle className="w-5 h-5 text-pana-navy" />
-                          <span className="text-foreground font-medium">Mobile Learning Apps</span>
-                        </div>
-                      </div>
-                    </div>
+                </Card3D>
+                <Card3D intensity={12} depth={15} glowColor="rgba(245, 158, 11, 0.15)">
+                  <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-3d-glass h-full preserve-3d">
+                    <div className="text-xs font-bold text-amber-600 uppercase tracking-wider mb-1 translate-z-10">Design</div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 translate-z-10">Custom learning solutions</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed translate-z-10">Courses built to address specific job roles and in country skills gaps.</p>
                   </div>
-                </article>
-
-                {/* Pillar 4: Learning Environment */}
-                <article className="group relative">
-                  <div className="bg-white dark:bg-card rounded-3xl shadow-xl p-10 h-full transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-gray-100 dark:border-gray-800 overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-pana-gold/10 to-transparent rounded-bl-3xl"></div>
-
-                    <div className="relative">
-                      <div className="flex items-start gap-6 mb-8">
-                        <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-102 transition-transform duration-300">
-                          <Award className="w-10 h-10 text-white" />
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-3 mb-2">
-                            <span className="text-lg font-bold text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 px-3 py-1 rounded-lg">04</span>
-                            <div className="w-12 h-px bg-gradient-to-r from-emerald-500 to-transparent"></div>
-                          </div>
-                          <h3 className="text-2xl md:text-3xl font-bold text-foreground">Learning Environment</h3>
-                        </div>
-                      </div>
-
-                      <p className="text-muted-foreground leading-relaxed mb-6 text-lg">
-                        World-class physical and virtual learning environments engineered to international standards, featuring optimal ergonomics, climate control, and flexible configurations for enhanced engagement.
-                      </p>
-
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3">
-                          <CheckCircle className="w-5 h-5 text-emerald-600" />
-                          <span className="text-foreground font-medium">International Standards</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <CheckCircle className="w-5 h-5 text-emerald-600" />
-                          <span className="text-foreground font-medium">Expert Facilitators</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <CheckCircle className="w-5 h-5 text-emerald-600" />
-                          <span className="text-foreground font-medium">Flexible Spaces</span>
-                        </div>
-                      </div>
-                    </div>
+                </Card3D>
+                <Card3D intensity={12} depth={15} glowColor="rgba(16, 185, 129, 0.15)">
+                  <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-3d-glass h-full preserve-3d">
+                    <div className="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-1 translate-z-10">Support</div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 translate-z-10">Lifetime alumni support</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed translate-z-10">Continuing mentorship for sustained professional growth.</p>
                   </div>
-                </article>
+                </Card3D>
+                <Card3D intensity={12} depth={15} glowColor="rgba(147, 51, 234, 0.15)">
+                  <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-3d-glass h-full preserve-3d">
+                    <div className="text-xs font-bold text-purple-600 uppercase tracking-wider mb-1 translate-z-10">Proof</div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 translate-z-10">Verifiable digital credentials</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed translate-z-10">Recognised certifications with secure verification an employer can check.</p>
+                  </div>
+                </Card3D>
+                <Card3D intensity={12} depth={15} glowColor="rgba(220, 38, 38, 0.15)">
+                  <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-3d-glass border-l-4 border-l-red-600 h-full preserve-3d">
+                    <div className="text-xs font-bold text-red-600 uppercase tracking-wider mb-1 translate-z-10">Integrity</div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 translate-z-10">Independent assessment</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed translate-z-10">No commercial relationship changes a judgement about what a person can do.</p>
+                  </div>
+                </Card3D>
               </div>
             </div>
           </section>
 
-          {/* Dynamic Call to Action */}
-          <section className="bg-gray-50 dark:bg-gray-900 py-20 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900"></div>
-            <div className="absolute inset-0">
-              <div className="absolute top-0 left-0 w-full h-full opacity-10">
-                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-pana-gold/20 rounded-full blur-3xl animate-pulse"></div>
-                <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gray-400/20 rounded-full blur-3xl animate-pulse animation-delay-2000"></div>
+          {/* Section 03: Competency · Labs */}
+          <section id="labs" className="py-20 bg-zinc-900 text-white">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8">
+              <div className="text-center max-w-3xl mx-auto mb-16">
+                <span className="text-red-400 font-bold text-xs uppercase tracking-wider block mb-2">Competency · Labs</span>
+                <h2 className="text-4xl font-bold mb-4">Operational Environments & Simulators</h2>
+                <p className="text-zinc-300 text-lg leading-relaxed">
+                  Learning happens in environments that mirror real operations: live equipment, workshops, plant and simulators. The technical domains below anchor the laboratories, the curriculum and the assessment centres.
+                </p>
+              </div>
+
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                  'Power and Drives',
+                  'Valves and Actuation',
+                  'Measurement and Management',
+                  'Integrated Automation and Digital Solutions',
+                  'Supply Chain Management',
+                  'Exploration and Production',
+                  'Marine and Subsea',
+                  'Digitalisation and Digitisation'
+                ].map((domain, idx) => (
+                  <div key={idx} className="bg-zinc-800 p-6 rounded-2xl border border-zinc-700 hover:border-red-500 transition-colors flex items-center">
+                    <div className="font-semibold text-zinc-100 text-base">{domain}</div>
+                  </div>
+                ))}
               </div>
             </div>
+          </section>
 
-            <div className="relative max-w-6xl mx-auto px-6 lg:px-8 text-center">
-              <div className="space-y-8">
-                <div className="inline-flex items-center gap-3 bg-white dark:bg-gray-800 px-6 py-3 rounded-full text-gray-800 dark:text-gray-200 font-medium border border-gray-200 dark:border-gray-700 shadow-sm">
-                  <Zap className="w-5 h-5 text-pana-gold" />
-                  Start Your Career and Organizational Transformation Today
-                </div>
-
-                <h3 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white leading-tight">
-                  Ready to Experience
-                  <span className="block bg-gradient-to-r from-pana-gold to-red-300 bg-clip-text text-transparent">
-                    <span className="text-red-500 dark:text-red-400">Training Excellence?</span>
-                  </span>
-                </h3>
-
-                <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-                  Join over 200 professionals who have transformed their careers through our innovative training delivery methods and achieved measurable success.
+          {/* Section 04: Competency · Roar Club */}
+          <section id="roar-club" className="py-20 bg-gradient-to-br from-amber-500/10 via-white to-red-50">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8">
+              <div className="text-center max-w-3xl mx-auto mb-16">
+                <span className="text-amber-700 font-bold text-xs uppercase tracking-wider block mb-2">Competency · Roar Club</span>
+                <h2 className="text-4xl font-bold text-gray-900 mb-4">Roar Club Alumni & Community</h2>
+                <p className="text-lg text-gray-700 leading-relaxed mb-4">
+                  Roar Club is the learner and alumni community of PANA Institute. It carries the lifetime relationship the Institute keeps with everyone who trains and is assessed here, from a first certificate course through to the fellowship.
                 </p>
+                <p className="text-sm text-gray-600 italic">
+                  Members stay connected through mentorship, continuing development, and access to events, career fairs and the Institute's partner network. The alumni base is being built toward a standing fellowship with a defined membership.
+                </p>
+              </div>
 
-                <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                  <a
-                    href="/auth?mode=signup"
-                    className="inline-flex items-center gap-3 px-10 py-5 bg-pana-gold text-pana-navy font-semibold rounded-2xl hover:bg-pana-gold/90 transition-all duration-300 shadow-md"
-                  >
-                    Get Started Today
-                  </a>
-
-                  <a
-                    href="/courses"
-                    className="inline-flex items-center gap-3 px-10 py-5 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 font-semibold rounded-2xl border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300 shadow-sm"
-                  >
-                    Explore Our Courses
-                  </a>
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="bg-white p-8 rounded-2xl shadow-sm border border-amber-200 border-t-4 border-t-amber-500">
+                  <div className="text-xs font-bold text-amber-600 uppercase tracking-wider mb-1">Belong</div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Alumni network</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">A lasting membership for graduates of every programme.</p>
                 </div>
+                <div className="bg-white p-8 rounded-2xl shadow-sm border border-amber-200 border-t-4 border-t-amber-600">
+                  <div className="text-xs font-bold text-amber-600 uppercase tracking-wider mb-1">Grow</div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Mentorship</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">Continuing guidance and professional development after certification.</p>
+                </div>
+                <div className="bg-white p-8 rounded-2xl shadow-sm border border-amber-200 border-t-4 border-t-red-600">
+                  <div className="text-xs font-bold text-red-600 uppercase tracking-wider mb-1">Connect</div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Events and fairs</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">Career fairs, community development and partner led sessions.</p>
+                </div>
+                <div className="bg-white p-8 rounded-2xl shadow-sm border border-amber-200 border-t-4 border-t-zinc-800">
+                  <div className="text-xs font-bold text-zinc-700 uppercase tracking-wider mb-1">Advance</div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Fellowship pathway</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">A route from alumnus to fellow as the fellowship is stood up.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+          {/* CTA Section */}
+          <section className="bg-zinc-900 text-white py-20">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Build Verifiable Operational Competence?</h2>
+              <p className="text-xl text-zinc-300 max-w-3xl mx-auto mb-8">
+                Explore our accredited programmes, register for hands-on simulator training, or join the Roar Club community.
+              </p>
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="/courses" className="no-underline">
+                  <Button className="bg-red-600 hover:bg-red-700 text-white px-8 py-6 text-lg font-semibold group">
+                    Explore Programmes
+                    <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                </a>
+                <a href="/contact" className="no-underline">
+                  <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white/10 px-8 py-6 text-lg group">
+                    Contact Admissions
+                    <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                </a>
               </div>
             </div>
           </section>

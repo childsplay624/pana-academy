@@ -1,6 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { checkPaymentStatus } from './paymentService';
 import { sendEmail } from './emailService';
+import { isCourseDatePassed } from './courseService';
 
 export type EnrollmentStatus = 'enrolled' | 'completed' | 'dropped' | 'suspended';
 
@@ -46,15 +47,23 @@ export const enrollInCourse = async (courseId: string): Promise<{ data: Enrollme
       throw checkError;
     }
 
-    // Check if course requires payment
+    // Check if course requires payment and get course dates
     const { data: course } = await supabase
       .from('courses')
-      .select('price, is_free, title')
+      .select('price, is_free, title, start_date, end_date, course_type')
       .eq('id', courseId)
       .single();
 
     if (!course) {
       throw new Error('Course not found');
+    }
+
+    // Check if course date has passed
+    if (isCourseDatePassed(course)) {
+      return {
+        data: null,
+        error: new Error('Enrollment closed: This course date has already passed.')
+      };
     }
 
     // If course is paid, verify payment exists

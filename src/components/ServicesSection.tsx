@@ -1,81 +1,68 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  GraduationCap,
-  Users,
-  Search,
-  Zap,
-  Settings,
-  TrendingUp,
-  ArrowRight,
-  BookOpen,
-  Target,
-  Lightbulb
-} from "lucide-react";
+import { FontAwesomeIcon } from "@/components/ui/FontAwesomeIcon";
 
 const ServicesSection = () => {
-  const services = [
+  const verticals = [
     {
-      icon: GraduationCap,
-      title: "Training Programs",
-      description: "Comprehensive training across multiple sectors designed to elevate professional capabilities.",
-      categories: [
-        { name: "Energy Sector", programs: "Oil & Gas, Renewable Energy, Technical Operations" },
-        { name: "Digital Transformation", programs: "Digital Leadership, Tech Innovation, Data Analytics" },
-        { name: "Technical Excellence", programs: "Engineering, Project Management, Quality Assurance" },
-        { name: "Leadership Development", programs: "Executive Leadership, Team Management, Strategic Planning" },
-        { name: "Specialized Programs", programs: "Industry-specific certifications and skills" }
-      ],
-      gradient: "from-pana-navy to-pana-blue"
+      title: "Competency Assessment & Development",
+      description: "Capability development hub delivering training, leadership development and practical skills on live equipment, judging competence on evidence alone.",
+      href: "/training-delivery",
+      icon: "fa-solid fa-book-open",
+      topBorder: "border-t-red-600",
+      highlights: [
+        { name: "Capability Development", text: "Tailored, product-specific & NCDMB stipulated HCD programmes." },
+        { name: "Port Harcourt Workshop & Labs", text: "Hands-on instruction across power, valves, flow measurement & SCADA." },
+        { name: "Evidence-Based Assessment", text: "Independent competence judgment built strictly on operational proof." }
+      ]
     },
     {
-      icon: Users,
-      title: "Consulting Services",
-      description: "Strategic consulting to transform organizations and optimize performance.",
-      categories: [
-        { name: "Organizational Development", programs: "Change Management, Culture Transformation" },
-        { name: "Process Optimization", programs: "Workflow Analysis, Efficiency Improvement" },
-        { name: "Digital Strategy", programs: "Technology Roadmaps, Digital Adoption" },
-        { name: "Leadership Coaching", programs: "Executive Coaching, Mentorship Programs" },
-        { name: "Custom Solutions", programs: "Tailored consulting for specific needs" }
-      ],
-      gradient: "from-pana-blue to-pana-gold"
-    },
-    {
-      icon: Search,
       title: "Research & Development",
-      description: "Cutting-edge research to drive innovation and industry advancement.",
-      categories: [
-        { name: "Industry Research", programs: "Market Analysis, Trend Forecasting" },
-        { name: "Training Methodology", programs: "Learning Innovation, Pedagogy Research" },
-        { name: "Technology Integration", programs: "EdTech Solutions, AI in Learning" },
-        { name: "Sector Studies", programs: "Energy, Digital, Leadership Research" },
-        { name: "Publications", programs: "White Papers, Case Studies, Reports" }
-      ],
-      gradient: "from-pana-gold to-accent"
-    }
-  ];
-
-  const features = [
-    {
-      icon: Zap,
-      title: "Accelerated Learning",
-      description: "Fast-track programs designed for busy professionals"
+      description: "Five Centres of Excellence supplying subject authority, driving revenue in partnership-led mode, and keeping training current.",
+      href: "/research-development",
+      icon: "fa-solid fa-bolt",
+      topBorder: "border-t-amber-500",
+      highlights: [
+        { name: "5 Centres of Excellence", text: "Oil & Gas Tech, Sustainability, Energy & Power, Digital & AI, Smart Agriculture." },
+        { name: "Operating Charter", text: "Standing advisory panel, 3-year research agenda & testbed labs." },
+        { name: "Flagship Publications", text: "Competence frameworks & annual industry research publications." }
+      ]
     },
     {
-      icon: Target,
-      title: "Targeted Solutions",
-      description: "Customized training for specific industry needs"
+      title: "Consultancy & Advisory",
+      description: "Technical advisory and consulting for industry and government clients, built on the same evidence and frameworks used to assess people.",
+      href: "/consulting-services",
+      icon: "fa-solid fa-layer-group",
+      topBorder: "border-t-blue-600",
+      highlights: [
+        { name: "Workforce & Capability", text: "Long-term workforce planning & operational self-sufficiency." },
+        { name: "Operating Model Design", text: "Operating model transformation for enterprises & institutions." },
+        { name: "Technology Adoption", text: "Choosing and embedding technology with training strategy." }
+      ]
     },
     {
-      icon: BookOpen,
-      title: "Blended Approach",
-      description: "Online, offline, and hybrid learning options"
+      title: "Sustainability & Climate Services",
+      description: "Driving value through decarbonisation, ESG and green innovation. A move from compliance to execution, delivering measurable value.",
+      href: "/sustainability-solutions",
+      icon: "fa-solid fa-globe",
+      topBorder: "border-t-emerald-600",
+      highlights: [
+        { name: "Decarbonisation Solutions", text: "Scope 1, 2, 3 carbon footprint, Net Zero roadmaps & CCUS." },
+        { name: "ESG Advisory", text: "ISSB, GRI & TCFD disclosure frameworks & investor readiness." },
+        { name: "SustainaCore Platform", text: "Unified digital OS for carbon accounting & emissions data." }
+      ]
     },
     {
-      icon: Lightbulb,
-      title: "Innovation Focus",
-      description: "Latest methodologies and cutting-edge content"
+      title: "Global Engagements & Initiatives",
+      description: "Connecting African industrial talent, technical labs, and energy assets with international consortia and global accreditation bodies.",
+      href: "/global-engagements",
+      icon: "fa-solid fa-earth-americas",
+      topBorder: "border-t-purple-600",
+      highlights: [
+        { name: "International Consortia", text: "Joint capacity building & tech transfer across Africa & Middle East." },
+        { name: "Competency Alignment", text: "Harmonizing regional skills with international standards." },
+        { name: "Global Hubs Network", text: "Operating bases across Port Harcourt, Abuja, Kampala & Dubai." }
+      ]
     }
   ];
 
@@ -83,85 +70,63 @@ const ServicesSection = () => {
     <section id="services" className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-pana-navy mb-4">Our Solutions and Services</h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Comprehensive solutions and services designed to transform careers and organizations through high-quality training, expert consulting, and industry-driven research.
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <span className="text-red-600 font-bold text-xs tracking-wider block mb-2">PANA institute Architecture</span>
+          <h2 className="text-4xl font-bold text-pana-navy mb-4">Our Five Operating Verticals</h2>
+          <p className="text-lg text-gray-600 leading-relaxed">
+            Comprehensive solutions and services designed to transform careers, enterprises, and institutions through evidence-based training, 5 R&D centres of excellence, strategic advisory, climate technology, and global engagements.
           </p>
         </div>
 
-        {/* Main Services */}
-        <div className="grid lg:grid-cols-3 gap-8 mb-20">
-          {services.map((service, index) => (
-            <Card key={index} className="group border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
-              <div className={`h-2 bg-gradient-to-r ${service.gradient}`}></div>
-              <CardHeader className="text-center pb-4">
-                <div className="inline-flex w-16 h-16 items-center justify-center rounded-full bg-black text-white mb-4 mx-auto group-hover:scale-110 transition-transform duration-300">
-                  <service.icon className="w-8 h-8" />
-                </div>
-                <CardTitle className="text-xl text-black">{service.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <p className="text-muted-foreground">{service.description}</p>
-
-                <div className="space-y-3">
-                  {service.categories.map((category, catIndex) => (
-                    <div key={catIndex} className="border-l-2 border-pana-gold/30 pl-4">
-                      <h4 className="font-semibold text-black text-sm">{category.name}</h4>
-                      <p className="text-xs text-muted-foreground">{category.programs}</p>
+        {/* 5 Verticals Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+          {verticals.map((vertical, index) => {
+            return (
+              <Card key={index} className={`border border-gray-200 ${vertical.topBorder} border-t-4 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between bg-white rounded-2xl`}>
+                <CardHeader className="pb-4">
+                  <div className="flex items-center justify-end mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-gray-50 text-gray-900 flex items-center justify-center border border-gray-100 text-lg">
+                      <FontAwesomeIcon name={vertical.icon} className="text-red-600" />
                     </div>
-                  ))}
-                </div>
+                  </div>
+                  <CardTitle className="text-2xl font-bold text-gray-900 leading-snug">{vertical.title}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6 flex-grow flex flex-col justify-between">
+                  <p className="text-gray-600 text-sm leading-relaxed">{vertical.description}</p>
 
-                <a href={service.title === 'Training Programs' ? '/training-delivery' : service.title === 'Consulting Services' ? '/consulting-services' : '/research-development'} className="w-full block">
-                  <Button variant="outline" className="w-full group border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white transition-colors">
-                    Learn More
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </a>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                  <div className="space-y-3 pt-2">
+                    {vertical.highlights.map((item, hIdx) => (
+                      <div key={hIdx} className="border-l-2 border-red-600/40 pl-3">
+                        <h4 className="font-semibold text-gray-900 text-xs uppercase tracking-wider">{item.name}</h4>
+                        <p className="text-xs text-gray-500">{item.text}</p>
+                      </div>
+                    ))}
+                  </div>
 
-        {/* Service Features */}
-        <div className="bg-pana-light-gray rounded-3xl p-8 md:p-12">
-          <h3 className="text-2xl font-bold text-black mb-12">Why Choose Our Services</h3>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <div key={index} className="text-center group">
-                <div className="inline-flex w-12 h-12 items-center justify-center rounded-lg bg-pana-gold/10 text-pana-gold mb-4 group-hover:bg-pana-gold group-hover:text-white transition-colors duration-300">
-                  <feature.icon className="w-6 h-6" />
-                </div>
-                <h4 className="font-semibold text-black mb-2">{feature.title}</h4>
-                <p className="text-muted-foreground text-sm">{feature.description}</p>
-              </div>
-            ))}
-          </div>
+                  <div className="pt-4 mt-auto">
+                    <a href={vertical.href} className="w-full block no-underline">
+                      <Button className="w-full bg-zinc-900 hover:bg-red-600 text-white font-semibold group transition-colors flex items-center justify-center gap-2">
+                        <span>Read More</span>
+                        <FontAwesomeIcon name="fa-solid fa-arrow-right" className="text-xs group-hover:translate-x-1 transition-transform" />
+                      </Button>
+                    </a>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
         {/* CTA Section */}
-        <div className="text-center mt-16">
-          <h3 className="text-2xl font-bold text-black mb-4">Ready to Transform Your Career and/or Organization?</h3>
-          <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Get in touch with us to discuss how PANA Institute can help you achieve your training, performance improvement, and research and development goals.
+        <div className="bg-zinc-950 text-white rounded-3xl p-8 md:p-12 text-center">
+          <h3 className="text-2xl md:text-3xl font-bold mb-4">Ready to Partner With PANA Institute?</h3>
+          <p className="text-zinc-300 max-w-2xl mx-auto text-base mb-8 leading-relaxed">
+            Get in touch to discuss custom workforce training, R&D partnership, operating model advisory, or decarbonisation roadmap deployment.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/contact">
-              <Button
-                size="lg"
-                className="bg-black text-white hover:bg-red-600 transition-colors"
-              >
+          <div className="flex justify-center">
+            <a href="/contact" className="no-underline">
+              <Button size="lg" className="bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-6">
                 Schedule Consultation
-              </Button>
-            </a>
-            <a href="/training-calendar.pdf" download>
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-black text-black hover:bg-red-600 hover:border-red-600 hover:text-white transition-colors"
-              >
-                Download Training Calendar
               </Button>
             </a>
           </div>

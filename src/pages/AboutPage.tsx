@@ -71,55 +71,70 @@ const AboutPage = () => {
                 />
             </Helmet>
 
-            <div className="min-h-screen bg-paper text-ink">
+            <div className="min-h-screen">
                 <Navigation />
 
-                {/* Hero Section with Editorial Frontpage Styling */}
-                <section className="relative pt-36 pb-24 overflow-hidden bg-ink text-paper border-b border-line">
-                    {/* Background Overlay */}
-                    <div className="absolute inset-0 opacity-40 pointer-events-none">
+                {/* Hero Section with Visual Impact */}
+                <section className="relative pt-32 pb-24 md:pt-48 md:pb-32 overflow-hidden min-h-[400px] md:min-h-[500px]">
+                    {/* Background Image */}
+                    <div className="absolute inset-0">
                         {headerImage ? (
                             <img
                                 src={headerImage}
                                 alt="About PANA Institute"
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-cover object-top"
                                 loading="eager"
                             />
                         ) : (
-                            <img
-                                src="/images/hero_slide_2.png"
-                                alt="About PANA Institute"
-                                className="w-full h-full object-cover"
-                                loading="eager"
-                            />
+                            <div className="w-full h-full bg-gradient-to-br from-pana-navy to-pana-gold"></div>
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/80 to-transparent" />
+                    </div>
+                    {/* Black overlay */}
+                    <div className="absolute inset-0 bg-black/60"></div>
+
+                    {/* Subtle animated elements */}
+                    <div className="absolute inset-0 opacity-10">
+                        <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-pana-gold/30 rounded-full blur-3xl animate-pulse"></div>
+                        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-white/20 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
                     </div>
 
-                    <div className="max-w-[1320px] mx-auto px-7 relative z-10">
-                        <div className="max-w-4xl space-y-6">
-                            <span className="font-mono text-xs text-brass uppercase tracking-[0.22em] font-semibold block">
-                                ABOUT PANA INSTITUTE · MANDATE & HERITAGE
-                            </span>
+                    {/* Floating Elements */}
+                    <div className="absolute inset-0 pointer-events-none">
+                        <div className="absolute top-20 left-20 w-6 h-6 bg-pana-gold/40 rounded-full animate-bounce"></div>
+                        <div className="absolute top-40 right-32 w-4 h-4 bg-white/30 rounded-full animate-ping"></div>
+                        <div className="absolute bottom-32 left-1/3 w-8 h-8 bg-red-600/30 rounded-full animate-pulse"></div>
+                    </div>
 
-                            <h1 className="font-serif text-5xl sm:text-6xl md:text-7xl font-normal text-paper leading-tight">
-                                Building the standard against which competence is measured.
+                    <div className="relative max-w-7xl mx-auto px-6 lg:px-8 text-center z-10 mt-16">
+                        <div className="space-y-8 animate-fade-in">
+                            <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full text-white/90 text-sm font-medium border border-white/20">
+                                <Zap className="w-5 h-5 text-pana-gold" />
+                                <span>{get('hero_badge', "Africa's Leading Oil & Gas Competency Hub")}</span>
+                                <ArrowRight className="w-4 h-4" />
+                            </div>
+
+                            <h1 className="text-6xl md:text-8xl font-bold mb-6 leading-tight">
+                                <span className="text-white">{get('hero_title', 'About')}</span>
+                                <span className="block text-red-600">
+                                    {get('hero_subtitle', 'PANA Institute')}
+                                </span>
                             </h1>
 
-                            <p className="font-serif text-lg sm:text-xl text-zinc-300 max-w-3xl leading-relaxed">
-                                {get('hero_description', 'Founded as the capability arm of PANA Holdings, elevated to Institute status to develop certified talent, assess competence, and drive applied research across 9 countries on four continents.')}
+                            <p className="text-xl md:text-2xl text-gray-200 max-w-4xl mx-auto">
+                                {get('hero_description', 'Dedicated to empowering talent across sectors through world-class training, consulting, and research excellence.')}
                             </p>
 
-                            <div className="flex flex-wrap gap-4 pt-4">
-                                <Link to="/courses">
-                                    <Button className="bg-oxblood hover:bg-oxblood-deep text-white font-mono text-xs uppercase tracking-widest px-8 py-4 rounded-xs border border-oxblood-light shadow-xl font-semibold">
+                            <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
+                                <Link to="/courses" className="no-underline">
+                                    <Button className="bg-red-600 hover:bg-red-700 text-white px-8 py-6 text-lg font-semibold group shadow-lg">
                                         Explore Programmes
-                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                        <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                                     </Button>
                                 </Link>
-                                <Link to="/contact">
-                                    <Button variant="outline" className="bg-transparent border-brass/50 text-paper hover:bg-brass/20 font-mono text-xs uppercase tracking-widest px-8 py-4 rounded-xs font-semibold">
-                                        Contact Advisory
+                                <Link to="/contact" className="no-underline">
+                                    <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-red-700 px-8 py-6 text-lg transition-all duration-300 shadow-lg group">
+                                        Get in Touch
+                                        <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                                     </Button>
                                 </Link>
                             </div>
@@ -127,96 +142,228 @@ const AboutPage = () => {
                     </div>
                 </section>
 
-                {/* Vision, Mission, Purpose Section */}
-                <section className="py-24 bg-paper">
-                    <div className="max-w-[1320px] mx-auto px-7">
-                        <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
-                            {/* Left Column - Featured Visual Image */}
-                            <div className="relative rounded-xs overflow-hidden border border-line shadow-2xl group">
-                                <img
-                                    src={trainingImg || heroTraining || "/images/hero_slide_1.png"}
-                                    alt="Professional Training at PANA Institute"
-                                    className="w-full h-[36rem] object-cover group-hover:scale-105 transition-transform duration-700 opacity-95"
-                                    loading="lazy"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-transparent to-transparent" />
-                                <div className="absolute bottom-6 left-6 right-6 p-6 bg-paper/90 backdrop-blur-xs border border-line rounded-xs">
-                                    <span className="font-mono text-[10px] text-oxblood uppercase tracking-widest font-semibold block mb-1">EXPERIENTIAL LEARNING</span>
-                                    <h4 className="font-serif text-xl font-medium text-ink">Port Harcourt & Abuja Operational Labs</h4>
-                                </div>
-                            </div>
-
-                            {/* Right Column - Vision & Mission Luxury Cards */}
-                            <div className="space-y-6">
-                                <span className="font-mono text-xs tracking-[0.22em] uppercase text-oxblood font-semibold block mb-2">
-                                    OUR OPERATING PHILOSOPHY
-                                </span>
-                                <h2 className="font-serif text-4xl sm:text-5xl text-ink font-medium mb-8">
-                                    Developing Africa's Technical & Digital Leadership
-                                </h2>
-
-                                <div className="bg-ink text-paper p-8 rounded-xs border border-brass/30 space-y-3 shadow-xl">
-                                    <span className="font-mono text-xs text-brass uppercase tracking-[0.2em] font-semibold block">01 · VISION</span>
-                                    <h3 className="font-serif text-2xl font-medium">Africa's Premier Competency Partner</h3>
-                                    <p className="text-sm text-zinc-300 leading-relaxed font-serif">
-                                        {get('vision_body', "To be Africa's premier competency solutions partner for the petroleum, energy, power, and digital industries.")}
-                                    </p>
-                                </div>
-
-                                <div className="bg-ink text-paper p-8 rounded-xs border border-brass/30 space-y-3 shadow-xl">
-                                    <span className="font-mono text-xs text-brass uppercase tracking-[0.2em] font-semibold block">02 · MISSION</span>
-                                    <h3 className="font-serif text-2xl font-medium">Practical Workforce Upskilling</h3>
-                                    <p className="text-sm text-zinc-300 leading-relaxed font-serif">
-                                        {get('mission_body', "To develop and upskill the workforce through experiential training that cultivates competencies directly applicable to real job roles.")}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Highlights Grid */}
-                        <div className="pt-16 border-t border-line">
-                            <span className="font-mono text-xs uppercase tracking-widest text-oxblood font-semibold block mb-8 text-center">
-                                WHY INDUSTRY LEADERS CHOOSE PANA INSTITUTE
+                {/* Main Content - Mission, Vision, Purpose */}
+                <section className="py-20 bg-pana-light-gray">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        {/* Who We Are & Core Identity */}
+                        <div className="text-center max-w-4xl mx-auto mb-16">
+                            <span className="inline-block px-4 py-1.5 rounded-full text-xs md:text-sm font-semibold tracking-wider bg-red-100 text-red-700 uppercase mb-4">
+                                Who We Are
                             </span>
-                            <div className="grid md:grid-cols-3 gap-8">
-                                {highlights.map((highlight, index) => {
-                                    const Icon = highlight.icon;
-                                    return (
-                                        <div key={index} className="bg-paper-soft p-8 border border-line rounded-xs hover:border-oxblood/40 transition-all group shadow-xs">
-                                            <Icon className="w-10 h-10 text-oxblood mb-6 group-hover:scale-110 transition-transform" />
-                                            <h3 className="font-serif text-2xl font-medium text-ink mb-3">{highlight.title}</h3>
-                                            <p className="text-sm text-muted-foreground leading-relaxed font-serif">{highlight.description}</p>
-                                        </div>
-                                    );
-                                })}
+                            <h2 className="text-3xl md:text-5xl font-bold text-pana-navy mb-6">
+                                Human capital for the industries that power the region
+                            </h2>
+                            <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
+                                PANA Institute builds human capital for the petroleum, energy, power, and digital sectors. It delivers customised, experiential programmes on modern facilities, led by instructors who have run the jobs they teach.
+                            </p>
+                        </div>
+
+                        <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
+                            {/* Left Column - Image */}
+                            <div className="relative">
+                                {trainingImg ? (
+                                    <img
+                                        src={trainingImg}
+                                        alt="Professional Training at PANA Institute"
+                                        className="rounded-2xl shadow-lg w-full h-[40rem] object-cover object-center"
+                                        loading="lazy"
+                                    />
+                                ) : (
+                                    <img
+                                        src={heroTraining}
+                                        alt="Professional Training at PANA Institute"
+                                        className="rounded-2xl shadow-lg w-full h-[40rem] object-cover object-center"
+                                        loading="lazy"
+                                    />
+                                )}
+                                <div className="absolute inset-0 bg-gradient-to-t from-pana-navy/20 to-transparent rounded-2xl"></div>
                             </div>
+
+                            {/* Right Column - Content */}
+                            <div className="space-y-8">
+                                <div className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-red-600">
+                                    <h3 className="text-2xl font-bold text-pana-navy mb-2">Vision</h3>
+                                    <p className="text-gray-700 leading-relaxed">
+                                        To be Africa's competency solutions partner for the energy, power, and digital industries.
+                                    </p>
+                                </div>
+                                <div className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-blue-600">
+                                    <h3 className="text-2xl font-bold text-pana-navy mb-2">Mission</h3>
+                                    <p className="text-gray-700 leading-relaxed">
+                                        To develop and upskill the workforce of these industries through training that cultivates practical competencies directly applicable to real job roles.
+                                    </p>
+                                </div>
+                                <div className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-amber-500">
+                                    <h3 className="text-2xl font-bold text-pana-navy mb-2">Purpose</h3>
+                                    <p className="text-gray-700 leading-relaxed">
+                                        To drive competency assessment and development, and to create a pool of relevant talent for the energy, power, and digital industries.
+                                    </p>
+                                </div>
+
+                                <div className="mt-8">
+                                    <Link to="/courses" className="no-underline">
+                                        <Button
+                                            variant="default"
+                                            size="lg"
+                                            className="bg-red-600 hover:bg-red-700 font-bold text-white shadow-lg"
+                                        >
+                                            Explore Programmes
+                                            <ChevronRight className="ml-2 h-4 w-4" />
+                                        </Button>
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Six Core Mandates Section */}
+                        <div className="pt-12 pb-16">
+                            <div className="text-center max-w-3xl mx-auto mb-16">
+                                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                                    Six things the Institute is set up to do, and nothing else.
+                                </h2>
+                                <div className="w-20 h-1 bg-red-600 mx-auto rounded-full"></div>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                {[
+                                    {
+                                        code: '01',
+                                        title: 'Accelerated competency development',
+                                        desc: 'Experiential learning on live equipment, workshops, plant and simulators.'
+                                    },
+                                    {
+                                        code: '02',
+                                        title: 'Competency assessment and profiling',
+                                        desc: 'Evidence based statements of what a named person can do, judged independently of who trained them.'
+                                    },
+                                    {
+                                        code: '03',
+                                        title: 'Customised learning solutions',
+                                        desc: 'Client and product specific programmes, local content development, executive education and hybrid delivery.'
+                                    },
+                                    {
+                                        code: '04',
+                                        title: 'Applied research and technology',
+                                        desc: 'Five centres of excellence, funded chairs, laboratories and research that reaches a licence or a working pilot.'
+                                    },
+                                    {
+                                        code: '05',
+                                        title: 'Sustainability Solutions and Climate Services',
+                                        desc: 'Value driven through decarbonisation, ESG and green innovation.'
+                                    },
+                                    {
+                                        code: '06',
+                                        title: 'Capability caretaker and advisory',
+                                        desc: 'Long term workforce planning, operating model design and implementation support.'
+                                    }
+                                ].map((item, idx) => (
+                                    <div key={idx} className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative overflow-hidden group">
+                                        <div className="text-4xl font-black text-red-100 group-hover:text-red-200 transition-colors mb-4">
+                                            {item.code}
+                                        </div>
+                                        <h3 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h3>
+                                        <p className="text-gray-600 leading-relaxed text-sm">{item.desc}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Recognition, Accreditation, Legacy Wins & Partners */}
+                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 pt-8">
+                            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                                <div className="text-red-600 font-bold text-xs uppercase tracking-wider mb-2">Recognition</div>
+                                <h4 className="font-bold text-gray-900 text-lg mb-2">OGTAN Life Member</h4>
+                                <p className="text-gray-600 text-sm leading-relaxed">
+                                    A life member of the Oil and Gas Trainers Association of Nigeria, and a presence at the Sub Saharan Africa International Petroleum Exhibition and Conference.
+                                </p>
+                            </div>
+                            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                                <div className="text-red-600 font-bold text-xs uppercase tracking-wider mb-2">Accreditation</div>
+                                <h4 className="font-bold text-gray-900 text-lg mb-2">Accredited Service Provider</h4>
+                                <p className="text-gray-600 text-sm leading-relaxed">
+                                    Guided by subject matter specialists and by experienced links across academia and industry.
+                                </p>
+                            </div>
+                            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                                <div className="text-red-600 font-bold text-xs uppercase tracking-wider mb-2">Legacy Wins</div>
+                                <h4 className="font-bold text-gray-900 text-lg mb-2">Total, PIDWAL & Chevron</h4>
+                                <p className="text-gray-600 text-sm leading-relaxed">
+                                    Delivered the Total and PIDWAL programmes and the Chevron Human Capital Development programme for the Makaraba Utonana gas flare project.
+                                </p>
+                            </div>
+                            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                                <div className="text-red-600 font-bold text-xs uppercase tracking-wider mb-2">Group Partners</div>
+                                <h4 className="font-bold text-gray-900 text-lg mb-2">PE Energy & AKD Consulting</h4>
+                                <p className="text-gray-600 text-sm leading-relaxed">
+                                    A standing training partnership across the PANA Holdings group for a range of competency development work.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Safety at PANA Institute Image Banner */}
+                        <div className="mt-20 rounded-3xl overflow-hidden shadow-2xl border border-gray-100 relative group">
+                            <img
+                                src="/images/safety_at_pana_institute.png"
+                                alt="Safety at PANA Institute - HSE & ISO 14001 / ISO 45001 Certification"
+                                className="w-full h-auto max-h-[500px] object-cover object-center transform transition-transform duration-500 group-hover:scale-102"
+                            />
                         </div>
                     </div>
                 </section>
 
+                {/* Highlights Section */}
+                <section className="py-20 bg-white">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center mb-12">
+                            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                                {get('highlights_title', 'Why Choose PANA Institute')}
+                            </h2>
+                            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                                {get('highlights_subtitle', 'Committed to excellence in every aspect of our training delivery')}
+                            </p>
+                        </div>
+
+                        <div className="grid md:grid-cols-3 gap-8">
+                            {highlights.map((highlight, index) => {
+                                const Icon = highlight.icon;
+                                return (
+                                    <div key={index} className="text-center p-6 rounded-xl bg-gray-50 hover:shadow-lg transition-shadow">
+                                        <Icon className="w-12 h-12 text-red-600 mx-auto mb-4" />
+                                        <h3 className="text-xl font-bold text-gray-900 mb-2">{highlight.title}</h3>
+                                        <p className="text-gray-600">{highlight.description}</p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </section>
+
+                {/* Values Section */}
+
+
+                {/* Values Section - Company Values with Images */}
                 <ValuesSection />
+
+                {/* Services Section */}
                 <ServicesSection />
 
-                {/* Frontpage Editorial CTA */}
-                <section className="py-24 bg-ink text-paper border-t border-line relative overflow-hidden">
-                    <div className="max-w-[1320px] mx-auto px-7 text-center relative z-10">
-                        <span className="font-mono text-xs text-brass uppercase tracking-[0.2em] font-semibold block mb-4">READY TO ELEVATE COMPETENCE?</span>
-                        <h2 className="font-serif text-4xl sm:text-5xl font-medium mb-6 max-w-3xl mx-auto">
-                            Join Thousands of Certified Energy & Tech Professionals
+                {/* CTA Section */}
+                <section className="py-20 bg-gradient-to-r from-red-600 to-red-700 text-white">
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                        <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                            {get('cta_title', 'Ready to Start Your Learning Journey?')}
                         </h2>
-                        <p className="text-base text-zinc-300 mb-8 max-w-2xl mx-auto font-serif">
-                            Explore our accredited training calendar or consult with our competency assessors.
+                        <p className="text-xl text-red-100 mb-8 max-w-2xl mx-auto">
+                            {get('cta_subtitle', 'Join thousands of professionals advancing their careers with PANA Institute')}
                         </p>
-                        <div className="flex flex-wrap gap-4 justify-center">
+                        <div className="flex justify-center">
                             <Link to="/courses">
-                                <Button className="bg-oxblood hover:bg-oxblood-deep text-white font-mono text-xs uppercase tracking-widest px-8 py-4 rounded-xs font-semibold shadow-xl border border-oxblood-light">
-                                    Browse Course Catalogue
-                                    <ChevronRight className="ml-2 h-4 w-4" />
-                                </Button>
-                            </Link>
-                            <Link to="/contact">
-                                <Button variant="outline" className="bg-transparent border-brass/50 text-paper hover:bg-brass/20 font-mono text-xs uppercase tracking-widest px-8 py-4 rounded-xs font-semibold">
-                                    Contact Us
+                                <Button
+                                    size="lg"
+                                    className="bg-white text-red-600 hover:bg-gray-100 px-8 py-6 text-lg font-semibold"
+                                >
+                                    Browse Courses
+                                    <ChevronRight className="ml-2 h-5 w-5" />
                                 </Button>
                             </Link>
                         </div>

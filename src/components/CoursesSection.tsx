@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Clock, Users, ArrowRight, Loader2, BookOpen, Calendar, MapPin } from "lucide-react";
+import { Clock, Users, ArrowRight, Loader2, BookOpen, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
 import { fetchAllCourses, formatCourseDate } from "@/services/courseService";
 import type { Course } from "@/services/courseService";
 import { usePlatformSettings } from "@/hooks/usePlatformSettings";
+import Card3D from "@/components/ui/Card3D";
 
 interface CoursesSectionProps {
   showAll?: boolean;
@@ -46,90 +47,88 @@ const CoursesSection = ({
           <div className="text-center py-12 text-gray-500">No courses found.</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {displayCourses.map((course) => {
-              const categoryText = (course.category_name || (course.category as string)?.replace('_', ' ') || 'BUSINESS').toUpperCase();
-              const levelBadge = (course.level || 'BEGINNER').toUpperCase();
-              const formattedDate = course.start_date ? formatCourseDate(course.start_date) : 'Sep 15, 2025';
-              const durationText = course.duration || (course.duration_hours ? `${course.duration_hours} hours` : '24 hours');
-              const locationText = course.location || 'Port Harcourt Hub & Virtual';
-              const priceText = !hidePrices ? (course.price ? `₦${course.price.toLocaleString()}` : '₦7,900') : null;
-              const originalPriceText = !hidePrices && (course.original_price || course.price) ? `₦${((course.original_price || (course.price ? course.price * 1.6 : 12900))).toLocaleString()}` : '₦12,900';
-
-              return (
-                <Link to={`/course/${course.id}`} key={course.id} className="block h-full">
-                  <div className="bg-[#FDFBF7] border border-[#E2DDD5] rounded-xs overflow-hidden flex flex-col justify-between hover:border-[#6E1D2B]/40 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 group h-full">
+            {displayCourses.map((course) => (
+              <Link to={`/course/${course.id}`} key={course.id} className="block h-full no-underline">
+                <Card3D intensity={12} depth={15} glowColor="rgba(220, 38, 38, 0.12)" className="h-full">
+                  <div className="h-full bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col justify-between preserve-3d">
+                    {/* Media Header */}
                     <div>
-                      {/* Thumbnail with Level Badge */}
-                      <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#1C1D1F]">
-                        <img
-                          src={course.thumbnail_url || course.image_url || '/images/hero_slide_1.png'}
-                          alt={course.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-95"
-                        />
-                        <div className="absolute top-3 left-3 bg-[#6E1D2B] text-white px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-widest rounded-xs shadow-md z-10">
-                          {levelBadge}
+                      <div className="relative aspect-[16/10] w-full overflow-hidden bg-zinc-950">
+                        {course.thumbnail_url ? (
+                          <img
+                            src={course.thumbnail_url}
+                            alt={course.title}
+                            className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-zinc-900 via-red-950 to-zinc-950 flex items-center justify-center">
+                            <BookOpen className="w-12 h-12 text-red-500/40" />
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+
+                        {/* Category Pill */}
+                        <div className="absolute top-3 left-3 translate-z-10">
+                          <span className="inline-block px-3 py-1 bg-red-600/90 backdrop-blur-md text-white text-[11px] font-bold uppercase tracking-wider rounded-md shadow-md">
+                            {course.category_name || (course.category as string)?.replace('_', ' ') || 'Professional'}
+                          </span>
                         </div>
+
+                        {/* Level Badge */}
+                        {course.level && (
+                          <div className="absolute top-3 right-3 translate-z-10">
+                            <span className="inline-block px-2.5 py-0.5 bg-black/60 backdrop-blur-md text-zinc-200 text-[10px] font-semibold uppercase tracking-wider rounded-md border border-white/20">
+                              {course.level}
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Price Overlay */}
+                        {!hidePrices && (
+                          <div className="absolute bottom-3 left-3 translate-z-10">
+                            <span className="inline-block px-3 py-1 bg-white/95 backdrop-blur-md text-zinc-950 text-sm font-black rounded-lg shadow-lg">
+                              {course.price ? `₦${course.price.toLocaleString()}` : 'Free'}
+                            </span>
+                          </div>
+                        )}
                       </div>
 
-                      {/* Card Content Body */}
-                      <div className="p-6">
-                        {/* Category & Status Row */}
-                        <div className="flex items-center justify-between gap-2 font-mono text-xs uppercase font-bold tracking-wider mb-2">
-                          <span className="text-[#9A7B3E]">{categoryText}</span>
-                          <span className="text-[#6E1D2B]">ENROLLMENT OPEN</span>
-                        </div>
-
-                        {/* Course Title */}
-                        <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#1C1D1F] leading-tight mb-3 group-hover:text-[#6E1D2B] transition-colors line-clamp-2">
+                      {/* Content Body */}
+                      <div className="p-6 space-y-3">
+                        <h3 className="text-xl font-bold text-gray-900 leading-tight line-clamp-2 hover:text-red-600 transition-colors translate-z-10">
                           {course.title}
                         </h3>
 
-                        {/* Excerpt Description */}
-                        <p className="font-serif text-xs text-slate-500 line-clamp-3 leading-relaxed mb-4">
-                          {course.description || 'This foundational course offers a deep dive into the economic principles, market dynamics, and financial frameworks that drive modern industry performance.'}
+                        <p className="text-gray-600 text-sm leading-relaxed line-clamp-2 translate-z-5">
+                          {course.description}
                         </p>
 
-                        {/* Metadata List with Top Divider */}
-                        <div className="pt-3 border-t border-[#E2DDD5] space-y-2 text-xs font-mono text-slate-600">
-                          <div className="flex items-center gap-2">
-                            <Calendar className="w-3.5 h-3.5 text-[#6E1D2B] shrink-0" />
-                            <span className="font-semibold text-slate-700">{formattedDate}</span>
+                        {/* Start Date */}
+                        {course.start_date && (
+                          <div className="flex items-center gap-2 pt-2 text-xs font-semibold text-zinc-700 translate-z-5">
+                            <div className="w-7 h-7 rounded-lg bg-red-50 text-red-600 flex items-center justify-center shrink-0 border border-red-100">
+                              <Calendar className="h-3.5 w-3.5" />
+                            </div>
+                            <span>Starts: {formatCourseDate(course.start_date)}</span>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <Clock className="w-3.5 h-3.5 text-[#9A7B3E] shrink-0" />
-                            <span>{durationText}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <MapPin className="w-3.5 h-3.5 text-[#6E1D2B] shrink-0" />
-                            <span>{locationText}</span>
-                          </div>
-                        </div>
+                        )}
                       </div>
                     </div>
 
-                    {/* Card Footer with Price and ENROL NOW Button */}
-                    <div className="px-6 py-4 border-t border-[#E2DDD5] bg-[#FDFBF7] flex items-center justify-between shrink-0">
-                      <div>
-                        {priceText && (
-                          <div className="font-serif text-2xl font-bold text-[#1C1D1F] leading-none">
-                            {priceText}
-                          </div>
-                        )}
-                        {originalPriceText && (
-                          <div className="font-mono text-[10px] text-slate-400 line-through mt-1">
-                            {originalPriceText}
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="bg-[#6E1D2B] group-hover:bg-[#581722] text-white px-5 py-2.5 rounded-xs font-mono text-xs font-bold uppercase tracking-widest transition-colors inline-flex items-center gap-1.5 shadow-sm">
-                        ENROL NOW <ArrowRight className="w-3.5 h-3.5" />
+                    {/* Footer Link */}
+                    <div className="px-6 pb-6 pt-4 border-t border-gray-100 flex items-center justify-end mt-auto translate-z-10">
+                      <div className="inline-flex items-center text-sm font-bold text-red-600 hover:text-red-700 group cursor-pointer">
+                        <span className="relative py-0.5">
+                          View Details
+                          <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-red-600 transition-all duration-300 group-hover:w-full" />
+                        </span>
+                        <ArrowRight className="ml-1.5 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                       </div>
                     </div>
                   </div>
-                </Link>
-              );
-            })}
+                </Card3D>
+              </Link>
+            ))}
           </div>
         )}
 

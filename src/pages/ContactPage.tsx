@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { usePageContent } from "@/hooks/usePageContent";
-import ScrollReveal from "@/components/ui/ScrollReveal";
 
 export const ContactPage = () => {
   const { toast } = useToast();
@@ -73,182 +72,170 @@ export const ContactPage = () => {
         <meta name="keywords" content="contact PANA Institute, support, inquiries, partnership, get in touch" />
       </Helmet>
 
-      <div className="min-h-screen bg-paper text-ink">
+      <div className="min-h-screen bg-gradient-subtle">
         <Navigation />
 
         <main>
-          {/* Hero Section with Frontpage Editorial Styling */}
-          <section className="relative pt-36 pb-24 bg-ink text-paper border-b border-line overflow-hidden">
-            <div className="max-w-[1320px] mx-auto px-7 relative z-10">
-              <span className="font-mono text-xs text-brass uppercase tracking-[0.22em] font-semibold block mb-3">
-                GET IN TOUCH · PANA INSTITUTE ADVISORY
-              </span>
-              <h1 className="font-serif text-5xl sm:text-6xl md:text-7xl font-normal text-paper mb-6">
-                {get('hero_title', 'Contact Us')}
-              </h1>
-              <p className="font-serif text-lg sm:text-xl text-zinc-300 max-w-3xl leading-relaxed">
-                {get('hero_subtitle', "Connect with our principal officers, competency assessors, or admissions directors across our Port Harcourt and Abuja hubs.")}
+          {/* Hero Section */}
+          <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 bg-zinc-950 text-white">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
+              <span className="text-red-500 font-bold text-xs uppercase tracking-wider block mb-3">PANA Institute Contact</span>
+              <h1 className="text-5xl md:text-7xl font-bold mb-4">Contact Us</h1>
+              <p className="text-2xl md:text-3xl font-semibold text-red-500 mb-6">
+                Let us build the standard together.
+              </p>
+              <p className="text-lg md:text-xl text-zinc-300 max-w-4xl mx-auto leading-relaxed">
+                For programmes, assessment, research, advisory or partnership, reach the Institute at <a href="mailto:info@pana-institute.com" className="text-white underline hover:text-red-400 font-medium">info@pana-institute.com</a> or through the offices below.
               </p>
             </div>
           </section>
 
           {/* Contact Information & Office Locations */}
-          <section className="py-24 bg-paper">
-            <div className="max-w-[1320px] mx-auto px-7">
-              <div className="grid md:grid-cols-2 gap-12">
+          <section className="py-20 bg-white">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8">
+              <div className="grid lg:grid-cols-2 gap-12">
                 <div>
-                  <span className="font-mono text-xs tracking-[0.22em] uppercase text-oxblood font-semibold block mb-2">
-                    INSTITUTIONAL BASE & CENTRES
-                  </span>
-                  <h2 className="font-serif text-4xl font-medium text-ink mb-10">Our Campus Offices</h2>
+                  <div className="mb-8">
+                    <span className="text-red-600 font-bold text-xs uppercase tracking-wider block mb-2">Global Operations</span>
+                    <h2 className="text-3xl font-bold text-pana-navy">Our Offices & Hubs</h2>
+                  </div>
 
-                  <div className="space-y-6">
-                    {/* Port Harcourt - Center of Excellence */}
-                    <div className="bg-paper-soft p-7 border border-line rounded-xs flex items-start gap-5 hover:border-oxblood/40 transition-colors">
-                      <div className="p-3 bg-oxblood text-white rounded-xs flex-shrink-0 mt-1">
-                        <MapPin className="h-6 w-6" />
-                      </div>
+                  <div className="grid sm:grid-cols-2 gap-6 mb-8">
+                    {/* Port Harcourt */}
+                    <div className="p-6 bg-gray-50 rounded-2xl border border-gray-100 border-t-4 border-t-red-600 shadow-sm flex flex-col justify-between">
                       <div>
-                        <span className="font-mono text-[10px] text-brass uppercase font-semibold block mb-1">R&D & LIVE SIMULATORS</span>
-                        <h3 className="font-serif text-xl font-medium text-ink mb-2">Port Harcourt - Center of Excellence</h3>
-                        <p className="text-xs text-muted-foreground leading-relaxed font-serif">{get('address_ph_coe', 'Plot 94 Rivoc Road, Trans Amadi Industrial Layout')}</p>
-                        <p className="text-xs text-muted-foreground font-serif">Port Harcourt, Rivers State, Nigeria</p>
+                        <div className="text-xs font-bold text-red-600 uppercase tracking-wider mb-1">Rivers State</div>
+                        <h3 className="text-lg font-bold text-gray-900 mb-2">Port Harcourt · Centre of Excellence</h3>
+                        <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                          Plot 94 Rivoc Road, Trans Amadi Industrial Layout, Port Harcourt.
+                        </p>
+                      </div>
+                      <div className="text-sm font-semibold text-gray-900 pt-2 border-t border-gray-200">
+                        Tel: <a href="tel:+2347026000116" className="text-red-600 hover:underline">+234 702 600 0116</a>
                       </div>
                     </div>
 
-                    {/* Port Harcourt - D-Line Office */}
-                    <div className="bg-paper-soft p-7 border border-line rounded-xs flex items-start gap-5 hover:border-oxblood/40 transition-colors">
-                      <div className="p-3 bg-oxblood text-white rounded-xs flex-shrink-0 mt-1">
-                        <MapPin className="h-6 w-6" />
-                      </div>
+                    {/* Abuja */}
+                    <div className="p-6 bg-gray-50 rounded-2xl border border-gray-100 border-t-4 border-t-blue-600 shadow-sm flex flex-col justify-between">
                       <div>
-                        <span className="font-mono text-[10px] text-brass uppercase font-semibold block mb-1">ADMINISTRATION & ASSESSMENT</span>
-                        <h3 className="font-serif text-xl font-medium text-ink mb-2">Port Harcourt - D-Line Office</h3>
-                        <p className="text-xs text-muted-foreground leading-relaxed font-serif">{get('address_ph_dline', 'No 54 Emekuku Street, D-Line')}</p>
-                        <p className="text-xs text-muted-foreground font-serif">Port Harcourt, Rivers State, Nigeria</p>
+                        <div className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Federal Capital Territory</div>
+                        <h3 className="text-lg font-bold text-gray-900 mb-2">Abuja</h3>
+                        <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                          No. 5 Vattern Street, off Amazon Street, Maitama, Abuja.
+                        </p>
+                      </div>
+                      <div className="text-sm font-semibold text-gray-900 pt-2 border-t border-gray-200">
+                        Tel: <a href="tel:+2347026000119" className="text-red-600 hover:underline">+234 702 600 0119</a>
                       </div>
                     </div>
 
-                    {/* Abuja Office */}
-                    <div className="bg-paper-soft p-7 border border-line rounded-xs flex items-start gap-5 hover:border-oxblood/40 transition-colors">
-                      <div className="p-3 bg-oxblood text-white rounded-xs flex-shrink-0 mt-1">
-                        <MapPin className="h-6 w-6" />
-                      </div>
+                    {/* Kampala */}
+                    <div className="p-6 bg-gray-50 rounded-2xl border border-gray-100 border-t-4 border-t-emerald-600 shadow-sm flex flex-col justify-between">
                       <div>
-                        <span className="font-mono text-[10px] text-brass uppercase font-semibold block mb-1">EXECUTIVE & GLOBAL POLICY HUB</span>
-                        <h3 className="font-serif text-xl font-medium text-ink mb-2">Abuja Executive Hub</h3>
-                        <p className="text-xs text-muted-foreground leading-relaxed font-serif">{get('address_abuja', 'No. 5 Vattern Street, off Amazon Street')}</p>
-                        <p className="text-xs text-muted-foreground font-serif">Maitama, Abuja, FCT, Nigeria</p>
+                        <div className="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-1">Uganda</div>
+                        <h3 className="text-lg font-bold text-gray-900 mb-2">Kampala</h3>
+                        <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                          C/O Cristal Advocates, 4th Floor, Padre Pio House, Plot 32 Lumumba Avenue, Kampala.
+                        </p>
                       </div>
                     </div>
 
-                    {/* Contact Details */}
-                    <div className="pt-6 border-t border-line space-y-4">
-                      <div className="bg-paper-soft p-7 border border-line rounded-xs flex items-start gap-5">
-                        <div className="p-3 bg-oxblood text-white rounded-xs flex-shrink-0 mt-1">
-                          <Phone className="h-6 w-6" />
-                        </div>
-                        <div>
-                          <span className="font-mono text-[10px] text-brass uppercase font-semibold block mb-1">DIRECT TELEPHONE LINES</span>
-                          <h3 className="font-serif text-xl font-medium text-ink mb-1">Phone Enquiries</h3>
-                          <p className="text-xs text-muted-foreground font-mono">{get('phone', 'Port Harcourt: +234 702 600 0116 | Abuja: +234 702 600 0119')}</p>
-                        </div>
-                      </div>
-
-                      <div className="bg-paper-soft p-7 border border-line rounded-xs flex items-start gap-5">
-                        <div className="p-3 bg-oxblood text-white rounded-xs flex-shrink-0 mt-1">
-                          <Mail className="h-6 w-6" />
-                        </div>
-                        <div>
-                          <span className="font-mono text-[10px] text-brass uppercase font-semibold block mb-1">ELECTRONIC CORRESPONDENCE</span>
-                          <h3 className="font-serif text-xl font-medium text-ink mb-1">Official Email</h3>
-                          <p className="text-xs text-muted-foreground font-mono">{get('email', 'info@pana-institute.com')}</p>
-                        </div>
+                    {/* Dubai */}
+                    <div className="p-6 bg-gray-50 rounded-2xl border border-gray-100 border-t-4 border-t-amber-500 shadow-sm flex flex-col justify-between">
+                      <div>
+                        <div className="text-xs font-bold text-amber-600 uppercase tracking-wider mb-1">United Arab Emirates</div>
+                        <h3 className="text-lg font-bold text-gray-900 mb-2">Dubai</h3>
+                        <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                          Business Center 1, M Floor, The Meydan Hotel, Nad Al Sheba, Dubai.
+                        </p>
                       </div>
                     </div>
                   </div>
+
+                  {/* General Enquiries Banner */}
+                  <div className="p-6 bg-red-50 rounded-2xl border-l-4 border-red-600">
+                    <h4 className="text-base font-bold text-red-950 mb-1">Central Direct Contact</h4>
+                    <p className="text-sm text-red-900">
+                      Email: <a href="mailto:info@pana-institute.com" className="font-bold underline">info@pana-institute.com</a>
+                    </p>
+                  </div>
                 </div>
 
-                <ScrollReveal direction="up" delay={0.2} className="w-full">
-                  <div className="bg-paper-soft p-8 md:p-10 rounded-none border border-line shadow-xs">
-                    <span className="font-mono text-xs text-brass uppercase tracking-[0.22em] font-semibold block mb-2">
-                      CORRESPONDENCE FORM
-                    </span>
-                    <h2 className="font-serif text-3xl font-medium text-ink mb-6">Send Us an Official Inquiry</h2>
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <label htmlFor="name" className="block text-xs font-mono font-semibold uppercase tracking-wider text-ink mb-2">Full Name</label>
-                          <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            className="w-full px-4 py-3 bg-paper border border-line rounded-none focus:outline-none focus:border-oxblood font-serif text-sm"
-                            placeholder="Your full name"
-                            required
-                            disabled={isSubmitting}
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="email" className="block text-xs font-mono font-semibold uppercase tracking-wider text-ink mb-2">Email Address</label>
-                          <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            className="w-full px-4 py-3 bg-paper border border-line rounded-none focus:outline-none focus:border-oxblood font-serif text-sm"
-                            placeholder="your.email@organization.com"
-                            required
-                            disabled={isSubmitting}
-                          />
-                        </div>
-                      </div>
-
+                <div className="bg-gray-50 p-8 rounded-xl border border-gray-100 shadow-sm">
+                  <h2 className="text-2xl font-bold text-pana-navy mb-6">Send Us a Message</h2>
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <label htmlFor="subject" className="block text-xs font-mono font-semibold uppercase tracking-wider text-ink mb-2">Subject / Mandate Category</label>
+                        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
                         <input
                           type="text"
-                          id="subject"
-                          name="subject"
-                          value={formData.subject}
+                          id="name"
+                          name="name"
+                          value={formData.name}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 bg-paper border border-line rounded-none focus:outline-none focus:border-oxblood font-serif text-sm"
-                          placeholder="e.g. Executive Assessment, Training Program, Consultancy"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                          placeholder="Your name"
                           required
                           disabled={isSubmitting}
                         />
                       </div>
-
                       <div>
-                        <label htmlFor="message" className="block text-xs font-mono font-semibold uppercase tracking-wider text-ink mb-2">Inquiry Details</label>
-                        <textarea
-                          id="message"
-                          name="message"
-                          rows={5}
-                          value={formData.message}
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                        <input
+                          type="email"
+                          id="email"
+                          name="email"
+                          value={formData.email}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 bg-paper border border-line rounded-none focus:outline-none focus:border-oxblood font-serif text-sm"
-                          placeholder="Type your official inquiry details here..."
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                          placeholder="your.email@example.com"
                           required
                           disabled={isSubmitting}
-                        ></textarea>
+                        />
                       </div>
+                    </div>
 
-                      <div>
-                        <Button
-                          type="submit"
-                          className="w-full bg-oxblood hover:bg-oxblood-deep text-white font-mono text-xs uppercase tracking-widest py-4 rounded-none font-semibold border border-oxblood-light shadow-md"
-                          disabled={isSubmitting}
-                        >
-                          {isSubmitting ? 'Transmitting Inquiry...' : 'Submit Official Inquiry'}
-                        </Button>
-                      </div>
-                    </form>
-                  </div>
-                </ScrollReveal>
+                    <div>
+                      <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                      <input
+                        type="text"
+                        id="subject"
+                        name="subject"
+                        value={formData.subject}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                        placeholder="How can we help you?"
+                        required
+                        disabled={isSubmitting}
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                      <textarea
+                        id="message"
+                        name="message"
+                        rows={5}
+                        value={formData.message}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                        placeholder="Type your message here..."
+                        required
+                        disabled={isSubmitting}
+                      ></textarea>
+                    </div>
+
+                    <div>
+                      <Button
+                        type="submit"
+                        className="w-full bg-red-600 hover:bg-red-700 text-white py-6 text-lg font-semibold"
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? 'Sending...' : 'Send Message'}
+                      </Button>
+                    </div>
+                  </form>
+                </div>
               </div>
             </div>
           </section>

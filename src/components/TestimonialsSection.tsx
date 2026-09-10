@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import heroTraining from "@/assets/hero-training.jpg";
@@ -15,19 +16,7 @@ const TestimonialsSection = () => {
     { name: 'MTN', logo: '/mtn.png' }
   ];
 
-  // For a draggable section, we don't need to triple the array, but having a few extra helps.
-  const marqueeItems = [...companies, ...companies];
-  
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [constraints, setConstraints] = useState({ left: 0, right: 0 });
 
-  useEffect(() => {
-    if (containerRef.current) {
-      const scrollWidth = containerRef.current.scrollWidth;
-      const offsetWidth = containerRef.current.offsetWidth;
-      setConstraints({ left: -(scrollWidth - offsetWidth), right: 0 });
-    }
-  }, [marqueeItems.length]);
 
   return (
     <section id="testimonials" className="py-24 relative bg-cover bg-center overflow-hidden" style={{ backgroundImage: `url(${heroTraining})` }}>
@@ -43,48 +32,49 @@ const TestimonialsSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <div className="inline-flex items-center gap-2 bg-pana-gold/20 px-4 py-2 rounded-full text-pana-gold font-medium mb-4">
-              <Target className="w-4 h-4" />
-              Direct Partnerships
+            <div className="inline-flex items-center gap-2 bg-pana-gold/20 px-4 py-2 rounded-full text-white font-medium mb-4">
+              <Target className="w-4 h-4 text-pana-gold" />
+              Clients and Partners
             </div>
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
                Trusted Industry Partners
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Drag left or right to explore the global energy and technology giants we collaborate with.
+              Explore the global energy and technology giants we collaborate with.
             </p>
           </motion.div>
         </div>
 
-        {/* DRAGGABLE LOGO CAROUSEL */}
-        <div className="relative py-12 w-full">
+        {/* INFINITE AUTO SLIDING LOGO CAROUSEL */}
+        <div className="relative py-12 w-full overflow-hidden">
           {/* Subtle edge fades */}
           <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-black/90 to-transparent z-20 pointer-events-none" />
           <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-black/90 to-transparent z-20 pointer-events-none" />
 
-          <div 
-            ref={containerRef}
-            className="flex w-full overflow-visible px-8"
-          >
+          <div className="flex w-full overflow-hidden select-none">
             <motion.div 
-              drag="x"
-              dragConstraints={constraints}
-              dragElastic={0.2}
-              className="flex gap-8 items-center cursor-grab active:cursor-grabbing"
+              className="flex gap-8 items-center flex-nowrap pr-8 min-w-full"
+              animate={{ x: ["0%", "-50%"] }}
+              transition={{
+                x: {
+                  repeat: Infinity,
+                  repeatType: "loop",
+                  duration: 25,
+                  ease: "linear",
+                },
+              }}
             >
-              {marqueeItems.map((company, index) => (
-                <motion.div 
+              {[...companies, ...companies, ...companies, ...companies].map((company, index) => (
+                <div 
                   key={index} 
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="flex-shrink-0 flex items-center justify-center p-6 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 hover:bg-white/10 transition-colors pointer-events-none select-none sm:pointer-events-auto"
+                  className="flex-shrink-0 flex items-center justify-center p-6 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 hover:bg-white/10 transition-all transform hover:scale-105"
                 >
                   <img
                     src={company.logo}
                     alt={company.name}
-                    className="h-16 w-32 md:h-20 md:w-40 object-contain brightness-110 drop-shadow-lg pointer-events-none"
+                    className="h-16 w-32 md:h-20 md:w-40 object-contain brightness-110 drop-shadow-lg"
                   />
-                </motion.div>
+                </div>
               ))}
             </motion.div>
           </div>
@@ -103,19 +93,23 @@ const TestimonialsSection = () => {
               Ready to transform your career and/or organization? Get in touch with us to discuss how PANA Institute can facilitate your growth.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-              <Button
-                size="lg"
-                className="bg-red-600 text-white hover:bg-white hover:text-red-600 px-10 h-14 rounded-xl font-bold text-lg shadow-xl shadow-red-600/20"
-              >
-                Get Started Today
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-white/40 text-white hover:bg-white hover:text-black bg-white/5 backdrop-blur-sm h-14 px-10 rounded-xl font-bold text-lg transition-all"
-              >
-                Learn More
-              </Button>
+              <Link to="/courses">
+                <Button
+                  size="lg"
+                  className="bg-red-600 text-white hover:bg-white hover:text-red-600 px-10 h-14 rounded-xl font-bold text-lg shadow-xl shadow-red-600/20"
+                >
+                  Get Started Today
+                </Button>
+              </Link>
+              <Link to="/contact">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="border-white/40 text-white hover:bg-white hover:text-black bg-white/5 backdrop-blur-sm h-14 px-10 rounded-xl font-bold text-lg transition-all"
+                >
+                  Learn More
+                </Button>
+              </Link>
             </div>
           </motion.div>
         </div>

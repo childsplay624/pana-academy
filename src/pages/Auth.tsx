@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Lock, Mail, User, Eye, EyeOff, Github, Linkedin, ArrowLeft } from 'lucide-react';
 import { signInWithLinkedIn } from '@/lib/auth-utils';
 import { useSiteImage } from '@/hooks/useSiteImage';
+import { FontAwesomeIcon } from '@/components/ui/FontAwesomeIcon';
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -339,7 +340,7 @@ export default function Auth() {
                 <Button
                   variant="outline"
                   type="button"
-                  className="bg-white hover:bg-gray-50 text-gray-700 font-bold h-10 text-[10px] transition-all shadow-sm border-gray-100"
+                  className="bg-white hover:bg-gray-50 text-gray-700 font-bold h-10 text-[10px] transition-all shadow-sm border-gray-200"
                   onClick={() => handleSocialLogin('google')}
                   disabled={isLoading}
                 >

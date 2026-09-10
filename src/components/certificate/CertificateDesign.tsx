@@ -148,8 +148,8 @@ export function CertificateDesign({
           <div className="flex flex-col items-center">
             <div className="w-48 border-t border-black mb-2 self-end"></div>
             <div className="text-right w-full">
-              <p className="text-sm font-bold text-black uppercase">Ifeyinwa E. Achumba</p>
-              <p className="text-[10px] text-gray-500 uppercase tracking-tighter">Dean</p>
+              <p className="text-sm font-bold text-black uppercase">Prof. Ifeyinwa E. Achumba</p>
+              <p className="text-[10px] text-gray-500 uppercase tracking-tighter">Prof. And Dean, PANA Institute</p>
             </div>
           </div>
         </div>

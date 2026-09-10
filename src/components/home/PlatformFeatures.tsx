@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Video, Download, Smartphone, MessageSquare, CheckCircle, Target } from "lucide-react";
+import { Card3D } from "@/components/ui/Card3D";
 
 export function PlatformFeatures() {
   const platformFeatures = [
@@ -36,19 +37,20 @@ export function PlatformFeatures() {
   ];
 
   return (
-    <section className="py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-24 bg-white relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <span className="text-red-600 font-bold text-xs uppercase tracking-widest block mb-2">Platform Excellence</span>
+          <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4 tracking-tight">
             Why Choose PANA Institute
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            A comprehensive learning platform built for your success
+            A comprehensive learning platform built for operational performance and global certification
           </p>
         </motion.div>
 
@@ -56,18 +58,15 @@ export function PlatformFeatures() {
           {platformFeatures.map((feature, index) => {
             const Icon = feature.icon;
             return (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-gray-50 rounded-xl p-6 hover:shadow-lg transition-shadow border border-gray-100"
-              >
-                <Icon className="w-12 h-12 text-red-600 mb-4" />
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{feature.title}</h3>
-                <p className="text-gray-600">{feature.description}</p>
-              </motion.div>
+              <Card3D key={index} intensity={12} depth={15} glowColor="rgba(220, 38, 38, 0.12)">
+                <div className="bg-gray-50/80 backdrop-blur-sm rounded-2xl p-8 shadow-3d-glass hover:shadow-3d-dark transition-all duration-300 border border-gray-200/80 h-full preserve-3d">
+                  <div className="w-14 h-14 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center mb-6 shadow-sm translate-z-10">
+                    <Icon className="w-7 h-7" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 translate-z-10">{feature.title}</h3>
+                  <p className="text-gray-600 leading-relaxed text-sm translate-z-10">{feature.description}</p>
+                </div>
+              </Card3D>
             );
           })}
         </div>

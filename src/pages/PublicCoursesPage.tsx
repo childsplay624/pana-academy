@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+import Card3D from '@/components/ui/Card3D';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -176,85 +178,242 @@ const PublicCoursesPage = () => {
   };
 
   return (
-      <div className="min-h-screen bg-paper text-ink">
+    <div className="min-h-screen bg-gray-50">
       <Navigation />
-      {/* Dark Executive Hero Section with Editorial Styling */}
-      <div className="relative pt-36 pb-24 bg-ink text-paper border-b border-zinc-800 overflow-hidden">
-        {headerImage && (
+      {/* Hero Section with Background Image */}
+      <div className="relative min-h-[500px] bg-cover bg-center mt-20">
+        {headerImage ? (
           <img
             src={headerImage}
             alt="Training Programs"
-            className="absolute inset-0 w-full h-full object-cover opacity-30 z-0 pointer-events-none"
+            className="absolute inset-0 w-full h-full object-cover z-0"
           />
+        ) : (
+          <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-pana-navy to-pana-red z-0"></div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/80 to-transparent z-10"></div>
+        <div className="absolute inset-0 bg-black/70 bg-blend-multiply z-10"></div>
 
-        {/* Search Form Overlay */}
-        <div className="relative z-20 max-w-[1320px] mx-auto px-7">
-          <div className="max-w-4xl space-y-6">
-            <span className="font-mono text-xs text-brass uppercase tracking-[0.22em] font-semibold block">
-              ACCREDITED PROGRAMMES · COMPETENCY CATALOGUE
-            </span>
-            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-normal text-paper">
-              Explore Our Course Catalogue
+        {/* Hero Content Overlay */}
+        <div className="relative z-20 flex flex-col justify-center min-h-[500px] px-4 sm:px-6 lg:px-8 py-16">
+          <div className="max-w-7xl mx-auto text-center">
+            <span className="text-red-500 font-bold text-xs uppercase tracking-wider block mb-3">Competency · Programmes</span>
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white">
+              Programmes & <span className="text-red-600">Qualifications</span>
             </h1>
-            <p className="font-serif text-lg sm:text-xl text-zinc-300 max-w-3xl leading-relaxed">
-              Discover accredited training solutions and experiential programs designed to build verifiable competence for energy and technology professionals.
+            <p className="text-xl md:text-2xl text-gray-200 max-w-4xl mx-auto leading-relaxed">
+              We train for performance, prevention and sustainability, across tailored, product specific and NCDMB stipulated Human Capital Development programmes. Thirteen categories of training solution sit under the pillar.
             </p>
-
-            <div className="max-w-2xl pt-2">
-              <div className="flex gap-3">
-                {/* Search Input */}
-                <div className="relative flex-1">
-                  <Input
-                    type="text"
-                    value={searchQuery}
-                    onChange={handleSearch}
-                    placeholder="Search courses..."
-                    className="pl-10 pr-4 py-6 text-base bg-white/10 border-0 text-white placeholder-gray-300 focus-visible:ring-2 focus-visible:ring-white/50"
-                  />
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-300 w-5 h-5" />
-                </div>
-
-                {/* Category Dropdown */}
-                <Select value={activeFilter} onValueChange={handleFilterClick}>
-                  <SelectTrigger className="w-[220px] py-6 bg-white/10 border-0 text-white focus:ring-2 focus:ring-white/50">
-                    <Filter className="w-4 h-4 mr-2" />
-                    <SelectValue placeholder="All Categories" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="All">All Categories</SelectItem>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.slug}>
-                        {cat.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
           </div>
         </div>
       </div>
 
-      {/* Courses Section */}
-      <div className="py-24 bg-paper max-w-[1320px] mx-auto px-7">
-        {isLoading ? (
-          <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pana-blue"></div>
-          </div>
-        ) : (
-          <>
-            <CoursesSection
-              showAll={true}
-              courses={currentCourses}
-              loading={isLoading}
-              error={error}
-            />
 
-            {/* Pagination */}
+
+      {/* Udemy-Style Guarantee Banner */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        <div className="bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-3 text-sm text-gray-800 shadow-sm">
+          <div className="w-8 h-8 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center font-bold shrink-0 border border-purple-200">
+            ℹ
+          </div>
+          <span className="font-semibold">Not sure? All courses have a 30-day money-back guarantee</span>
+        </div>
+      </div>
+
+      {/* Main Filter & Course Listing Area */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Top Control Bar */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-200">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <Select value={activeFilter} onValueChange={handleFilterClick}>
+              <SelectTrigger className="w-full sm:w-[200px] bg-white border-gray-300 font-bold text-sm text-gray-900 rounded-lg shadow-sm">
+                <Filter className="w-4 h-4 mr-2 text-gray-500" />
+                <SelectValue placeholder="Filter" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All">All Categories</SelectItem>
+                {categories.map((cat) => (
+                  <SelectItem key={cat.id} value={cat.slug}>
+                    {cat.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select defaultValue="popular">
+              <SelectTrigger className="w-[180px] bg-white border-gray-300 font-bold text-sm text-gray-900 rounded-lg shadow-sm">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="popular">Most Popular</SelectItem>
+                <SelectItem value="newest">Newest</SelectItem>
+                <SelectItem value="rating">Highest Rated</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="text-sm font-bold text-gray-600">
+            {filteredCourses.length.toLocaleString()} results
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Left Sidebar Filter Section */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* Ratings Filter */}
+            <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-4">
+              <h3 className="font-bold text-gray-900 text-sm tracking-tight border-b pb-2">Ratings</h3>
+              <div className="space-y-2.5 text-xs font-semibold text-gray-700">
+                {[
+                  { stars: '4.5 & up', count: '(10,000)' },
+                  { stars: '4.0 & up', count: '(10,000)' },
+                  { stars: '3.5 & up', count: '(10,000)' },
+                  { stars: '3.0 & up', count: '(10,000)' },
+                ].map((item, idx) => (
+                  <label key={idx} className="flex items-center gap-2.5 cursor-pointer hover:text-purple-700 transition-colors">
+                    <input type="radio" name="rating" className="text-purple-600 focus:ring-purple-500" defaultChecked={idx === 0} />
+                    <span className="text-amber-500 font-bold text-sm">★★★★☆</span>
+                    <span>{item.stars}</span>
+                    <span className="text-gray-400 font-normal ml-auto">{item.count}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Video Duration Filter */}
+            <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-4">
+              <h3 className="font-bold text-gray-900 text-sm tracking-tight border-b pb-2">Video Duration</h3>
+              <div className="space-y-2.5 text-xs font-semibold text-gray-700">
+                {[
+                  { label: '0-1 Hour', count: '(3,983)' },
+                  { label: '1-3 Hours', count: '(10,000)' },
+                  { label: '3-6 Hours', count: '(9,959)' },
+                  { label: '6-17 Hours', count: '(10,000)' },
+                ].map((item, idx) => (
+                  <label key={idx} className="flex items-center gap-2.5 cursor-pointer hover:text-purple-700 transition-colors">
+                    <input type="checkbox" className="rounded text-purple-600 focus:ring-purple-500" />
+                    <span>{item.label}</span>
+                    <span className="text-gray-400 font-normal ml-auto">{item.count}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Level Filter */}
+            <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-3">
+              <h3 className="font-bold text-gray-900 text-sm tracking-tight border-b pb-2">Level</h3>
+              <div className="space-y-2 text-xs font-semibold text-gray-700">
+                {['All Levels', 'Beginner', 'Intermediate', 'Expert'].map((lvl, idx) => (
+                  <label key={idx} className="flex items-center gap-2.5 cursor-pointer hover:text-purple-700">
+                    <input type="checkbox" className="rounded text-purple-600 focus:ring-purple-500" />
+                    <span>{lvl}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Main Course List - Udemy Row Display */}
+          <div className="lg:col-span-3 space-y-6">
+            {isLoading ? (
+              <div className="flex justify-center items-center py-16">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
+              </div>
+            ) : currentCourses.length === 0 ? (
+              <div className="bg-white p-12 text-center rounded-2xl border border-gray-200 text-gray-500">
+                No programmes matching your criteria.
+              </div>
+            ) : (
+              currentCourses.map((course) => {
+                const originalPriceNum = course.price ? Math.round(course.price * 1.25) : null;
+                return (
+                  <Link
+                    to={`/course/${course.id}`}
+                    key={course.id}
+                    className="block bg-white p-5 rounded-2xl border border-gray-200 hover:border-gray-400 hover:shadow-xl transition-all duration-300 no-underline group"
+                  >
+                    <div className="flex flex-col sm:flex-row gap-6">
+                      {/* Left Course Image Thumbnail */}
+                      <div className="w-full sm:w-64 h-44 shrink-0 rounded-xl overflow-hidden relative bg-zinc-950">
+                        {course.thumbnail_url ? (
+                          <img
+                            src={course.thumbnail_url}
+                            alt={course.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-zinc-900 via-red-950 to-zinc-950 flex items-center justify-center">
+                            <span className="text-white font-bold text-lg">PANA Institute</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Right Detail Information Column */}
+                      <div className="flex-1 flex flex-col justify-between space-y-2">
+                        <div>
+                          <div className="flex items-start justify-between gap-4 mb-1">
+                            <h3 className="text-lg md:text-xl font-bold text-gray-900 group-hover:text-purple-700 transition-colors leading-snug">
+                              {course.title}
+                            </h3>
+                            <button className="text-gray-400 hover:text-gray-600 p-1">⋮</button>
+                          </div>
+
+                          <p className="text-xs text-gray-600 leading-relaxed line-clamp-2 mb-2 font-normal">
+                            {course.description}
+                          </p>
+
+                          <p className="text-xs text-gray-500 font-medium mb-1">
+                            {course.instructor || 'Dr. Angela Yu, Lead Instructor & Industry Veteran'}
+                          </p>
+
+                          {/* Star Rating & Student Metadata */}
+                          <div className="flex items-center gap-2 text-xs mb-2">
+                            <span className="font-bold text-amber-700 text-sm">4.7</span>
+                            <div className="flex text-amber-500 text-sm">★★★★★</div>
+                            <span className="text-gray-500 font-medium">(474,283)</span>
+                          </div>
+
+                          {/* Lecture & Hours Metadata */}
+                          <div className="text-xs text-gray-500 font-semibold space-x-2">
+                            <span>{course.duration_hours || '40'} total hours</span>
+                            <span>•</span>
+                            <span>{course.level || 'All Levels'}</span>
+                            <span>•</span>
+                            <span>Experiential Lab Training</span>
+                          </div>
+                        </div>
+
+                        {/* Price Tag & Badges Row */}
+                        <div className="pt-3 border-t border-gray-100 flex flex-wrap items-center justify-between gap-3">
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-xl font-black text-gray-900">
+                              {course.price ? `₦${course.price.toLocaleString()}` : 'Free'}
+                            </span>
+                            {originalPriceNum && (
+                              <span className="text-xs text-gray-400 line-through font-semibold">
+                                ₦{originalPriceNum.toLocaleString()}
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <span className="px-3 py-1 bg-purple-700 text-white text-[11px] font-bold rounded-md uppercase tracking-wider shadow-xs">
+                              Premium
+                            </span>
+                            <span className="px-3 py-1 bg-teal-100 text-teal-800 text-[11px] font-bold rounded-md uppercase tracking-wider">
+                              Bestseller
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })
+            )}
+
+            {/* Pagination Controls */}
             {totalPages > 1 && (
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+              <div className="mt-8 pt-4">
                 <Pagination>
                   <PaginationContent>
                     <PaginationItem>
@@ -278,7 +437,7 @@ const PublicCoursesPage = () => {
                               handlePageChange(page);
                             }}
                             isActive={currentPage === page}
-                            className="cursor-pointer"
+                            className="cursor-pointer font-bold text-sm"
                           >
                             {page}
                           </PaginationLink>
@@ -301,14 +460,13 @@ const PublicCoursesPage = () => {
                   </PaginationContent>
                 </Pagination>
 
-                {/* Results info */}
-                <div className="text-center mt-6 text-sm text-gray-600">
+                <div className="text-center mt-4 text-xs font-semibold text-gray-500">
                   Showing {indexOfFirstCourse + 1} - {Math.min(indexOfLastCourse, filteredCourses.length)} of {filteredCourses.length} courses
                 </div>
               </div>
             )}
-          </>
-        )}
+          </div>
+        </div>
       </div>
 
       {/* CTA Section */}

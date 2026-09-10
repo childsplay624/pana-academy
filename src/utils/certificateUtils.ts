@@ -281,8 +281,8 @@ export const generateCertificateHtml = (certificate: Certificate, studentName: s
 
             <div class="signature-block right">
                 <div class="signature-line"></div>
-                <p class="signer-name">Ifeyinwa E. Achumba</p>
-                <p class="signer-title">Dean</p>
+                <p class="signer-name">Prof. Ifeyinwa E. Achumba</p>
+                <p class="signer-title">Prof. And Dean, PANA Institute</p>
             </div>
         </div>
 

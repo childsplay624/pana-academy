@@ -8,7 +8,7 @@ export interface TeamMember {
   full_bio: string | null;
   experience: string[] | any; // JSONB can be string array
   image_key: string | null;
-  category: 'board' | 'advisory';
+  category: 'board' | 'advisory' | 'governing' | string;
   display_order: number;
   is_active: boolean;
   created_at: string;

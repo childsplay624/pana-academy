@@ -52,12 +52,6 @@ const ValuesSection = () => {
               <div className="relative bg-white rounded-[2rem] shadow-2xl overflow-hidden border border-gray-100">
                 {/* Header Strip */}
                 <div className="bg-gradient-to-r from-gray-50 to-white border-b border-gray-100 p-8 md:p-10 text-center relative overflow-hidden">
-                  <div className="absolute top-0 right-0 p-4 opacity-5">
-                    <span className="text-9xl font-black">{index + 1}</span>
-                  </div>
-                  <span className="relative z-10 inline-block py-1.5 px-4 rounded-full bg-red-50 text-red-600 text-sm font-bold tracking-widest uppercase mb-4 shadow-sm border border-red-100">
-                    Pillar {index + 1}
-                  </span>
                   <h3 className="relative z-10 text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">
                     {value.title}
                   </h3>

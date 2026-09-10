@@ -1,8 +1,8 @@
-import { Mail, Phone, MapPin, Instagram, Linkedin, Facebook, Twitter } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { FontAwesomeIcon } from "@/components/ui/FontAwesomeIcon";
 
-export const Footer = () => {
+const Footer = () => {
   const currentYear = new Date().getFullYear();
   const [footerColumns, setFooterColumns] = useState<any[]>([]);
 
@@ -37,38 +37,37 @@ export const Footer = () => {
         if (typeof parsed === 'string') parsed = JSON.parse(parsed);
         layout = parsed;
       } else {
-        // Fallback default layout
+        // Fallback default layout according to official PANA Institute structure
         layout = [
           {
             id: 'col-1',
-            title: 'Our Institute',
+            title: 'Institute',
             links: [
-              { name: "About PANA Institute", href: "/about" },
-              { name: "Leadership & Faculty", href: "/team" },
-              { name: "Client Testimonials", href: "/testimonials" },
-              { name: "Verify Certificate", href: "/verify-certificate" },
-              { name: "Careers & Culture", href: "/careers" }
+              { name: "Our Journey", href: "/our-journey" },
+              { name: "Leadership", href: "/team" },
+              { name: "Safety", href: "/safety" },
+              { name: "Careers", href: "/careers" }
             ]
           },
           {
             id: 'col-2',
-            title: 'Five Mandate Verticals',
+            title: 'Verticals',
             links: [
-              { name: "01 · Competency & Training", href: "/competency" },
-              { name: "02 · Research & R&D", href: "/research" },
-              { name: "03 · Consultancy & Advisory", href: "/consultancy" },
-              { name: "04 · Sustainability & Climate", href: "/sustainability" },
-              { name: "05 · Global Engagements", href: "/global" }
+              { name: "Competency Assessment and Development", href: "/training-delivery" },
+              { name: "Research and Development", href: "/research-development" },
+              { name: "Consulting and Advisory Services", href: "/consulting-services" },
+              { name: "Sustainability Solutions and Climate Services", href: "/sustainability-solutions" },
+              { name: "Global Engagements and Initiatives", href: "/global-engagements" }
             ]
           },
           {
             id: 'col-3',
-            title: 'Quick Resources',
+            title: 'Media and Resources',
             links: [
-              { name: "Course Catalogue", href: "/courses" },
-              { name: "Training Calendar", href: "/training-calendar" },
-              { name: "Publications & Blog", href: "/blog" },
-              { name: "Contact Us", href: "/contact" }
+              { name: "Media", href: "/media" },
+              { name: "News", href: "/news" },
+              { name: "Resources", href: "/resources" },
+              { name: "Contact us", href: "/contact" }
             ]
           }
         ];
@@ -109,17 +108,20 @@ export const Footer = () => {
   }, []);
 
   return (
-    <footer className="bg-ink text-paper border-t border-zinc-800">
-      <div className="max-w-[1320px] mx-auto px-7">
+    <footer className="bg-black text-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="py-16">
           <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-8">
             <div className="lg:col-span-1">
               <div className="text-2xl font-bold mb-4">PANA <span className="text-red-600">Institute</span></div>
-              <p className="text-gray-400 mb-6 leading-relaxed">Empowering talent across sectors through world-class training, consulting, and research excellence.</p>
+              <p className="text-gray-400 mb-6 text-sm leading-relaxed">
+                Building the standard against which competence is measured. For the Oil and Gas, Energy and Power, and Digital Industries.
+              </p>
               <div className="space-y-3">
-                <div className="flex items-center space-x-3 text-sm"><Phone className="w-4 h-4 text-red-600" /><span>+234 702 600 0119</span></div>
-                <div className="flex items-center space-x-3 text-sm"><Mail className="w-4 h-4 text-red-600" /><span>info@pana-institute.com</span></div>
-                <div className="flex items-center space-x-3 text-sm"><MapPin className="w-4 h-4 text-red-600" /><span>Abuja & Port Harcourt</span></div>
+                <a href="mailto:info@pana-institute.com" className="flex items-center space-x-3 text-sm text-gray-300 hover:text-white transition-colors">
+                  <FontAwesomeIcon name="fa-solid fa-envelope" className="text-red-600 text-sm flex-shrink-0" />
+                  <span>info@pana-institute.com</span>
+                </a>
               </div>
             </div>
 
@@ -160,8 +162,15 @@ export const Footer = () => {
         <div className="py-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-xs text-gray-500">© {currentYear} PANA Institute. All rights reserved.</div>
           <div className="flex space-x-4">
-            {[Linkedin, Twitter, Facebook, Instagram].map((Icon, i) => (
-              <a key={i} href="#" className="w-8 h-8 bg-gray-900 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"><Icon className="w-4 h-4" /></a>
+            {[
+              { name: "fa-brands fa-linkedin-in", href: "https://linkedin.com" },
+              { name: "fa-brands fa-youtube", href: "https://youtube.com" },
+              { name: "fa-brands fa-facebook-f", href: "https://facebook.com" },
+              { name: "fa-brands fa-instagram", href: "https://instagram.com" }
+            ].map((social, i) => (
+              <a key={i} href={social.href} target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-gray-900 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors text-white text-xs">
+                <FontAwesomeIcon name={social.name} />
+              </a>
             ))}
           </div>
         </div>

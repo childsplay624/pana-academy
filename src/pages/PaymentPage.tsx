@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Loader2, CreditCard, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { fetchCourseById } from '@/services/courseService';
+import { fetchCourseById, isCourseDatePassed } from '@/services/courseService';
 import {
     initializePayment,
     savePaymentRecord,
@@ -120,6 +120,17 @@ export function PaymentPage() {
                     variant: "destructive",
                 });
                 navigate('/courses');
+                return;
+            }
+
+            // Check if course date has passed
+            if (isCourseDatePassed(data)) {
+                toast({
+                    title: "Enrollment Closed",
+                    description: "This course date has already passed. Enrollment is closed.",
+                    variant: "destructive",
+                });
+                navigate(`/course/${courseId}`);
                 return;
             }
 

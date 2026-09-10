@@ -42,7 +42,7 @@ All colors MUST be HSL.
     --input: 215 27% 92%;
     --ring: 217 91% 15%;
 
-    --radius: 0rem;
+    --radius: 0.75rem;
 
     /* PANA Institute Brand Colors */
     --pana-navy: 0 84% 15%;
@@ -69,22 +69,20 @@ All colors MUST be HSL.
     --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
 
-  button,
-  .btn,
-  [role="button"],
-  [type="button"],
-  [type="reset"],
-  [type="submit"] {
-    border-radius: 0px !important;
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
@@ -129,14 +127,18 @@ All colors MUST be HSL.
 @layer base {
   * {
     @apply border-border;
+    font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   }
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   }
 
   img {
     image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: pixelated;
     backface-visibility: hidden;
     transform: translateZ(0);
     -webkit-font-smoothing: antialiased;
@@ -144,34 +146,45 @@ All colors MUST be HSL.
   }
 }
 
+/* 3D Spatial & Depth Utilities */
 @layer utilities {
-  .scale {
-    height: 14px;
-    width: 100%;
-    background-image: repeating-linear-gradient(90deg, #E3DDD2 0 1px, transparent 1px 22px);
-    border-bottom: 1px solid #E3DDD2;
+  .perspective-500 {
+    perspective: 500px;
   }
-  .scale.tall {
-    height: 22px;
-    background-image: repeating-linear-gradient(90deg, #6E1D2B 0 1.5px, transparent 1.5px 30px);
-    opacity: 0.5;
+  .perspective-1000 {
+    perspective: 1000px;
   }
-  .anchor-head {
-    scroll-margin-top: 110px;
+  .perspective-2000 {
+    perspective: 2000px;
   }
-
-  @keyframes revealUp {
-    from {
-      opacity: 0;
-      transform: translateY(24px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  .preserve-3d {
+    transform-style: preserve-3d;
   }
-
-  .reveal-on-scroll {
-    animation: revealUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  .translate-z-10 {
+    transform: translateZ(10px);
   }
-}
+  .translate-z-20 {
+    transform: translateZ(20px);
+  }
+  .translate-z-30 {
+    transform: translateZ(30px);
+  }
+  .translate-z-50 {
+    transform: translateZ(50px);
+  }
+  .shadow-3d-red {
+    box-shadow: 0 20px 40px -15px rgba(220, 38, 38, 0.25), 0 0 20px -5px rgba(220, 38, 38, 0.1);
+  }
+  .shadow-3d-dark {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35), 0 0 30px -5px rgba(15, 23, 42, 0.2);
+  }
+  .shadow-3d-glass {
+    box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  }
+  .bg-grid-3d {
+    background-size: 40px 40px;
+    background-image: 
+      linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  }
+}

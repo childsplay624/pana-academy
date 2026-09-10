@@ -13,10 +13,7 @@ export default defineConfig(({ mode }) => ({
       host: 'localhost',
       protocol: 'ws',
     },
-    allowedHosts: [
-      'f1e2afb34adb.ngrok-free.app',
-      'localhost',
-    ]
+    allowedHosts: true
   },
   plugins: [
     react(),

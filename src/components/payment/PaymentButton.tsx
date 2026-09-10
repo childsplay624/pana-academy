@@ -12,6 +12,7 @@ interface PaymentButtonProps {
   courseId: string;
   amount: number;
   courseTitle: string;
+  isExpired?: boolean;
   className?: string;
 }
 
@@ -19,6 +20,7 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
   courseId,
   amount,
   courseTitle,
+  isExpired = false,
   className = ''
 }) => {
   const { user } = useAuth();
@@ -27,6 +29,23 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
   const navigate = useNavigate();
   const { data: settings } = usePlatformSettings();
   const hidePrices = settings?.hide_course_prices;
+
+  if (isExpired) {
+    return (
+      <div className={`space-y-2 ${className}`}>
+        <Button
+          disabled
+          className="w-full bg-zinc-500/80 text-white cursor-not-allowed border-none font-semibold shadow-none"
+          size="lg"
+        >
+          Enrollment Closed (Date Passed)
+        </Button>
+        <p className="text-xs text-red-500 font-medium text-center">
+          This course date has already passed and enrollment is closed.
+        </p>
+      </div>
+    );
+  }
 
   const handleEnroll = async () => {
     if (!user) {
