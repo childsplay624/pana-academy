@@ -471,69 +471,23 @@ export default function CourseDetails() {
                 {/* CARD BODY WITH PRICING & OPTIONS */}
                 <div className="p-6 space-y-6">
                   
-                  {/* PRICING OPTIONS SELECTOR */}
+                  {/* PRICING DISPLAY */}
                   {!hidePrices && (
-                    <div className="space-y-4">
-                      
-                      {/* Subscription Option Radio */}
-                      <label 
-                        onClick={() => setPurchaseOption('subscription')}
-                        className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all ${
-                          purchaseOption === 'subscription' 
-                            ? 'border-purple-600 bg-purple-50/40 ring-2 ring-purple-600/20' 
-                            : 'border-gray-200 hover:border-gray-300 bg-white'
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="pricing"
-                          checked={purchaseOption === 'subscription'}
-                          onChange={() => setPurchaseOption('subscription')}
-                          className="mt-1 accent-purple-600 w-4 h-4"
-                        />
-                        <div className="space-y-0.5 flex-1">
-                          <div className="text-xs font-bold uppercase tracking-wider text-purple-700">Subscribe & save</div>
-                          <div className="text-xl font-extrabold text-gray-900">
-                            From ₦12,000.00 <span className="text-xs font-normal text-gray-500">/ month</span>
-                          </div>
-                          <p className="text-[11px] text-gray-500">Access 200+ top-rated courses with PANA Pass. Cancel anytime.</p>
-                        </div>
-                      </label>
-
-                      {/* Individual Course Buy Radio */}
-                      <label 
-                        onClick={() => setPurchaseOption('individual')}
-                        className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all ${
-                          purchaseOption === 'individual' 
-                            ? 'border-red-600 bg-red-50/40 ring-2 ring-red-600/20' 
-                            : 'border-gray-200 hover:border-gray-300 bg-white'
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="pricing"
-                          checked={purchaseOption === 'individual'}
-                          onChange={() => setPurchaseOption('individual')}
-                          className="mt-1 accent-red-600 w-4 h-4"
-                        />
-                        <div className="space-y-0.5 flex-1">
-                          <div className="text-xs font-bold uppercase tracking-wider text-red-600">Buy individual course</div>
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-2xl font-extrabold text-gray-900">
-                              {course.is_free || course.price === 0 ? 'Free' : `₦${course.price.toLocaleString()}`}
+                    <div className="p-4 rounded-xl border border-gray-200 bg-white space-y-1">
+                      <div className="text-xs font-bold uppercase tracking-wider text-red-600">Course Price</div>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-3xl font-extrabold text-gray-900">
+                          {course.is_free || course.price === 0 ? 'Free' : `₦${course.price.toLocaleString()}`}
+                        </span>
+                        {!course.is_free && course.price > 0 && (
+                          <>
+                            <span className="text-sm text-gray-400 line-through font-medium">
+                              ₦{originalPrice.toLocaleString()}
                             </span>
-                            {!course.is_free && course.price > 0 && (
-                              <>
-                                <span className="text-sm text-gray-400 line-through font-medium">
-                                  ₦{originalPrice.toLocaleString()}
-                                </span>
-                                <span className="text-xs font-bold text-red-600">30% off</span>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </label>
-
+                            <span className="text-xs font-bold text-red-600">30% off</span>
+                          </>
+                        )}
+                      </div>
                     </div>
                   )}
 
