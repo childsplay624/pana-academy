@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useSiteImage } from "@/hooks/useSiteImage";
 import { usePageContent } from "@/hooks/usePageContent";
 import { Card3D } from "@/components/ui/Card3D";
+import { DynamicPageSections } from "@/components/page-builder/DynamicPageSections";
 
 const SustainabilitySolutionsPage = () => {
   const { imageUrl: defaultHeaderImage } = useSiteImage('header_sustainability');
@@ -360,6 +361,9 @@ const SustainabilitySolutionsPage = () => {
               </div>
             </div>
           </section>
+
+          {/* Dynamic Page Sections from CMS Page Builder */}
+          <DynamicPageSections slug="sustainability-solutions" />
         </main>
 
         <Footer />

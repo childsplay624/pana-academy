@@ -7,6 +7,7 @@ import Card3D from "@/components/ui/Card3D";
 import { useSiteImage } from "@/hooks/useSiteImage";
 import { usePageContent } from "@/hooks/usePageContent";
 import { Link } from "react-router-dom";
+import { DynamicPageSections } from "@/components/page-builder/DynamicPageSections";
 
 const GlobalEngagementsPage = () => {
   const { imageUrl: defaultHeaderImage } = useSiteImage('header_global_engagements');
@@ -280,6 +281,9 @@ const GlobalEngagementsPage = () => {
               </div>
             </div>
           </section>
+
+          {/* Dynamic Page Sections from CMS Page Builder */}
+          <DynamicPageSections slug="global-engagements" />
         </main>
 
         <Footer />

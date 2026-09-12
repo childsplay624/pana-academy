@@ -103,6 +103,18 @@ const STATIC_PAGE_FIELDS: Record<string, { key: string; label: string; type: 'te
     { key: 'hero_subtitle', label: 'Hero Subtitle (Red text)', type: 'text' },
     { key: 'hero_description', label: 'Hero Description', type: 'textarea' },
   ],
+  'sustainability-solutions': [
+    { key: 'header_image', label: 'Header Hero Background Image', type: 'image' },
+    { key: 'hero_title', label: 'Hero Title (White text)', type: 'text' },
+    { key: 'hero_subtitle', label: 'Hero Subtitle (Red text)', type: 'text' },
+    { key: 'hero_description', label: 'Hero Description', type: 'textarea' },
+  ],
+  'global-engagements': [
+    { key: 'header_image', label: 'Header Hero Background Image', type: 'image' },
+    { key: 'hero_title', label: 'Hero Title (White text)', type: 'text' },
+    { key: 'hero_subtitle', label: 'Hero Subtitle (Red text)', type: 'text' },
+    { key: 'hero_description', label: 'Hero Description', type: 'textarea' },
+  ],
 };
 
 const SECTION_TEMPLATES = {

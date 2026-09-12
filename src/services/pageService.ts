@@ -34,6 +34,8 @@ export const DEFAULT_PAGES: Partial<Page>[] = [
   { title: 'Consulting Services', slug: 'consulting-services', page_type: 'static', status: 'published', show_in_navbar: true, show_in_footer: true, description: 'Expert consulting services.' },
   { title: 'Research & Development', slug: 'rnd-services', page_type: 'static', status: 'published', show_in_navbar: true, show_in_footer: true, description: 'R&D services and methodologies.' },
   { title: 'Training Delivery', slug: 'training-delivery', page_type: 'static', status: 'published', show_in_navbar: true, show_in_footer: true, description: 'Training methodologies and delivery options.' },
+  { title: 'Sustainability Solutions', slug: 'sustainability-solutions', page_type: 'static', status: 'published', show_in_navbar: true, show_in_footer: true, description: 'Decarbonisation, ESG, and climate services.' },
+  { title: 'Global Engagements', slug: 'global-engagements', page_type: 'static', status: 'published', show_in_navbar: true, show_in_footer: true, description: 'International partnerships, cross-border workforce development, and global hubs.' },
 ];
 
 export const pageService = {
