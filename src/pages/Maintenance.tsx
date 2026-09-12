@@ -53,6 +53,13 @@ export default function Maintenance() {
                             Check Again
                         </Button>
                         <Button
+                            variant="outline"
+                            className="rounded-full px-8"
+                            onClick={() => navigate('/auth')}
+                        >
+                            Admin Login
+                        </Button>
+                        <Button
                             className="rounded-full px-8"
                             onClick={() => window.location.href = "mailto:support@pana-institute.com"}
                         >
