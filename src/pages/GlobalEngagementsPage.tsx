@@ -57,34 +57,7 @@ const GlobalEngagementsPage = () => {
     }
   ];
 
-  const globalHubs = [
-    {
-      city: "Port Harcourt",
-      country: "Nigeria · Centre of Excellence",
-      address: "Plot 94 Rivoc Road, Trans Amadi Industrial Layout, Port Harcourt",
-      tel: "+234 702 600 0116",
-      role: "Primary Technical Hub & Simulator Labs"
-    },
-    {
-      city: "Abuja",
-      country: "Nigeria · Federal Capital Territory",
-      address: "No. 5 Vattern Street, off Amazon Street, Maitama, Abuja",
-      tel: "+234 702 600 0119",
-      role: "Policy, Governance & Institutional Liaison"
-    },
-    {
-      city: "Kampala",
-      country: "Uganda · East Africa",
-      address: "C/O Cristal Advocates, 4th Floor, Padre Pio House, Plot 32 Lumumba Avenue, Kampala",
-      role: "East African Rift & Energy Operations"
-    },
-    {
-      city: "Dubai",
-      country: "United Arab Emirates",
-      address: "Business Center 1, M Floor, The Meydan Hotel, Nad Al Sheba, Dubai",
-      role: "Middle East & International Advisory Hub"
-    }
-  ];
+
 
   return (
     <>
@@ -224,41 +197,7 @@ const GlobalEngagementsPage = () => {
             </div>
           </section>
 
-          {/* Global Hubs Section */}
-          <section id="hubs" className="py-20 bg-white">
-            <div className="max-w-7xl mx-auto px-6 lg:px-8">
-              <div className="text-center max-w-3xl mx-auto mb-16">
-                <div className="text-red-600 font-bold text-xs uppercase tracking-wider mb-2">International Presence</div>
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Global Operating Hubs</h2>
-                <p className="text-gray-600 leading-relaxed">
-                  Engage with PANA Institute through our strategic offices across West Africa, East Africa, and the Middle East.
-                </p>
-              </div>
 
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {globalHubs.map((hub, idx) => (
-                  <Card3D key={idx} className="bg-gray-50 p-6 rounded-2xl border border-gray-200 flex flex-col justify-between hover:border-red-600 transition-colors preserve-3d">
-                    <div>
-                      <div className="w-8 h-8 rounded-lg bg-red-600 text-white flex items-center justify-center font-bold text-xs mb-4 transform transition-transform duration-300 translate-z-12 shadow-3d-sm">
-                        {hub.city[0]}
-                      </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-1 transform transition-transform duration-300 translate-z-10">{hub.city}</h3>
-                      <p className="text-xs font-semibold text-red-600 mb-3 transform transition-transform duration-300 translate-z-5">{hub.country}</p>
-                      <p className="text-xs text-gray-600 leading-relaxed mb-4 transform transition-transform duration-300 translate-z-5">{hub.address}</p>
-                    </div>
-                    <div className="transform transition-transform duration-300 translate-z-5">
-                      {hub.tel && (
-                        <p className="text-xs font-bold text-gray-900 mb-2">Tel: {hub.tel}</p>
-                      )}
-                      <span className="inline-block px-3 py-1 rounded-full bg-zinc-200 text-zinc-800 text-[11px] font-medium">
-                        {hub.role}
-                      </span>
-                    </div>
-                  </Card3D>
-                ))}
-              </div>
-            </div>
-          </section>
 
           {/* Partnership CTA */}
           <section id="contact" className="py-20 bg-red-600 text-white text-center">
