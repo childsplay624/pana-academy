@@ -23,6 +23,7 @@ export interface PageSection {
   section_type: string;
   content: any;
   order_index: number;
+  is_active?: boolean;
 }
 
 export const DEFAULT_PAGES: Partial<Page>[] = [

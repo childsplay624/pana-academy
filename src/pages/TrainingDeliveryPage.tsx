@@ -62,21 +62,7 @@ const TrainingDelivery = () => {
                   A capability development hub delivering training, leadership development and practical skills aligned with real operational needs, and an assessment function that judges competence on evidence alone.
                 </p>
 
-                {/* Sub-navigation Pills */}
-                <div className="flex flex-wrap justify-center gap-3 mt-8">
-                  <a href="#programmes" className="px-6 py-2.5 rounded-full bg-red-600 hover:bg-red-700 text-white font-medium text-sm transition-colors shadow-lg">
-                    Programmes
-                  </a>
-                  <a href="#faculty" className="px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-sm border border-white/20 transition-colors">
-                    Faculty
-                  </a>
-                  <a href="#labs" className="px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-sm border border-white/20 transition-colors">
-                    Labs
-                  </a>
-                  <a href="#roar-club" className="px-6 py-2.5 rounded-full bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-medium text-sm border border-amber-500/30 transition-colors">
-                    Roar Club
-                  </a>
-                </div>
+
               </div>
             </div>
           </section>

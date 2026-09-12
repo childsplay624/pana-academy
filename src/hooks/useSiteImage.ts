@@ -65,6 +65,8 @@ export function useSiteImage(key: string): UseSiteImageReturn {
             'header_about': null,
             'header_team': null,
             'header_rnd': null,
+            'header_sustainability': '/images/sustainability_hero.jpg',
+            'header_global_engagements': '/images/global_engagements_hero.jpg',
             'header_consultancy': null,
             'header_careers': null,
             'logo': '/logo.png',

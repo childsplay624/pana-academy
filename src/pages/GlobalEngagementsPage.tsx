@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 const GlobalEngagementsPage = () => {
   const { imageUrl: defaultHeaderImage } = useSiteImage('header_global_engagements');
   const { get } = usePageContent('global-engagements');
-  const headerImage = get('header_image') || defaultHeaderImage;
+  const headerImage = get('header_image') || defaultHeaderImage || '/images/global_engagements_hero.jpg';
 
   const globalPillars = [
     {
@@ -126,21 +126,7 @@ const GlobalEngagementsPage = () => {
                   Connecting African industrial talent, technical labs, and energy assets with international consortia, cross-border workforce development, and global accreditation bodies.
                 </p>
 
-                {/* Sub-navigation Pills */}
-                <div className="flex flex-wrap justify-center gap-3 pt-4">
-                  <a href="#overview" className="px-5 py-2 rounded-full bg-red-600 hover:bg-red-700 text-white font-semibold text-xs transition-colors shadow-lg">
-                    Overview
-                  </a>
-                  <a href="#pillars" className="px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 text-white font-semibold text-xs border border-white/20 transition-colors">
-                    Core Pillars
-                  </a>
-                  <a href="#hubs" className="px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 text-white font-semibold text-xs border border-white/20 transition-colors">
-                    Global Operating Hubs
-                  </a>
-                  <a href="#contact" className="px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 text-white font-semibold text-xs border border-white/20 transition-colors">
-                    Partner With Us
-                  </a>
-                </div>
+
               </div>
             </div>
           </section>

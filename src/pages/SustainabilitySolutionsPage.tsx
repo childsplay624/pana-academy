@@ -10,7 +10,7 @@ import { Card3D } from "@/components/ui/Card3D";
 const SustainabilitySolutionsPage = () => {
   const { imageUrl: defaultHeaderImage } = useSiteImage('header_sustainability');
   const { get } = usePageContent('sustainability-solutions');
-  const headerImage = get('header_image') || defaultHeaderImage;
+  const headerImage = get('header_image') || defaultHeaderImage || '/images/sustainability_hero.jpg';
 
   return (
     <>
@@ -54,24 +54,7 @@ const SustainabilitySolutionsPage = () => {
                   Driving value through decarbonisation, ESG and green innovation. A move from compliance to execution, delivering measurable environmental and financial value.
                 </p>
 
-                {/* Sub-navigation Pills */}
-                <div className="flex flex-wrap justify-center gap-3 mt-8">
-                  <a href="#overview" className="px-6 py-2.5 rounded-full bg-red-600 hover:bg-red-700 text-white font-medium text-sm transition-colors shadow-lg">
-                    Overview
-                  </a>
-                  <a href="#services" className="px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-sm border border-white/20 transition-colors">
-                    Services
-                  </a>
-                  <a href="#sustainacore" className="px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-sm border border-white/20 transition-colors">
-                    SustainaCore
-                  </a>
-                  <a href="#deliverables" className="px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-sm border border-white/20 transition-colors">
-                    What We Deliver
-                  </a>
-                  <a href="#gtm" className="px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-sm border border-white/20 transition-colors">
-                    Go to Market
-                  </a>
-                </div>
+
               </div>
             </div>
           </section>

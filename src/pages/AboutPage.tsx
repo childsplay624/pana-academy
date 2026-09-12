@@ -300,14 +300,7 @@ const AboutPage = () => {
                             </div>
                         </div>
 
-                        {/* Safety at PANA Institute Image Banner */}
-                        <div className="mt-20 rounded-3xl overflow-hidden shadow-2xl border border-gray-100 relative group">
-                            <img
-                                src="/images/safety_at_pana_institute.png"
-                                alt="Safety at PANA Institute - HSE & ISO 14001 / ISO 45001 Certification"
-                                className="w-full h-auto max-h-[500px] object-cover object-center transform transition-transform duration-500 group-hover:scale-102"
-                            />
-                        </div>
+
                     </div>
                 </section>
 
