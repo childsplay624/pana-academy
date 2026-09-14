@@ -27,6 +27,10 @@ export default function BlogPage() {
   const isNewsPage = currentPath === '/news' || currentPath === '/blog';
   const isResourcesPage = currentPath === '/resources';
 
+  const mediaPosts = posts.filter(p => p.category === 'media');
+  const newsPosts = posts.filter(p => p.category === 'news' || !p.category);
+  const resourcesPosts = posts.filter(p => p.category === 'resources');
+
   useEffect(() => {
     fetchPosts();
   }, []);
@@ -180,6 +184,73 @@ export default function BlogPage() {
                     </div>
                   </div>
                 </div>
+
+                {/* Published Media Documentation from Admin */}
+                {mediaPosts.length > 0 && (
+                  <div className="pt-16 mt-16 border-t border-gray-200">
+                    <div className="text-center max-w-2xl mx-auto mb-12">
+                      <span className="text-blue-600 font-bold text-xs uppercase tracking-wider block mb-2">Media & Trainee Records</span>
+                      <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Published Media & Field Records</h3>
+                      <p className="text-sm text-gray-600">High-resolution photographic documentation, site albums, and trainee media releases.</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                      {mediaPosts.map((post, idx) => (
+                        <motion.div
+                          key={post.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.5, delay: idx * 0.1 }}
+                          viewport={{ once: true }}
+                        >
+                          <Card 
+                            className="overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer h-full border-gray-200 group flex flex-col bg-white"
+                            onClick={() => navigate(`/blog/${post.slug}`)}
+                          >
+                            <div className="h-56 overflow-hidden relative bg-zinc-900">
+                              {post.cover_image ? (
+                                <img 
+                                  src={post.cover_image} 
+                                  alt={post.title} 
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-gray-400 font-medium bg-zinc-900 text-white">
+                                  PANA Media
+                                </div>
+                              )}
+                              <span className="absolute bottom-3 left-3 bg-blue-600 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-md">
+                                Media Gallery
+                              </span>
+                            </div>
+                            <CardContent className="p-6 flex-1 flex flex-col">
+                              <div className="flex items-center gap-4 text-xs text-gray-500 mb-3 font-medium uppercase tracking-wider">
+                                <span className="flex items-center">
+                                  <Calendar className="w-3 h-3 mr-1 text-blue-600" />
+                                  {new Date(post.published_at || post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                </span>
+                              </div>
+                              
+                              <h4 className="text-lg font-bold mb-3 text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug">
+                                {post.title}
+                              </h4>
+                              
+                              <p className="text-gray-600 text-sm line-clamp-3 mb-6 flex-1 leading-relaxed">
+                                {post.excerpt || 'View media gallery and photographic field documentation...'}
+                              </p>
+                              
+                              <div className="mt-auto pt-4 border-t border-gray-100">
+                                <span className="text-xs font-bold text-blue-600 group-hover:text-blue-700 uppercase tracking-wider inline-flex items-center">
+                                  View Media & Details <span className="ml-1.5 group-hover:translate-x-1 transition-transform">→</span>
+                                </span>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </section>
           )}
@@ -226,7 +297,7 @@ export default function BlogPage() {
                 </div>
 
                 {/* Published Articles from Database */}
-                {posts.length > 0 && (
+                {newsPosts.length > 0 && (
                   <div className="pt-12 border-t border-gray-200">
                     <div className="text-center max-w-2xl mx-auto mb-12">
                       <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Published Press & Insights</h3>
@@ -234,7 +305,7 @@ export default function BlogPage() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                      {posts.map((post, idx) => (
+                      {newsPosts.map((post, idx) => (
                         <motion.div
                           key={post.id}
                           initial={{ opacity: 0, y: 20 }}
@@ -370,6 +441,78 @@ export default function BlogPage() {
                     </a>
                   </div>
                 </div>
+
+                {/* Published Institutional Documents & Policies from Admin */}
+                {resourcesPosts.length > 0 && (
+                  <div className="pt-16 mt-16 border-t border-gray-200">
+                    <div className="text-center max-w-2xl mx-auto mb-12">
+                      <span className="text-emerald-600 font-bold text-xs uppercase tracking-wider block mb-2">Policy & Document Library</span>
+                      <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Published Policies & Documents</h3>
+                      <p className="text-sm text-gray-600">Official institutional documentation, governance standards, and operational guidelines.</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                      {resourcesPosts.map((post, idx) => (
+                        <motion.div
+                          key={post.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.5, delay: idx * 0.1 }}
+                          viewport={{ once: true }}
+                        >
+                          <Card 
+                            className="overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer h-full border-gray-200 group flex flex-col bg-white"
+                            onClick={() => navigate(`/blog/${post.slug}`)}
+                          >
+                            {post.cover_image ? (
+                              <div className="h-52 overflow-hidden relative bg-gray-100">
+                                <img 
+                                  src={post.cover_image} 
+                                  alt={post.title} 
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                                />
+                                <span className="absolute bottom-3 left-3 bg-emerald-600 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-md">
+                                  Policy / Document
+                                </span>
+                              </div>
+                            ) : (
+                              <div className="p-6 pb-2 flex items-center gap-3">
+                                <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                                  <FileText className="w-6 h-6" />
+                                </div>
+                                <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">
+                                  Official Document
+                                </span>
+                              </div>
+                            )}
+                            <CardContent className="p-6 flex-1 flex flex-col">
+                              <div className="flex items-center gap-4 text-xs text-gray-500 mb-3 font-medium uppercase tracking-wider">
+                                <span className="flex items-center">
+                                  <Calendar className="w-3 h-3 mr-1 text-emerald-600" />
+                                  {new Date(post.published_at || post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                </span>
+                              </div>
+                              
+                              <h4 className="text-lg font-bold mb-3 text-gray-900 group-hover:text-emerald-600 transition-colors line-clamp-2 leading-snug">
+                                {post.title}
+                              </h4>
+                              
+                              <p className="text-gray-600 text-sm line-clamp-3 mb-6 flex-1 leading-relaxed">
+                                {post.excerpt || 'Read official policy guidelines, documentation and regulatory compliance information...'}
+                              </p>
+                              
+                              <div className="mt-auto pt-4 border-t border-gray-100">
+                                <span className="text-xs font-bold text-emerald-600 group-hover:text-emerald-700 uppercase tracking-wider inline-flex items-center">
+                                  Read Document & Policy <span className="ml-1.5 group-hover:translate-x-1 transition-transform">→</span>
+                                </span>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </section>
           )}

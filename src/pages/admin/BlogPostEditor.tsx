@@ -7,10 +7,11 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ChevronLeft, Save, Loader2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ChevronLeft, Save, Loader2, Newspaper, Image as ImageIcon, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ImagePicker } from '@/components/admin/ImagePicker';
-import { blogService, BlogPost } from '@/services/blogService';
+import { blogService, BlogPost, BlogCategory } from '@/services/blogService';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
@@ -24,6 +25,7 @@ export default function BlogPostEditor() {
   
   const [title, setTitle] = useState('');
   const [slug, setSlug] = useState('');
+  const [category, setCategory] = useState<BlogCategory>('news');
   const [excerpt, setExcerpt] = useState('');
   const [content, setContent] = useState('');
   const [coverImage, setCoverImage] = useState('');
@@ -42,6 +44,7 @@ export default function BlogPostEditor() {
       if (post) {
         setTitle(post.title || '');
         setSlug(post.slug || '');
+        setCategory(post.category || 'news');
         setExcerpt(post.excerpt || '');
         setContent(post.content || '');
         setCoverImage(post.cover_image || '');
@@ -82,6 +85,7 @@ export default function BlogPostEditor() {
       const postData: Partial<BlogPost> = {
         title,
         slug,
+        category,
         excerpt,
         content,
         cover_image: coverImage,
@@ -180,6 +184,48 @@ export default function BlogPostEditor() {
           </div>
 
           <div className="space-y-6">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Section & Category</CardTitle>
+                <CardDescription className="text-xs">Choose which page this post is published to</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="post-category" className="text-sm font-medium">Category</Label>
+                  <Select value={category} onValueChange={(val: BlogCategory) => setCategory(val)}>
+                    <SelectTrigger id="post-category" className="w-full">
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="news">
+                        <div className="flex items-center gap-2">
+                          <Newspaper className="w-4 h-4 text-red-600" />
+                          <span>News & Press (/news)</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="media">
+                        <div className="flex items-center gap-2">
+                          <ImageIcon className="w-4 h-4 text-blue-600" />
+                          <span>Media & Gallery (/media)</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="resources">
+                        <div className="flex items-center gap-2">
+                          <FileText className="w-4 h-4 text-emerald-600" />
+                          <span>Resources & Policies (/resources)</span>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground pt-1">
+                    {category === 'news' && 'This post will appear on the News & Press page.'}
+                    {category === 'media' && 'This post will appear on the Media & Gallery page.'}
+                    {category === 'resources' && 'This post will appear on the Resources & Policies page.'}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
             <Card>
               <CardHeader>
                 <CardTitle>Publishing</CardTitle>

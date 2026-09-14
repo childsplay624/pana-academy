@@ -4,7 +4,8 @@ import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { blogService, BlogPost } from '@/services/blogService';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Loader2, Calendar, User } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ChevronLeft, Loader2, Calendar } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import 'react-quill/dist/quill.snow.css';
 
@@ -49,6 +50,9 @@ export default function BlogPostPage() {
 
   if (!post) return null;
 
+  const backRoute = post.category === 'media' ? '/media' : post.category === 'resources' ? '/resources' : '/news';
+  const backLabel = post.category === 'media' ? 'Back to Media Gallery' : post.category === 'resources' ? 'Back to Resources & Policies' : 'Back to News & Press';
+
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans">
       <Helmet>
@@ -60,53 +64,63 @@ export default function BlogPostPage() {
       <Navigation />
       
       <div className="flex-1 pb-20">
-        {/* Minimal Header if no cover, otherwise Cover Image Header */}
+        {/* Header with Cover Image or Minimal Header */}
         {post.cover_image ? (
           <div className="w-full h-[50vh] md:h-[60vh] relative pt-20">
-            <div className="absolute inset-0 bg-black/40 z-10" />
+            <div className="absolute inset-0 bg-black/50 z-10" />
             <img 
               src={post.cover_image} 
               alt={post.title}
               className="absolute inset-0 w-full h-full object-cover"
             />
             <div className="absolute inset-0 z-20 flex items-center justify-center p-4">
-              <div className="max-w-4xl text-center">
-                 <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-white mb-6 drop-shadow-lg leading-tight">
-                    {post.title}
-                 </h1>
-                 <div className="flex items-center justify-center gap-6 text-white/90 text-sm font-medium uppercase tracking-widest drop-shadow-md">
-                    <span className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4" />
-                      {new Date(post.published_at || post.created_at).toLocaleDateString()}
-                    </span>
-                 </div>
+              <div className="max-w-4xl text-center space-y-4">
+                <div className="inline-block">
+                  <Badge className="bg-red-600/90 hover:bg-red-600 text-white uppercase tracking-wider text-xs font-bold px-3 py-1">
+                    {post.category === 'media' ? 'Media & Gallery' : post.category === 'resources' ? 'Resources & Policies' : 'News & Press'}
+                  </Badge>
+                </div>
+                <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-white drop-shadow-lg leading-tight">
+                  {post.title}
+                </h1>
+                <div className="flex items-center justify-center gap-6 text-white/90 text-sm font-medium uppercase tracking-widest drop-shadow-md">
+                  <span className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    {new Date(post.published_at || post.created_at).toLocaleDateString()}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         ) : (
           <div className="pt-32 pb-12 px-4 bg-gray-50 border-b border-gray-100">
-             <div className="max-w-4xl mx-auto text-center">
-                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-pana-navy mb-6 leading-tight">
-                    {post.title}
-                 </h1>
-                 <div className="flex items-center justify-center gap-6 text-gray-500 text-sm font-medium uppercase tracking-widest">
-                    <span className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4" />
-                      {new Date(post.published_at || post.created_at).toLocaleDateString()}
-                    </span>
-                 </div>
+            <div className="max-w-4xl mx-auto text-center space-y-4">
+              <div className="inline-block">
+                <Badge variant="outline" className="bg-white text-red-600 border-red-200 uppercase tracking-wider text-xs font-bold px-3 py-1">
+                  {post.category === 'media' ? 'Media & Gallery' : post.category === 'resources' ? 'Resources & Policies' : 'News & Press'}
+                </Badge>
               </div>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-pana-navy leading-tight">
+                {post.title}
+              </h1>
+              <div className="flex items-center justify-center gap-6 text-gray-500 text-sm font-medium uppercase tracking-widest">
+                <span className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  {new Date(post.published_at || post.created_at).toLocaleDateString()}
+                </span>
+              </div>
+            </div>
           </div>
         )}
 
         <div className="max-w-3xl mx-auto px-4 sm:px-6 mt-12 md:mt-16">
           <Button 
             variant="ghost" 
-            onClick={() => navigate('/blog')}
-            className="mb-8 text-gray-500 hover:text-pana-navy hover:bg-gray-100 -ml-4"
+            onClick={() => navigate(backRoute)}
+            className="mb-8 text-gray-500 hover:text-pana-navy hover:bg-gray-100 -ml-4 font-semibold text-sm"
           >
             <ChevronLeft className="w-4 h-4 mr-2" />
-            Back to articles
+            {backLabel}
           </Button>
           
           <article 

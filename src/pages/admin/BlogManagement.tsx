@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, ExternalLink, Loader2 } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Plus, Edit, Trash2, ExternalLink, Loader2, Newspaper, Image as ImageIcon, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { blogService, BlogPost } from '@/services/blogService';
+import { blogService, BlogPost, BlogCategory } from '@/services/blogService';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,6 +21,7 @@ import {
 
 export default function BlogManagement() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [loading, setLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const { toast } = useToast();
@@ -56,38 +58,80 @@ export default function BlogManagement() {
     }
   };
 
+  const newsCount = posts.filter(p => (p.category || 'news') === 'news').length;
+  const mediaCount = posts.filter(p => p.category === 'media').length;
+  const resourcesCount = posts.filter(p => p.category === 'resources').length;
+
+  const filteredPosts = posts.filter(post => {
+    if (selectedCategory === 'all') return true;
+    return (post.category || 'news') === selectedCategory;
+  });
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Blog & News</h1>
-            <p className="text-muted-foreground">Manage articles, news, and publications.</p>
+            <h1 className="text-3xl font-bold tracking-tight">Blog & Media Management</h1>
+            <p className="text-muted-foreground">Manage articles, trainee media gallery, news releases, and institutional resources.</p>
           </div>
           <Button onClick={() => navigate('/dashboard/blog/new')} className="font-bold shadow-sm">
             <Plus className="w-4 h-4 mr-2" /> New Post
           </Button>
         </div>
 
+        <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
+          <TabsList className="grid grid-cols-2 sm:grid-cols-4 max-w-2xl h-auto p-1 bg-muted/60">
+            <TabsTrigger value="all" className="text-xs sm:text-sm py-2">
+              All ({posts.length})
+            </TabsTrigger>
+            <TabsTrigger value="news" className="text-xs sm:text-sm py-2 flex items-center gap-1.5">
+              <Newspaper className="w-3.5 h-3.5 text-red-600" />
+              News ({newsCount})
+            </TabsTrigger>
+            <TabsTrigger value="media" className="text-xs sm:text-sm py-2 flex items-center gap-1.5">
+              <ImageIcon className="w-3.5 h-3.5 text-blue-600" />
+              Media ({mediaCount})
+            </TabsTrigger>
+            <TabsTrigger value="resources" className="text-xs sm:text-sm py-2 flex items-center gap-1.5">
+              <FileText className="w-3.5 h-3.5 text-emerald-600" />
+              Resources ({resourcesCount})
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+
         <Card>
           <CardHeader>
-            <CardTitle>All Posts</CardTitle>
+            <CardTitle>
+              {selectedCategory === 'all' && 'All Published & Draft Posts'}
+              {selectedCategory === 'news' && 'News & Press Posts'}
+              {selectedCategory === 'media' && 'Media & Gallery Posts'}
+              {selectedCategory === 'resources' && 'Resources & Policy Posts'}
+            </CardTitle>
+            <CardDescription>
+              {selectedCategory === 'all' && 'Showing all posts across News, Media, and Resources.'}
+              {selectedCategory === 'news' && 'Posts appearing on the /news page.'}
+              {selectedCategory === 'media' && 'Photo & documentation posts appearing on the /media page.'}
+              {selectedCategory === 'resources' && 'Documents & compliance publications appearing on the /resources page.'}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
               <div className="flex justify-center p-8">
                 <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
               </div>
-            ) : posts.length === 0 ? (
+            ) : filteredPosts.length === 0 ? (
               <div className="text-center p-12 border-2 border-dashed rounded-xl">
-                <p className="text-muted-foreground mb-4">No posts found. Start writing!</p>
+                <p className="text-muted-foreground mb-4">
+                  {posts.length === 0 ? 'No posts found. Start writing!' : 'No posts found in this category.'}
+                </p>
                 <Button onClick={() => navigate('/dashboard/blog/new')} variant="outline">
-                  Create First Post
+                  Create Post
                 </Button>
               </div>
             ) : (
               <div className="space-y-4">
-                {posts.map(post => (
+                {filteredPosts.map(post => (
                   <div key={post.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-xl bg-card hover:shadow-md transition-shadow gap-4">
                     <div className="flex items-start gap-4 flex-1">
                       {post.cover_image ? (
@@ -101,7 +145,24 @@ export default function BlogManagement() {
                       )}
                       <div>
                         <h3 className="font-bold text-lg line-clamp-1">{post.title}</h3>
-                        <div className="flex items-center gap-2 mt-1">
+                        <div className="flex flex-wrap items-center gap-2 mt-1">
+                          {/* Category Badge */}
+                          {post.category === 'media' && (
+                            <Badge variant="outline" className="text-[10px] font-semibold bg-blue-50 text-blue-700 border-blue-200">
+                              Media & Gallery
+                            </Badge>
+                          )}
+                          {post.category === 'resources' && (
+                            <Badge variant="outline" className="text-[10px] font-semibold bg-emerald-50 text-emerald-700 border-emerald-200">
+                              Resources & Policies
+                            </Badge>
+                          )}
+                          {(post.category === 'news' || !post.category) && (
+                            <Badge variant="outline" className="text-[10px] font-semibold bg-red-50 text-red-700 border-red-200">
+                              News & Press
+                            </Badge>
+                          )}
+
                           <Badge variant={post.published ? 'default' : 'secondary'} className="text-[10px]">
                             {post.published ? 'Published' : 'Draft'}
                           </Badge>
