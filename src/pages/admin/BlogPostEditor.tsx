@@ -216,8 +216,9 @@ export default function BlogPostEditor() {
               </CardContent>
             </Card>
 
-            {/* Media Activity Photo Gallery (Specially emphasized for category === 'media') */}
-            <Card className={category === 'media' ? "border-blue-300 ring-2 ring-blue-500/20 shadow-sm" : ""}>
+            {/* Media Activity Photo Gallery (Only appears when Media & Gallery is selected) */}
+            {category === 'media' && (
+              <Card className="border-blue-300 ring-2 ring-blue-500/20 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
               <CardHeader className="pb-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div className="space-y-1">
@@ -342,6 +343,7 @@ export default function BlogPostEditor() {
                 )}
               </CardContent>
             </Card>
+            )}
           </div>
 
           <div className="space-y-6">
