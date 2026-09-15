@@ -1,5 +1,6 @@
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
+import { SuspendedAccountNotice } from '@/components/SuspendedAccountNotice';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -19,6 +20,12 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
 
   if (!user) {
     return <Navigate to="/auth" replace />;
+  }
+
+  // Check if user has been suspended or deactivated
+  const isSuspended = Boolean(profile?.social_links && typeof profile.social_links === 'object' && (profile.social_links.is_suspended || profile.social_links.is_deleted));
+  if (isSuspended) {
+    return <SuspendedAccountNotice />;
   }
 
   if (allowedRoles && profile && !allowedRoles.includes(profile.role)) {

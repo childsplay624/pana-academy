@@ -16,6 +16,7 @@ interface Profile {
   role: 'student' | 'instructor' | 'admin';
   created_at: string;
   updated_at: string;
+  social_links?: any;
 }
 
 interface AuthContextType {
