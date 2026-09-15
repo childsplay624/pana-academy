@@ -236,33 +236,38 @@ export default function BlogPostEditor() {
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Image Picker / Upload action bar */}
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-4 bg-muted/40 rounded-xl border border-dashed border-gray-300">
-                  <div className="flex-shrink-0">
+                <div className="p-4 bg-muted/30 rounded-xl border border-dashed border-gray-300 space-y-3">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                     <ImagePicker 
+                      compact
                       onSelect={handleAddGalleryImage}
                       category="facilities"
-                      label="Upload / Pick Gallery Photo"
+                      label="Choose or Upload Photo"
+                      buttonVariant="default"
                     />
+                    <div className="flex-1 flex items-center gap-2">
+                      <Input 
+                        placeholder="Or paste direct image URL (https://...)" 
+                        value={customImageUrl} 
+                        onChange={(e) => setCustomImageUrl(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddCustomUrl(); } }}
+                        className="text-sm bg-white"
+                      />
+                      <Button 
+                        type="button" 
+                        variant="secondary" 
+                        size="sm" 
+                        onClick={handleAddCustomUrl}
+                        disabled={!customImageUrl.trim()}
+                        className="px-4 shrink-0 font-medium"
+                      >
+                        <Plus className="w-4 h-4 mr-1" /> Add URL
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex-1 flex items-center gap-2">
-                    <Input 
-                      placeholder="Or paste direct image URL (https://...)" 
-                      value={customImageUrl} 
-                      onChange={(e) => setCustomImageUrl(e.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddCustomUrl(); } }}
-                      className="text-sm bg-white"
-                    />
-                    <Button 
-                      type="button" 
-                      variant="secondary" 
-                      size="sm" 
-                      onClick={handleAddCustomUrl}
-                      disabled={!customImageUrl.trim()}
-                      className="px-4"
-                    >
-                      <Plus className="w-4 h-4 mr-1" /> Add
-                    </Button>
-                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Upload live plant exercises, inspections, workshop photos, or choose existing assets from the institute library.
+                  </p>
                 </div>
 
                 {/* Gallery Grid */}
@@ -409,6 +414,8 @@ export default function BlogPostEditor() {
                     onSelect={setCoverImage}
                     category="other"
                     label="Upload cover image"
+                    title="Cover Image"
+                    description="Recommended: 1200x630px or 16:9 banner"
                   />
                 </div>
                 <div className="space-y-2">
