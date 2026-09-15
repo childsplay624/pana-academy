@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ChevronLeft, Save, Loader2, Newspaper, Image as ImageIcon, FileText } from 'lucide-react';
+import { ChevronLeft, Save, Loader2, Newspaper, Image as ImageIcon, FileText, Images, Trash2, Plus, Star } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ImagePicker } from '@/components/admin/ImagePicker';
 import { blogService, BlogPost, BlogCategory } from '@/services/blogService';
@@ -29,6 +29,8 @@ export default function BlogPostEditor() {
   const [excerpt, setExcerpt] = useState('');
   const [content, setContent] = useState('');
   const [coverImage, setCoverImage] = useState('');
+  const [gallery, setGallery] = useState<string[]>([]);
+  const [customImageUrl, setCustomImageUrl] = useState('');
   const [published, setPublished] = useState(false);
 
   useEffect(() => {
@@ -48,6 +50,7 @@ export default function BlogPostEditor() {
         setExcerpt(post.excerpt || '');
         setContent(post.content || '');
         setCoverImage(post.cover_image || '');
+        setGallery(post.gallery || []);
         setPublished(post.published || false);
       }
     } catch (error) {
@@ -74,6 +77,35 @@ export default function BlogPostEditor() {
     }
   };
 
+  const handleAddGalleryImage = (url: string) => {
+    if (!url) return;
+    if (gallery.includes(url)) {
+      toast({ title: 'Already Added', description: 'This image is already in the gallery.' });
+      return;
+    }
+    setGallery([...gallery, url]);
+    // Auto-set cover image if none is selected yet
+    if (!coverImage) {
+      setCoverImage(url);
+    }
+    toast({ title: 'Photo Added', description: 'Photo added to activity gallery.' });
+  };
+
+  const handleAddCustomUrl = () => {
+    if (!customImageUrl.trim()) return;
+    handleAddGalleryImage(customImageUrl.trim());
+    setCustomImageUrl('');
+  };
+
+  const handleRemoveGalleryImage = (indexToRemove: number) => {
+    setGallery(gallery.filter((_, idx) => idx !== indexToRemove));
+  };
+
+  const handleSetAsCover = (url: string) => {
+    setCoverImage(url);
+    toast({ title: 'Cover Updated', description: 'Selected photo set as the main cover image.' });
+  };
+
   const handleSave = async () => {
     if (!title || !slug) {
       toast({ title: 'Validation Error', description: 'Title and Slug are required.', variant: 'destructive' });
@@ -89,6 +121,7 @@ export default function BlogPostEditor() {
         excerpt,
         content,
         cover_image: coverImage,
+        gallery,
         published
       };
 
@@ -179,6 +212,128 @@ export default function BlogPostEditor() {
                     />
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Media Activity Photo Gallery (Specially emphasized for category === 'media') */}
+            <Card className={category === 'media' ? "border-blue-300 ring-2 ring-blue-500/20 shadow-sm" : ""}>
+              <CardHeader className="pb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="space-y-1">
+                    <CardTitle className="text-lg flex items-center gap-2 text-gray-900">
+                      <Images className="w-5 h-5 text-blue-600" />
+                      Media Activity Photo Gallery
+                    </CardTitle>
+                    <CardDescription>
+                      Upload and manage the photo collection for this event, workshop, site visit, or training activity.
+                    </CardDescription>
+                  </div>
+                  <Badge variant={category === 'media' ? "default" : "secondary"} className={category === 'media' ? "bg-blue-600 self-start sm:self-auto" : "self-start sm:self-auto"}>
+                    {gallery.length} {gallery.length === 1 ? 'Photo' : 'Photos'}
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Image Picker / Upload action bar */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-4 bg-muted/40 rounded-xl border border-dashed border-gray-300">
+                  <div className="flex-shrink-0">
+                    <ImagePicker 
+                      onSelect={handleAddGalleryImage}
+                      category="facilities"
+                      label="Upload / Pick Gallery Photo"
+                    />
+                  </div>
+                  <div className="flex-1 flex items-center gap-2">
+                    <Input 
+                      placeholder="Or paste direct image URL (https://...)" 
+                      value={customImageUrl} 
+                      onChange={(e) => setCustomImageUrl(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddCustomUrl(); } }}
+                      className="text-sm bg-white"
+                    />
+                    <Button 
+                      type="button" 
+                      variant="secondary" 
+                      size="sm" 
+                      onClick={handleAddCustomUrl}
+                      disabled={!customImageUrl.trim()}
+                      className="px-4"
+                    >
+                      <Plus className="w-4 h-4 mr-1" /> Add
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Gallery Grid */}
+                {gallery.length === 0 ? (
+                  <div className="text-center py-10 px-4 border border-dashed rounded-xl bg-gray-50/50">
+                    <div className="w-12 h-12 mx-auto rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-3">
+                      <Images className="w-6 h-6" />
+                    </div>
+                    <p className="text-sm font-medium text-gray-900 mb-1">No Gallery Photos Yet</p>
+                    <p className="text-xs text-muted-foreground max-w-sm mx-auto mb-4">
+                      Add photos of live plant exercises, facility inspections, student assessments, or ceremonies to build an interactive photo album.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    {gallery.map((imgUrl, index) => {
+                      const isCover = coverImage === imgUrl;
+                      return (
+                        <div 
+                          key={index}
+                          className="relative group rounded-xl overflow-hidden border border-gray-200 bg-muted aspect-[4/3] shadow-sm hover:shadow-md transition-all"
+                        >
+                          <img 
+                            src={imgUrl} 
+                            alt={`Gallery item ${index + 1}`}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                          />
+                          
+                          {/* Number & Cover Badge */}
+                          <div className="absolute top-2 left-2 flex items-center gap-1 z-10">
+                            <span className="bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
+                              #{index + 1}
+                            </span>
+                            {isCover && (
+                              <span className="bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-0.5">
+                                <Star className="w-2.5 h-2.5 fill-current" /> Cover
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Hover action overlay */}
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2">
+                            <div className="flex justify-end">
+                              <Button
+                                type="button"
+                                size="icon"
+                                variant="destructive"
+                                className="w-7 h-7 rounded-full shadow"
+                                onClick={() => handleRemoveGalleryImage(index)}
+                                title="Remove photo"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </Button>
+                            </div>
+                            
+                            {!isCover && (
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="secondary"
+                                className="w-full text-xs h-7 bg-white/90 hover:bg-white text-gray-900 font-semibold shadow-sm"
+                                onClick={() => handleSetAsCover(imgUrl)}
+                              >
+                                Set as Cover
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>

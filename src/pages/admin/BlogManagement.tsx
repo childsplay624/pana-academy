@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Edit, Trash2, ExternalLink, Loader2, Newspaper, Image as ImageIcon, FileText } from 'lucide-react';
+import { Plus, Edit, Trash2, ExternalLink, Loader2, Newspaper, Image as ImageIcon, FileText, Images } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { blogService, BlogPost, BlogCategory } from '@/services/blogService';
 import {
@@ -160,6 +160,14 @@ export default function BlogManagement() {
                           {(post.category === 'news' || !post.category) && (
                             <Badge variant="outline" className="text-[10px] font-semibold bg-red-50 text-red-700 border-red-200">
                               News & Press
+                            </Badge>
+                          )}
+
+                          {/* Gallery Photos Badge */}
+                          {post.gallery && post.gallery.length > 0 && (
+                            <Badge variant="secondary" className="text-[10px] bg-blue-50/80 text-blue-800 border-blue-200 flex items-center gap-1 font-medium">
+                              <Images className="w-3 h-3 text-blue-600" />
+                              {post.gallery.length} {post.gallery.length === 1 ? 'photo' : 'photos'}
                             </Badge>
                           )}
 

@@ -15,6 +15,7 @@ export interface BlogPost {
   created_at: string;
   updated_at: string;
   category: BlogCategory;
+  gallery: string[];
 }
 
 export const CATEGORY_LABELS: Record<BlogCategory, string> = {
@@ -35,23 +36,64 @@ export function extractCategory(content?: string, dbCategory?: string): BlogCate
   return 'news';
 }
 
+export function extractGallery(content?: string): string[] {
+  if (!content) return [];
+  const match = content.match(/<!--gallery:(.*?)-->/);
+  if (match && match[1]) {
+    try {
+      const decoded = decodeURIComponent(match[1]);
+      const parsed = JSON.parse(decoded);
+      if (Array.isArray(parsed)) return parsed.filter((item): item is string => typeof item === 'string' && item.length > 0);
+    } catch {
+      try {
+        const parsed = JSON.parse(match[1]);
+        if (Array.isArray(parsed)) return parsed.filter((item): item is string => typeof item === 'string' && item.length > 0);
+      } catch {
+        return [];
+      }
+    }
+  }
+  return [];
+}
+
 export function stripCategoryTag(content?: string): string {
   if (!content) return '';
   return content.replace(/<!--category:(news|media|resources)-->/g, '').trim();
 }
 
+export function stripMetadataTags(content?: string): string {
+  if (!content) return '';
+  return content
+    .replace(/<!--category:(news|media|resources)-->/g, '')
+    .replace(/<!--gallery:.*?-->/g, '')
+    .trim();
+}
+
+export function embedMetadataTags(
+  content?: string,
+  category: BlogCategory = 'news',
+  gallery: string[] = []
+): string {
+  const clean = stripMetadataTags(content);
+  const galleryTag = gallery && gallery.length > 0 
+    ? `<!--gallery:${encodeURIComponent(JSON.stringify(gallery))}-->` 
+    : '';
+  return `<!--category:${category}-->${galleryTag}${clean}`;
+}
+
 export function embedCategoryTag(content?: string, category: BlogCategory = 'news'): string {
-  const clean = stripCategoryTag(content);
-  return `<!--category:${category}-->${clean}`;
+  return embedMetadataTags(content, category, []);
 }
 
 const formatPost = (post: any): BlogPost => {
   if (!post) return post;
   const category = extractCategory(post.content, post.category);
+  const gallery = extractGallery(post.content);
   return {
     ...post,
     category,
-    content: stripCategoryTag(post.content),
+    gallery,
+    content: stripMetadataTags(post.content),
   };
 };
 
@@ -116,10 +158,11 @@ export const blogService = {
     if (!userId) throw new Error('Not authenticated');
 
     const category = postData.category || 'news';
-    const content = embedCategoryTag(postData.content, category);
+    const gallery = postData.gallery || [];
+    const content = embedMetadataTags(postData.content, category, gallery);
 
-    // Omit category column to prevent schema mismatch if column doesn't exist
-    const { category: _c, ...restPostData } = postData;
+    // Omit category and gallery columns to prevent schema mismatch if column doesn't exist
+    const { category: _c, gallery: _g, ...restPostData } = postData;
 
     const { data, error } = await supabase
       .from('blog_posts')
@@ -139,9 +182,13 @@ export const blogService = {
   // Admin: Update a post
   updatePost: async (id: string, postData: Partial<BlogPost>) => {
     const category = postData.category || 'news';
-    const content = postData.content !== undefined ? embedCategoryTag(postData.content, category) : undefined;
+    const gallery = postData.gallery || [];
+    let content = postData.content;
+    if (content !== undefined || postData.gallery !== undefined) {
+      content = embedMetadataTags(content, category, gallery);
+    }
 
-    const { category: _c, ...restPostData } = postData;
+    const { category: _c, gallery: _g, ...restPostData } = postData;
     const updatePayload: any = { ...restPostData };
     if (content !== undefined) {
       updatePayload.content = content;

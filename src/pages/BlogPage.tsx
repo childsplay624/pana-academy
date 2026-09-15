@@ -7,7 +7,7 @@ import { blogService, BlogPost } from '@/services/blogService';
 import { Card, CardContent } from '@/components/ui/card';
 import { 
   Calendar, FileText, ExternalLink, ArrowRight, Download, 
-  BookOpen, ShieldCheck, Image as ImageIcon, Newspaper
+  BookOpen, ShieldCheck, Image as ImageIcon, Newspaper, Images
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -185,13 +185,15 @@ export default function BlogPage() {
                   </div>
                 </div>
 
-                {/* Published Media Documentation from Admin */}
+                {/* Published Media Activities & Galleries from Admin */}
                 {mediaPosts.length > 0 && (
                   <div className="pt-16 mt-16 border-t border-gray-200">
                     <div className="text-center max-w-2xl mx-auto mb-12">
-                      <span className="text-blue-600 font-bold text-xs uppercase tracking-wider block mb-2">Media & Trainee Records</span>
-                      <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Published Media & Field Records</h3>
-                      <p className="text-sm text-gray-600">High-resolution photographic documentation, site albums, and trainee media releases.</p>
+                      <span className="text-blue-600 font-bold text-xs uppercase tracking-wider block mb-2 flex items-center justify-center gap-1.5">
+                        <Images className="w-4 h-4" /> Activity Photo Albums & Gallery
+                      </span>
+                      <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Media Activities & Photo Galleries</h3>
+                      <p className="text-sm text-gray-600">High-resolution photographic documentation, live equipment exercises, graduations, and trainee activity galleries.</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -220,8 +222,15 @@ export default function BlogPage() {
                                 </div>
                               )}
                               <span className="absolute bottom-3 left-3 bg-blue-600 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-md">
-                                Media Gallery
+                                Media Activity
                               </span>
+
+                              {post.gallery && post.gallery.length > 0 && (
+                                <span className="absolute top-3 right-3 bg-black/70 backdrop-blur-md text-white text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-md">
+                                  <Images className="w-3.5 h-3.5 text-blue-400" />
+                                  {post.gallery.length} Photos
+                                </span>
+                              )}
                             </div>
                             <CardContent className="p-6 flex-1 flex flex-col">
                               <div className="flex items-center gap-4 text-xs text-gray-500 mb-3 font-medium uppercase tracking-wider">
@@ -231,17 +240,33 @@ export default function BlogPage() {
                                 </span>
                               </div>
                               
-                              <h4 className="text-lg font-bold mb-3 text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug">
+                              <h4 className="text-lg font-bold mb-2 text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug">
                                 {post.title}
                               </h4>
                               
-                              <p className="text-gray-600 text-sm line-clamp-3 mb-6 flex-1 leading-relaxed">
+                              <p className="text-gray-600 text-sm line-clamp-2 mb-4 leading-relaxed">
                                 {post.excerpt || 'View media gallery and photographic field documentation...'}
                               </p>
+
+                              {/* Gallery Filmstrip Preview */}
+                              {post.gallery && post.gallery.length > 0 && (
+                                <div className="flex items-center gap-1.5 pt-3 mb-4 border-t border-gray-100">
+                                  {post.gallery.slice(0, 4).map((thumb, tIdx) => (
+                                    <div key={tIdx} className="w-9 h-9 rounded-md overflow-hidden bg-gray-100 border border-gray-200 flex-shrink-0">
+                                      <img src={thumb} alt="" className="w-full h-full object-cover" />
+                                    </div>
+                                  ))}
+                                  {post.gallery.length > 4 && (
+                                    <span className="text-[11px] font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
+                                      +{post.gallery.length - 4}
+                                    </span>
+                                  )}
+                                </div>
+                              )}
                               
-                              <div className="mt-auto pt-4 border-t border-gray-100">
+                              <div className="mt-auto pt-3 border-t border-gray-100">
                                 <span className="text-xs font-bold text-blue-600 group-hover:text-blue-700 uppercase tracking-wider inline-flex items-center">
-                                  View Media & Details <span className="ml-1.5 group-hover:translate-x-1 transition-transform">→</span>
+                                  Explore Activity Gallery <span className="ml-1.5 group-hover:translate-x-1 transition-transform">→</span>
                                 </span>
                               </div>
                             </CardContent>
