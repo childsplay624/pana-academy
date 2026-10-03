@@ -54,7 +54,7 @@ const ConsultingServicesPage = () => {
                   <ArrowRight className="w-4 h-4" />
                 </div>
 
-                <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight text-white">
+                <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-[1.25] pb-2 text-white">
                   Consultancy <span className="text-red-600">& Advisory</span>
                 </h1>
 

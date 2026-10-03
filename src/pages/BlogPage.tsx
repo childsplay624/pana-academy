@@ -93,7 +93,7 @@ export default function BlogPage() {
               <span className="inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase bg-red-500/10 text-red-500 border border-red-500/20">
                 {pageMeta.badge}
               </span>
-              <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold leading-tight">
+              <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold leading-[1.25] pb-2">
                 {pageMeta.heroTitle} <span className="text-red-600">{pageMeta.heroHighlight}</span>
               </h1>
               <p className="text-lg sm:text-xl text-zinc-300 font-light max-w-3xl mx-auto leading-relaxed">

@@ -23,6 +23,7 @@ export interface Course {
   duration?: string;   // For backward compatibility
   students_count: number;
   rating?: number;
+  reviews_count?: number;
   price: number;
   is_free?: boolean;   // Whether course is free
   thumbnail_url?: string;

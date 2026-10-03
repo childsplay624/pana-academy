@@ -106,7 +106,7 @@ export default function BlogPostPage() {
                     </Badge>
                   )}
                 </div>
-                <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-white drop-shadow-lg leading-tight">
+                <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-white drop-shadow-lg leading-[1.25] pb-2">
                   {post.title}
                 </h1>
                 <div className="flex items-center justify-center gap-6 text-white/90 text-sm font-medium uppercase tracking-widest drop-shadow-md">
@@ -132,7 +132,7 @@ export default function BlogPostPage() {
                   </Badge>
                 )}
               </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-pana-navy leading-tight">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-pana-navy leading-[1.25] pb-2">
                 {post.title}
               </h1>
               <div className="flex items-center justify-center gap-6 text-gray-500 text-sm font-medium uppercase tracking-widest">

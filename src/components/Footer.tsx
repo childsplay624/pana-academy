@@ -163,10 +163,9 @@ const Footer = () => {
           <div className="text-xs text-gray-500">© {currentYear} PANA Institute. All rights reserved.</div>
           <div className="flex space-x-4">
             {[
-              { name: "fa-brands fa-linkedin-in", href: "https://linkedin.com" },
-              { name: "fa-brands fa-youtube", href: "https://youtube.com" },
-              { name: "fa-brands fa-facebook-f", href: "https://facebook.com" },
-              { name: "fa-brands fa-instagram", href: "https://instagram.com" }
+              { name: "fa-brands fa-linkedin-in", href: "https://www.linkedin.com/company/pana-academy/" },
+              { name: "fa-brands fa-facebook-f", href: "https://www.facebook.com/profile.php?id=61555861660075" },
+              { name: "fa-brands fa-instagram", href: "https://www.instagram.com/pana_academy/" }
             ].map((social, i) => (
               <a key={i} href={social.href} target="_blank" rel="noopener noreferrer" className="w-8 h-8 bg-gray-900 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors text-white text-xs">
                 <FontAwesomeIcon name={social.name} />

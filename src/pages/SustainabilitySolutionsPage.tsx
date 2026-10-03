@@ -47,7 +47,7 @@ const SustainabilitySolutionsPage = () => {
                   <ArrowRight className="w-4 h-4" />
                 </div>
 
-                <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight text-white">
+                <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-[1.25] pb-2 text-white">
                   Sustainability Solutions <span className="text-red-600">& Climate Services</span>
                 </h1>
 

@@ -352,7 +352,7 @@ export const OurInstitutePage: React.FC = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium text-ink leading-[1.08] tracking-tight max-w-4xl mb-7 min-h-[140px] flex items-center"
+              className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium text-ink leading-[1.25] py-2 tracking-tight max-w-4xl mb-7 min-h-[140px]"
             >
               {heroSlides[currentSlide].headline}
             </motion.h1>

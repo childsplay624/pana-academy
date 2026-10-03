@@ -92,7 +92,7 @@ const GlobalEngagementsPage = () => {
                   <span>Global Engagements & Partnerships</span>
                 </div>
 
-                <h1 className="text-4xl md:text-6xl font-bold leading-tight text-white drop-shadow-lg">
+                <h1 className="text-4xl md:text-6xl font-bold leading-[1.25] pb-2 text-white drop-shadow-lg">
                   Global Engagements & <span className="text-red-500">International Alliances</span>
                 </h1>
 

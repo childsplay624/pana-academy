@@ -32,17 +32,20 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
 
   if (isExpired) {
     return (
-      <div className={`space-y-2 ${className}`}>
+      <div className={`space-y-2.5 ${className}`}>
         <Button
           disabled
-          className="w-full bg-zinc-500/80 text-white cursor-not-allowed border-none font-semibold shadow-none"
+          className="w-full bg-zinc-400 text-white cursor-not-allowed border-none font-semibold shadow-none"
           size="lg"
         >
           Enrollment Closed (Date Passed)
         </Button>
-        <p className="text-xs text-red-500 font-medium text-center">
-          This course date has already passed and enrollment is closed.
-        </p>
+        <Button
+          onClick={() => navigate(`/contact?subject=Next+Cohort+Enquiry&course=${encodeURIComponent(courseTitle)}`)}
+          className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 text-xs rounded-xl shadow-sm transition-all"
+        >
+          Request / Enquire for Next Session
+        </Button>
       </div>
     );
   }

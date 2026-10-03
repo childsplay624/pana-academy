@@ -170,11 +170,11 @@ const HeroSection = () => {
             </motion.div>
 
             {/* Main 3D Perspective Headline */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.15] drop-shadow-2xl preserve-3d">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.25] pb-2 drop-shadow-2xl preserve-3d">
               <span className="inline-block transition-transform duration-300 hover:translate-z-20">
                 {current.title}
               </span>{" "}
-              <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-red-600 to-amber-500 drop-shadow-[0_10px_20px_rgba(220,38,38,0.4)]">
+              <span className="inline-block mt-2 pb-3 text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-red-600 to-amber-500 drop-shadow-[0_10px_20px_rgba(220,38,38,0.4)]">
                 {current.highlight}
               </span>
             </h1>

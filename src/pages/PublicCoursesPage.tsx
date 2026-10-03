@@ -39,6 +39,11 @@ const PublicCoursesPage = () => {
   const [activeFilter, setActiveFilter] = useState('All');
   const [categories, setCategories] = useState<Category[]>([]);
 
+  // Sidebar interactive filter states
+  const [selectedMinRating, setSelectedMinRating] = useState<number | null>(null);
+  const [selectedDurations, setSelectedDurations] = useState<string[]>([]);
+  const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const coursesPerPage = 9;
@@ -76,13 +81,13 @@ const PublicCoursesPage = () => {
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
-    filterCourses(query, activeFilter);
+    filterCourses(query, activeFilter, selectedMinRating, selectedDurations, selectedLevels);
   };
 
   // Handle filter click
   const handleFilterClick = (filter: string) => {
     setActiveFilter(filter);
-    filterCourses(searchQuery, filter);
+    filterCourses(searchQuery, filter, selectedMinRating, selectedDurations, selectedLevels);
   };
 
   // Helper function to normalize category strings for comparison
@@ -95,8 +100,14 @@ const PublicCoursesPage = () => {
       .replace(/^_+|_+$/g, '');      // Remove leading/trailing underscores
   };
 
-  // Filter courses based on search query and active filter
-  const filterCourses = (query: string, filter: string) => {
+  // Filter courses based on search query, active filter, ratings, durations, and levels
+  const filterCourses = (
+    query = searchQuery,
+    filter = activeFilter,
+    minRating = selectedMinRating,
+    durations = selectedDurations,
+    levels = selectedLevels
+  ) => {
     let results = [...allCourses];
 
     // Apply search query filter
@@ -126,7 +137,54 @@ const PublicCoursesPage = () => {
       });
     }
 
+    // Apply rating filter
+    if (minRating !== null) {
+      results = results.filter(course => (course.rating || 0) >= minRating);
+    }
+
+    // Apply duration filter
+    if (durations.length > 0) {
+      results = results.filter(course => {
+        const hrs = course.duration_hours || 0;
+        return durations.some(d => {
+          if (d === '0-3 Hours') return hrs <= 3;
+          if (d === '3-6 Hours') return hrs > 3 && hrs <= 6;
+          if (d === '6-20 Hours') return hrs > 6 && hrs <= 20;
+          if (d === '20+ Hours') return hrs > 20;
+          return false;
+        });
+      });
+    }
+
+    // Apply level filter
+    if (levels.length > 0 && !levels.includes('All Levels')) {
+      results = results.filter(course =>
+        course.level && levels.some(l => l.toLowerCase() === course.level?.toLowerCase())
+      );
+    }
+
     setFilteredCourses(results);
+  };
+
+  const handleRatingChange = (min: number | null) => {
+    setSelectedMinRating(min);
+    filterCourses(searchQuery, activeFilter, min, selectedDurations, selectedLevels);
+  };
+
+  const handleDurationToggle = (label: string) => {
+    const updated = selectedDurations.includes(label)
+      ? selectedDurations.filter(d => d !== label)
+      : [...selectedDurations, label];
+    setSelectedDurations(updated);
+    filterCourses(searchQuery, activeFilter, selectedMinRating, updated, selectedLevels);
+  };
+
+  const handleLevelToggle = (lvl: string) => {
+    const updated = selectedLevels.includes(lvl)
+      ? selectedLevels.filter(l => l !== lvl)
+      : [...selectedLevels, lvl];
+    setSelectedLevels(updated);
+    filterCourses(searchQuery, activeFilter, selectedMinRating, selectedDurations, updated);
   };
 
   // Calculate pagination
@@ -197,7 +255,7 @@ const PublicCoursesPage = () => {
         <div className="relative z-20 flex flex-col justify-center min-h-[500px] px-4 sm:px-6 lg:px-8 py-16">
           <div className="max-w-7xl mx-auto text-center">
             <span className="text-red-500 font-bold text-xs uppercase tracking-wider block mb-3">Competency · Programmes</span>
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white">
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white leading-[1.25] pb-2">
               Programmes & <span className="text-red-600">Qualifications</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-200 max-w-4xl mx-auto leading-relaxed">
@@ -209,15 +267,7 @@ const PublicCoursesPage = () => {
 
 
 
-      {/* Udemy-Style Guarantee Banner */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        <div className="bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-3 text-sm text-gray-800 shadow-sm">
-          <div className="w-8 h-8 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center font-bold shrink-0 border border-purple-200">
-            ℹ
-          </div>
-          <span className="font-semibold">Not sure? All courses have a 30-day money-back guarantee</span>
-        </div>
-      </div>
+
 
       {/* Main Filter & Course Listing Area */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -261,53 +311,112 @@ const PublicCoursesPage = () => {
           <div className="lg:col-span-1 space-y-6">
             {/* Ratings Filter */}
             <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-4">
-              <h3 className="font-bold text-gray-900 text-sm tracking-tight border-b pb-2">Ratings</h3>
+              <div className="flex items-center justify-between border-b pb-2">
+                <h3 className="font-bold text-gray-900 text-sm tracking-tight">Ratings</h3>
+                {selectedMinRating !== null && (
+                  <button onClick={() => handleRatingChange(null)} className="text-[11px] text-red-600 font-semibold hover:underline">
+                    Clear
+                  </button>
+                )}
+              </div>
               <div className="space-y-2.5 text-xs font-semibold text-gray-700">
                 {[
-                  { stars: '4.5 & up', count: '(10,000)' },
-                  { stars: '4.0 & up', count: '(10,000)' },
-                  { stars: '3.5 & up', count: '(10,000)' },
-                  { stars: '3.0 & up', count: '(10,000)' },
-                ].map((item, idx) => (
-                  <label key={idx} className="flex items-center gap-2.5 cursor-pointer hover:text-purple-700 transition-colors">
-                    <input type="radio" name="rating" className="text-purple-600 focus:ring-purple-500" defaultChecked={idx === 0} />
-                    <span className="text-amber-500 font-bold text-sm">★★★★☆</span>
-                    <span>{item.stars}</span>
-                    <span className="text-gray-400 font-normal ml-auto">{item.count}</span>
-                  </label>
-                ))}
+                  { stars: '4.5 & up', min: 4.5 },
+                  { stars: '4.0 & up', min: 4.0 },
+                  { stars: '3.5 & up', min: 3.5 },
+                  { stars: '3.0 & up', min: 3.0 },
+                ].map((item, idx) => {
+                  const cnt = allCourses.filter(c => (c.rating || 0) >= item.min).length;
+                  const isChecked = selectedMinRating === item.min;
+                  return (
+                    <label key={idx} className="flex items-center gap-2.5 cursor-pointer hover:text-purple-700 transition-colors">
+                      <input
+                        type="radio"
+                        name="rating"
+                        className="text-purple-600 focus:ring-purple-500"
+                        checked={isChecked}
+                        onChange={() => handleRatingChange(isChecked ? null : item.min)}
+                      />
+                      <span className="text-amber-500 font-bold text-sm">★★★★☆</span>
+                      <span>{item.stars}</span>
+                      <span className="text-gray-400 font-normal ml-auto">({cnt})</span>
+                    </label>
+                  );
+                })}
               </div>
             </div>
 
             {/* Video Duration Filter */}
             <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-4">
-              <h3 className="font-bold text-gray-900 text-sm tracking-tight border-b pb-2">Video Duration</h3>
+              <div className="flex items-center justify-between border-b pb-2">
+                <h3 className="font-bold text-gray-900 text-sm tracking-tight">Duration</h3>
+                {selectedDurations.length > 0 && (
+                  <button onClick={() => { setSelectedDurations([]); filterCourses(searchQuery, activeFilter, selectedMinRating, [], selectedLevels); }} className="text-[11px] text-red-600 font-semibold hover:underline">
+                    Clear
+                  </button>
+                )}
+              </div>
               <div className="space-y-2.5 text-xs font-semibold text-gray-700">
                 {[
-                  { label: '0-1 Hour', count: '(3,983)' },
-                  { label: '1-3 Hours', count: '(10,000)' },
-                  { label: '3-6 Hours', count: '(9,959)' },
-                  { label: '6-17 Hours', count: '(10,000)' },
-                ].map((item, idx) => (
-                  <label key={idx} className="flex items-center gap-2.5 cursor-pointer hover:text-purple-700 transition-colors">
-                    <input type="checkbox" className="rounded text-purple-600 focus:ring-purple-500" />
-                    <span>{item.label}</span>
-                    <span className="text-gray-400 font-normal ml-auto">{item.count}</span>
-                  </label>
-                ))}
+                  { label: '0-3 Hours', filterFn: (c: Course) => (c.duration_hours || 0) <= 3 },
+                  { label: '3-6 Hours', filterFn: (c: Course) => (c.duration_hours || 0) > 3 && (c.duration_hours || 0) <= 6 },
+                  { label: '6-20 Hours', filterFn: (c: Course) => (c.duration_hours || 0) > 6 && (c.duration_hours || 0) <= 20 },
+                  { label: '20+ Hours', filterFn: (c: Course) => (c.duration_hours || 0) > 20 },
+                ].map((item, idx) => {
+                  const cnt = allCourses.filter(item.filterFn).length;
+                  const isChecked = selectedDurations.includes(item.label);
+                  return (
+                    <label key={idx} className="flex items-center gap-2.5 cursor-pointer hover:text-purple-700 transition-colors">
+                      <input
+                        type="checkbox"
+                        className="rounded text-purple-600 focus:ring-purple-500"
+                        checked={isChecked}
+                        onChange={() => handleDurationToggle(item.label)}
+                      />
+                      <span>{item.label}</span>
+                      <span className="text-gray-400 font-normal ml-auto">({cnt})</span>
+                    </label>
+                  );
+                })}
               </div>
             </div>
 
             {/* Level Filter */}
             <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-3">
-              <h3 className="font-bold text-gray-900 text-sm tracking-tight border-b pb-2">Level</h3>
+              <div className="flex items-center justify-between border-b pb-2">
+                <h3 className="font-bold text-gray-900 text-sm tracking-tight">Level</h3>
+                {selectedLevels.length > 0 && (
+                  <button onClick={() => { setSelectedLevels([]); filterCourses(searchQuery, activeFilter, selectedMinRating, selectedDurations, []); }} className="text-[11px] text-red-600 font-semibold hover:underline">
+                    Clear
+                  </button>
+                )}
+              </div>
               <div className="space-y-2 text-xs font-semibold text-gray-700">
-                {['All Levels', 'Beginner', 'Intermediate', 'Expert'].map((lvl, idx) => (
-                  <label key={idx} className="flex items-center gap-2.5 cursor-pointer hover:text-purple-700">
-                    <input type="checkbox" className="rounded text-purple-600 focus:ring-purple-500" />
-                    <span>{lvl}</span>
-                  </label>
-                ))}
+                {['All Levels', 'Beginner', 'Intermediate', 'Expert'].map((lvl, idx) => {
+                  const cnt = lvl === 'All Levels' 
+                    ? allCourses.length 
+                    : allCourses.filter(c => c.level?.toLowerCase() === lvl.toLowerCase()).length;
+                  const isChecked = lvl === 'All Levels' ? selectedLevels.length === 0 : selectedLevels.includes(lvl);
+                  return (
+                    <label key={idx} className="flex items-center gap-2.5 cursor-pointer hover:text-purple-700">
+                      <input
+                        type="checkbox"
+                        className="rounded text-purple-600 focus:ring-purple-500"
+                        checked={isChecked}
+                        onChange={() => {
+                          if (lvl === 'All Levels') {
+                            setSelectedLevels([]);
+                            filterCourses(searchQuery, activeFilter, selectedMinRating, selectedDurations, []);
+                          } else {
+                            handleLevelToggle(lvl);
+                          }
+                        }}
+                      />
+                      <span>{lvl}</span>
+                      <span className="text-gray-400 font-normal ml-auto">({cnt})</span>
+                    </label>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -361,24 +470,48 @@ const PublicCoursesPage = () => {
                             {course.description}
                           </p>
 
-                          <p className="text-xs text-gray-500 font-medium mb-1">
-                            {course.instructor || 'Dr. Angela Yu, Lead Instructor & Industry Veteran'}
-                          </p>
+                          {course.instructor && (
+                            <p className="text-xs text-gray-500 font-medium mb-1">
+                              {course.instructor}
+                            </p>
+                          )}
 
                           {/* Star Rating & Student Metadata */}
-                          <div className="flex items-center gap-2 text-xs mb-2">
-                            <span className="font-bold text-amber-700 text-sm">4.7</span>
-                            <div className="flex text-amber-500 text-sm">★★★★★</div>
-                            <span className="text-gray-500 font-medium">(474,283)</span>
-                          </div>
+                          {course.rating && course.rating > 0 ? (
+                            <div className="flex items-center gap-2 text-xs mb-2">
+                              <span className="font-bold text-amber-700 text-sm">{course.rating.toFixed(1)}</span>
+                              <div className="flex text-amber-500 text-sm">★★★★★</div>
+                              {course.reviews_count ? (
+                                <span className="text-gray-500 font-medium">({course.reviews_count.toLocaleString()})</span>
+                              ) : null}
+                            </div>
+                          ) : null}
 
                           {/* Lecture & Hours Metadata */}
                           <div className="text-xs text-gray-500 font-semibold space-x-2">
-                            <span>{course.duration_hours || '40'} total hours</span>
-                            <span>•</span>
-                            <span>{course.level || 'All Levels'}</span>
-                            <span>•</span>
-                            <span>Experiential Lab Training</span>
+                            {course.duration_hours ? (
+                              <span>{course.duration_hours} total hours</span>
+                            ) : course.duration ? (
+                              <span>{course.duration}</span>
+                            ) : null}
+                            {course.level && (
+                              <>
+                                <span>•</span>
+                                <span>{course.level}</span>
+                              </>
+                            )}
+                            {course.course_type && (
+                              <>
+                                <span>•</span>
+                                <span>
+                                  {course.course_type === 'online'
+                                    ? 'Online Training'
+                                    : course.course_type === 'onsite'
+                                    ? 'On-Site Practical'
+                                    : 'Hybrid Delivery'}
+                                </span>
+                              </>
+                            )}
                           </div>
                         </div>
 

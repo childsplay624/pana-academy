@@ -82,7 +82,7 @@ const TestimonialsPage = () => {
               <span>Real Stories, Real Results</span>
             </div>
 
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-[1.25] pb-2">
               Voices of <span className="text-red-600">Excellence</span>
             </h1>
 

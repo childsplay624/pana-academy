@@ -145,11 +145,11 @@ export default function CourseDetails() {
     );
   }
 
-  const formattedStudents = course.students_count?.toLocaleString() || '124';
-  const instructorName = course.instructor_name || 'Dr. Ryan Ahmed / PANA Lead Instructor';
-  const duration = course.duration || (course.duration_hours ? `${course.duration_hours} hours` : '12 hours');
+  const formattedStudents = course.students_count && course.students_count > 0 ? course.students_count.toLocaleString() : null;
+  const instructorName = course.instructor_name || course.instructor || 'PANA Institute Faculty';
+  const duration = course.duration || (course.duration_hours ? `${course.duration_hours} hours` : '');
   const originalPrice = Math.round(course.price * 1.45);
-  const ratingValue = course.rating && course.rating > 0 ? course.rating : 4.8;
+  const ratingValue = course.rating && course.rating > 0 ? course.rating : null;
   const categoryName = course.category_name || (course.category as string)?.replace(/_/g, ' ') || 'Technical Training';
 
   return (
@@ -186,11 +186,6 @@ export default function CourseDetails() {
 
                 {/* Badges & Rating Row */}
                 <div className="flex flex-wrap items-center gap-3 pt-2 text-sm">
-                  {/* Bestseller Badge */}
-                  <span className="bg-teal-400/20 text-teal-300 border border-teal-400/40 text-xs font-extrabold px-3 py-1 rounded-md uppercase tracking-wider">
-                    Bestseller
-                  </span>
-
                   {/* Course Type Badge */}
                   {course.course_type && (
                     <span className="bg-white/10 border border-white/20 text-white text-xs font-semibold px-3 py-1 rounded-md">
@@ -199,21 +194,27 @@ export default function CourseDetails() {
                   )}
 
                   {/* Rating Stars */}
-                  <div className="flex items-center gap-1.5 text-amber-400 font-bold">
-                    <span>{ratingValue.toFixed(1)}</span>
-                    <div className="flex text-amber-400">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className={`w-4 h-4 ${i < Math.floor(ratingValue) ? 'fill-amber-400 text-amber-400' : 'text-zinc-600'}`} />
-                      ))}
+                  {ratingValue && (
+                    <div className="flex items-center gap-1.5 text-amber-400 font-bold">
+                      <span>{ratingValue.toFixed(1)}</span>
+                      <div className="flex text-amber-400">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className={`w-4 h-4 ${i < Math.floor(ratingValue) ? 'fill-amber-400 text-amber-400' : 'text-zinc-600'}`} />
+                        ))}
+                      </div>
+                      {course.reviews_count && course.reviews_count > 0 && (
+                        <span className="text-xs text-red-400 underline font-semibold">({course.reviews_count.toLocaleString()} ratings)</span>
+                      )}
                     </div>
-                    <span className="text-xs text-red-400 underline font-semibold">(1,248 ratings)</span>
-                  </div>
+                  )}
 
                   {/* Student Count */}
-                  <div className="flex items-center gap-1 text-zinc-300 text-xs font-medium">
-                    <Users className="w-3.5 h-3.5 text-gray-400" />
-                    <span>{formattedStudents} learners</span>
-                  </div>
+                  {formattedStudents && (
+                    <div className="flex items-center gap-1 text-zinc-300 text-xs font-medium">
+                      <Users className="w-3.5 h-3.5 text-gray-400" />
+                      <span>{formattedStudents} learners</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Creator & Meta Line */}
@@ -240,31 +241,35 @@ export default function CourseDetails() {
                 </div>
 
                 {/* Header Info Banner / Floating Micro Card */}
-                <div className="mt-6 bg-white/5 border border-white/10 backdrop-blur-md rounded-xl p-4 grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-xl">
+                <div className="mt-6 bg-white/5 border border-white/10 backdrop-blur-md rounded-xl p-4 flex flex-wrap items-center gap-6 max-w-xl">
+                  {ratingValue && (
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-lg bg-red-600/20 flex items-center justify-center text-red-400 font-bold text-sm">
+                        {ratingValue.toFixed(1)}
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-white">Top Rated</div>
+                        <div className="text-[11px] text-zinc-400">Verified Ratings</div>
+                      </div>
+                    </div>
+                  )}
+                  {formattedStudents && (
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-lg bg-blue-600/20 flex items-center justify-center text-blue-400 font-bold text-sm">
+                        <Users className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-white">{formattedStudents}</div>
+                        <div className="text-[11px] text-zinc-400">Enrolled Learners</div>
+                      </div>
+                    </div>
+                  )}
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-red-600/20 flex items-center justify-center text-red-400 font-bold text-sm">
-                      4.8
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-white">Top Rated</div>
-                      <div className="text-[11px] text-zinc-400">1,200+ Reviews</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-blue-600/20 flex items-center justify-center text-blue-400 font-bold text-sm">
-                      <Users className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-white">{formattedStudents}</div>
-                      <div className="text-[11px] text-zinc-400">Enrolled Learners</div>
-                    </div>
-                  </div>
-                  <div className="hidden sm:flex items-center gap-3">
                     <div className="w-9 h-9 rounded-lg bg-emerald-600/20 flex items-center justify-center text-emerald-400 font-bold text-sm">
                       <ShieldCheck className="w-4 h-4" />
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-white">NCDMB Aligned</div>
+                      <div className="text-xs font-bold text-white">ISO Aligned</div>
                       <div className="text-[11px] text-zinc-400">Verified Quality</div>
                     </div>
                   </div>
@@ -543,9 +548,18 @@ export default function CourseDetails() {
                         </Button>
                       )
                     ) : isCourseDatePassed(course) ? (
-                      <Button disabled className="w-full bg-gray-400 text-white font-bold py-6 rounded-xl cursor-not-allowed">
-                        Enrollment Closed
-                      </Button>
+                      <div className="space-y-3">
+                        <Button disabled className="w-full bg-zinc-400 text-white font-bold py-4 rounded-xl cursor-not-allowed">
+                          Enrollment Closed (Past Date)
+                        </Button>
+                        <Button
+                          onClick={() => navigate(`/contact?subject=Next+Cohort+Enquiry&course=${encodeURIComponent(course.title)}`)}
+                          className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
+                        >
+                          <Calendar className="w-4 h-4" />
+                          Enquire for Next Session
+                        </Button>
+                      </div>
                     ) : (
                       <Button
                         onClick={() => navigate('/auth', { state: { from: window.location.pathname } })}
