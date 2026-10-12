@@ -1,4 +1,4 @@
-# PANA Academy — Technical Learning & Competency Management System
+# PANA Institute — Technical Learning & Competency Management System
 
 [![React](https://img.shields.io/badge/React-18.x-61DAFB?logo=react&logoColor=white)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -7,7 +7,7 @@
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-An enterprise-grade Educational Management System (EMS) and Learning Management System (LMS) purpose-built for **PANA Institute / PE Energy Academy**. The platform delivers practical, ISO-aligned industrial training across Sub-Saharan Africa, covering turbomachinery, instrumentation, power systems, valves, flow measurement, and asset integrity.
+An enterprise-grade Educational Management System (EMS) and Learning Management System (LMS) purpose-built for **PANA Institute (PE Energy)**. The platform delivers practical, ISO-aligned industrial training across Sub-Saharan Africa, covering turbomachinery, instrumentation, power systems, valves, flow measurement, and asset integrity.
 
 ---
 
@@ -184,4 +184,4 @@ npm run preview
 ## 📄 License
 
 This software is licensed under the [MIT License](LICENSE).
-PANA Academy © 2026. All rights reserved.
+PANA Institute © 2026. All rights reserved.
