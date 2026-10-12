@@ -395,50 +395,7 @@ const PublicCoursesPage = () => {
           </div>
         </div>
 
-        {/* Course Areas (Sub-categories) Horizontal Scrollable Filter Bar */}
-        {availableSubcategories.length > 0 && (
-          <div className="mb-8 bg-white p-3.5 rounded-xl border border-gray-200/80 shadow-xs">
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-              <span className="text-xs font-bold text-gray-500 uppercase tracking-wider shrink-0 mr-1 flex items-center gap-1.5 pl-1">
-                <Layers className="w-4 h-4 text-red-600" />
-                Course Areas:
-              </span>
-              <button
-                onClick={() => handleSubcategoryClick(null)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 transition-all ${
-                  selectedSubcategory === null
-                    ? 'bg-red-600 text-white shadow-xs'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200/80'
-                }`}
-              >
-                All Areas
-              </button>
-              {availableSubcategories.map((sub) => {
-                const isSelected = selectedSubcategory === sub.name;
-                return (
-                  <button
-                    key={sub.name}
-                    onClick={() => handleSubcategoryClick(isSelected ? null : sub.name)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 transition-all flex items-center gap-1.5 ${
-                      isSelected
-                        ? 'bg-red-600 text-white shadow-xs'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200/80'
-                    }`}
-                  >
-                    <span>{sub.name}</span>
-                    {sub.count > 0 && (
-                      <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                        isSelected ? 'bg-red-700 text-white' : 'bg-gray-200 text-gray-600'
-                      }`}>
-                        {sub.count}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
+
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Left Sidebar Filter Section */}
@@ -820,22 +777,7 @@ const PublicCoursesPage = () => {
         </div>
       </div>
 
-      {/* CTA Section */}
-      <div className="bg-gray-100 text-pana-navy py-16">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold mb-6">Ready to advance your career?</h2>
-          <p className="text-xl text-gray-600 mb-8">
-            Join thousands of professionals who have already transformed their careers with our courses
-          </p>
-          <Button
-            size="lg"
-            className="bg-pana-navy hover:bg-pana-navy/90 text-white px-8 py-6 text-lg"
-          >
-            Browse All Courses
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
-        </div>
-      </div>
+
       <Footer />
     </div>
   );
