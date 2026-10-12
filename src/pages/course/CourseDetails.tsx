@@ -421,104 +421,6 @@ export default function CourseDetails() {
                 </div>
               )}
 
-              {/* INDUSTRIAL STANDARDS & RECOGNIZED REFERENCES */}
-              {course.standards && course.standards.length > 0 && (
-                <div className="bg-gradient-to-br from-slate-900 via-slate-850 to-slate-800 text-white rounded-2xl p-6 sm:p-8 shadow-md space-y-4 border border-slate-700/60">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-red-600/30 border border-red-500/40 text-red-400 flex items-center justify-center font-bold">
-                      <ShieldCheck className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl sm:text-2xl font-bold text-white">Standards & Recognized References</h2>
-                      <p className="text-xs text-slate-300">Course syllabus strictly aligned with recognized international standards</p>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-2.5 pt-2">
-                    {course.standards.map((std, idx) => (
-                      <span
-                        key={idx}
-                        className="inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/15 border border-white/20 text-white font-mono text-xs font-bold px-3 py-1.5 rounded-lg transition-colors shadow-sm"
-                      >
-                        <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                        {std}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* OEM TECHNOLOGY REFERENCES & OEM PARTNERS */}
-              {course.oem_partners && course.oem_partners.length > 0 && (
-                <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center font-bold">
-                      <Cpu className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Technology & OEM References</h2>
-                      <p className="text-xs text-gray-500">Curriculum mapped to PE Energy OEM partner equipment & protocols</p>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-2 pt-2">
-                    {course.oem_partners.map((partner, idx) => (
-                      <span
-                        key={idx}
-                        className="bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-2 shadow-2xs"
-                      >
-                        <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span>
-                        {partner}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* PRACTICAL WORK & EXERCISES */}
-              {course.practical_work && course.practical_work.length > 0 && (
-                <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center font-bold">
-                      <FileText className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Practical Work & Real Datasets</h2>
-                      <p className="text-xs text-gray-500">Hands-on diagnostic drills and laboratory exercises completed by participants</p>
-                    </div>
-                  </div>
-                  <div className="space-y-2.5 pt-2">
-                    {course.practical_work.map((pw, idx) => (
-                      <div key={idx} className="flex items-start gap-3 p-3.5 rounded-xl bg-emerald-50/40 border border-emerald-100/60">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
-                        <span className="text-gray-800 text-xs sm:text-sm font-medium">{pw}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* REQUIREMENTS & PREREQUISITES */}
-              {course.requirements && course.requirements.length > 0 && (
-                <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 border border-amber-200/60 flex items-center justify-center font-bold">
-                      <GraduationCap className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Requirements & Prerequisites</h2>
-                      <p className="text-xs text-gray-500">Recommended background and prior technical competencies</p>
-                    </div>
-                  </div>
-                  <div className="space-y-2.5 pt-2">
-                    {course.requirements.map((req, idx) => (
-                      <div key={idx} className="flex items-start gap-3 p-3.5 rounded-xl bg-amber-50/40 border border-amber-100/60">
-                        <CheckCircle2 className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
-                        <span className="text-gray-800 text-xs sm:text-sm font-medium">{req}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               {/* COURSE CONTENT / SYLLABUS SECTION */}
               <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-5">
@@ -709,6 +611,104 @@ export default function CourseDetails() {
                   </div>
                 )}
               </div>
+
+              {/* INDUSTRIAL STANDARDS & RECOGNIZED REFERENCES */}
+              {course.standards && course.standards.length > 0 && (
+                <div className="bg-gradient-to-br from-slate-900 via-slate-850 to-slate-800 text-white rounded-2xl p-6 sm:p-8 shadow-md space-y-4 border border-slate-700/60">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-red-600/30 border border-red-500/40 text-red-400 flex items-center justify-center font-bold">
+                      <ShieldCheck className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl sm:text-2xl font-bold text-white">Standards & Recognized References</h2>
+                      <p className="text-xs text-slate-300">Course syllabus strictly aligned with recognized international standards</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2.5 pt-2">
+                    {course.standards.map((std, idx) => (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/15 border border-white/20 text-white font-mono text-xs font-bold px-3 py-1.5 rounded-lg transition-colors shadow-sm"
+                      >
+                        <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                        {std}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* OEM TECHNOLOGY REFERENCES & OEM PARTNERS */}
+              {course.oem_partners && course.oem_partners.length > 0 && (
+                <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center font-bold">
+                      <Cpu className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Technology & OEM References</h2>
+                      <p className="text-xs text-gray-500">Curriculum mapped to PE Energy OEM partner equipment & protocols</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    {course.oem_partners.map((partner, idx) => (
+                      <span
+                        key={idx}
+                        className="bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-2 shadow-2xs"
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span>
+                        {partner}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* PRACTICAL WORK & EXERCISES */}
+              {course.practical_work && course.practical_work.length > 0 && (
+                <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center font-bold">
+                      <FileText className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Practical Work & Real Datasets</h2>
+                      <p className="text-xs text-gray-500">Hands-on diagnostic drills and laboratory exercises completed by participants</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2.5 pt-2">
+                    {course.practical_work.map((pw, idx) => (
+                      <div key={idx} className="flex items-start gap-3 p-3.5 rounded-xl bg-emerald-50/40 border border-emerald-100/60">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-800 text-xs sm:text-sm font-medium">{pw}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* REQUIREMENTS & PREREQUISITES */}
+              {course.requirements && course.requirements.length > 0 && (
+                <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 border border-amber-200/60 flex items-center justify-center font-bold">
+                      <GraduationCap className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Requirements & Prerequisites</h2>
+                      <p className="text-xs text-gray-500">Recommended background and prior technical competencies</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2.5 pt-2">
+                    {course.requirements.map((req, idx) => (
+                      <div key={idx} className="flex items-start gap-3 p-3.5 rounded-xl bg-amber-50/40 border border-amber-100/60">
+                        <CheckCircle2 className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-800 text-xs sm:text-sm font-medium">{req}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* COURSE SCHEDULE SECTION (Onsite / Hybrid) */}
               {(course.course_type === 'onsite' || course.course_type === 'hybrid') && course.start_date && (
