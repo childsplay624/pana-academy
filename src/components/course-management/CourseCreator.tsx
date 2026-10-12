@@ -28,6 +28,7 @@ interface Course {
   zoom_meeting_id?: string;
   scheduled_date?: string;
   is_free: boolean;
+  is_price_tbd?: boolean;
   venue_name?: string;
   venue_address?: string;
   venue_city?: string;
@@ -67,6 +68,7 @@ export default function CourseCreator() {
     start_date: '',
     end_date: '',
     is_free: false,
+    is_price_tbd: false,
     venue_name: '',
     venue_address: '',
     venue_city: '',
@@ -127,10 +129,12 @@ export default function CourseCreator() {
       return;
     }
 
-    // If course is free, set price to 0
+    // If course is free or fee TBD, set price to 0
     const courseData = {
       ...course,
-      price: course.is_free ? 0 : course.price,
+      price: (course.is_free || course.is_price_tbd) ? 0 : course.price,
+      is_free: Boolean(course.is_free),
+      is_price_tbd: Boolean(course.is_price_tbd),
       // Convert empty string to null for database
       start_date: course.start_date || null,
       end_date: course.end_date || null,
@@ -444,28 +448,52 @@ export default function CourseCreator() {
                         </div>
                       )}
 
-                      <div className="flex items-center space-x-2 pt-6">
-                        <input
-                          type="checkbox"
-                          id="is_free"
-                          checked={course.is_free}
-                          onChange={(e) => {
-                            const isFree = e.target.checked;
-                            setCourse({
-                              ...course,
-                              is_free: isFree,
-                              price: isFree ? 0 : course.price
-                            });
-                          }}
-                          className="h-4 w-4 rounded border-gray-300 text-pana-navy focus:ring-pana-navy"
-                        />
-                        <label htmlFor="is_free" className="text-sm font-medium text-foreground">
-                          This is a free course
-                        </label>
+                      <div className="space-y-3 pt-4">
+                        <label className="text-sm font-medium text-foreground">Pricing Model</label>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          <button
+                            type="button"
+                            onClick={() => setCourse({ ...course, is_free: false, is_price_tbd: false })}
+                            className={`p-3 text-left rounded-xl border text-sm font-medium transition-all ${
+                              !course.is_free && !course.is_price_tbd
+                                ? 'border-primary bg-primary/5 text-primary ring-1 ring-primary'
+                                : 'border-gray-200 hover:border-gray-300'
+                            }`}
+                          >
+                            <div className="font-semibold">Paid Course</div>
+                            <div className="text-xs text-muted-foreground mt-0.5">Fixed price in ₦ with online payment</div>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setCourse({ ...course, is_free: true, is_price_tbd: false, price: 0 })}
+                            className={`p-3 text-left rounded-xl border text-sm font-medium transition-all ${
+                              course.is_free
+                                ? 'border-primary bg-primary/5 text-primary ring-1 ring-primary'
+                                : 'border-gray-200 hover:border-gray-300'
+                            }`}
+                          >
+                            <div className="font-semibold">Free Course</div>
+                            <div className="text-xs text-muted-foreground mt-0.5">Open enrollment at ₦0</div>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setCourse({ ...course, is_free: false, is_price_tbd: true, price: 0 })}
+                            className={`p-3 text-left rounded-xl border text-sm font-medium transition-all ${
+                              course.is_price_tbd
+                                ? 'border-primary bg-primary/5 text-primary ring-1 ring-primary'
+                                : 'border-gray-200 hover:border-gray-300'
+                            }`}
+                          >
+                            <div className="font-semibold">Fee TBD</div>
+                            <div className="text-xs text-muted-foreground mt-0.5">Upon request / Proposal inquiry CTA</div>
+                          </button>
+                        </div>
                       </div>
                     </div>
 
-                    {!course.is_free && (
+                    {!course.is_free && !course.is_price_tbd && (
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="space-y-2">
                           <label className="text-sm font-medium">Price (₦)</label>

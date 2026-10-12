@@ -19,7 +19,8 @@ import {
   fetchUpcomingCourses,
   Course as CourseType,
   formatCourseDate,
-  isStartingSoon
+  isStartingSoon,
+  isCoursePriceTbd
 } from '@/services/courseService';
 import { enrollInCourse } from '@/services/enrollmentService';
 import Card3D from '@/components/ui/Card3D';
@@ -77,9 +78,15 @@ const CourseCard = ({ course, onEnroll, isEnrolling }: CourseCardProps) => {
               {/* Price Tag Overlay */}
               {!hidePrices && (
                 <div className="absolute bottom-3 left-3 translate-z-10">
-                  <span className="inline-block px-3 py-1 bg-white/95 backdrop-blur-md text-zinc-950 text-sm font-black rounded-lg shadow-lg">
-                    {course.price ? `₦${course.price.toLocaleString()}` : 'Free'}
-                  </span>
+                  {isCoursePriceTbd(course) ? (
+                    <span className="inline-block px-3 py-1 bg-amber-600/95 backdrop-blur-md text-white text-xs font-black rounded-lg shadow-lg">
+                      Fee TBD
+                    </span>
+                  ) : (
+                    <span className="inline-block px-3 py-1 bg-white/95 backdrop-blur-md text-zinc-950 text-sm font-black rounded-lg shadow-lg">
+                      {course.is_free || !course.price ? 'Free' : `₦${course.price.toLocaleString()}`}
+                    </span>
+                  )}
                 </div>
               )}
             </div>

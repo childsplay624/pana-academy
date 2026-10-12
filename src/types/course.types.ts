@@ -60,6 +60,7 @@ export interface Course {
   start_date?: string; // ISO date string - course/event starts
   end_date?: string;   // ISO date string - course/event ends (for multi-day)
   is_free: boolean;
+  is_price_tbd?: boolean;
 
   // Online course fields
   total_lessons?: number;

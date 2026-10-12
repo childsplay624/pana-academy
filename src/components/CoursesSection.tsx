@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Clock, Users, ArrowRight, Loader2, BookOpen, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
-import { fetchAllCourses, formatCourseDate } from "@/services/courseService";
+import { fetchAllCourses, formatCourseDate, isCoursePriceTbd } from "@/services/courseService";
 import type { Course } from "@/services/courseService";
 import { usePlatformSettings } from "@/hooks/usePlatformSettings";
 import Card3D from "@/components/ui/Card3D";
@@ -86,9 +86,15 @@ const CoursesSection = ({
                         {/* Price Overlay */}
                         {!hidePrices && (
                           <div className="absolute bottom-3 left-3 translate-z-10">
-                            <span className="inline-block px-3 py-1 bg-white/95 backdrop-blur-md text-zinc-950 text-sm font-black rounded-lg shadow-lg">
-                              {course.price ? `₦${course.price.toLocaleString()}` : 'Free'}
-                            </span>
+                            {isCoursePriceTbd(course) ? (
+                              <span className="inline-block px-3 py-1 bg-amber-600/95 backdrop-blur-md text-white text-xs font-black rounded-lg shadow-lg">
+                                Fee TBD
+                              </span>
+                            ) : (
+                              <span className="inline-block px-3 py-1 bg-white/95 backdrop-blur-md text-zinc-950 text-sm font-black rounded-lg shadow-lg">
+                                {course.is_free || !course.price ? 'Free' : `₦${course.price.toLocaleString()}`}
+                              </span>
+                            )}
                           </div>
                         )}
                       </div>

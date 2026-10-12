@@ -61,6 +61,7 @@ export interface Course {
   reviews_count?: number;
   price: number;
   is_free?: boolean;   // Whether course is free
+  is_price_tbd?: boolean; // Whether pricing is upon request / TBD
   thumbnail_url?: string;
   learning_outcomes: string[];
   modules: Module[];
@@ -139,6 +140,7 @@ interface DatabaseCourse {
   start_date?: string;
   end_date?: string;
   is_free?: boolean;
+  is_price_tbd?: boolean;
   status?: 'draft' | 'review' | 'published' | 'archived';
   modules?: any[];
   category_data?: {
@@ -238,6 +240,7 @@ export const fetchCourseById = async (id: string): Promise<Course | null> => {
       start_date: dbCourse.start_date,
       end_date: dbCourse.end_date,
       is_free: dbCourse.is_free || false,
+      is_price_tbd: dbCourse.is_price_tbd ?? (!dbCourse.is_free && (!dbCourse.price || dbCourse.price === 0)),
       status: dbCourse.status || 'published',
       modules: (dbCourse.modules || []).map((m: any) => ({
         ...m,
@@ -310,6 +313,7 @@ export const fetchAllCourses = async (): Promise<Course[]> => {
         end_date: (dbCourse as any).end_date,
         course_type: (dbCourse as any).course_type || 'online',
         is_free: (dbCourse as any).is_free,
+        is_price_tbd: (dbCourse as any).is_price_tbd ?? (!(dbCourse as any).is_free && (!(dbCourse as any).price || (dbCourse as any).price === 0)),
         status: (dbCourse as any).status || 'published'
       };
     });
@@ -524,6 +528,16 @@ export const isCourseDatePassed = (course: { start_date?: string | null; end_dat
     if (startDate < now) return true;
   }
 
+  return false;
+};
+
+/**
+ * Helper to check if a course's pricing is not set / to be determined (TBD)
+ */
+export const isCoursePriceTbd = (course?: { is_free?: boolean | null; price?: number | null; is_price_tbd?: boolean | null } | null): boolean => {
+  if (!course) return false;
+  if (course.is_price_tbd === true) return true;
+  if (!course.is_free && (course.price === null || course.price === undefined || course.price === 0)) return true;
   return false;
 };
 

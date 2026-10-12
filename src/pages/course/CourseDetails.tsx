@@ -35,7 +35,7 @@ import {
   HelpCircle,
   GraduationCap
 } from 'lucide-react';
-import { fetchCourseById, formatCourseDate, isStartingSoon, isCourseDatePassed, type Course, type Lesson } from '@/services/courseService';
+import { fetchCourseById, formatCourseDate, isStartingSoon, isCourseDatePassed, isCoursePriceTbd, type Course, type Lesson } from '@/services/courseService';
 import { ModuleManager } from '@/components/course-management/ModuleManager';
 import { usePlatformSettings } from '@/hooks/usePlatformSettings';
 import { useAuth } from '@/hooks/useAuth';
@@ -833,20 +833,29 @@ export default function CourseDetails() {
                   {/* PRICING DISPLAY */}
                   {!hidePrices && (
                     <div className="p-4 rounded-xl border border-gray-200 bg-white space-y-1">
-                      <div className="text-xs font-bold uppercase tracking-wider text-red-600">Course Price</div>
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-3xl font-extrabold text-gray-900">
-                          {course.is_free || course.price === 0 ? 'Free' : `₦${course.price.toLocaleString()}`}
-                        </span>
-                        {!course.is_free && course.price > 0 && (
-                          <>
-                            <span className="text-sm text-gray-400 line-through font-medium">
-                              ₦{originalPrice.toLocaleString()}
-                            </span>
-                            <span className="text-xs font-bold text-red-600">30% off</span>
-                          </>
-                        )}
-                      </div>
+                      <div className="text-xs font-bold uppercase tracking-wider text-red-600">Course Fee</div>
+                      {isCoursePriceTbd(course) ? (
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-3xl font-extrabold text-gray-900">Fee TBD</span>
+                          <span className="text-xs font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                            Upon Request
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-3xl font-extrabold text-gray-900">
+                            {course.is_free ? 'Free' : `₦${course.price.toLocaleString()}`}
+                          </span>
+                          {!course.is_free && course.price > 0 && (
+                            <>
+                              <span className="text-sm text-gray-400 line-through font-medium">
+                                ₦{originalPrice.toLocaleString()}
+                              </span>
+                              <span className="text-xs font-bold text-red-600">30% off</span>
+                            </>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -860,7 +869,7 @@ export default function CourseDetails() {
                         >
                           Edit Course Content
                         </Button>
-                        {!isEnrolled && (
+                        {!isEnrolled && !isCoursePriceTbd(course) && (
                           <PaymentButton
                             courseId={course.id}
                             amount={course.price || 0}
@@ -869,38 +878,29 @@ export default function CourseDetails() {
                           />
                         )}
                       </div>
-                    ) : user ? (
-                      !isEnrolled ? (
-                        <PaymentButton
-                          courseId={course.id}
-                          amount={course.price || 0}
-                          courseTitle={course.title}
-                          isExpired={isCourseDatePassed(course)}
-                        />
-                      ) : (
-                        <Button
-                          onClick={() => {
-                            if (course.course_type === 'online') {
-                              navigate(`/course/${id}/learn`);
-                            } else {
-                              setIsScheduleDialogOpen(true);
-                            }
-                          }}
-                          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-6 text-base rounded-xl shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2"
-                        >
-                          {course.course_type === 'online' ? (
-                            <>
-                              <PlayCircle className="w-5 h-5" />
-                              Continue Learning
-                            </>
-                          ) : (
-                            <>
-                              <Calendar className="w-5 h-5" />
-                              View My Schedule
-                            </>
-                          )}
-                        </Button>
-                      )
+                    ) : user && isEnrolled ? (
+                      <Button
+                        onClick={() => {
+                          if (course.course_type === 'online') {
+                            navigate(`/course/${id}/learn`);
+                          } else {
+                            setIsScheduleDialogOpen(true);
+                          }
+                        }}
+                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-6 text-base rounded-xl shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2"
+                      >
+                        {course.course_type === 'online' ? (
+                          <>
+                            <PlayCircle className="w-5 h-5" />
+                            Continue Learning
+                          </>
+                        ) : (
+                          <>
+                            <Calendar className="w-5 h-5" />
+                            View My Schedule
+                          </>
+                        )}
+                      </Button>
                     ) : isCourseDatePassed(course) ? (
                       <div className="space-y-3">
                         <Button disabled className="w-full bg-zinc-400 text-white font-bold py-4 rounded-xl cursor-not-allowed">
@@ -914,6 +914,21 @@ export default function CourseDetails() {
                           Enquire for Next Session
                         </Button>
                       </div>
+                    ) : isCoursePriceTbd(course) ? (
+                      <Button
+                        onClick={() => navigate(`/contact?subject=Course+Pricing+Enquiry&course=${encodeURIComponent(course.title)}`)}
+                        className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold py-6 text-base rounded-xl shadow-lg shadow-red-600/30 transition-all hover:scale-[1.02] flex items-center justify-center gap-2"
+                      >
+                        <FileText className="w-5 h-5" />
+                        Request Fee & Proposal
+                      </Button>
+                    ) : user ? (
+                      <PaymentButton
+                        courseId={course.id}
+                        amount={course.price || 0}
+                        courseTitle={course.title}
+                        isExpired={isCourseDatePassed(course)}
+                      />
                     ) : (
                       <Button
                         onClick={() => navigate('/auth', { state: { from: window.location.pathname } })}

@@ -11,7 +11,7 @@ import { DashboardLayout } from '@/components/DashboardLayout';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { fetchCategories, Category } from '@/services/courseService';
+import { fetchCategories, Category, isCoursePriceTbd } from '@/services/courseService';
 
 
 interface Course {
@@ -20,6 +20,8 @@ interface Course {
   description: string | null;
   status: 'draft' | 'published' | 'archived' | 'review';
   price: number;
+  is_free?: boolean;
+  is_price_tbd?: boolean;
   duration_hours: number;
   category: string;
   created_at: string;
@@ -332,7 +334,19 @@ export default function CourseManagement() {
                         {course.category_data?.name || course.category}
                       </Badge>
                     </TableCell>
-                    <TableCell>₦{course.price.toLocaleString()}</TableCell>
+                    <TableCell>
+                      {isCoursePriceTbd(course) ? (
+                        <Badge variant="secondary" className="bg-amber-100 text-amber-800 border-amber-300">
+                          Fee TBD
+                        </Badge>
+                      ) : course.is_free ? (
+                        <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 border-emerald-300">
+                          Free
+                        </Badge>
+                      ) : (
+                        `₦${course.price.toLocaleString()}`
+                      )}
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center">
                         <Clock className="h-4 w-4 mr-1" />

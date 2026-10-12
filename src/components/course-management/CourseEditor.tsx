@@ -67,6 +67,8 @@ interface Course {
   start_date?: string | null;
   end_date?: string | null;
   course_type?: 'online' | 'onsite' | 'hybrid';
+  is_free?: boolean | null;
+  is_price_tbd?: boolean | null;
 
   // Onsite fields
   venue_name?: string | null;
@@ -476,7 +478,9 @@ export function CourseEditor() {
           description: course.description,
           category_id: course.category_id,
           instructor_id: course.instructor_id,
-          price: course.price,
+          price: (course.is_price_tbd || course.is_free) ? 0 : course.price,
+          is_free: Boolean(course.is_free),
+          is_price_tbd: Boolean(course.is_price_tbd),
           duration_hours: course.duration_hours,
           level: course.level,
           requirements: course.requirements,
@@ -951,16 +955,55 @@ export function CourseEditor() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Price (₦)</label>
-                      <Input
-                        type="number"
-                        value={course.price}
-                        onChange={(e) => setCourse(prev => prev ? { ...prev, price: Number(e.target.value) } : null)}
+                      <label className="text-sm font-medium">Pricing Model</label>
+                      <Select
+                        value={course.is_price_tbd ? 'tbd' : course.is_free ? 'free' : 'paid'}
+                        onValueChange={(val) => {
+                          setCourse(prev => {
+                            if (!prev) return null;
+                            if (val === 'tbd') {
+                              return { ...prev, is_price_tbd: true, is_free: false, price: 0 };
+                            } else if (val === 'free') {
+                              return { ...prev, is_free: true, is_price_tbd: false, price: 0 };
+                            } else {
+                              return { ...prev, is_free: false, is_price_tbd: false, price: prev.price || 0 };
+                            }
+                          });
+                        }}
                         disabled={!canEdit}
-                      />
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="paid">Paid Course</SelectItem>
+                          <SelectItem value="free">Free Course</SelectItem>
+                          <SelectItem value="tbd">Fee TBD (Upon Request)</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
+
+                    {!course.is_price_tbd && !course.is_free ? (
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Price (₦)</label>
+                        <Input
+                          type="number"
+                          value={course.price}
+                          onChange={(e) => setCourse(prev => prev ? { ...prev, price: Number(e.target.value) } : null)}
+                          disabled={!canEdit}
+                        />
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Pricing Note</label>
+                        <div className="h-10 px-3 py-2 border rounded-md bg-muted/50 text-sm flex items-center text-muted-foreground font-medium">
+                          {course.is_price_tbd ? 'Fee TBD (Inquiry CTA)' : 'Free Enrollment'}
+                        </div>
+                      </div>
+                    )}
+
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Duration (hours)</label>
                       <Input

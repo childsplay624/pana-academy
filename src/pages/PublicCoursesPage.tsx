@@ -15,7 +15,7 @@ import {
 import { Search, Filter, ArrowRight, Layers, Tag, X } from 'lucide-react';
 import CoursesSection from '@/components/CoursesSection';
 import type { Course, Category, Subcategory } from '@/services/courseService';
-import { fetchAllCourses, fetchCategoriesWithSubcategories } from '@/services/courseService';
+import { fetchAllCourses, fetchCategoriesWithSubcategories, isCoursePriceTbd } from '@/services/courseService';
 import {
   Pagination,
   PaginationContent,
@@ -616,7 +616,8 @@ const PublicCoursesPage = () => {
               </div>
             ) : (
               currentCourses.map((course) => {
-                const originalPriceNum = course.price ? Math.round(course.price * 1.25) : null;
+                const isPriceTbd = isCoursePriceTbd(course);
+                const originalPriceNum = !isPriceTbd && !course.is_free && course.price ? Math.round(course.price * 1.25) : null;
                 return (
                   <Link
                     to={`/course/${course.id}`}
@@ -722,13 +723,26 @@ const PublicCoursesPage = () => {
                         {/* Price Tag & Badges Row */}
                         <div className="pt-3 border-t border-gray-100 flex flex-wrap items-center justify-between gap-3">
                           <div className="flex items-baseline gap-2">
-                            <span className="text-xl font-black text-gray-900">
-                              {course.price ? `₦${course.price.toLocaleString()}` : 'Free'}
-                            </span>
-                            {originalPriceNum && (
-                              <span className="text-xs text-gray-400 line-through font-semibold">
-                                ₦{originalPriceNum.toLocaleString()}
-                              </span>
+                            {isPriceTbd ? (
+                              <div className="flex items-center gap-2">
+                                <span className="text-lg font-black text-amber-700">Fee TBD</span>
+                                <span className="text-xs text-amber-700 font-semibold bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                                  Upon Request
+                                </span>
+                              </div>
+                            ) : course.is_free || !course.price ? (
+                              <span className="text-xl font-black text-emerald-600">Free</span>
+                            ) : (
+                              <>
+                                <span className="text-xl font-black text-gray-900">
+                                  ₦{course.price.toLocaleString()}
+                                </span>
+                                {originalPriceNum && (
+                                  <span className="text-xs text-gray-400 line-through font-semibold">
+                                    ₦{originalPriceNum.toLocaleString()}
+                                  </span>
+                                )}
+                              </>
                             )}
                           </div>
 
