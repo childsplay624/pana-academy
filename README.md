@@ -1,128 +1,187 @@
-PANA Institute LMS
+# PANA Academy — Technical Learning & Competency Management System
 
-An Educational Management System (EMS) designed for PANA Institute. This platform allows administrators, instructors, and students to manage courses, track progress, and interact in an engaging learning environment.
+[![React](https://img.shields.io/badge/React-18.x-61DAFB?logo=react&logoColor=white)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.x-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Features
-Authentication & User Management
+An enterprise-grade Educational Management System (EMS) and Learning Management System (LMS) purpose-built for **PANA Institute / PE Energy Academy**. The platform delivers practical, ISO-aligned industrial training across Sub-Saharan Africa, covering turbomachinery, instrumentation, power systems, valves, flow measurement, and asset integrity.
 
-Secure sign-up and login with email/password or social providers.
+---
 
-Role-based access (Admin, Instructor, Student).
+## 🚀 Key Highlights & Capabilities
 
-User profiles with customizable information.
+### 🎓 Industrial Course Catalog & Taxonomy
+- **10 Core Engineering Domains**: Hierarchical categorization across Power & Drives, Valves & Actuation, Instrumentation, Process Control, Metering, and Asset Integrity.
+- **Automated Catalog Coding**: Auto-generates course codes (`PD01`, `VA01`, `IN01`, etc.) mapped to domain numbering and subcategories.
+- **Standards & Compliance Alignment**: Syllabus tagging for international engineering standards (API 617, API 614, ASME PTC 10, ISO 18436, IEC 61508, etc.).
+- **OEM Technology Mapping**: Maps equipment drills to technology partners (Baker Hughes, Siemens Energy, ITT Goulds, Emerson, Schlumberger, etc.).
 
-Course Management
+### 🖥️ High-Fidelity Course Experience (Udemy-Grade UI)
+- **Interactive Dark Hero**: Course code badge, award pill, last updated stamp, and ISO/API verification micro-cards.
+- **Interactive Syllabus Accordion**: Expandable/collapsible module sections, topic duration badges, and instant lesson modal previews with resource descriptions.
+- **Industrial Metadata Cards**: Dedicated sections for *Who Should Attend (Target Audience)*, *Practical Work & Laboratory Drills*, and *Requirements & Prerequisites*.
+- **Live Scheduling & Venue Logistics**: Physical venue maps, cohort commencement dates, daily session hours, and corporate facility delivery proposals.
+- **Sticky Pricing Card**: Live enrollment CTA, currency formatting, downloadable resource counts, and qualification award badges.
 
-Create, edit, and organize courses.
+### 🛠️ Comprehensive Course Management Suite
+- **Basic Information**: Title, domain, subcategory, assigned instructor, level, duration, and price.
+- **Media Library & Image Uploader**: Direct image upload to public Supabase storage buckets (`course-images`) with fallback handling.
+- **Curriculum & Module Builder**: Add, order, and edit modules and lessons (videos, quizzes, technical documents, and free previews).
+- **Industrial Specifications Editor**: Visual tag and array editors with bulk paste support for standards, OEM partners, practical drills, and learning outcomes.
+- **Onsite & Hybrid Venue Management**: Integrated venue picker, capacity limits, parking instructions, and hotel accommodation guidance.
 
-Upload lessons, videos, and other learning materials.
+### 🔐 Security & Role-Based Access Control (RBAC)
+- **Role Permissions**: Strict isolation between **Admins**, **Instructors**, and **Students / Corporate Delegates**.
+- **PostgreSQL Row Level Security (RLS)**: Enforced database policies preventing unauthorized course modifications or cross-tenant data leakage.
+- **Payment Verification**: Paystack, bank transfer verification, automated invoice generation, and conditional enrollment gates.
 
-Assign instructors to courses.
+---
 
-Enroll students manually or via registration codes.
+## 🏗️ Technology Architecture
 
-Student Dashboard
+| Layer | Technologies |
+| :--- | :--- |
+| **Frontend Framework** | [React 18](https://react.dev/) + [Vite 5](https://vitejs.dev/) |
+| **Language** | [TypeScript 5](https://www.typescriptlang.org/) (Strict typing) |
+| **Styling & Design System** | [Tailwind CSS](https://tailwindcss.com/), [shadcn/ui](https://ui.shadcn.com/), [Radix UI](https://www.radix-ui.com/) |
+| **Icons & Animations** | [Lucide React](https://lucide.dev/), [Framer Motion](https://www.framer.com/motion/) |
+| **Database & Auth** | [Supabase](https://supabase.com/) (PostgreSQL 15 + RLS + GoTrue Auth) |
+| **Storage** | Supabase Storage (`course-images`, `site-images`, `certificates`) |
+| **Transactional Email** | [Resend](https://resend.com/) API |
+| **PDF Generation** | [jsPDF](https://github.com/parallax/jsPDF) (Invoicing & Certificates) |
 
-Personalized dashboard showing enrolled courses.
+---
 
-Progress tracking for lessons and modules.
+## 📁 Repository Structure
 
-Collapsible and responsive sidebar for easy navigation.
-
-Interactive charts for performance insights.
-
-Instructor Dashboard
-
-Manage assigned courses.
-
-Upload and organize learning materials.
-
-Monitor student progress and performance.
-
-Admin Dashboard
-
-Full control of users (students, instructors, admins).
-
-Course approval and management.
-
-Analytics and reports on platform usage.
-
-Backend Integration
-
-- Built with Supabase for authentication and database.
-- Real-time updates using Supabase's real-time features.
-- Secure file storage for course materials.
-
-## Email Notifications
-
-The platform uses [Resend](https://resend.com) for sending email notifications. The following emails are sent automatically:
-
-- **Welcome Email**: Sent when a new user signs up
-- **Password Reset**: Sent when a user requests a password reset
-- **Course Enrollment**: Sent when a user enrolls in a course
-
-### Email Templates
-
-Email templates are defined in `src/services/emailService.ts` and can be customized as needed. The following templates are available:
-
-- `welcome(name: string)`: Welcome email for new users
-- `passwordReset(userName: string, resetLink: string)`: Password reset email
-- `courseEnrollment(courseTitle: string, userName: string)`: Course enrollment confirmation
-
-## Environment Setup
-
-Create a `.env` file in the root directory with the following variables:
-
+```text
+pana-academy-main/
+├── .agents/                 # AI Assistant skills & Postgres best-practice guides
+├── public/                  # Static assets & brand media
+├── scripts/                 # Utility scripts (db-push, migration runners)
+├── src/
+│   ├── components/
+│   │   ├── admin/           # Admin forms, wizards & media pickers
+│   │   ├── course/          # Course video players & learning interfaces
+│   │   ├── course-management/# CourseEditor, ModuleManager, LessonManager
+│   │   ├── payment/         # Paystack & manual payment integrations
+│   │   └── ui/              # shadcn/ui design system components
+│   ├── hooks/               # Custom hooks (useAuth, usePlatformSettings, etc.)
+│   ├── integrations/
+│   │   └── supabase/        # Supabase client & generated database types
+│   ├── pages/
+│   │   ├── admin/           # Administrative control centers & analytics
+│   │   ├── course/          # CourseDetails, CoursePlayer, BrowseCatalog
+│   │   └── dashboard/       # Student and instructor portals
+│   ├── services/            # API services (courseService, enrollmentService, etc.)
+│   └── types/               # TypeScript interfaces and domain schemas
+├── supabase/
+│   ├── functions/           # Supabase Edge Functions (Deno / TypeScript)
+│   └── migrations/          # Declarative PostgreSQL schema migrations
+├── tailwind.config.ts       # Tailwind CSS design tokens
+├── tsconfig.json            # TypeScript compiler configuration
+└── vite.config.ts           # Vite build pipeline & module aliases
 ```
-VITE_APP_URL=http://localhost:5173
-VITE_RESEND_API_KEY=your_resend_api_key_here
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
 
-## Backend
+---
 
-Built with Node.js + Supabase (authentication, data, and storage).
+## ⚡ Quickstart & Development
 
-Database: PostgreSQL (structured and scalable).
+### 1. Prerequisites
+- **Node.js**: `v18.x` or `v20.x` recommended
+- **npm** or **bun**
+- A **Supabase** project instance (Cloud or Local CLI)
 
-Installation
+### 2. Clone and Install Dependencies
 
-Clone the repository:
+```bash
+# Clone the repository
+git clone https://github.com/childsplay624/pana-academy.git
+cd pana-academy
 
-git clone https://github.com/yourusername/pana-academy-lms.git
-cd pana-academy-lms
-
-
-Install dependencies:
-
+# Install packages
 npm install
+```
 
+### 3. Configure Environment Variables
 
-Set up environment variables in a .env file:
+Create a `.env` file in the project root:
 
-SUPABASE_URL=your_supabase_url
-SUPABASE_ANON_KEY=your_supabase_anon_key
+```env
+# Application Host
+VITE_API_BASE_URL=http://localhost:5173
 
+# Supabase Credentials
+VITE_SUPABASE_URL=https://your-project-ref.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key-here
 
-Run the development server:
+# Payment Gateways (Optional for local testing)
+VITE_PAYSTACK_PUBLIC_KEY=pk_test_xxxxxxxxxxxxxxxxxxxx
+VITE_FLUTTERWAVE_PUBLIC_KEY=FLWPUBK_TEST-xxxxxxxxxxxx
 
+# Transactional Email (Optional)
+VITE_RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxx
+```
+
+### 4. Database Setup & Migrations
+
+All schema definitions, RLS policies, and seed data live in `supabase/migrations/`:
+
+```bash
+# Using Supabase CLI to apply migrations
+supabase db push
+
+# Or run individual migrations directly via your Supabase SQL editor:
+# 20270101000000_course_domains_subcategories.sql
+# 20270101000001_seed_domains_and_subcategories.sql
+# 20270101000002_add_course_industrial_metadata.sql
+# 20270101000003_seed_course_pd01.sql
+```
+
+### 5. Run the Local Development Server
+
+```bash
 npm run dev
+```
 
-Roadmap
+The application will start at `http://localhost:5173` (or the next available port).
 
-✅ Authentication (email/social login).
+---
 
-✅ Student, Instructor, Admin dashboards.
+## 🧪 Quality Assurance & Build Commands
 
-✅ Course creation & enrollment.
+```bash
+# Run TypeScript typecheck without emitting output
+npx tsc --noEmit
 
-🚧 Quizzes & Assessments.
+# Run ESLint linter
+npm run lint
 
-🚧 Certificates on course completion.
+# Build optimized production bundle
+npm run build
 
-🚧 AI-driven recommendations for courses.
+# Preview production build locally
+npm run preview
+```
 
-License
+---
 
-This project is licensed under the MIT License.
+## 🔐 Database Schema & Security Principles
+
+1. **Row Level Security (RLS)**:
+   - Public courses are readable by all authenticated and unauthenticated visitors (`status = 'published'`).
+   - Draft and review courses are visible only to the assigned instructor and platform administrators.
+   - Enrollment progress and invoices are strictly restricted to the owning student profile (`auth.uid() = user_id`).
+2. **Defensive Defaults**:
+   - Course prices, durations, and student counts use explicit defaults to avoid null pointer exceptions across user interfaces.
+   - Foreign keys enforce cascade constraints to maintain referential integrity across modules and lessons.
+
+---
+
+## 📄 License
+
+This software is licensed under the [MIT License](LICENSE).
+PANA Academy © 2026. All rights reserved.
