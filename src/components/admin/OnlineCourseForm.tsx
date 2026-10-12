@@ -31,6 +31,18 @@ export function OnlineCourseForm({ initialData, onSubmit, onBack, isSubmitting }
     const [requirements, setRequirements] = React.useState<string[]>(
         initialData.requirements || []
     );
+    const [standardsInput, setStandardsInput] = React.useState(
+        (initialData.standards || []).join(', ')
+    );
+    const [oemInput, setOemInput] = React.useState(
+        (initialData.oemPartners || initialData.oem_partners || []).join(', ')
+    );
+    const [targetAudience, setTargetAudience] = React.useState<string[]>(
+        initialData.targetAudience || initialData.target_audience || []
+    );
+    const [practicalWork, setPracticalWork] = React.useState<string[]>(
+        initialData.practicalWork || initialData.practical_work || []
+    );
 
     const addLearningOutcome = () => {
         setLearningOutcomes([...learningOutcomes, '']);
@@ -60,11 +72,43 @@ export function OnlineCourseForm({ initialData, onSubmit, onBack, isSubmitting }
         setRequirements(updated);
     };
 
+    const addTargetAudience = () => {
+        setTargetAudience([...targetAudience, '']);
+    };
+
+    const removeTargetAudience = (index: number) => {
+        setTargetAudience(targetAudience.filter((_, i) => i !== index));
+    };
+
+    const updateTargetAudience = (index: number, value: string) => {
+        const updated = [...targetAudience];
+        updated[index] = value;
+        setTargetAudience(updated);
+    };
+
+    const addPracticalWork = () => {
+        setPracticalWork([...practicalWork, '']);
+    };
+
+    const removePracticalWork = (index: number) => {
+        setPracticalWork(practicalWork.filter((_, i) => i !== index));
+    };
+
+    const updatePracticalWork = (index: number, value: string) => {
+        const updated = [...practicalWork];
+        updated[index] = value;
+        setPracticalWork(updated);
+    };
+
     const handleFormSubmit = (data: any) => {
         onSubmit({
             ...data,
             learningOutcomes: learningOutcomes.filter(o => o.trim() !== ''),
             requirements: requirements.filter(r => r.trim() !== ''),
+            standards: standardsInput.split(',').map((s: string) => s.trim()).filter(Boolean),
+            oemPartners: oemInput.split(',').map((s: string) => s.trim()).filter(Boolean),
+            targetAudience: targetAudience.filter(t => t.trim() !== ''),
+            practicalWork: practicalWork.filter(p => p.trim() !== ''),
         });
     };
 
@@ -144,6 +188,120 @@ export function OnlineCourseForm({ initialData, onSubmit, onBack, isSubmitting }
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => removeRequirement(index)}
+                            >
+                                <X className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Industrial Standards & Recognized References */}
+            <div className="space-y-2 border-t pt-4">
+                <div>
+                    <Label htmlFor="standards">Standards & Recognized References</Label>
+                    <p className="text-xs text-muted-foreground mt-1">
+                        Comma-separated compliance standards (e.g., ISO 18436-2, ISO 20816, ISO 13373, API 670, API 684)
+                    </p>
+                </div>
+                <Input
+                    id="standards"
+                    value={standardsInput}
+                    onChange={(e) => setStandardsInput(e.target.value)}
+                    placeholder="e.g., ISO 18436-2, ISO 20816, API 670, API 684"
+                />
+            </div>
+
+            {/* Technology References & OEM Partners */}
+            <div className="space-y-2">
+                <div>
+                    <Label htmlFor="oemPartners">Technology References & OEM Partners</Label>
+                    <p className="text-xs text-muted-foreground mt-1">
+                        Comma-separated partner equipment & technology (e.g., Baker Hughes, Siemens, ITT Goulds Pumps, GE Vernova)
+                    </p>
+                </div>
+                <Input
+                    id="oemPartners"
+                    value={oemInput}
+                    onChange={(e) => setOemInput(e.target.value)}
+                    placeholder="e.g., Baker Hughes, Siemens, ITT Goulds Pumps, GE Vernova"
+                />
+            </div>
+
+            {/* Who Should Attend / Target Audience */}
+            <div className="space-y-4 border-t pt-4">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <Label>Who Should Attend (Target Audience)</Label>
+                        <p className="text-xs text-muted-foreground mt-1">
+                            Add target engineering sectors, disciplines, or job titles
+                        </p>
+                    </div>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={addTargetAudience}
+                    >
+                        <Plus className="h-4 w-4 mr-1" />
+                        Add Audience
+                    </Button>
+                </div>
+
+                <div className="space-y-2">
+                    {targetAudience.map((aud, index) => (
+                        <div key={index} className="flex gap-2">
+                            <Input
+                                value={aud}
+                                onChange={(e) => updateTargetAudience(index, e.target.value)}
+                                placeholder={`e.g., Oil and gas operators and service companies`}
+                            />
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => removeTargetAudience(index)}
+                            >
+                                <X className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Practical Work & Exercises */}
+            <div className="space-y-4 border-t pt-4">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <Label>Practical Work & Hands-on Exercises</Label>
+                        <p className="text-xs text-muted-foreground mt-1">
+                            Diagnostic workflows, simulation drills, or mock exams completed during the course
+                        </p>
+                    </div>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={addPracticalWork}
+                    >
+                        <Plus className="h-4 w-4 mr-1" />
+                        Add Exercise
+                    </Button>
+                </div>
+
+                <div className="space-y-2">
+                    {practicalWork.map((pw, index) => (
+                        <div key={index} className="flex gap-2">
+                            <Input
+                                value={pw}
+                                onChange={(e) => updatePracticalWork(index, e.target.value)}
+                                placeholder={`e.g., Diagnose faults from a library of real turbomachinery datasets`}
+                            />
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => removePracticalWork(index)}
                             >
                                 <X className="h-4 w-4" />
                             </Button>

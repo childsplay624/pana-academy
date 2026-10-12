@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -24,11 +24,18 @@ import {
   Globe,
   Share2,
   Heart,
-  ChevronRight,
   ShieldCheck,
-  Check
+  Check,
+  Briefcase,
+  Cpu,
+  Building2,
+  Sparkles,
+  ChevronDown,
+  ChevronUp,
+  HelpCircle,
+  GraduationCap
 } from 'lucide-react';
-import { fetchCourseById, formatCourseDate, isStartingSoon, isCourseDatePassed, type Course } from '@/services/courseService';
+import { fetchCourseById, formatCourseDate, isStartingSoon, isCourseDatePassed, type Course, type Lesson } from '@/services/courseService';
 import { ModuleManager } from '@/components/course-management/ModuleManager';
 import { usePlatformSettings } from '@/hooks/usePlatformSettings';
 import { useAuth } from '@/hooks/useAuth';
@@ -54,10 +61,39 @@ export default function CourseDetails() {
   const [error, setError] = useState<string | null>(null);
   const [purchaseOption, setPurchaseOption] = useState<'subscription' | 'individual'>('individual');
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+  const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({});
   const { toast } = useToast();
   const { data: settings } = usePlatformSettings();
   const hidePrices = settings?.hide_course_prices;
   const isInstructor = user?.id === course?.instructor_id;
+
+  useEffect(() => {
+    // Keep all module sections closed by default when course details page opens
+    setExpandedModules({});
+  }, [course?.id]);
+
+  const toggleModule = (moduleId: string) => {
+    setExpandedModules(prev => ({
+      ...prev,
+      [moduleId]: !prev[moduleId]
+    }));
+  };
+
+  const expandAllModules = () => {
+    if (!course?.modules) return;
+    const allExpanded: Record<string, boolean> = {};
+    course.modules.forEach(m => {
+      allExpanded[String(m.id)] = true;
+    });
+    setExpandedModules(allExpanded);
+  };
+
+  const collapseAllModules = () => {
+    setExpandedModules({});
+  };
+
+  const totalLessonsCount = course?.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0), 0) || 0;
 
   useEffect(() => {
     const loadCourse = async () => {
@@ -165,19 +201,31 @@ export default function CourseDetails() {
               {/* LEFT HERO METADATA (8 Cols on Desktop) */}
               <div className="lg:col-span-8 space-y-4">
                 
-                {/* Breadcrumbs */}
-                <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-red-400 tracking-wide uppercase">
-                  <Link to="/" className="hover:underline text-gray-300">Home</Link>
-                  <ChevronRight className="w-3 h-3 text-gray-500" />
-                  <Link to="/courses" className="hover:underline text-gray-300">Courses</Link>
-                  <ChevronRight className="w-3 h-3 text-gray-500" />
-                  <span className="text-red-400">{categoryName}</span>
-                </div>
+                {/* Course Code & Title */}
+                <div className="space-y-2">
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    {course.code && (
+                      <span className="bg-red-600 text-white font-mono text-xs font-extrabold tracking-wider px-2.5 py-1 rounded-md shadow-sm">
+                        {course.code}
+                      </span>
+                    )}
+                    {course.course_area && (
+                      <span className="bg-white/10 text-zinc-300 text-xs font-medium px-2.5 py-1 rounded-md border border-white/10">
+                        {course.course_area}
+                      </span>
+                    )}
+                    {course.award && (
+                      <span className="bg-amber-400/20 text-amber-300 border border-amber-400/30 text-xs font-semibold px-2.5 py-1 rounded-md flex items-center gap-1">
+                        <Award className="w-3 h-3" />
+                        {course.award}
+                      </span>
+                    )}
+                  </div>
 
-                {/* Course Title */}
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
-                  {course.title}
-                </h1>
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
+                    {course.title}
+                  </h1>
+                </div>
 
                 {/* Course Short Description */}
                 <p className="text-base sm:text-lg text-zinc-300 font-normal leading-relaxed max-w-3xl">
@@ -190,6 +238,21 @@ export default function CourseDetails() {
                   {course.course_type && (
                     <span className="bg-white/10 border border-white/20 text-white text-xs font-semibold px-3 py-1 rounded-md">
                       {course.course_type === 'online' ? '💻 Online' : course.course_type === 'onsite' ? '🏢 On-Site' : '🌓 Hybrid'}
+                    </span>
+                  )}
+
+                  {/* Level Badge */}
+                  {course.level && (
+                    <span className="bg-white/10 border border-white/20 text-zinc-200 text-xs font-semibold px-3 py-1 rounded-md capitalize">
+                      Level: {course.level}
+                    </span>
+                  )}
+
+                  {/* Class Size Badge */}
+                  {course.class_size && (
+                    <span className="bg-white/10 border border-white/20 text-zinc-200 text-xs font-medium px-3 py-1 rounded-md flex items-center gap-1.5">
+                      <Users className="w-3.5 h-3.5 text-red-400" />
+                      {course.class_size}
                     </span>
                   )}
 
@@ -235,7 +298,7 @@ export default function CourseDetails() {
                     </div>
                     <div className="flex items-center gap-1">
                       <Award className="w-3.5 h-3.5 text-gray-400" />
-                      <span>Official PANA Accreditation Pass</span>
+                      <span>{course.award || 'Official PANA Accreditation Pass'}</span>
                     </div>
                   </div>
                 </div>
@@ -264,15 +327,27 @@ export default function CourseDetails() {
                       </div>
                     </div>
                   )}
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-emerald-600/20 flex items-center justify-center text-emerald-400 font-bold text-sm">
-                      <ShieldCheck className="w-4 h-4" />
+                  {course.standards && course.standards.length > 0 ? (
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-lg bg-emerald-600/20 flex items-center justify-center text-emerald-400 font-bold text-sm">
+                        <ShieldCheck className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-white">{course.standards[0]} Aligned</div>
+                        <div className="text-[11px] text-zinc-400">{course.standards.length} {course.standards.length === 1 ? 'Standard' : 'Standards'}</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="text-xs font-bold text-white">ISO Aligned</div>
-                      <div className="text-[11px] text-zinc-400">Verified Quality</div>
+                  ) : (
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-lg bg-emerald-600/20 flex items-center justify-center text-emerald-400 font-bold text-sm">
+                        <ShieldCheck className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-white">ISO Aligned</div>
+                        <div className="text-[11px] text-zinc-400">Verified Quality</div>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
 
               </div>
@@ -323,71 +398,312 @@ export default function CourseDetails() {
                 </div>
               </div>
 
+              {/* WHO SHOULD ATTEND / TARGET AUDIENCE */}
+              {course.target_audience && course.target_audience.length > 0 && (
+                <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center font-bold">
+                      <Briefcase className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Who Should Attend</h2>
+                      <p className="text-xs text-gray-500">Target disciplines, engineering specialists, and operational sectors</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                    {course.target_audience.map((item, idx) => (
+                      <div key={idx} className="flex items-start gap-2.5 p-3.5 rounded-xl bg-gray-50/80 border border-gray-100 hover:border-gray-200 transition-colors">
+                        <Building2 className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-800 text-xs sm:text-sm font-medium leading-relaxed">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* INDUSTRIAL STANDARDS & RECOGNIZED REFERENCES */}
+              {course.standards && course.standards.length > 0 && (
+                <div className="bg-gradient-to-br from-slate-900 via-slate-850 to-slate-800 text-white rounded-2xl p-6 sm:p-8 shadow-md space-y-4 border border-slate-700/60">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-red-600/30 border border-red-500/40 text-red-400 flex items-center justify-center font-bold">
+                      <ShieldCheck className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl sm:text-2xl font-bold text-white">Standards & Recognized References</h2>
+                      <p className="text-xs text-slate-300">Course syllabus strictly aligned with recognized international standards</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2.5 pt-2">
+                    {course.standards.map((std, idx) => (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/15 border border-white/20 text-white font-mono text-xs font-bold px-3 py-1.5 rounded-lg transition-colors shadow-sm"
+                      >
+                        <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                        {std}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* OEM TECHNOLOGY REFERENCES & OEM PARTNERS */}
+              {course.oem_partners && course.oem_partners.length > 0 && (
+                <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center font-bold">
+                      <Cpu className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Technology & OEM References</h2>
+                      <p className="text-xs text-gray-500">Curriculum mapped to PE Energy OEM partner equipment & protocols</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    {course.oem_partners.map((partner, idx) => (
+                      <span
+                        key={idx}
+                        className="bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-2 shadow-2xs"
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span>
+                        {partner}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* PRACTICAL WORK & EXERCISES */}
+              {course.practical_work && course.practical_work.length > 0 && (
+                <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center font-bold">
+                      <FileText className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Practical Work & Real Datasets</h2>
+                      <p className="text-xs text-gray-500">Hands-on diagnostic drills and laboratory exercises completed by participants</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2.5 pt-2">
+                    {course.practical_work.map((pw, idx) => (
+                      <div key={idx} className="flex items-start gap-3 p-3.5 rounded-xl bg-emerald-50/40 border border-emerald-100/60">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-800 text-xs sm:text-sm font-medium">{pw}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* REQUIREMENTS & PREREQUISITES */}
+              {course.requirements && course.requirements.length > 0 && (
+                <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 border border-amber-200/60 flex items-center justify-center font-bold">
+                      <GraduationCap className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Requirements & Prerequisites</h2>
+                      <p className="text-xs text-gray-500">Recommended background and prior technical competencies</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2.5 pt-2">
+                    {course.requirements.map((req, idx) => (
+                      <div key={idx} className="flex items-start gap-3 p-3.5 rounded-xl bg-amber-50/40 border border-amber-100/60">
+                        <CheckCircle2 className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-800 text-xs sm:text-sm font-medium">{req}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* COURSE CONTENT / SYLLABUS SECTION */}
               <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-6">
-                <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-5">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900">Course Content</h2>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {course.modules?.length || 4} modules • {duration} total duration
+                    <h2 className="text-2xl font-bold text-gray-900">Course Content & Syllabus</h2>
+                    <p className="text-xs sm:text-sm text-gray-500 mt-1 flex flex-wrap items-center gap-2">
+                      <span className="font-semibold text-gray-800">
+                        {course.modules?.length || 0} {course.modules?.length === 1 ? 'module' : 'modules'}
+                      </span>
+                      {totalLessonsCount > 0 && (
+                        <>
+                          <span>•</span>
+                          <span>{totalLessonsCount} lectures / topics</span>
+                        </>
+                      )}
+                      {duration && (
+                        <>
+                          <span>•</span>
+                          <span>{duration} total duration</span>
+                        </>
+                      )}
                     </p>
                   </div>
-                  {isInstructor && id && (
-                    <Button variant="outline" size="sm" onClick={() => navigate(`/course/${id}/edit`)}>
-                      Edit Content
-                    </Button>
-                  )}
+
+                  <div className="flex items-center gap-3">
+                    {course.modules && course.modules.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const allOpen = course.modules.every(m => expandedModules[String(m.id)]);
+                          if (allOpen) {
+                            collapseAllModules();
+                          } else {
+                            expandAllModules();
+                          }
+                        }}
+                        className="text-xs font-semibold text-red-600 hover:text-red-700 hover:underline transition-colors py-1.5 px-3 rounded-lg bg-red-50 hover:bg-red-100/70 cursor-pointer"
+                      >
+                        {course.modules.every(m => expandedModules[String(m.id)]) ? 'Collapse all sections' : 'Expand all sections'}
+                      </button>
+                    )}
+
+                    {isInstructor && id && (
+                      <Button variant="outline" size="sm" onClick={() => navigate(`/course/${id}/edit`)}>
+                        Edit Content
+                      </Button>
+                    )}
+                  </div>
                 </div>
 
                 {isInstructor && id ? (
                   <ModuleManager courseId={id} canEdit={true} />
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-3.5">
                     {course.modules && course.modules.length > 0 ? (
-                      course.modules.map((module) => (
-                        <div key={module.id} className="border border-gray-200 rounded-xl overflow-hidden hover:border-gray-300 transition-colors">
-                          <div className="p-4 bg-gray-50/70 flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center font-bold text-xs">
-                                <BookOpen className="w-4 h-4" />
+                      course.modules.map((module, mIdx) => {
+                        const mId = String(module.id);
+                        const isExpanded = !!expandedModules[mId];
+                        const lessons = module.lessons || [];
+
+                        return (
+                          <div
+                            key={module.id}
+                            className="border border-gray-200 rounded-xl overflow-hidden transition-all duration-200 bg-white shadow-xs"
+                          >
+                            {/* Module Header Trigger */}
+                            <button
+                              type="button"
+                              onClick={() => toggleModule(mId)}
+                              className="w-full p-4 bg-gray-50/80 hover:bg-gray-100/80 flex items-center justify-between text-left transition-colors cursor-pointer border-b border-transparent data-[expanded=true]:border-gray-200"
+                              data-expanded={isExpanded}
+                            >
+                              <div className="flex items-center gap-3.5 min-w-0 pr-3">
+                                <div className="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center font-bold text-xs flex-shrink-0">
+                                  {mIdx + 1}
+                                </div>
+                                <div className="min-w-0">
+                                  <h3 className="font-bold text-gray-900 text-sm sm:text-base leading-snug">
+                                    {module.title}
+                                  </h3>
+                                  {module.duration && (
+                                    <span className="text-xs text-gray-500 font-medium">
+                                      {module.duration}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
-                              <div>
-                                <h3 className="font-semibold text-gray-900 text-base">{module.title}</h3>
-                                <span className="text-xs text-gray-500">{module.duration}</span>
+
+                              <div className="flex items-center gap-3 flex-shrink-0 text-xs text-gray-500">
+                                {lessons.length > 0 ? (
+                                  <span className="hidden sm:inline font-medium">
+                                    {lessons.length} {lessons.length === 1 ? 'topic' : 'topics'}
+                                  </span>
+                                ) : null}
+                                <div className="w-6 h-6 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-600 shadow-2xs">
+                                  {isExpanded ? (
+                                    <ChevronUp className="w-3.5 h-3.5" />
+                                  ) : (
+                                    <ChevronDown className="w-3.5 h-3.5" />
+                                  )}
+                                </div>
                               </div>
-                            </div>
+                            </button>
+
+                            {/* Expanded Module Content */}
+                            {isExpanded && (
+                              <div className="divide-y divide-gray-100 bg-white">
+                                {module.description && (
+                                  <div className="px-5 py-3 bg-red-50/40 text-xs sm:text-sm text-gray-700 leading-relaxed border-b border-gray-100">
+                                    <span className="font-semibold text-red-900 mr-1.5">Overview:</span>
+                                    {module.description}
+                                  </div>
+                                )}
+
+                                {lessons.length > 0 ? (
+                                  lessons.map((lesson, lIdx) => (
+                                    <div
+                                      key={lesson.id || lIdx}
+                                      onClick={() => setSelectedLesson(lesson)}
+                                      className="px-5 py-3.5 hover:bg-gray-50/70 transition-colors flex items-start justify-between gap-4 cursor-pointer group"
+                                    >
+                                      <div className="flex items-start gap-3 min-w-0">
+                                        <div className="pt-0.5 text-gray-400 group-hover:text-red-600 transition-colors flex-shrink-0">
+                                          {lesson.lesson_type === 'video' ? (
+                                            <PlayCircle className="w-4 h-4 text-red-600" />
+                                          ) : lesson.lesson_type === 'quiz' ? (
+                                            <HelpCircle className="w-4 h-4 text-amber-600" />
+                                          ) : (
+                                            <FileText className="w-4 h-4 text-gray-500" />
+                                          )}
+                                        </div>
+                                        <div className="min-w-0 space-y-1">
+                                          <div className="flex flex-wrap items-center gap-2">
+                                            <h4 className="text-sm font-semibold text-gray-900 group-hover:text-red-600 transition-colors leading-snug">
+                                              {lesson.title}
+                                            </h4>
+                                            {lesson.is_free && (
+                                              <span className="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-200">
+                                                Free Preview
+                                              </span>
+                                            )}
+                                          </div>
+                                          {lesson.content && (
+                                            <p className="text-xs text-gray-600 leading-relaxed line-clamp-2">
+                                              {lesson.content}
+                                            </p>
+                                          )}
+                                        </div>
+                                      </div>
+
+                                      <div className="flex items-center gap-2 flex-shrink-0 pt-0.5">
+                                        {lesson.duration_minutes ? (
+                                          <span className="text-xs font-medium text-gray-500 flex items-center gap-1">
+                                            <Clock className="w-3 h-3 text-gray-400" />
+                                            {lesson.duration_minutes}m
+                                          </span>
+                                        ) : null}
+                                        <span className="text-[11px] font-medium text-red-600 opacity-0 group-hover:opacity-100 transition-opacity hidden sm:inline">
+                                          View
+                                        </span>
+                                      </div>
+                                    </div>
+                                  ))
+                                ) : (
+                                  <div className="px-5 py-4 text-xs text-gray-500 italic">
+                                    Detailed topic materials and resources provided during live class sessions.
+                                  </div>
+                                )}
+                              </div>
+                            )}
                           </div>
-                        </div>
-                      ))
+                        );
+                      })
                     ) : (
-                      <div className="space-y-3">
-                        <div className="p-4 border border-gray-200 rounded-xl flex items-center justify-between bg-gray-50/50">
-                          <div className="flex items-center gap-3">
-                            <BookOpen className="w-5 h-5 text-red-600" />
-                            <div>
-                              <h4 className="font-bold text-gray-900 text-sm">Module 1: Foundations & Technical Principles</h4>
-                              <p className="text-xs text-gray-500">4 lectures • 2h 30m</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="p-4 border border-gray-200 rounded-xl flex items-center justify-between bg-gray-50/50">
-                          <div className="flex items-center gap-3">
-                            <BookOpen className="w-5 h-5 text-red-600" />
-                            <div>
-                              <h4 className="font-bold text-gray-900 text-sm">Module 2: Practical Equipment Calibration & Hands-on Lab</h4>
-                              <p className="text-xs text-gray-500">6 lectures • 4h 15m</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="p-4 border border-gray-200 rounded-xl flex items-center justify-between bg-gray-50/50">
-                          <div className="flex items-center gap-3">
-                            <BookOpen className="w-5 h-5 text-red-600" />
-                            <div>
-                              <h4 className="font-bold text-gray-900 text-sm">Module 3: Industry Case Studies & Compliance Standards</h4>
-                              <p className="text-xs text-gray-500">3 lectures • 2h 00m</p>
-                            </div>
-                          </div>
-                        </div>
+                      <div className="p-8 border border-dashed border-gray-300 rounded-xl text-center bg-gray-50/50 space-y-3">
+                        <BookOpen className="w-8 h-8 text-gray-400 mx-auto" />
+                        <h4 className="font-bold text-gray-800 text-sm">Detailed Curriculum Being Finalized</h4>
+                        <p className="text-xs text-gray-500 max-w-md mx-auto">
+                          The comprehensive syllabus and schedule for this course are being prepared. Check back shortly or contact our training coordinators for advance handouts.
+                        </p>
+                        {isInstructor && (
+                          <Button size="sm" variant="outline" onClick={() => navigate(`/course/${id}/edit?tab=content`)} className="mt-2 text-xs">
+                            Add Course Modules
+                          </Button>
+                        )}
                       </div>
                     )}
                   </div>
@@ -422,22 +738,60 @@ export default function CourseDetails() {
               <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-6">
                 <h2 className="text-2xl font-bold text-gray-900">Instructor</h2>
                 <div className="flex flex-col sm:flex-row items-start gap-6">
-                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-red-600 to-red-800 text-white flex items-center justify-center font-extrabold text-2xl shadow-lg flex-shrink-0">
-                    {instructorName.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                  </div>
+                  {course.instructor_avatar ? (
+                    <img
+                      src={course.instructor_avatar}
+                      alt={instructorName}
+                      className="w-20 h-20 rounded-2xl object-cover shadow-md flex-shrink-0 border border-gray-100"
+                    />
+                  ) : (
+                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-red-600 to-red-800 text-white flex items-center justify-center font-extrabold text-2xl shadow-lg flex-shrink-0">
+                      {instructorName.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                    </div>
+                  )}
                   <div className="space-y-2">
                     <h3 className="text-xl font-bold text-gray-900">{instructorName}</h3>
-                    <p className="text-xs font-semibold text-red-600 uppercase tracking-wider">Senior Subject Authority & Lead Assessor</p>
+                    <p className="text-xs font-semibold text-red-600 uppercase tracking-wider">
+                      {course.instructor_role ? (course.instructor_role === 'instructor' ? 'Senior Technical Instructor & Assessor' : course.instructor_role) : 'Senior Subject Authority & Lead Assessor'}
+                    </p>
                     <div className="flex items-center gap-4 text-xs text-gray-500 pt-1">
-                      <span className="flex items-center gap-1"><Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" /> 4.9 Rating</span>
-                      <span className="flex items-center gap-1"><Users className="w-3.5 h-3.5 text-gray-400" /> {formattedStudents} Students</span>
-                      <span className="flex items-center gap-1"><BookOpen className="w-3.5 h-3.5 text-gray-400" /> 12 Courses</span>
+                      {ratingValue && (
+                        <span className="flex items-center gap-1"><Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" /> {ratingValue.toFixed(1)} Rating</span>
+                      )}
+                      {formattedStudents && (
+                        <span className="flex items-center gap-1"><Users className="w-3.5 h-3.5 text-gray-400" /> {formattedStudents} Students</span>
+                      )}
+                      {course.modules && course.modules.length > 0 && (
+                        <span className="flex items-center gap-1"><BookOpen className="w-3.5 h-3.5 text-gray-400" /> {course.modules.length} {course.modules.length === 1 ? 'Module' : 'Modules'}</span>
+                      )}
                     </div>
                     <p className="text-sm text-gray-600 leading-relaxed pt-2">
-                      Experienced energy sector consultant and certified technical assessor leading practical competency programs across Sub-Saharan Africa.
+                      {course.instructor_bio || 'Experienced energy sector consultant and certified technical assessor leading practical competency programs across Sub-Saharan Africa.'}
                     </p>
                   </div>
                 </div>
+              </div>
+
+              {/* IN-HOUSE / CORPORATE FACILITY DELIVERY */}
+              <div className="bg-gradient-to-br from-red-600 via-red-700 to-red-850 text-white rounded-2xl p-6 sm:p-8 shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border border-red-500/30">
+                <div className="space-y-2 max-w-xl">
+                  <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider bg-white/20 px-2.5 py-1 rounded-md text-white">
+                    <Building2 className="w-3.5 h-3.5" />
+                    In-House Client Delivery
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-extrabold text-white">
+                    Deliver this training at your plant or facility
+                  </h3>
+                  <p className="text-xs sm:text-sm text-red-100 leading-relaxed">
+                    Adapted specifically to your OEM equipment, operating procedures, and plant reliability targets. Custom group sizes, dates, and syllabus modifications available upon request.
+                  </p>
+                </div>
+                <Button
+                  onClick={() => navigate(`/contact?subject=In-House+Training+Request&course=${encodeURIComponent(course.title)}`)}
+                  className="bg-white text-red-700 hover:bg-gray-100 font-bold px-6 py-6 rounded-xl text-sm shadow-md flex-shrink-0 transition-transform hover:scale-105"
+                >
+                  Request In-House Proposal
+                </Button>
               </div>
 
             </div>
@@ -589,8 +943,20 @@ export default function CourseDetails() {
                       </div>
                       <div className="flex items-center gap-2.5">
                         <Award className="w-4 h-4 text-red-600 flex-shrink-0" />
-                        <span>Official PANA Institute Competency Certificate</span>
+                        <span>{course.award ? `Award: ${course.award}` : 'Official PANA Institute Competency Certificate'}</span>
                       </div>
+                      {course.delivery_options && (
+                        <div className="flex items-center gap-2.5">
+                          <Building2 className="w-4 h-4 text-red-600 flex-shrink-0" />
+                          <span className="line-clamp-2">{course.delivery_options}</span>
+                        </div>
+                      )}
+                      {course.class_size && (
+                        <div className="flex items-center gap-2.5">
+                          <Users className="w-4 h-4 text-red-600 flex-shrink-0" />
+                          <span>Class size: {course.class_size}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -691,6 +1057,52 @@ export default function CourseDetails() {
             {course.course_type !== 'online' && (
               <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-xs text-red-900 leading-relaxed">
                 <span className="font-bold">Important Notice:</span> Please arrive 15 minutes early with valid government identification for security verification at the main gate.
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* Lesson Details Dialog Modal */}
+      <Dialog open={!!selectedLesson} onOpenChange={(open) => !open && setSelectedLesson(null)}>
+        <DialogContent className="max-w-2xl rounded-2xl p-6 sm:p-8">
+          <DialogHeader>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-red-100 text-red-700">
+                {selectedLesson?.lesson_type === 'quiz' ? 'Assessment / Exam' : selectedLesson?.lesson_type === 'video' ? 'Video Lecture' : 'Topic Lecture'}
+              </span>
+              {selectedLesson?.duration_minutes && (
+                <span className="text-xs text-gray-500 font-medium">
+                  {selectedLesson.duration_minutes} minutes
+                </span>
+              )}
+            </div>
+            <DialogTitle className="text-2xl font-extrabold text-gray-900">
+              {selectedLesson?.title}
+            </DialogTitle>
+            <DialogDescription className="text-gray-500 text-sm">
+              Syllabus module topic overview and learning notes
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 pt-4 text-gray-800 text-sm leading-relaxed">
+            {selectedLesson?.content ? (
+              <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 whitespace-pre-wrap font-normal text-gray-700 text-sm leading-relaxed">
+                {selectedLesson.content}
+              </div>
+            ) : (
+              <p className="text-gray-500 italic">Course topic overview and exercise notes provided during session.</p>
+            )}
+
+            {selectedLesson?.video_url && (
+              <div className="pt-2">
+                <a
+                  href={selectedLesson.video_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-red-600 hover:text-red-700 hover:underline"
+                >
+                  <PlayCircle className="w-4 h-4" /> Watch Lesson Video
+                </a>
               </div>
             )}
           </div>

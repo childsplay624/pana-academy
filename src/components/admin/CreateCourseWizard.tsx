@@ -13,6 +13,10 @@ import { createCourse } from '@/services/courseService';
 import { useToast } from '@/hooks/use-toast';
 
 interface CourseBasics {
+    code?: string;
+    domain_no?: number;
+    subcategoryId?: string;
+    courseArea?: string;
     title: string;
     description: string;
     instructorId: string;
@@ -24,12 +28,19 @@ interface CourseBasics {
     endDate?: string;
     thumbnailUrl?: string;
     level?: 'beginner' | 'intermediate' | 'advanced';
+    award?: string;
+    classSize?: string;
+    deliveryOptions?: string;
 }
 
 interface CourseDetails {
-    // Online course details
+    // Online & General course details
     learningOutcomes?: string[];
     requirements?: string[];
+    standards?: string[];
+    oemPartners?: string[];
+    targetAudience?: string[];
+    practicalWork?: string[];
 
     // Onsite course details
     venueName?: string;

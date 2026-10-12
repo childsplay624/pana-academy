@@ -9,6 +9,7 @@ import {
   TableRow 
 } from "@/components/ui/table";
 import { 
+  fetchCategoriesWithSubcategories,
   fetchCategories, 
   createCategory, 
   updateCategory, 
@@ -67,7 +68,7 @@ export default function CourseCategoryManagement() {
   const loadCategories = async () => {
     try {
       setLoading(true);
-      const data = await fetchCategories();
+      const data = await fetchCategoriesWithSubcategories();
       setCategories(data);
     } catch (error) {
       console.error('Error loading categories:', error);
@@ -215,10 +216,24 @@ export default function CourseCategoryManagement() {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                              <Tag className="w-4 h-4 text-primary" />
+                            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center font-mono font-bold text-xs text-primary">
+                              {category.code_prefix || <Tag className="w-4 h-4 text-primary" />}
                             </div>
-                            <span className="font-bold">{category.name}</span>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                {category.domain_no && (
+                                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0 font-bold">
+                                    Domain {category.domain_no}
+                                  </Badge>
+                                )}
+                                <span className="font-bold">{category.name}</span>
+                              </div>
+                              {category.subcategories && category.subcategories.length > 0 && (
+                                <span className="text-xs text-muted-foreground block mt-0.5">
+                                  {category.subcategories.length} Course Areas (Sub-categories)
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell>

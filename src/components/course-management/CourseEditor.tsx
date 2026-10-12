@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
-import { fetchCategories, Category } from '@/services/courseService';
+import { fetchCategoriesWithSubcategories, Category, Subcategory } from '@/services/courseService';
 import { ModuleManager } from './ModuleManager';
 
 import { EnrollmentManager } from './EnrollmentManager';
@@ -21,17 +21,44 @@ import {
   Eye,
   Trash2,
   Plus,
-  Settings
+  Settings,
+  Upload,
+  ImageIcon,
+  Loader2,
+  User,
+  CheckCircle2,
+  Award,
+  ShieldCheck,
+  Cpu,
+  Briefcase,
+  FileText,
+  X,
+  Sparkles,
+  GraduationCap,
+  Users as UsersIcon,
+  Building2
 } from 'lucide-react';
+import { ImagePicker } from '@/components/admin/ImagePicker';
+
+interface Instructor {
+  id: string;
+  full_name: string;
+  role: string;
+  avatar_url?: string;
+}
 
 interface Course {
   id: string;
+  code?: string | null;
+  domain_no?: number | null;
+  subcategory_id?: string | null;
+  course_area?: string | null;
   title: string;
   description: string | null;
   status: 'draft' | 'published' | 'archived' | 'review';
   price: number;
   duration_hours: number;
-  category: 'soft_skills' | 'safety' | 'sustainability' | 'general_technical' | 'flow_drives' | 'flow_control' | 'flow_measurement' | 'instrumentation_automation';
+  category: any;
   thumbnail_url: string | null;
   level: string | null;
   requirements: string[] | null;
@@ -57,6 +84,196 @@ interface Course {
   resources_count?: number | null;
   venue_id?: string | null;
   category_id?: string | null;
+
+  // Industrial metadata
+  standards?: string[] | null;
+  oem_partners?: string[] | null;
+  award?: string | null;
+  target_audience?: string[] | null;
+  practical_work?: string[] | null;
+  class_size?: string | null;
+  delivery_options?: string | null;
+}
+
+function ArrayItemEditor({
+  title,
+  description,
+  items = [],
+  onChange,
+  placeholder,
+  canEdit,
+  icon: IconComponent,
+  chipStyle = false,
+  badgeText
+}: {
+  title: string;
+  description?: string;
+  items?: string[];
+  onChange: (items: string[]) => void;
+  placeholder?: string;
+  canEdit: boolean;
+  icon?: any;
+  chipStyle?: boolean;
+  badgeText?: string;
+}) {
+  const safeItems = Array.isArray(items) ? items : [];
+  const [inputVal, setInputVal] = useState('');
+  const [showBulk, setShowBulk] = useState(false);
+  const [bulkText, setBulkText] = useState('');
+
+  const handleAdd = () => {
+    const trimmed = inputVal.trim();
+    if (!trimmed) return;
+    if (!safeItems.includes(trimmed)) {
+      onChange([...safeItems, trimmed]);
+    }
+    setInputVal('');
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAdd();
+    }
+  };
+
+  const handleRemove = (index: number) => {
+    onChange(safeItems.filter((_, idx) => idx !== index));
+  };
+
+  const handleBulkAdd = () => {
+    if (!bulkText.trim()) return;
+    const splitLines = bulkText
+      .split(/[\n,]/)
+      .map(s => s.trim())
+      .filter(s => s.length > 0);
+    const combined = Array.from(new Set([...safeItems, ...splitLines]));
+    onChange(combined);
+    setBulkText('');
+    setShowBulk(false);
+  };
+
+  return (
+    <div className="space-y-3 p-4 rounded-xl border border-border bg-card/60">
+      <div className="flex items-center justify-between gap-2">
+        <div>
+          <label className="text-sm font-semibold flex items-center gap-2 text-foreground">
+            {IconComponent && <IconComponent className="w-4 h-4 text-primary" />}
+            <span>{title}</span>
+            <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-normal">
+              {safeItems.length} {badgeText || 'items'}
+            </Badge>
+          </label>
+          {description && <p className="text-xs text-muted-foreground mt-0.5">{description}</p>}
+        </div>
+        {canEdit && (
+          <button
+            type="button"
+            onClick={() => setShowBulk(!showBulk)}
+            className="text-xs text-primary hover:underline font-medium cursor-pointer"
+          >
+            {showBulk ? 'Single line input' : 'Paste bulk items'}
+          </button>
+        )}
+      </div>
+
+      {showBulk && canEdit ? (
+        <div className="space-y-2 p-3 bg-muted/50 rounded-lg border border-border">
+          <Textarea
+            value={bulkText}
+            onChange={(e) => setBulkText(e.target.value)}
+            placeholder="Paste items separated by newlines or commas..."
+            rows={3}
+            className="text-xs bg-background"
+          />
+          <div className="flex items-center justify-end gap-2">
+            <Button type="button" variant="ghost" size="sm" onClick={() => setShowBulk(false)} className="text-xs h-7">
+              Cancel
+            </Button>
+            <Button type="button" size="sm" onClick={handleBulkAdd} className="text-xs h-7">
+              Add All
+            </Button>
+          </div>
+        </div>
+      ) : (
+        canEdit && (
+          <div className="flex items-center gap-2">
+            <Input
+              value={inputVal}
+              onChange={(e) => setInputVal(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={placeholder || 'Type item and press Enter...'}
+              className="text-xs h-9 bg-background"
+              disabled={!canEdit}
+            />
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={handleAdd}
+              className="h-9 px-3 text-xs flex-shrink-0 cursor-pointer"
+              disabled={!inputVal.trim() || !canEdit}
+            >
+              <Plus className="w-3.5 h-3.5 mr-1" />
+              Add
+            </Button>
+          </div>
+        )
+      )}
+
+      {/* Rendered list */}
+      {safeItems.length > 0 ? (
+        chipStyle ? (
+          <div className="flex flex-wrap gap-2 pt-1">
+            {safeItems.map((item, idx) => (
+              <span
+                key={idx}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-muted text-xs font-semibold text-foreground border border-border shadow-2xs"
+              >
+                <span>{item}</span>
+                {canEdit && (
+                  <button
+                    type="button"
+                    onClick={() => handleRemove(idx)}
+                    className="text-muted-foreground hover:text-destructive transition-colors ml-0.5 cursor-pointer"
+                    title="Remove"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                )}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-2 pt-1">
+            {safeItems.map((item, idx) => (
+              <div
+                key={idx}
+                className="flex items-start justify-between gap-2 p-2.5 rounded-lg bg-muted/40 border border-border text-xs text-foreground group"
+              >
+                <div className="flex items-start gap-2.5 min-w-0">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0" />
+                  <span className="leading-relaxed font-medium">{item}</span>
+                </div>
+                {canEdit && (
+                  <button
+                    type="button"
+                    onClick={() => handleRemove(idx)}
+                    className="text-muted-foreground hover:text-destructive transition-colors opacity-70 group-hover:opacity-100 flex-shrink-0 p-1 cursor-pointer"
+                    title="Remove item"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        )
+      ) : (
+        <p className="text-xs text-muted-foreground italic pt-0.5">No entries added yet.</p>
+      )}
+    </div>
+  );
 }
 
 function QuickVenueSelect({ onSelect }: { onSelect: (venue: any) => void }) {
@@ -112,7 +329,9 @@ export function CourseEditor() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [activeTab, setActiveTab] = useState('details');
   const [loadingCategories, setLoadingCategories] = useState(true);
-
+  const [instructors, setInstructors] = useState<Instructor[]>([]);
+  const [loadingInstructors, setLoadingInstructors] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   useEffect(() => {
     if (courseId) {
@@ -127,12 +346,87 @@ export function CourseEditor() {
     }
 
     fetchCategoriesList();
+    fetchInstructorsList();
   }, [courseId]);
+
+  const fetchInstructorsList = async () => {
+    try {
+      setLoadingInstructors(true);
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, role, avatar_url')
+        .or('role.eq.instructor,role.eq.admin')
+        .order('full_name', { ascending: true });
+      if (!error && data) {
+        setInstructors(data);
+      }
+    } catch (err) {
+      console.error('Error fetching instructors:', err);
+    } finally {
+      setLoadingInstructors(false);
+    }
+  };
+
+  const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Image size must be less than 5MB",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      setUploadingImage(true);
+      const fileExt = file.name.split('.').pop() || 'jpg';
+      const fileName = `${courseId || 'course'}-${Date.now()}.${fileExt}`;
+      const filePath = `thumbnails/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('course-images')
+        .upload(filePath, file, { upsert: true });
+
+      let publicUrl = '';
+      if (uploadError) {
+        // Fallback to site-images bucket
+        const { error: fallbackError } = await supabase.storage
+          .from('site-images')
+          .upload(filePath, file, { upsert: true });
+        if (fallbackError) throw uploadError;
+
+        const { data: pubData } = supabase.storage.from('site-images').getPublicUrl(filePath);
+        publicUrl = pubData.publicUrl;
+      } else {
+        const { data: pubData } = supabase.storage.from('course-images').getPublicUrl(filePath);
+        publicUrl = pubData.publicUrl;
+      }
+
+      setCourse(prev => prev ? { ...prev, thumbnail_url: publicUrl } : null);
+      toast({
+        title: "Image Uploaded",
+        description: "Course thumbnail updated. Click Save to persist changes."
+      });
+    } catch (err: any) {
+      console.error("Error uploading image:", err);
+      toast({
+        title: "Upload Failed",
+        description: err.message || "Failed to upload course image",
+        variant: "destructive"
+      });
+    } finally {
+      setUploadingImage(false);
+      if (e.target) e.target.value = '';
+    }
+  };
 
   const fetchCategoriesList = async () => {
     try {
       setLoadingCategories(true);
-      const data = await fetchCategories();
+      const data = await fetchCategoriesWithSubcategories();
       setCategories(data);
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -175,8 +469,13 @@ export function CourseEditor() {
         .from('courses')
         .update({
           title: course.title,
+          code: course.code,
+          domain_no: course.domain_no,
+          subcategory_id: course.subcategory_id,
+          course_area: course.course_area,
           description: course.description,
           category_id: course.category_id,
+          instructor_id: course.instructor_id,
           price: course.price,
           duration_hours: course.duration_hours,
           level: course.level,
@@ -195,7 +494,14 @@ export function CourseEditor() {
           onsite_schedule: course.onsite_schedule,
           venue_id: course.venue_id,
           features: course.features,
-          resources_count: course.resources_count
+          resources_count: course.resources_count,
+          standards: course.standards || [],
+          oem_partners: course.oem_partners || [],
+          award: course.award || 'Certificate of Attendance',
+          target_audience: course.target_audience || [],
+          practical_work: course.practical_work || [],
+          class_size: course.class_size || null,
+          delivery_options: course.delivery_options || null
         })
         .eq('id', courseId);
 
@@ -482,31 +788,110 @@ export function CourseEditor() {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
+                      <label className="text-sm font-medium">Domain (Category)</label>
+                      <Select
+                        value={course.category_id || ''}
+                        onValueChange={async (value) => {
+                          const selectedCat = categories.find(c => c.id === value);
+                          const prefix = selectedCat?.code_prefix || '';
+                          let nextCode = course.code;
+                          if (prefix && (!course.code || course.code.length <= 4)) {
+                            try {
+                              const { data } = await supabase
+                                .from('courses')
+                                .select('code')
+                                .ilike('code', `${prefix}%`);
+                              let maxNum = 0;
+                              if (data) {
+                                data.forEach(item => {
+                                  if (item.code) {
+                                    const match = item.code.match(new RegExp(`^${prefix}(\\d+)`, 'i'));
+                                    if (match && match[1]) {
+                                      const num = parseInt(match[1], 10);
+                                      if (!isNaN(num) && num > maxNum) maxNum = num;
+                                    }
+                                  }
+                                });
+                              }
+                              nextCode = `${prefix}${String(maxNum + 1).padStart(2, '0')}`;
+                            } catch {
+                              nextCode = `${prefix}01`;
+                            }
+                          }
+                          setCourse(prev => prev ? {
+                            ...prev,
+                            category_id: value,
+                            category: (selectedCat?.name || prev.category) as any,
+                            domain_no: selectedCat?.domain_no ?? prev.domain_no,
+                            code: nextCode,
+                            subcategory_id: null,
+                            course_area: null
+                          } : null);
+                        }}
+                        disabled={!canEdit || loadingCategories}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder={loadingCategories ? "Loading..." : "Select domain"} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {categories.map((cat) => (
+                            <SelectItem key={cat.id} value={cat.id}>
+                              {cat.domain_no ? `${cat.domain_no}. ` : ''}{cat.name} {cat.code_prefix ? `(${cat.code_prefix})` : ''}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Course Area (Sub-category)</label>
+                      <Select
+                        value={course.subcategory_id || ''}
+                        disabled={!canEdit || !course.category_id}
+                        onValueChange={(val) => {
+                          const activeCat = categories.find(c => c.id === course.category_id);
+                          const sub = activeCat?.subcategories?.find(s => s.id === val);
+                          setCourse(prev => prev ? {
+                            ...prev,
+                            subcategory_id: val,
+                            course_area: sub?.name || null
+                          } : null);
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select course area" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {(categories.find(c => c.id === course.category_id)?.subcategories || []).map((sub) => (
+                            <SelectItem key={sub.id} value={sub.id}>
+                              {sub.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-sm font-medium">Course Code</label>
+                        <span className="text-[10px] text-muted-foreground font-mono">Auto from domain</span>
+                      </div>
+                      <Input
+                        value={course.code || ''}
+                        onChange={(e) => setCourse(prev => prev ? { ...prev, code: e.target.value.toUpperCase() } : null)}
+                        placeholder="e.g. PD01"
+                        className="font-mono font-bold"
+                        disabled={!canEdit}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
                       <label className="text-sm font-medium">Course Title</label>
                       <Input
                         value={course.title}
                         onChange={(e) => setCourse(prev => prev ? { ...prev, title: e.target.value } : null)}
                         disabled={!canEdit}
                       />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Category</label>
-                      <Select
-                        value={course.category_id || ''}
-                        onValueChange={(value) => setCourse(prev => prev ? { ...prev, category_id: value } : null)}
-                        disabled={!canEdit || loadingCategories}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder={loadingCategories ? "Loading..." : "Select category"} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {categories.map((cat) => (
-                            <SelectItem key={cat.id} value={cat.id}>
-                              {cat.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
                     </div>
 
                     <div className="space-y-2">
@@ -525,6 +910,34 @@ export function CourseEditor() {
                           <SelectItem value="hybrid">🔄 Hybrid Course</SelectItem>
                         </SelectContent>
                       </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Assigned Instructor</label>
+                      {profile?.role === 'admin' ? (
+                        <Select
+                          value={course.instructor_id || ''}
+                          onValueChange={(value) => setCourse(prev => prev ? { ...prev, instructor_id: value } : null)}
+                          disabled={!canEdit || loadingInstructors}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder={loadingInstructors ? "Loading instructors..." : "Select instructor"} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {instructors.map((ins) => (
+                              <SelectItem key={ins.id} value={ins.id}>
+                                {ins.full_name || 'Unnamed'} ({ins.role})
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Input
+                          value={instructors.find(i => i.id === course.instructor_id)?.full_name || profile?.full_name || 'Instructor'}
+                          disabled
+                          className="bg-muted/50"
+                        />
+                      )}
                     </div>
                   </div>
 
@@ -597,6 +1010,111 @@ export function CourseEditor() {
                         min={course.start_date ? new Date(course.start_date).toISOString().slice(0, 16) : undefined}
                       />
                       <p className="text-xs text-gray-500">When does the course finish?</p>
+                    </div>
+                  </div>
+
+                  {/* Course Image / Thumbnail Section */}
+                  <div className="space-y-3 pt-3 border-t">
+                    <label className="text-sm font-medium flex items-center justify-between">
+                      <span className="flex items-center gap-2">
+                        <ImageIcon className="w-4 h-4 text-primary" />
+                        Course Image / Thumbnail
+                      </span>
+                      {course.thumbnail_url && (
+                        <span className="text-xs text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                          Active Thumbnail
+                        </span>
+                      )}
+                    </label>
+
+                    <div className="flex flex-col sm:flex-row items-start gap-4 p-4 rounded-xl border border-border bg-card/60">
+                      {/* Thumbnail Preview */}
+                      <div className="w-full sm:w-56 h-36 rounded-lg border border-border bg-muted/40 overflow-hidden flex items-center justify-center flex-shrink-0 relative group shadow-xs">
+                        {course.thumbnail_url ? (
+                          <>
+                            <img
+                              src={course.thumbnail_url}
+                              alt={course.title}
+                              className="w-full h-full object-cover"
+                            />
+                            {canEdit && (
+                              <button
+                                type="button"
+                                onClick={() => setCourse(prev => prev ? { ...prev, thumbnail_url: null } : null)}
+                                className="absolute top-2 right-2 bg-black/70 hover:bg-destructive text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
+                                title="Remove image"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </>
+                        ) : (
+                          <div className="text-center p-3 text-muted-foreground">
+                            <ImageIcon className="w-8 h-8 mx-auto mb-1 opacity-40" />
+                            <span className="text-xs">No image uploaded</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Upload Actions & Controls */}
+                      <div className="space-y-3 flex-1 w-full">
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          Upload a high-resolution banner image for this course (recommended 1280x720px, PNG, JPG, or WEBP, max 5MB).
+                        </p>
+
+                        <div className="flex flex-wrap items-center gap-2">
+                          <label className={`cursor-pointer inline-flex items-center gap-2 px-3 py-2 rounded-md text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-xs ${uploadingImage ? 'opacity-60 pointer-events-none' : ''}`}>
+                            {uploadingImage ? (
+                              <>
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                <span>Uploading...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Upload className="w-3.5 h-3.5" />
+                                <span>Upload New Image</span>
+                              </>
+                            )}
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              disabled={!canEdit || uploadingImage}
+                              onChange={handleImageFileChange}
+                            />
+                          </label>
+
+                          <ImagePicker
+                            value={course.thumbnail_url || ''}
+                            onSelect={(url) => setCourse(prev => prev ? { ...prev, thumbnail_url: url } : null)}
+                            category="other"
+                            label="Media Library"
+                          />
+
+                          {course.thumbnail_url && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setCourse(prev => prev ? { ...prev, thumbnail_url: null } : null)}
+                              className="text-xs text-destructive hover:bg-destructive/10"
+                              disabled={!canEdit}
+                            >
+                              Remove
+                            </Button>
+                          )}
+                        </div>
+
+                        <div>
+                          <Input
+                            value={course.thumbnail_url || ''}
+                            onChange={(e) => setCourse(prev => prev ? { ...prev, thumbnail_url: e.target.value } : null)}
+                            placeholder="Or paste external image URL (https://...)"
+                            className="text-xs h-8"
+                            disabled={!canEdit}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
 
@@ -733,6 +1251,166 @@ export function CourseEditor() {
                   )}
                 </CardContent>
               </Card>
+
+              {/* Card 2: Learning Outcomes & Prerequisites */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                    Learning Outcomes & Prerequisites
+                  </CardTitle>
+                  <CardDescription>
+                    Define the core competencies students will master and any prerequisite experience required.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <ArrayItemEditor
+                    title="What You'll Learn (Learning Outcomes)"
+                    description="Key skills, principles, and methodologies participants will acquire during this course."
+                    items={course.learning_outcomes || []}
+                    onChange={(newItems) => setCourse(prev => prev ? { ...prev, learning_outcomes: newItems } : null)}
+                    placeholder="e.g. Read a compressor performance map and locate the operating point..."
+                    canEdit={canEdit}
+                    icon={CheckCircle2}
+                    badgeText="outcomes"
+                  />
+
+                  <ArrayItemEditor
+                    title="Requirements & Prerequisites"
+                    description="Knowledge, technical backgrounds, or certifications recommended before enrolling."
+                    items={course.requirements || []}
+                    onChange={(newItems) => setCourse(prev => prev ? { ...prev, requirements: newItems } : null)}
+                    placeholder="e.g. Working knowledge of plant operations or 2 years engineering experience."
+                    canEdit={canEdit}
+                    icon={GraduationCap}
+                    badgeText="requirements"
+                  />
+                </CardContent>
+              </Card>
+
+              {/* Card 3: Industrial, Technical & Accreditation Specifications */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <ShieldCheck className="w-5 h-5 text-red-600" />
+                    Industrial & Accreditation Specifications
+                  </CardTitle>
+                  <CardDescription>
+                    Configure industry compliance standards, OEM technology partners, target disciplines, and certification awards.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-xl border border-border bg-card/60">
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold flex items-center gap-1.5 text-foreground">
+                        <Award className="w-4 h-4 text-primary" />
+                        Certification / Award
+                      </label>
+                      <Select
+                        value={course.award || 'Certificate of Attendance'}
+                        onValueChange={(val) => setCourse(prev => prev ? { ...prev, award: val } : null)}
+                        disabled={!canEdit}
+                      >
+                        <SelectTrigger className="text-xs">
+                          <SelectValue placeholder="Select award type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Certificate of Competence">Certificate of Competence</SelectItem>
+                          <SelectItem value="Certificate of Attendance">Certificate of Attendance</SelectItem>
+                          <SelectItem value="Exam Preparation & Assessment">Exam Preparation & Assessment</SelectItem>
+                          <SelectItem value="Continuous Professional Development (CPD)">CPD Accredited</SelectItem>
+                          <SelectItem value="Official PANA Accreditation Pass">PANA Accreditation Pass</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        value={course.award || ''}
+                        onChange={(e) => setCourse(prev => prev ? { ...prev, award: e.target.value } : null)}
+                        placeholder="Or type custom award title"
+                        className="text-xs h-8"
+                        disabled={!canEdit}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold flex items-center gap-1.5 text-foreground">
+                        <UsersIcon className="w-4 h-4 text-primary" />
+                        Recommended Class Size
+                      </label>
+                      <Input
+                        value={course.class_size || ''}
+                        onChange={(e) => setCourse(prev => prev ? { ...prev, class_size: e.target.value } : null)}
+                        placeholder="e.g. Up to 16 participants"
+                        className="text-xs"
+                        disabled={!canEdit}
+                      />
+                      <p className="text-[11px] text-muted-foreground">Optimal attendee cohort limit for lab drills</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold flex items-center gap-1.5 text-foreground">
+                        <Building2 className="w-4 h-4 text-primary" />
+                        Delivery Options & Cohorts
+                      </label>
+                      <Textarea
+                        value={course.delivery_options || ''}
+                        onChange={(e) => setCourse(prev => prev ? { ...prev, delivery_options: e.target.value } : null)}
+                        placeholder="e.g. Public sessions: Mar 8 to 12. In-house dates on request."
+                        rows={2}
+                        className="text-xs"
+                        disabled={!canEdit}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <ArrayItemEditor
+                      title="Standards & Recognized References"
+                      description="International standards the curriculum aligns with (e.g. API 617, ASME PTC 10, ISO 18436)."
+                      items={course.standards || []}
+                      onChange={(newItems) => setCourse(prev => prev ? { ...prev, standards: newItems } : null)}
+                      placeholder="e.g. API 617, API 614, ASME PTC 10"
+                      canEdit={canEdit}
+                      icon={ShieldCheck}
+                      chipStyle={true}
+                      badgeText="standards"
+                    />
+
+                    <ArrayItemEditor
+                      title="Technology & OEM Partners"
+                      description="OEM equipment, manufacturers, and technology references taught (e.g. Baker Hughes, Siemens)."
+                      items={course.oem_partners || []}
+                      onChange={(newItems) => setCourse(prev => prev ? { ...prev, oem_partners: newItems } : null)}
+                      placeholder="e.g. Baker Hughes, Siemens, Goulds Pumps"
+                      canEdit={canEdit}
+                      icon={Cpu}
+                      chipStyle={true}
+                      badgeText="OEM partners"
+                    />
+                  </div>
+
+                  <ArrayItemEditor
+                    title="Who Should Attend (Target Audience)"
+                    description="Disciplines, engineering job roles, and industrial sectors suited for this course."
+                    items={course.target_audience || []}
+                    onChange={(newItems) => setCourse(prev => prev ? { ...prev, target_audience: newItems } : null)}
+                    placeholder="e.g. Operations engineers, reliability leads, turbomachinery supervisors"
+                    canEdit={canEdit}
+                    icon={Briefcase}
+                    badgeText="roles"
+                  />
+
+                  <ArrayItemEditor
+                    title="Practical Work & Hands-on Exercises"
+                    description="Real-world diagnostic drills, dynamic simulations, or laboratory calibration exercises."
+                    items={course.practical_work || []}
+                    onChange={(newItems) => setCourse(prev => prev ? { ...prev, practical_work: newItems } : null)}
+                    placeholder="e.g. Tune an anti-surge loop on a dynamic simulator and test a fast stop"
+                    canEdit={canEdit}
+                    icon={FileText}
+                    badgeText="exercises"
+                  />
+                </CardContent>
+              </Card>
             </TabsContent>
 
             <TabsContent value="content" className="space-y-6">
@@ -771,14 +1449,56 @@ export function CourseEditor() {
                     </Select>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Thumbnail URL</label>
-                    <Input
-                      value={course.thumbnail_url || ''}
-                      onChange={(e) => setCourse(prev => prev ? { ...prev, thumbnail_url: e.target.value } : null)}
-                      placeholder="https://example.com/image.jpg"
-                      disabled={!canEdit}
-                    />
+                  <div className="space-y-3 pt-2">
+                    <label className="text-sm font-medium flex items-center gap-2">
+                      <ImageIcon className="w-4 h-4 text-primary" />
+                      Course Thumbnail & Cover Image
+                    </label>
+
+                    <div className="flex flex-col sm:flex-row items-start gap-4 p-4 rounded-xl border border-border bg-card/60">
+                      <div className="w-40 h-24 rounded-lg border border-border bg-muted/40 overflow-hidden flex items-center justify-center flex-shrink-0 relative group">
+                        {course.thumbnail_url ? (
+                          <img
+                            src={course.thumbnail_url}
+                            alt={course.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-xs text-muted-foreground">No image</span>
+                        )}
+                      </div>
+
+                      <div className="space-y-2 flex-1 w-full">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <label className={`cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-xs ${uploadingImage ? 'opacity-60 pointer-events-none' : ''}`}>
+                            <Upload className="w-3.5 h-3.5" />
+                            <span>Upload File</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              disabled={!canEdit || uploadingImage}
+                              onChange={handleImageFileChange}
+                            />
+                          </label>
+
+                          <ImagePicker
+                            value={course.thumbnail_url || ''}
+                            onSelect={(url) => setCourse(prev => prev ? { ...prev, thumbnail_url: url } : null)}
+                            category="other"
+                            label="Media Library"
+                          />
+                        </div>
+
+                        <Input
+                          value={course.thumbnail_url || ''}
+                          onChange={(e) => setCourse(prev => prev ? { ...prev, thumbnail_url: e.target.value } : null)}
+                          placeholder="https://example.com/image.jpg"
+                          className="text-xs h-8"
+                          disabled={!canEdit}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

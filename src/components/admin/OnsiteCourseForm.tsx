@@ -49,6 +49,18 @@ export function OnsiteCourseForm({
     const [materialsList, setMaterialsList] = React.useState<string[]>(
         initialData.materialsList || []
     );
+    const [standardsInput, setStandardsInput] = React.useState(
+        (initialData.standards || []).join(', ')
+    );
+    const [oemInput, setOemInput] = React.useState(
+        (initialData.oemPartners || initialData.oem_partners || []).join(', ')
+    );
+    const [targetAudience, setTargetAudience] = React.useState<string[]>(
+        initialData.targetAudience || initialData.target_audience || []
+    );
+    const [practicalWork, setPracticalWork] = React.useState<string[]>(
+        initialData.practicalWork || initialData.practical_work || []
+    );
 
     const requiresMaterials = watch('requiresMaterials');
 
@@ -103,6 +115,10 @@ export function OnsiteCourseForm({
             ...data,
             onsiteSchedule,
             materialsList: requiresMaterials ? materialsList.filter(m => m.trim() !== '') : [],
+            standards: standardsInput.split(',').map((s: string) => s.trim()).filter(Boolean),
+            oemPartners: oemInput.split(',').map((s: string) => s.trim()).filter(Boolean),
+            targetAudience: targetAudience.filter(t => t.trim() !== ''),
+            practicalWork: practicalWork.filter(p => p.trim() !== ''),
         });
     };
 
