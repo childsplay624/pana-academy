@@ -113,6 +113,10 @@ export default function CourseDetails() {
           return;
         }
 
+        if (courseData.id && id !== courseData.id) {
+          navigate(`/course/${courseData.id}`, { replace: true });
+        }
+
         setCourse({
           ...courseData,
           students_count: courseData.students_count || 0,
@@ -123,7 +127,7 @@ export default function CourseDetails() {
 
         if (user?.id) {
           try {
-            const { isEnrolled: enrolled } = await checkEnrollment(id);
+            const { isEnrolled: enrolled } = await checkEnrollment(courseData.id);
             setIsEnrolled(enrolled);
           } catch (enrollError) {
             console.error('Error checking enrollment:', enrollError);
@@ -463,8 +467,8 @@ export default function CourseDetails() {
                       </button>
                     )}
 
-                    {isInstructor && id && (
-                      <Button variant="outline" size="sm" onClick={() => navigate(`/course/${id}/edit`)}>
+                    {isInstructor && course?.id && (
+                      <Button variant="outline" size="sm" onClick={() => navigate(`/course/${course.id}/edit`)}>
                         Edit Content
                       </Button>
                     )}
@@ -601,8 +605,8 @@ export default function CourseDetails() {
                         <p className="text-xs text-gray-500 max-w-md mx-auto">
                           The comprehensive syllabus and schedule for this course are being prepared. Check back shortly or contact our training coordinators for advance handouts.
                         </p>
-                        {isInstructor && (
-                          <Button size="sm" variant="outline" onClick={() => navigate(`/course/${id}/edit?tab=content`)} className="mt-2 text-xs">
+                        {isInstructor && course?.id && (
+                          <Button size="sm" variant="outline" onClick={() => navigate(`/course/${course.id}/edit?tab=content`)} className="mt-2 text-xs">
                             Add Course Modules
                           </Button>
                         )}
