@@ -159,7 +159,9 @@ interface DatabaseCourse {
 
 export const fetchCourseById = async (id: string): Promise<Course | null> => {
   try {
-    const { data, error } = await supabase
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+
+    let query = supabase
       .from('courses')
       .select(`
         *,
@@ -181,10 +183,17 @@ export const fetchCourseById = async (id: string): Promise<Course | null> => {
           )
         ),
         category_data:course_categories (id, name, slug)
-      `)
-      .eq('id', id)
+      `);
+
+    if (isUuid) {
+      query = query.eq('id', id);
+    } else {
+      query = query.ilike('code', id);
+    }
+
+    const { data, error } = await query
       .order('order_index', { foreignTable: 'modules', ascending: true })
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error('Error fetching course:', error);

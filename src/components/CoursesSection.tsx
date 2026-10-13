@@ -48,7 +48,7 @@ const CoursesSection = ({
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {displayCourses.map((course) => (
-              <Link to={`/course/${course.id}`} key={course.id} className="block h-full no-underline">
+              <Link to={`/course/${course.code || course.id}`} key={course.id} className="block h-full no-underline">
                 <Card3D intensity={12} depth={15} glowColor="rgba(220, 38, 38, 0.12)" className="h-full">
                   <div className="h-full bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col justify-between preserve-3d">
                     {/* Media Header */}
