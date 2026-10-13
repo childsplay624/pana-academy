@@ -714,19 +714,37 @@ export default function CourseDetails() {
                 </div>
               )}
 
-              {/* COURSE SCHEDULE SECTION (Onsite / Hybrid) */}
-              {(course.course_type === 'onsite' || course.course_type === 'hybrid') && course.start_date && (
+              {/* COURSE SCHEDULE SECTION (Onsite / Hybrid / In-house) */}
+              {(course.course_type === 'onsite' || course.course_type === 'hybrid' || course.delivery_options) && (
                 <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-2xl border border-red-100 p-6 sm:p-8 shadow-sm">
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 rounded-2xl bg-red-600 text-white flex items-center justify-center flex-shrink-0 shadow-md">
                       <Calendar className="w-6 h-6" />
                     </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-1">Live Training Schedule & Venue</h3>
-                      <p className="text-gray-600 text-sm mb-3">
-                        <span className="font-semibold text-gray-800">Commencing:</span> {formatCourseDate(course.start_date)}
-                        {course.end_date && <> to {formatCourseDate(course.end_date)}</>}
-                      </p>
+                    <div className="space-y-2 flex-1">
+                      <h3 className="text-xl font-bold text-gray-900 mb-1">Live Training Schedule & Delivery</h3>
+                      
+                      {course.start_date ? (
+                        <p className="text-gray-700 text-sm">
+                          <span className="font-semibold text-gray-900">Next Scheduled Session:</span>{' '}
+                          <span className="font-medium text-red-700 bg-red-100/70 px-2 py-0.5 rounded">
+                            {formatCourseDate(course.start_date)}
+                            {course.end_date && <> to {formatCourseDate(course.end_date)}</>}
+                          </span>
+                        </p>
+                      ) : (
+                        <p className="text-gray-700 text-sm font-medium text-amber-800 bg-amber-50 border border-amber-200/80 px-2.5 py-1 rounded-lg w-fit">
+                          On-Demand & In-House Delivery (Runs on request)
+                        </p>
+                      )}
+
+                      {course.delivery_options && (
+                        <div className="text-xs sm:text-sm text-gray-600 bg-white/80 p-3 rounded-xl border border-red-100/80">
+                          <span className="font-semibold text-gray-800">Public & Client Sessions: </span>
+                          <span>{course.delivery_options}</span>
+                        </div>
+                      )}
+
                       {course.venue_name && (
                         <div className="flex items-center gap-2 text-xs font-semibold text-red-700 bg-white/80 px-3 py-1.5 rounded-lg border border-red-200 w-fit">
                           <MapPin className="w-3.5 h-3.5" />
