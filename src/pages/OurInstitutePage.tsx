@@ -190,14 +190,14 @@ export const OurInstitutePage: React.FC = () => {
 
         if (courseData && courseData.length > 0) {
           const mappedCourses = courseData.map((c: any, idx: number) => {
-            const startTs = c.start_date ? new Date(c.start_date).getTime() : Date.now() + idx * 86400000 * 14;
+            const startTs = c.start_date ? new Date(c.start_date).getTime() : Number.MAX_SAFE_INTEGER;
             return {
               id: c.id,
               title: c.title,
               description: c.description || 'Accredited training solution designed to build verifiable competence for energy and technology professionals.',
               category: c.category_name || (c.category ? (c.category as string).replace('_', ' ') : 'Competency Training'),
               startDateTimestamp: startTs,
-              date: c.start_date ? new Date(c.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Sept 15 – 19, 2026',
+              date: c.start_date ? new Date(c.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Based on Request',
               duration: c.duration || `${c.duration_hours || 40} hours`,
               location: c.location || 'Port Harcourt Hub & Virtual',
               status: 'Enrollment Open',

@@ -109,13 +109,20 @@ const CoursesSection = ({
                           {course.description}
                         </p>
 
-                        {/* Start Date */}
-                        {course.start_date && (
+                        {/* Schedule / Delivery Status */}
+                        {course.start_date ? (
                           <div className="flex items-center gap-2 pt-2 text-xs font-semibold text-zinc-700 translate-z-5">
                             <div className="w-7 h-7 rounded-lg bg-red-50 text-red-600 flex items-center justify-center shrink-0 border border-red-100">
                               <Calendar className="h-3.5 w-3.5" />
                             </div>
                             <span>Starts: {formatCourseDate(course.start_date)}</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 pt-2 text-xs font-semibold text-amber-800 translate-z-5">
+                            <div className="w-7 h-7 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 border border-amber-200">
+                              <Calendar className="h-3.5 w-3.5" />
+                            </div>
+                            <span className="bg-amber-50 px-2 py-0.5 rounded border border-amber-200/80">Based on Request</span>
                           </div>
                         )}
                       </div>

@@ -733,9 +733,12 @@ export default function CourseDetails() {
                           </span>
                         </p>
                       ) : (
-                        <p className="text-gray-700 text-sm font-medium text-amber-800 bg-amber-50 border border-amber-200/80 px-2.5 py-1 rounded-lg w-fit">
-                          On-Demand & In-House Delivery (Runs on request)
-                        </p>
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-900 font-semibold text-sm">Schedule:</span>
+                          <span className="font-semibold text-xs text-amber-800 bg-amber-50 border border-amber-300 px-2.5 py-1 rounded-lg">
+                            Based on Request (In-house & on-demand)
+                          </span>
+                        </div>
                       )}
 
                       {course.delivery_options && (
