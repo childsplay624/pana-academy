@@ -577,7 +577,7 @@ const PublicCoursesPage = () => {
                 const originalPriceNum = !isPriceTbd && !course.is_free && course.price ? Math.round(course.price * 1.25) : null;
                 return (
                   <Link
-                    to={`/course/${course.code || course.id}`}
+                    to={`/course/${course.id}`}
                     key={course.id}
                     className="block bg-white p-5 rounded-2xl border border-gray-200 hover:border-gray-400 hover:shadow-xl transition-all duration-300 no-underline group"
                   >

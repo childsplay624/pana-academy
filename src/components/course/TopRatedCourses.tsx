@@ -8,11 +8,11 @@ import { Star, Clock, Users, BookOpen } from 'lucide-react';
 import { usePlatformSettings } from '@/hooks/usePlatformSettings';
 import { Card3D } from '@/components/ui/Card3D';
 
-// Extend Course type with additional properties needed for display
 interface DisplayCourse extends Course {
   category: string;
   duration: number;
   students_enrolled: number;
+  code?: string;
 }
 
 // Sample course data for when no courses are available in the database
@@ -244,7 +244,7 @@ export function TopRatedCourses() {
                       {course.level?.charAt(0).toUpperCase() + course.level?.slice(1) || 'All Levels'}
                     </span>
                     <Link
-                      to={`/course/${course.code || course.id}`}
+                      to={`/course/${course.id}`}
                       className="text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors"
                     >
                       Enroll Now
@@ -264,7 +264,7 @@ export function TopRatedCourses() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {courses.map((course) => (
           <Card3D key={course.id} intensity={12} depth={15} glowColor="rgba(220, 38, 38, 0.12)">
-            <Link to={`/course/${course.code || course.id}`} className="block h-full no-underline">
+            <Link to={`/course/${course.id}`} className="block h-full no-underline">
               <Card className="h-full hover:shadow-3d-dark transition-all border border-gray-200/80 overflow-hidden bg-white/95 preserve-3d">
                 {course.thumbnail_url ? (
                   <div className="relative h-44 overflow-hidden">

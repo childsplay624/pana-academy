@@ -48,6 +48,8 @@ export interface CourseLogistics {
 
 export interface Course {
   id: string;
+  code?: string;
+  domain_no?: number;
   title: string;
   description: string;
   thumbnail_url?: string;
