@@ -52,18 +52,6 @@ export function Navigation() {
   useEffect(() => {
     const fetchNavData = async () => {
       try {
-        // Fetch custom pages for the "More" dropdown fallback
-        const { data: pageData } = await supabase
-          .from('pages')
-          .select('title, slug')
-          .eq('status', 'published')
-          .eq('show_in_navbar', true);
-          
-        let customPagesDropdown: any[] = [];
-        if (pageData && pageData.length > 0) {
-          customPagesDropdown = pageData.map(p => ({ name: p.title, href: `/p/${p.slug}`, icon: "fa-solid fa-file-lines" }));
-        }
-
         // Fetch dynamic navbar layout from Supabase platform_settings if configured
         const { data: settingData } = await supabase
           .from('platform_settings')
@@ -75,7 +63,8 @@ export function Navigation() {
           let parsed = settingData.value;
           if (typeof parsed === 'string') parsed = JSON.parse(parsed);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            setNavItems(parsed);
+            // Ensure any "More" tab is disabled/excluded
+            setNavItems(parsed.filter((item: any) => item.name?.trim().toLowerCase() !== 'more'));
             return;
           }
         }
@@ -143,15 +132,6 @@ export function Navigation() {
           },
           { name: "Contact Us", href: "/contact" },
         ];
-
-        if (customPagesDropdown.length > 0) {
-          defaultItems.push({
-            name: "More",
-            href: "#",
-            dropdown: customPagesDropdown,
-            megaMenu: false,
-          } as any);
-        }
 
         setNavItems(defaultItems);
       } catch (err) {

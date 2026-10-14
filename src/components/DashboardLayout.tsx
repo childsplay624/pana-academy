@@ -1,6 +1,7 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "./DashboardSidebar";
-import { Home } from "lucide-react";
+import { Home, BookMarked, Sparkles } from "lucide-react";
+import { NavLink } from "react-router-dom";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -18,15 +19,41 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="flex items-center h-full px-4">
               <SidebarTrigger className="mr-4" />
               <div className="flex-1 flex items-center justify-between">
-                <h1 className="text-lg font-semibold">Dashboard</h1>
-                <a
-                  href="/"
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-red-600 transition-colors bg-secondary/50 px-3 py-1.5 rounded-full border border-border group"
-                  title="Return to Public Website"
-                >
-                  <Home className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                  <span className="hidden sm:inline font-medium text-xs">Back to Homepage</span>
-                </a>
+                <div className="flex items-center gap-3">
+                  <h1 className="text-lg font-semibold tracking-tight">Dashboard</h1>
+                  <span className="text-xs text-muted-foreground hidden md:inline">|</span>
+                  <span className="text-xs text-muted-foreground hidden md:inline font-medium">Administration & Control Hub</span>
+                </div>
+
+                <div className="flex items-center gap-2 sm:gap-3">
+                  {/* Documentation Navbar Pill Button */}
+                  <NavLink
+                    to="/dashboard/documentation"
+                    className={({ isActive }) =>
+                      `flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full border transition-all ${
+                        isActive
+                          ? "bg-red-600 text-white border-red-600 shadow-sm shadow-red-600/30"
+                          : "bg-background text-foreground hover:bg-secondary/70 border-border text-muted-foreground hover:text-foreground"
+                      }`
+                    }
+                    title="System Documentation & Architecture"
+                  >
+                    <BookMarked className="w-3.5 h-3.5 text-red-500 group-hover:scale-110 transition-transform" />
+                    <span>Documentation</span>
+                    <span className="hidden lg:inline-block text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">
+                      v1.0
+                    </span>
+                  </NavLink>
+
+                  <a
+                    href="/"
+                    className="flex items-center gap-2 text-xs text-muted-foreground hover:text-red-600 transition-colors bg-secondary/50 px-3 py-1.5 rounded-full border border-border group"
+                    title="Return to Public Website"
+                  >
+                    <Home className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
+                    <span className="hidden sm:inline font-medium">Website</span>
+                  </a>
+                </div>
               </div>
             </div>
           </header>

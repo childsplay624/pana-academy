@@ -76,6 +76,7 @@ import BlogManagement from "./pages/admin/BlogManagement";
 import BlogPostEditor from "./pages/admin/BlogPostEditor";
 import FindAndReplaceManagement from "./pages/admin/FindAndReplaceManagement";
 import NavigationManagement from "./pages/admin/NavigationManagement";
+import DocumentationPage from "./pages/admin/DocumentationPage";
 
 
 const queryClient = new QueryClient();
@@ -139,6 +140,7 @@ const App = () => (
                     <Route path="/training-delivery" element={<TrainingDeliveryPage />} />
                     <Route path="/consulting-services" element={<ConsultingServicesPage />} />
                     <Route path="/research-development" element={<RnDServicesPage />} />
+                    <Route path="/rnd-services" element={<RnDServicesPage />} />
                     <Route path="/sustainability-solutions" element={<SustainabilitySolutionsPage />} />
                     <Route path="/sustainability" element={<SustainabilitySolutionsPage />} />
                     <Route path="/global-engagements" element={<GlobalEngagementsPage />} />
@@ -307,6 +309,14 @@ const App = () => (
                       element={
                         <ProtectedRoute allowedRoles={['admin']}>
                           <FindAndReplaceManagement />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard/documentation"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <DocumentationPage />
                         </ProtectedRoute>
                       }
                     />

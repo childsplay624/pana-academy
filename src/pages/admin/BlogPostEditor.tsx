@@ -9,10 +9,11 @@ import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ChevronLeft, Save, Loader2, Newspaper, Image as ImageIcon, FileText, Images, Trash2, Plus, Star } from 'lucide-react';
+import { ChevronLeft, Save, Loader2, Newspaper, Image as ImageIcon, FileText, Images, Trash2, Plus, Star, FileUp, Download, CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ImagePicker } from '@/components/admin/ImagePicker';
 import { blogService, BlogPost, BlogCategory } from '@/services/blogService';
+import { supabase } from '@/integrations/supabase/client';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
@@ -32,6 +33,10 @@ export default function BlogPostEditor() {
   const [coverImage, setCoverImage] = useState('');
   const [gallery, setGallery] = useState<string[]>([]);
   const [customImageUrl, setCustomImageUrl] = useState('');
+  const [pdfUrl, setPdfUrl] = useState('');
+  const [pdfName, setPdfName] = useState('');
+  const [pdfSize, setPdfSize] = useState('');
+  const [uploadingPdf, setUploadingPdf] = useState(false);
   const [published, setPublished] = useState(false);
 
   useEffect(() => {
@@ -52,6 +57,9 @@ export default function BlogPostEditor() {
         setContent(post.content || '');
         setCoverImage(post.cover_image || '');
         setGallery(post.gallery || []);
+        setPdfUrl(post.pdf_url || '');
+        setPdfName(post.pdf_name || '');
+        setPdfSize(post.pdf_size || '');
         setPublished(post.published || false);
       }
     } catch (error) {
@@ -107,6 +115,73 @@ export default function BlogPostEditor() {
     toast({ title: 'Cover Updated', description: 'Selected photo set as the main cover image.' });
   };
 
+  const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+      toast({
+        title: 'Invalid File',
+        description: 'Please upload a valid PDF document (.pdf)',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (file.size > 25 * 1024 * 1024) {
+      toast({
+        title: 'File Too Large',
+        description: 'Maximum PDF file size is 25MB.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      setUploadingPdf(true);
+      const cleanFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const filePath = `documents/${Date.now()}-${cleanFileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('site-images')
+        .upload(filePath, file, { cacheControl: '3600', upsert: false });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('site-images')
+        .getPublicUrl(filePath);
+
+      const sizeFormatted = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+      setPdfUrl(publicUrl);
+      setPdfName(file.name);
+      setPdfSize(sizeFormatted);
+
+      toast({
+        title: 'PDF Uploaded',
+        description: `"${file.name}" attached successfully.`,
+      });
+    } catch (error: any) {
+      console.error('Error uploading PDF:', error);
+      toast({
+        title: 'Upload Failed',
+        description: error.message || 'Could not upload PDF document.',
+        variant: 'destructive',
+      });
+    } finally {
+      setUploadingPdf(false);
+      // Reset input value
+      e.target.value = '';
+    }
+  };
+
+  const handleRemovePdf = () => {
+    setPdfUrl('');
+    setPdfName('');
+    setPdfSize('');
+    toast({ title: 'PDF Removed', description: 'Document attachment cleared.' });
+  };
+
   const handleSave = async () => {
     if (!title || !slug) {
       toast({ title: 'Validation Error', description: 'Title and Slug are required.', variant: 'destructive' });
@@ -123,6 +198,9 @@ export default function BlogPostEditor() {
         content,
         cover_image: coverImage,
         gallery,
+        pdf_url: pdfUrl,
+        pdf_name: pdfName,
+        pdf_size: pdfSize,
         published
       };
 
@@ -344,6 +422,85 @@ export default function BlogPostEditor() {
               </CardContent>
             </Card>
             )}
+
+            {/* PDF Document Attachment Card (Prominently displayed for resources, but available for any document attachment) */}
+            <Card className={category === 'resources' ? "border-emerald-300 ring-2 ring-emerald-500/20 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300" : "border-gray-200 shadow-sm"}>
+              <CardHeader className="pb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="space-y-1">
+                    <CardTitle className="text-lg flex items-center gap-2 text-gray-900">
+                      <FileText className="w-5 h-5 text-emerald-600" />
+                      PDF Document Attachment {category === 'resources' && <Badge className="bg-emerald-600 text-white ml-2 text-xs">Primary for Resources & Policies</Badge>}
+                    </CardTitle>
+                    <CardDescription>
+                      Upload institutional policies, compliance codes, brochures, charters, or research documents in PDF format for users to view and download.
+                    </CardDescription>
+                  </div>
+                  {pdfUrl && (
+                    <Badge variant="outline" className="border-emerald-500 text-emerald-700 bg-emerald-50">
+                      PDF Attached
+                    </Badge>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {pdfUrl ? (
+                  <div className="p-4 bg-emerald-50/60 rounded-xl border border-emerald-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-12 h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                        <FileText className="w-6 h-6" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-bold text-gray-900 truncate">{pdfName || 'Attached Document.pdf'}</p>
+                        <p className="text-xs text-muted-foreground">{pdfSize ? `${pdfSize} • ` : ''}Ready for download & viewing</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
+                      <a 
+                        href={pdfUrl} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="inline-flex items-center text-xs font-semibold px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 shadow-sm"
+                      >
+                        <Download className="w-3.5 h-3.5 mr-1 text-emerald-600" /> View/Test
+                      </a>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        onClick={handleRemovePdf}
+                        className="text-xs h-8"
+                      >
+                        <Trash2 className="w-3.5 h-3.5 mr-1" /> Remove
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-6 border-2 border-dashed border-gray-300 hover:border-emerald-500 transition-colors rounded-xl bg-gray-50/50 text-center">
+                    <div className="w-12 h-12 mx-auto rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3">
+                      {uploadingPdf ? <Loader2 className="w-6 h-6 animate-spin" /> : <FileUp className="w-6 h-6" />}
+                    </div>
+                    <p className="text-sm font-semibold text-gray-900 mb-1">
+                      {uploadingPdf ? 'Uploading PDF Document...' : 'Upload Official PDF Document'}
+                    </p>
+                    <p className="text-xs text-muted-foreground max-w-md mx-auto mb-4">
+                      Select brochures, institutional policies, governance manuals, or guidelines (PDF only, up to 25MB).
+                    </p>
+                    <label className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm cursor-pointer transition-colors">
+                      <FileUp className="w-4 h-4 mr-1.5" />
+                      Browse PDF File
+                      <input 
+                        type="file" 
+                        accept="application/pdf,.pdf" 
+                        onChange={handlePdfUpload} 
+                        disabled={uploadingPdf} 
+                        className="hidden" 
+                      />
+                    </label>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
 
           <div className="space-y-6">
