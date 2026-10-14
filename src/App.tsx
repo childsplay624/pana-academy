@@ -58,6 +58,7 @@ import ContactPage from "./pages/ContactPage";
 import TrainingCalendarPage from "./pages/TrainingCalendarPage";
 import AuthCallback from "./pages/auth/callback";
 import OurJourney from "./pages/our-journey";
+import { OurInstitutePage } from "./pages/OurInstitutePage";
 import PublicPageRenderer from "./pages/PublicPageRenderer";
 
 import AboutPage from "./pages/AboutPage";
@@ -76,6 +77,8 @@ import BlogManagement from "./pages/admin/BlogManagement";
 import BlogPostEditor from "./pages/admin/BlogPostEditor";
 import FindAndReplaceManagement from "./pages/admin/FindAndReplaceManagement";
 import NavigationManagement from "./pages/admin/NavigationManagement";
+import DocumentationPage from "./pages/admin/DocumentationPage";
+import { PanaAiWidget } from "./components/PanaAiWidget";
 
 
 const queryClient = new QueryClient();
@@ -139,6 +142,7 @@ const App = () => (
                     <Route path="/training-delivery" element={<TrainingDeliveryPage />} />
                     <Route path="/consulting-services" element={<ConsultingServicesPage />} />
                     <Route path="/research-development" element={<RnDServicesPage />} />
+                    <Route path="/rnd-services" element={<RnDServicesPage />} />
                     <Route path="/sustainability-solutions" element={<SustainabilitySolutionsPage />} />
                     <Route path="/sustainability" element={<SustainabilitySolutionsPage />} />
                     <Route path="/global-engagements" element={<GlobalEngagementsPage />} />
@@ -147,7 +151,8 @@ const App = () => (
                     <Route path="/contact" element={<ContactPage />} />
                     <Route path="/training-calendar" element={<TrainingCalendarPage />} />
                     <Route path="/our-journey" element={<OurJourney />} />
-                     <Route path="/testimonials" element={<TestimonialsPage />} />
+                    <Route path="/our-institute" element={<OurInstitutePage />} />
+                    <Route path="/testimonials" element={<TestimonialsPage />} />
                     <Route path="/careers" element={<CareersPage />} />
                     <Route path="/test" element={<TestPage />} />
                     <Route
@@ -311,6 +316,14 @@ const App = () => (
                       }
                     />
                     <Route
+                      path="/dashboard/documentation"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <DocumentationPage />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
                       path="/dashboard/blog"
                       element={
                         <ProtectedRoute allowedRoles={['admin']}>
@@ -409,6 +422,7 @@ const App = () => (
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </MaintenanceGuard>
+                <PanaAiWidget />
               </BrowserRouter>
             </Dialog>
           </TooltipProvider>
