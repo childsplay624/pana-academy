@@ -802,7 +802,6 @@ export default function PageEditor() {
                                     checked={section.is_active ?? true}
                                     onCheckedChange={(checked) => {
                                       setSections(prev => prev.map(s => s.id === section.id ? { ...s, is_active: checked } : s));
-                                      setIsDirty(true);
                                     }}
                                   />
                                 </div>
