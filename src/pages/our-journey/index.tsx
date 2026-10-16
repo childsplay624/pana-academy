@@ -2,16 +2,25 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Helmet } from "react-helmet-async";
 import { useSiteImage } from "@/hooks/useSiteImage";
+import { usePageContent } from "@/hooks/usePageContent";
+import { DynamicPageSections } from "@/components/page-builder/DynamicPageSections";
 import { ChevronLeft } from 'lucide-react';
 import Navigation from '../../components/Navigation';
 import Footer from '../../components/Footer';
 
 export default function OurJourney() {
-  // Fetch header image from centralized system
-  const { imageUrl: headerImage } = useSiteImage('header_team');
+  // Fetch header image and page builder content
+  const { imageUrl: defaultHeaderImage } = useSiteImage('header_team');
+  const { get } = usePageContent('our-journey');
+  const headerImage = get('header_image') || defaultHeaderImage;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
+      <Helmet>
+        <title>{get('hero_title', 'From Academy to Institute')} | Our Journey · PANA Institute</title>
+        <meta name="description" content={get('hero_description', 'PANA Institute grew from a corporate training arm into a centre of excellence across competency assessment, applied research, consultancy, and sustainability.')} />
+      </Helmet>
+
       <Navigation />
       <main className="flex-grow pt-20">
         {/* Hero Section with Header Image */}
@@ -39,13 +48,18 @@ export default function OurJourney() {
           <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 text-center">
             <div className="max-w-4xl mx-auto">
               <span className="inline-block px-4 py-1.5 rounded-full text-xs md:text-sm font-semibold tracking-wider bg-red-600/30 text-red-200 border border-red-500/40 mb-4 uppercase">
-                Our Institute · Our Journey
+                {get('hero_badge', 'Our Institute · Our Journey')}
               </span>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
-                From Academy to Institute
+                {get('hero_title', 'From Academy to Institute')}
               </h1>
+              {get('hero_subtitle') && (
+                <p className="text-lg md:text-xl text-red-300 font-semibold mb-3">
+                  {get('hero_subtitle')}
+                </p>
+              )}
               <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
-                PANA Institute grew from a corporate training arm into a centre of excellence with a broader remit across competency assessment and development, applied research, consultancy, global engagement, and sustainability.
+                {get('hero_description', 'PANA Institute grew from a corporate training arm into a centre of excellence with a broader remit across competency assessment and development, applied research, consultancy, global engagement, and sustainability.')}
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-4">
                 <a
@@ -470,6 +484,10 @@ export default function OurJourney() {
           </div>
         </div>
       </main>
+
+      {/* Modular Sections from Page Builder */}
+      <DynamicPageSections slug="our-journey" />
+
       <Footer />
     </div>
   );

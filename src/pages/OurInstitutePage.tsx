@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Calendar, Clock, MapPin, ArrowRight, BookOpen, Tag, Quote, Star } from 'lucide-react';
 import { supabase } from "@/integrations/supabase/client";
 import { Card3D } from '@/components/ui/Card3D';
+import { usePageContent } from "@/hooks/usePageContent";
+import { DynamicPageSections } from "@/components/page-builder/DynamicPageSections";
 
 const heroSlides = [
   {
@@ -140,6 +142,7 @@ const latestArticles = [
 ];
 
 export const OurInstitutePage: React.FC = () => {
+  const { get } = usePageContent('our-institute');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [activeTimelineStep, setActiveTimelineStep] = useState(0);
   const [activeGovTab, setActiveGovTab] = useState<'council' | 'committees' | 'exec'>('council');
@@ -1122,6 +1125,9 @@ export const OurInstitutePage: React.FC = () => {
             </div>
           </div>
         </motion.section>
+
+        {/* Modular Sections from Page Builder */}
+        <DynamicPageSections slug="our-institute" />
       </main>
 
       <Footer />

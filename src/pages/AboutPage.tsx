@@ -148,13 +148,13 @@ const AboutPage = () => {
                         {/* Who We Are & Core Identity */}
                         <div className="text-center max-w-4xl mx-auto mb-16">
                             <span className="inline-block px-4 py-1.5 rounded-full text-xs md:text-sm font-semibold tracking-wider bg-red-100 text-red-700 uppercase mb-4">
-                                Who We Are
+                                {get('who_we_are_badge', 'Who We Are')}
                             </span>
                             <h2 className="text-3xl md:text-5xl font-bold text-pana-navy mb-6">
-                                Human capital for the industries that power the region
+                                {get('who_we_are_title', 'Human capital for the industries that power the region')}
                             </h2>
                             <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
-                                PANA Institute builds human capital for the petroleum, energy, power, and digital sectors. It delivers customised, experiential programmes on modern facilities, led by instructors who have run the jobs they teach.
+                                {get('who_we_are_description', 'PANA Institute builds human capital for the petroleum, energy, power, and digital sectors. It delivers customised, experiential programmes on modern facilities, led by instructors who have run the jobs they teach.')}
                             </p>
                         </div>
 
@@ -184,19 +184,19 @@ const AboutPage = () => {
                                 <div className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-red-600">
                                     <h3 className="text-2xl font-bold text-pana-navy mb-2">Vision</h3>
                                     <p className="text-gray-700 leading-relaxed">
-                                        To be Africa's competency solutions partner for the energy, power, and digital industries.
+                                        {get('vision_body', "To be Africa's competency solutions partner for the energy, power, and digital industries.")}
                                     </p>
                                 </div>
                                 <div className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-blue-600">
                                     <h3 className="text-2xl font-bold text-pana-navy mb-2">Mission</h3>
                                     <p className="text-gray-700 leading-relaxed">
-                                        To develop and upskill the workforce of these industries through training that cultivates practical competencies directly applicable to real job roles.
+                                        {get('mission_body', 'To develop and upskill the workforce of these industries through training that cultivates practical competencies directly applicable to real job roles.')}
                                     </p>
                                 </div>
                                 <div className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-amber-500">
                                     <h3 className="text-2xl font-bold text-pana-navy mb-2">Purpose</h3>
                                     <p className="text-gray-700 leading-relaxed">
-                                        To drive competency assessment and development, and to create a pool of relevant talent for the energy, power, and digital industries.
+                                        {get('purpose_body', 'To drive competency assessment and development, and to create a pool of relevant talent for the energy, power, and digital industries.')}
                                     </p>
                                 </div>
 
@@ -207,7 +207,7 @@ const AboutPage = () => {
                                             size="lg"
                                             className="bg-red-600 hover:bg-red-700 font-bold text-white shadow-lg"
                                         >
-                                            Explore Programmes
+                                            {get('programmes_button_text', 'Explore Programmes')}
                                             <ChevronRight className="ml-2 h-4 w-4" />
                                         </Button>
                                     </Link>
@@ -219,7 +219,7 @@ const AboutPage = () => {
                         <div className="pt-12 pb-16">
                             <div className="text-center max-w-3xl mx-auto mb-16">
                                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                                    Six things the Institute is set up to do, and nothing else.
+                                    {get('mandates_title', 'Six things the Institute is set up to do, and nothing else.')}
                                 </h2>
                                 <div className="w-20 h-1 bg-red-600 mx-auto rounded-full"></div>
                             </div>
@@ -362,6 +362,9 @@ const AboutPage = () => {
                         </div>
                     </div>
                 </section>
+
+                {/* Modular Sections Added via Page Builder */}
+                <DynamicPageSections slug="about" />
 
                 <Footer />
             </div>

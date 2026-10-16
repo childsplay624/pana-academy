@@ -27,16 +27,28 @@ export interface PageSection {
 }
 
 export const DEFAULT_PAGES: Partial<Page>[] = [
-  { title: 'Home Page', slug: 'home', page_type: 'dynamic', status: 'published', show_in_navbar: true, show_in_footer: true, description: 'Homepage with hero banner, top courses, and stats.' },
-  { title: 'About Us', slug: 'about', page_type: 'static', status: 'published', show_in_navbar: true, show_in_footer: true, description: 'Company vision, mission, and highlights.' },
-  { title: 'Contact Us', slug: 'contact', page_type: 'static', status: 'published', show_in_navbar: true, show_in_footer: true, description: 'Office locations, email, phone numbers, and inquiry form.' },
-  { title: 'Careers', slug: 'careers', page_type: 'static', status: 'published', show_in_navbar: true, show_in_footer: true, description: 'Career opportunities and vision.' },
-  { title: 'Consulting Services', slug: 'consulting-services', page_type: 'static', status: 'published', show_in_navbar: true, show_in_footer: true, description: 'Expert consulting services.' },
-  { title: 'Research & Development', slug: 'rnd-services', page_type: 'static', status: 'published', show_in_navbar: true, show_in_footer: true, description: 'R&D services and methodologies.' },
-  { title: 'Training Delivery', slug: 'training-delivery', page_type: 'static', status: 'published', show_in_navbar: true, show_in_footer: true, description: 'Training methodologies and delivery options.' },
-  { title: 'Sustainability Solutions', slug: 'sustainability-solutions', page_type: 'static', status: 'published', show_in_navbar: true, show_in_footer: true, description: 'Decarbonisation, ESG, and climate services.' },
-  { title: 'Global Engagements', slug: 'global-engagements', page_type: 'static', status: 'published', show_in_navbar: true, show_in_footer: true, description: 'International partnerships, cross-border workforce development, and global hubs.' },
+  { title: 'Home Page', slug: 'home', page_type: 'dynamic', status: 'published', show_in_navbar: false, show_in_footer: false, description: 'Homepage with hero banner, top courses, and stats.' },
+  { title: 'About Us', slug: 'about', page_type: 'static', status: 'published', show_in_navbar: false, show_in_footer: false, description: 'Company vision, mission, and highlights.' },
+  { title: 'Contact Us', slug: 'contact', page_type: 'static', status: 'published', show_in_navbar: false, show_in_footer: false, description: 'Office locations, email, phone numbers, and inquiry form.' },
+  { title: 'Careers', slug: 'careers', page_type: 'static', status: 'published', show_in_navbar: false, show_in_footer: false, description: 'Career opportunities and vision.' },
+  { title: 'Consulting Services', slug: 'consulting-services', page_type: 'static', status: 'published', show_in_navbar: false, show_in_footer: false, description: 'Expert consulting services.' },
+  { title: 'Research & Development', slug: 'rnd-services', page_type: 'static', status: 'published', show_in_navbar: false, show_in_footer: false, description: 'R&D services and methodologies.' },
+  { title: 'Training Delivery', slug: 'training-delivery', page_type: 'static', status: 'published', show_in_navbar: false, show_in_footer: false, description: 'Training methodologies and delivery options.' },
+  { title: 'Sustainability Solutions', slug: 'sustainability-solutions', page_type: 'static', status: 'published', show_in_navbar: false, show_in_footer: false, description: 'Decarbonisation, ESG, and climate services.' },
+  { title: 'Global Engagements', slug: 'global-engagements', page_type: 'static', status: 'published', show_in_navbar: false, show_in_footer: false, description: 'International partnerships, cross-border workforce development, and global hubs.' },
+  { title: 'Safety Standards & HSE', slug: 'safety', page_type: 'static', status: 'published', show_in_navbar: false, show_in_footer: false, description: 'Health, safety, and environment standards, ISO framework, and safety culture.' },
+  { title: 'Our Journey & Milestones', slug: 'our-journey', page_type: 'static', status: 'published', show_in_navbar: false, show_in_footer: false, description: 'Evolution from Academy to Institute, timeline, and accreditations.' },
+  { title: 'Training Calendar', slug: 'training-calendar', page_type: 'static', status: 'published', show_in_navbar: false, show_in_footer: false, description: 'Interactive schedule of upcoming course sessions and intake dates.' },
+  { title: 'Client Testimonials', slug: 'testimonials', page_type: 'static', status: 'published', show_in_navbar: false, show_in_footer: false, description: 'Success stories, corporate endorsements, and client reviews.' },
+  { title: 'Our Institute', slug: 'our-institute', page_type: 'static', status: 'published', show_in_navbar: false, show_in_footer: false, description: 'Institutional evolution, governance council, executive leadership, and research chairs.' },
 ];
+
+export const getPageUrl = (page?: { slug?: string | null; page_type?: string | null } | null): string => {
+  if (!page || !page.slug) return '/';
+  if (page.slug === 'home') return '/';
+  if (page.page_type === 'static') return `/${page.slug}`;
+  return `/p/${page.slug}`;
+};
 
 export const pageService = {
   // Page CRUD
@@ -67,14 +79,40 @@ export const pageService = {
     return (existing || []) as Page[];
   },
 
-  async getPageById(id: string) {
-    const { data, error } = await supabase
-      .from('pages')
-      .select('*')
-      .eq('id', id)
-      .single();
+  async getPageById(idOrSlug: string) {
+    if (!idOrSlug) throw new Error('Page identifier is required');
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
+    let query = supabase.from('pages').select('*');
+    if (isUuid) {
+      query = query.eq('id', idOrSlug);
+    } else {
+      query = query.eq('slug', idOrSlug);
+    }
+    const { data, error } = await query.maybeSingle();
     if (error) throw error;
-    return { data: data as Page, error };
+    
+    if (data) {
+      return { data: data as Page, error: null };
+    }
+
+    // Auto-seed default page if exists in registry
+    const defaultPage = DEFAULT_PAGES.find(p => p.slug === idOrSlug || p.id === idOrSlug);
+    if (defaultPage) {
+      try {
+        const { data: created, error: createErr } = await supabase
+          .from('pages')
+          .insert(defaultPage)
+          .select()
+          .single();
+        if (!createErr && created) {
+          return { data: created as Page, error: null };
+        }
+      } catch (e) {
+        console.warn('Auto-create default page fallback error:', e);
+      }
+    }
+
+    throw new Error(`Page not found: ${idOrSlug}`);
   },
 
   async getPageBySlug(slug: string) {
@@ -168,14 +206,22 @@ export const pageService = {
 
   // Page Content (key-value overrides for static pages)
   async getPageContent(slug: string): Promise<Record<string, string>> {
-    const { data, error } = await supabase
-      .from('page_content')
-      .select('content_key, content_value')
-      .eq('page_slug', slug);
-    if (error) throw error;
-    const map: Record<string, string> = {};
-    (data || []).forEach(row => { map[row.content_key] = row.content_value || ''; });
-    return map;
+    try {
+      const { data, error } = await supabase
+        .from('page_content')
+        .select('content_key, content_value')
+        .eq('page_slug', slug);
+      if (error) {
+        console.warn(`getPageContent warning for ${slug}:`, error.message);
+        return {};
+      }
+      const map: Record<string, string> = {};
+      (data || []).forEach(row => { map[row.content_key] = row.content_value || ''; });
+      return map;
+    } catch (err) {
+      console.warn(`getPageContent exception for ${slug}:`, err);
+      return {};
+    }
   },
 
   async savePageContent(slug: string, content: Record<string, string>) {
@@ -184,6 +230,7 @@ export const pageService = {
       content_key,
       content_value
     }));
+    if (rows.length === 0) return;
     const { error } = await supabase
       .from('page_content')
       .upsert(rows, { onConflict: 'page_slug,content_key' });

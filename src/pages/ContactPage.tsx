@@ -79,13 +79,13 @@ export const ContactPage = () => {
           {/* Hero Section */}
           <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 bg-zinc-950 text-white">
             <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
-              <span className="text-red-500 font-bold text-xs uppercase tracking-wider block mb-3">PANA Institute Contact</span>
-              <h1 className="text-5xl md:text-7xl font-bold mb-4">Contact Us</h1>
+              <span className="text-red-500 font-bold text-xs uppercase tracking-wider block mb-3">{get('hero_badge', 'PANA Institute Contact')}</span>
+              <h1 className="text-5xl md:text-7xl font-bold mb-4">{get('hero_title', 'Contact Us')}</h1>
               <p className="text-2xl md:text-3xl font-semibold text-red-500 mb-6">
-                Let us build the standard together.
+                {get('hero_subtitle', 'Let us build the standard together.')}
               </p>
               <p className="text-lg md:text-xl text-zinc-300 max-w-4xl mx-auto leading-relaxed">
-                For programmes, assessment, research, advisory or partnership, reach the Institute at <a href="mailto:info@pana-institute.com" className="text-white underline hover:text-red-400 font-medium">info@pana-institute.com</a> or through the offices below.
+                {get('hero_description', 'For programmes, assessment, research, advisory or partnership, reach the Institute at info@pana-institute.com or through the offices below.')}
               </p>
             </div>
           </section>
@@ -96,8 +96,8 @@ export const ContactPage = () => {
               <div className="grid lg:grid-cols-2 gap-12">
                 <div>
                   <div className="mb-8">
-                    <span className="text-red-600 font-bold text-xs uppercase tracking-wider block mb-2">Global Operations</span>
-                    <h2 className="text-3xl font-bold text-pana-navy">Our Offices & Hubs</h2>
+                    <span className="text-red-600 font-bold text-xs uppercase tracking-wider block mb-2">{get('offices_badge', 'Global Operations')}</span>
+                    <h2 className="text-3xl font-bold text-pana-navy">{get('offices_heading', 'Our Offices & Hubs')}</h2>
                   </div>
 
                   <div className="grid sm:grid-cols-2 gap-6 mb-8">
@@ -107,11 +107,11 @@ export const ContactPage = () => {
                         <div className="text-xs font-bold text-red-600 uppercase tracking-wider mb-1">Rivers State</div>
                         <h3 className="text-lg font-bold text-gray-900 mb-2">Port Harcourt · Centre of Excellence</h3>
                         <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                          Plot 94 Rivoc Road, Trans Amadi Industrial Layout, Port Harcourt.
+                          {get('address_ph', 'Plot 94 Rivoc Road, Trans Amadi Industrial Layout, Port Harcourt.')}
                         </p>
                       </div>
                       <div className="text-sm font-semibold text-gray-900 pt-2 border-t border-gray-200">
-                        Tel: <a href="tel:+2347026000116" className="text-red-600 hover:underline">+234 702 600 0116</a>
+                        Tel: <a href={`tel:${get('phone_ph', '+234 702 600 0116')}`} className="text-red-600 hover:underline">{get('phone_ph', '+234 702 600 0116')}</a>
                       </div>
                     </div>
 
@@ -121,11 +121,11 @@ export const ContactPage = () => {
                         <div className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Federal Capital Territory</div>
                         <h3 className="text-lg font-bold text-gray-900 mb-2">Abuja</h3>
                         <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                          No. 5 Vattern Street, off Amazon Street, Maitama, Abuja.
+                          {get('address_abuja', 'No. 5 Vattern Street, off Amazon Street, Maitama, Abuja.')}
                         </p>
                       </div>
                       <div className="text-sm font-semibold text-gray-900 pt-2 border-t border-gray-200">
-                        Tel: <a href="tel:+2347026000119" className="text-red-600 hover:underline">+234 702 600 0119</a>
+                        Tel: <a href={`tel:${get('phone_abuja', '+234 702 600 0119')}`} className="text-red-600 hover:underline">{get('phone_abuja', '+234 702 600 0119')}</a>
                       </div>
                     </div>
 
@@ -135,7 +135,7 @@ export const ContactPage = () => {
                         <div className="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-1">Uganda</div>
                         <h3 className="text-lg font-bold text-gray-900 mb-2">Kampala</h3>
                         <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                          C/O Cristal Advocates, 4th Floor, Padre Pio House, Plot 32 Lumumba Avenue, Kampala.
+                          {get('address_kampala', 'C/O Cristal Advocates, 4th Floor, Padre Pio House, Plot 32 Lumumba Avenue, Kampala.')}
                         </p>
                       </div>
                     </div>
@@ -146,7 +146,7 @@ export const ContactPage = () => {
                         <div className="text-xs font-bold text-amber-600 uppercase tracking-wider mb-1">United Arab Emirates</div>
                         <h3 className="text-lg font-bold text-gray-900 mb-2">Dubai</h3>
                         <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                          Business Center 1, M Floor, The Meydan Hotel, Nad Al Sheba, Dubai.
+                          {get('address_dubai', 'Business Center 1, M Floor, The Meydan Hotel, Nad Al Sheba, Dubai.')}
                         </p>
                       </div>
                     </div>
@@ -156,7 +156,7 @@ export const ContactPage = () => {
                   <div className="p-6 bg-red-50 rounded-2xl border-l-4 border-red-600">
                     <h4 className="text-base font-bold text-red-950 mb-1">Central Direct Contact</h4>
                     <p className="text-sm text-red-900">
-                      Email: <a href="mailto:info@pana-institute.com" className="font-bold underline">info@pana-institute.com</a>
+                      Email: <a href={`mailto:${get('email', 'info@pana-institute.com')}`} className="font-bold underline">{get('email', 'info@pana-institute.com')}</a>
                     </p>
                   </div>
                 </div>
@@ -254,6 +254,9 @@ export const ContactPage = () => {
               ></iframe>
             </div>
           </section>
+
+          {/* Dynamic Page Builder Sections */}
+          <DynamicPageSections slug="contact" />
         </main>
 
         <Footer />

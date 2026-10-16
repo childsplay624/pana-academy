@@ -50,19 +50,17 @@ const TrainingDelivery = () => {
               <div className="space-y-8 animate-fade-in">
                 <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full text-white/90 text-sm font-medium border border-white/20">
                   <Zap className="w-5 h-5 text-pana-gold" />
-                  <span>Competency Assessment & Development</span>
+                  <span>{get('hero_badge', 'Competency Assessment & Development')}</span>
                   <ArrowRight className="w-4 h-4" />
                 </div>
 
                 <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-[1.25] pb-2 text-white">
-                  Competency Assessment <span className="text-red-600">& Development</span>
+                  {get('hero_title', 'Competency Assessment ')}<span className="text-red-600">{get('hero_subtitle', '& Development')}</span>
                 </h1>
 
                 <p className="text-xl md:text-2xl text-gray-200 max-w-4xl mx-auto leading-relaxed">
-                  A capability development hub delivering training, leadership development and practical skills aligned with real operational needs, and an assessment function that judges competence on evidence alone.
+                  {get('hero_description', 'A capability development hub delivering training, leadership development and practical skills aligned with real operational needs, and an assessment function that judges competence on evidence alone.')}
                 </p>
-
-
               </div>
             </div>
           </section>
@@ -272,26 +270,29 @@ const TrainingDelivery = () => {
           {/* CTA Section */}
           <section className="bg-zinc-900 text-white py-20">
             <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Build Verifiable Operational Competence?</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">{get('cta_title', 'Ready to Build Verifiable Operational Competence?')}</h2>
               <p className="text-xl text-zinc-300 max-w-3xl mx-auto mb-8">
-                Explore our accredited programmes, register for hands-on simulator training, or join the Roar Club community.
+                {get('cta_subtitle', 'Explore our accredited programmes, register for hands-on simulator training, or join the Roar Club community.')}
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="/courses" className="no-underline">
+                <a href={get('cta_button_1_link', '/courses')} className="no-underline">
                   <Button className="bg-red-600 hover:bg-red-700 text-white px-8 py-6 text-lg font-semibold group">
-                    Explore Programmes
+                    {get('cta_button_1_text', 'Explore Programmes')}
                     <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </a>
-                <a href="/contact" className="no-underline">
+                <a href={get('cta_button_2_link', '/contact')} className="no-underline">
                   <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white/10 px-8 py-6 text-lg group">
-                    Contact Admissions
+                    {get('cta_button_2_text', 'Contact Admissions')}
                     <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </a>
               </div>
             </div>
           </section>
+
+          {/* Dynamic Page Builder Sections */}
+          <DynamicPageSections slug="training-delivery" />
         </main>
 
         <Footer />

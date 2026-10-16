@@ -50,28 +50,28 @@ const ConsultingServicesPage = () => {
               <div className="space-y-8 animate-fade-in">
                 <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full text-white/90 text-sm font-medium border border-white/20">
                   <Zap className="w-5 h-5 text-pana-gold" />
-                  <span>Consultancy and Advisory</span>
+                  <span>{get('hero_badge', 'Consultancy and Advisory')}</span>
                   <ArrowRight className="w-4 h-4" />
                 </div>
 
                 <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-[1.25] pb-2 text-white">
-                  Consultancy <span className="text-red-600">& Advisory</span>
+                  {get('hero_title', 'Consultancy ')}<span className="text-red-600">{get('hero_subtitle', '& Advisory')}</span>
                 </h1>
 
                 <p className="text-xl md:text-2xl text-gray-200 max-w-4xl mx-auto leading-relaxed">
-                  Technical advisory and consulting for industry and government clients, built on the same competence frameworks and evidence the Institute uses to assess people.
+                  {get('hero_description', 'Technical advisory and consulting for industry and government clients, built on the same competence frameworks and evidence the Institute uses to assess people.')}
                 </p>
 
                 <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
                   <a href="#what-we-deliver" className="no-underline">
                     <Button className="bg-red-600 hover:bg-red-700 text-white px-8 py-6 text-lg font-semibold group">
-                      What We Deliver
+                      {get('button_deliver_text', 'What We Deliver')}
                       <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </Button>
                   </a>
                   <a href="#how-we-work" className="no-underline">
                     <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white/10 px-8 py-6 text-lg group">
-                      How We Work
+                      {get('button_work_text', 'How We Work')}
                       <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </Button>
                   </a>
@@ -236,26 +236,29 @@ const ConsultingServicesPage = () => {
           {/* CTA Section */}
           <section className="bg-zinc-950 text-white py-20">
             <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Schedule a Technical Advisory Engagement</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">{get('cta_title', 'Schedule a Technical Advisory Engagement')}</h2>
               <p className="text-xl text-zinc-400 max-w-3xl mx-auto mb-8">
-                Speak with our consultancy team to assess workforce capability, operating models, or technology adoption.
+                {get('cta_subtitle', 'Speak with our consultancy team to assess workforce capability, operating models, or technology adoption.')}
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="/contact" className="no-underline">
+                <a href={get('cta_button_1_link', '/contact')} className="no-underline">
                   <Button className="bg-red-600 hover:bg-red-700 text-white px-8 py-6 text-lg font-semibold group">
-                    Schedule Consultation
+                    {get('cta_button_1_text', 'Schedule Consultation')}
                     <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </a>
-                <a href="mailto:info@pana-institute.com" className="no-underline">
+                <a href={`mailto:${get('cta_email', 'info@pana-institute.com')}`} className="no-underline">
                   <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white/10 px-8 py-6 text-lg group">
-                    Contact Advisory Desk
+                    {get('cta_button_2_text', 'Contact Advisory Desk')}
                     <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </a>
               </div>
             </div>
           </section>
+
+          {/* Dynamic Page Builder Sections */}
+          <DynamicPageSections slug="consulting-services" />
         </main>
 
         <Footer />

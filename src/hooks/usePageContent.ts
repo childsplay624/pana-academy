@@ -25,7 +25,10 @@ export function usePageContent(slug: string) {
           .select('content_key, content_value')
           .eq('page_slug', slug);
 
-        if (error) throw error;
+        if (error) {
+          console.warn(`Could not load page content overrides for "${slug}":`, error.message);
+          return;
+        }
 
         const map: ContentMap = {};
         (data || []).forEach(row => {
@@ -33,7 +36,7 @@ export function usePageContent(slug: string) {
         });
         setContent(map);
       } catch (err) {
-        console.error(`Failed to load content for page "${slug}":`, err);
+        console.warn(`Failed to load content for page "${slug}":`, err);
       } finally {
         setLoading(false);
       }
