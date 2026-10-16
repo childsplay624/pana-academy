@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet-async";
+import SEO from "@/components/SEO";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -63,13 +63,11 @@ const AboutPage = () => {
 
     return (
         <>
-            <Helmet>
-                <title>{get('title', 'About Us | PANA Institute - Our Mission & Vision')}</title>
-                <meta
-                    name="description"
-                    content={get('meta_description', 'Learn about PANA Institute\'s mission to empower Oil & Gas professionals. Discover our vision, values, and commitment to excellence in training and development.')}
-                />
-            </Helmet>
+            <SEO
+                title={get('title', 'About Us | PANA Institute - Our Mission & Vision')}
+                description={get('meta_description', 'Learn about PANA Institute\'s mission to empower Oil & Gas and engineering professionals. Discover our vision, values, and commitment to excellence in technical training and human capital development.')}
+                canonical="/about"
+            />
 
             <div className="min-h-screen">
                 <Navigation />

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Helmet } from "react-helmet-async";
+import SEO from "@/components/SEO";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Mail, MapPin, Phone } from "lucide-react";
@@ -66,11 +66,11 @@ export const ContactPage = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Contact Us | PANA Institute - Get in Touch</title>
-        <meta name="description" content="Contact PANA Institute for inquiries, support, or partnership opportunities. We're here to help you with your learning and development needs." />
-        <meta name="keywords" content="contact PANA Institute, support, inquiries, partnership, get in touch" />
-      </Helmet>
+      <SEO
+        title="Contact Us | PANA Institute - Port Harcourt & Abuja"
+        description="Contact PANA Institute for admissions, corporate technical training partnerships, consulting, and workforce development inquiries in Port Harcourt and Abuja."
+        canonical="/contact"
+      />
 
       <div className="min-h-screen bg-gradient-subtle">
         <Navigation />

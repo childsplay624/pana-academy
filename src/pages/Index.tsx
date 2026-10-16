@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Helmet } from "react-helmet-async";
+import { SEO } from "@/components/SEO";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import SocialMediaIcons from "@/components/SocialMediaIcons";
@@ -45,10 +45,11 @@ const Index = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{page?.meta_title || "PANA Institute - Professional Training & Development"}</title>
-        <meta name="description" content={page?.meta_description || "Transform your career with PANA Institute's world-class professional training programs."} />
-      </Helmet>
+      <SEO
+        title={page?.meta_title || "PANA Institute Limited - Empowering Talent Across Sectors"}
+        description={page?.meta_description || "Professional training, consulting, and research excellence. Transform your career with PANA Institute's world-class programs in energy, digital transformation, and leadership development."}
+        canonical="/"
+      />
       <div className="min-h-screen relative">
         <Navigation />
         <SocialMediaIcons />
