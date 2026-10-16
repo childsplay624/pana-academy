@@ -363,8 +363,8 @@ const AboutPage = () => {
                     </div>
                 </section>
 
-                {/* Modular Sections Added via Page Builder */}
-                <DynamicPageSections slug="about" />
+                {/* Modular Sections Added via Page Builder (Disabled on About to prevent duplicate legacy sections) */}
+                {/* <DynamicPageSections slug="about" /> */}
 
                 <Footer />
             </div>
