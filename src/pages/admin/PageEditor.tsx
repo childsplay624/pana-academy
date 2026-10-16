@@ -783,13 +783,28 @@ export default function PageEditor() {
                               exit={{ opacity: 0, x: -20 }}
                               key={section.id}
                             >
-                              <div className="flex items-center gap-2 mb-6 border-b pb-4">
-                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-muted shrink-0" onClick={() => setActiveSectionId(null)}>
-                                  <ChevronLeft className="w-4 h-4" />
-                                </Button>
-                                <div className="truncate">
-                                  <h3 className="font-bold text-lg capitalize truncate">{section.section_type.replace(/_/g, ' ')}</h3>
-                                  <p className="text-xs text-muted-foreground">Editing section properties</p>
+                              <div className="flex items-center justify-between gap-2 mb-6 border-b pb-4">
+                                <div className="flex items-center gap-2 truncate">
+                                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-muted shrink-0" onClick={() => setActiveSectionId(null)}>
+                                    <ChevronLeft className="w-4 h-4" />
+                                  </Button>
+                                  <div className="truncate">
+                                    <h3 className="font-bold text-lg capitalize truncate">{section.section_type.replace(/_/g, ' ')}</h3>
+                                    <p className="text-xs text-muted-foreground">Editing section properties</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2 shrink-0">
+                                  <Label htmlFor={`active-${section.id}`} className="text-xs font-medium cursor-pointer">
+                                    {section.is_active ? 'Active' : 'Disabled'}
+                                  </Label>
+                                  <Switch
+                                    id={`active-${section.id}`}
+                                    checked={section.is_active ?? true}
+                                    onCheckedChange={(checked) => {
+                                      setSections(prev => prev.map(s => s.id === section.id ? { ...s, is_active: checked } : s));
+                                      setIsDirty(true);
+                                    }}
+                                  />
                                 </div>
                               </div>
 

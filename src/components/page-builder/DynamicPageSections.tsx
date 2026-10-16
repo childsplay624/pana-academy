@@ -19,7 +19,23 @@ export const DynamicPageSections = ({
         const data = await pageService.getPageBySlug(slug);
         if (isMounted && data && (data as any).page_sections) {
           const rawSections: PageSection[] = (data as any).page_sections || [];
-          const filtered = rawSections.filter(s => !excludeTypes.includes(s.section_type));
+          const filtered = rawSections.filter(s => {
+            if (s.is_active === false) return false;
+            if (excludeTypes.includes(s.section_type)) return false;
+            if (
+              s.section_type === 'features' &&
+              (
+                s.content?.title?.toLowerCase().trim() === 'our offices' ||
+                s.content?.features?.some((f: any) =>
+                  f?.title?.toLowerCase().includes('d-line') ||
+                  f?.description?.toLowerCase().includes('emekuku')
+                )
+              )
+            ) {
+              return false;
+            }
+            return true;
+          });
           setSections(filtered);
         }
       } catch (err) {

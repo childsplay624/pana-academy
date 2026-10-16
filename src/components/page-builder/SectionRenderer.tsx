@@ -80,29 +80,43 @@ export const ContentSection = ({ content }: { content: any }) => (
   </section>
 );
 
-export const FeaturesSection = ({ content }: { content: any }) => (
-  <section className="py-24 bg-background">
-    <div className="container px-4 mx-auto">
-      <div className="text-center max-w-3xl mx-auto mb-16">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">{content.title || 'Key Features'}</h2>
-        <p className="text-muted-foreground text-lg">{content.subtitle || ''}</p>
+export const FeaturesSection = ({ content }: { content: any }) => {
+  // Check if this is the "Our Offices" section requested to be disabled
+  const isOfficesSection = 
+    content?.title?.toLowerCase().trim() === 'our offices' ||
+    content?.features?.some((f: any) => 
+      f?.title?.toLowerCase().includes('d-line') || 
+      f?.description?.toLowerCase().includes('emekuku')
+    );
+
+  if (isOfficesSection) {
+    return null;
+  }
+
+  return (
+    <section className="py-24 bg-background">
+      <div className="container px-4 mx-auto">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">{content.title || 'Key Features'}</h2>
+          <p className="text-muted-foreground text-lg">{content.subtitle || ''}</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {(content.features || []).map((feature: any, i: number) => (
+            <Card key={i} className="border-2 hover:border-primary/50 transition-all duration-300 group">
+              <CardContent className="p-8">
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                  <CheckCircle2 className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl font-bold mb-3">{feature.title || 'Feature Title'}</h3>
+                <p className="text-muted-foreground leading-relaxed">{feature.description || 'Feature description goes here.'}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {(content.features || []).map((feature: any, i: number) => (
-          <Card key={i} className="border-2 hover:border-primary/50 transition-all duration-300 group">
-            <CardContent className="p-8">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
-                <CheckCircle2 className="w-6 h-6" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">{feature.title || 'Feature Title'}</h3>
-              <p className="text-muted-foreground leading-relaxed">{feature.description || 'Feature description goes here.'}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 export const TestimonialsSection = ({ content }: { content: any }) => (
   <section className="py-24 bg-muted/50 overflow-hidden">
