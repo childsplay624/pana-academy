@@ -37,7 +37,8 @@ const ICON_MAP: Record<string, any> = {
   Replace,
   TrendingUp,
   MessageSquareText,
-  Settings
+  Settings,
+  Sparkles
 };
 
 export default function DocumentationPage() {

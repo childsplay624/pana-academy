@@ -605,5 +605,39 @@ export const MODULES_DATA: ModuleItem[] = [
       }
     ],
     tips: "Always double-check phone numbers in international format (e.g. +234...) so mobile tap-to-call works seamlessly."
+  },
+  {
+    id: "mod-19",
+    num: "19",
+    title: "PANA AI Intelligent Agent",
+    url: "/dashboard",
+    category: "AI & Automation",
+    badge: "Smart Copilot",
+    iconName: "Sparkles",
+    summary: "Integrated AI copilot and academic mentor. Powers guest course recommendations, co-instructor assistance, website CMS text & image replacement, course price adjustments, and brochure-to-course publishing.",
+    prereqs: "Available platform-wide. Action cards require Administrator role privileges.",
+    steps: [
+      {
+        title: "Guest & Student Engagement",
+        detail: "Proactively invites visitors after 10 seconds of site dwell time with personalized course advice. Answers technical engineering queries on instrumentation, process control, and safety."
+      },
+      {
+        title: "Update Website Text & Phone Numbers",
+        detail: "Ask PANA AI to 'change phone number to +234...' or 'update contact email'. Review the matched CMS slot and confirm with one click."
+      },
+      {
+        title: "Change Course Prices via Course Code",
+        detail: "Instruct PANA AI to 'change SC05 price to 50000'. The AI extracts the course code and field, updating the database and clearing price TBD flags."
+      },
+      {
+        title: "Replace Website Images & Hero Banners",
+        detail: "Upload a graphic directly in chat or ask to 'replace hero banner'. Select the image slot and confirm to apply it live to the website."
+      },
+      {
+        title: "Auto-Extract & Publish Courses from Brochures",
+        detail: "Upload a course brochure (PDF, Word, or flyer image). PANA AI extracts title, code, modules, duration, and standards, allowing immediate catalog publishing with thumbnail."
+      }
+    ],
+    tips: "PANA AI never uses ### heading hashes and strictly abides by institutional naming ('PANA Institute') and route governance (/courses)."
   }
 ];

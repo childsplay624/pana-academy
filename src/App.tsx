@@ -77,6 +77,7 @@ import BlogPostEditor from "./pages/admin/BlogPostEditor";
 import FindAndReplaceManagement from "./pages/admin/FindAndReplaceManagement";
 import NavigationManagement from "./pages/admin/NavigationManagement";
 import DocumentationPage from "./pages/admin/DocumentationPage";
+import { PanaAiWidget } from "./components/PanaAiWidget";
 
 
 const queryClient = new QueryClient();
@@ -149,7 +150,7 @@ const App = () => (
                     <Route path="/contact" element={<ContactPage />} />
                     <Route path="/training-calendar" element={<TrainingCalendarPage />} />
                     <Route path="/our-journey" element={<OurJourney />} />
-                     <Route path="/testimonials" element={<TestimonialsPage />} />
+                    <Route path="/testimonials" element={<TestimonialsPage />} />
                     <Route path="/careers" element={<CareersPage />} />
                     <Route path="/test" element={<TestPage />} />
                     <Route
@@ -419,6 +420,7 @@ const App = () => (
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </MaintenanceGuard>
+                <PanaAiWidget />
               </BrowserRouter>
             </Dialog>
           </TooltipProvider>
