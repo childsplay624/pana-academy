@@ -1008,15 +1008,16 @@ export const PanaAiWidget: React.FC = () => {
   const displayName = profile?.full_name ? profile.full_name.split(' ')[0] : 'there';
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end font-sans">
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end font-sans max-w-[100vw]">
       {/* Tidio-Inspired Floating Chat Window */}
       {isOpen && (
         <div
           className={cn(
-            'flex flex-col bg-background border border-border/80 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.35)] rounded-[28px] overflow-hidden transition-all duration-300 ring-1 ring-black/5 dark:ring-white/10 mb-4',
-            isExpanded
-              ? 'w-[95vw] md:w-[680px] h-[85vh] max-h-[850px]'
-              : 'w-[92vw] sm:w-[390px] h-[640px] max-h-[88vh]'
+            'flex flex-col bg-background border border-border/80 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.35)] transition-all duration-300 ring-1 ring-black/5 dark:ring-white/10 mb-3 sm:mb-4',
+            // On mobile (under 640px): Full width, height pegged to safe viewport height, rounded edges
+            // On tablet/desktop: floating capsule with rounded-[28px]
+            'w-[calc(100vw-24px)] sm:w-[390px] h-[calc(100dvh-95px)] sm:h-[640px] max-h-[720px] rounded-[24px] sm:rounded-[28px] overflow-hidden',
+            isExpanded && 'sm:w-[680px] sm:h-[85vh] sm:max-h-[850px]'
           )}
         >
           {/* VIEW: HOME TAB */}
@@ -1539,7 +1540,7 @@ export const PanaAiWidget: React.FC = () => {
             {showGuestTeaser && (
               <div 
                 onClick={handleOpenFromTeaser}
-                className="absolute right-0 bottom-20 w-72 sm:w-80 p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-red-500/30 shadow-[0_20px_50px_rgba(0,0,0,0.25)] text-foreground z-10 cursor-pointer animate-in fade-in slide-in-from-bottom-3 duration-300 group/bubble"
+                className="absolute right-0 bottom-18 sm:bottom-20 w-[calc(100vw-32px)] sm:w-80 max-w-[340px] p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-red-500/30 shadow-[0_20px_50px_rgba(0,0,0,0.25)] text-foreground z-10 cursor-pointer animate-in fade-in slide-in-from-bottom-3 duration-300 group/bubble"
               >
                 <div className="flex items-start justify-between gap-2 mb-1.5">
                   <div className="flex items-center gap-1.5">
