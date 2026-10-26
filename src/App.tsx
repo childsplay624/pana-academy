@@ -140,8 +140,10 @@ const App = () => (
                     <Route path="/team/:memberId" element={<TeamMemberPage />} />
                     <Route path="/training-delivery" element={<TrainingDeliveryPage />} />
                     <Route path="/consulting-services" element={<ConsultingServicesPage />} />
+                    <Route path="/consulting" element={<ConsultingServicesPage />} />
                     <Route path="/research-development" element={<RnDServicesPage />} />
                     <Route path="/rnd-services" element={<RnDServicesPage />} />
+                    <Route path="/rnd" element={<RnDServicesPage />} />
                     <Route path="/sustainability-solutions" element={<SustainabilitySolutionsPage />} />
                     <Route path="/sustainability" element={<SustainabilitySolutionsPage />} />
                     <Route path="/global-engagements" element={<GlobalEngagementsPage />} />
@@ -370,6 +372,38 @@ const App = () => (
                       }
                     />
                     <Route
+                      path="/student/certificates"
+                      element={
+                        <ProtectedRoute allowedRoles={['student']}>
+                          <Certificates />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/student/my-courses"
+                      element={
+                        <ProtectedRoute allowedRoles={['student']}>
+                          <MyCourses />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/my-courses"
+                      element={
+                        <ProtectedRoute allowedRoles={['student']}>
+                          <MyCourses />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/student/dashboard"
+                      element={
+                        <ProtectedRoute allowedRoles={['student']}>
+                          <StudentDashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
                       path="/dashboard/progress"
                       element={
                         <ProtectedRoute allowedRoles={['student']}>
@@ -378,7 +412,23 @@ const App = () => (
                       }
                     />
                     <Route
+                      path="/student/progress"
+                      element={
+                        <ProtectedRoute allowedRoles={['student']}>
+                          <Progress />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
                       path="/dashboard/assignments"
+                      element={
+                        <ProtectedRoute allowedRoles={['student']}>
+                          <Assignments />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/student/assignments"
                       element={
                         <ProtectedRoute allowedRoles={['student']}>
                           <Assignments />
@@ -395,6 +445,14 @@ const App = () => (
                     />
                     <Route
                       path="/dashboard/help"
+                      element={
+                        <ProtectedRoute allowedRoles={['student']}>
+                          <Help />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/student/help"
                       element={
                         <ProtectedRoute allowedRoles={['student']}>
                           <Help />

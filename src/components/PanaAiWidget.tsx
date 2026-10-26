@@ -29,7 +29,9 @@ import {
   Newspaper,
   Layers,
   Clock,
-  Check
+  Check,
+  Mail,
+  User as UserIcon
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -55,6 +57,7 @@ import {
   ExtractedCourseData,
   ExtractedNewsData
 } from '@/services/panaAiAdminActionService';
+import { subscribeToMailchimp } from '@/services/mailchimpService';
 
 export const PanaAiWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -99,9 +102,18 @@ export const PanaAiWidget: React.FC = () => {
     setActiveTab('chat');
   };
 
+  const [guestName, setGuestName] = useState<string>(() => {
+    return localStorage.getItem('pana_guest_name') || '';
+  });
+  const [guestEmail, setGuestEmail] = useState<string>(() => {
+    return localStorage.getItem('pana_guest_email') || '';
+  });
+  const [introNameInput, setIntroNameInput] = useState('');
+  const [introEmailInput, setIntroEmailInput] = useState('');
+
   // Initial welcome message
   const getGreeting = () => {
-    const role = profile?.role || 'visitor';
+    const role = profile?.role;
     if (role === 'admin') {
       return `Welcome, Administrator! I am **PANA AI**, your platform assistant. I can guide you through user management, course approvals, transactions, or system settings. What would you like to review?`;
     }
@@ -111,7 +123,10 @@ export const PanaAiWidget: React.FC = () => {
     if (role === 'instructor') {
       return `Welcome Instructor! I'm **PANA AI**. Need help with curriculum planning, quiz questions, or navigating student submissions? I'm here to assist.`;
     }
-    return `Hello! I'm **PANA AI**, your intelligent guide to PANA Institute. Explore courses, discover certifications, understand engineering curriculums, or ask for guidance around the platform!`;
+    if (guestName) {
+      return `Welcome back, **${guestName}**! I'm **PANA AI**, your personal guide to PANA Institute. How can I assist you today?`;
+    }
+    return `Hello! I'm **PANA AI**, your guide to PANA Institute. May I have your name and email so I can address you and assist your learning path?`;
   };
 
   const [messages, setMessages] = useState<ChatMessage[]>(() => [
@@ -152,13 +167,13 @@ export const PanaAiWidget: React.FC = () => {
       return [
         { label: 'Recommend Course', query: 'Which course is best for a beginner in Energy Transition and Safety?' },
         { label: 'Certifications', query: 'Are PANA Institute certificates accredited and verifiable?' },
-        { label: 'Delivery Formats', query: 'What training delivery formats does PANA Institute support?' },
+        { label: 'Delivery Formats', query: 'What training delivery formats does PANA Institute offer (virtual vs hands-on)?' },
       ];
     }
     return [
-      { label: 'Browse Courses', query: 'What courses and engineering programs does PANA Institute offer?' },
-      { label: 'Verify Certificate', query: 'How can I verify a PANA certificate?' },
-      { label: 'Consulting Services', query: 'Tell me about PANA Institute consulting and R&D services.' },
+      { label: 'Find Right Course', query: 'Can you recommend an engineering course based on my background?' },
+      { label: 'Verify Certificate', query: 'How does PANA Institute certificate verification work?' },
+      { label: 'Corporate Training', query: 'How can our company request bespoke on-site or corporate training?' },
     ];
   };
 
@@ -195,7 +210,7 @@ export const PanaAiWidget: React.FC = () => {
         })),
         context: {
           role: (profile?.role as any) || (user ? 'student' : 'visitor'),
-          userName: profile?.full_name || null,
+          userName: profile?.full_name || guestName || null,
           currentPath: location.pathname,
         },
       });
@@ -272,6 +287,77 @@ export const PanaAiWidget: React.FC = () => {
     slug?: string;
     errorMsg?: string;
   } | null>(null);
+
+  const [leadCaptureEmail, setLeadCaptureEmail] = useState('');
+  const [leadCaptureSubmitting, setLeadCaptureSubmitting] = useState(false);
+  const [leadCaptureStatus, setLeadCaptureStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [leadCaptureMsg, setLeadCaptureMsg] = useState('');
+  const [introSubmitting, setIntroSubmitting] = useState(false);
+
+  const handleIntroSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const cleanName = introNameInput.trim();
+    const cleanEmail = introEmailInput.trim();
+    if (!cleanName) return;
+
+    setIntroSubmitting(true);
+    setGuestName(cleanName);
+    localStorage.setItem('pana_guest_name', cleanName);
+
+    if (cleanEmail) {
+      setGuestEmail(cleanEmail);
+      localStorage.setItem('pana_guest_email', cleanEmail);
+      // Automatically register to Mailchimp and Supabase
+      subscribeToMailchimp({
+        email: cleanEmail,
+        firstName: cleanName,
+        interest: 'New Visitor Introduction',
+      });
+    }
+
+    setIntroSubmitting(false);
+
+    // Welcome user by their name in the chat
+    const introMsg: ChatMessage = {
+      id: Date.now().toString(),
+      role: 'assistant',
+      content: `It is wonderful to meet you, **${cleanName}**! 🤝\n\nI am your dedicated academic advisor and co-instructor at PANA Institute. Are you looking to upskill in a specific engineering field (like Instrumentation, Safety, or Energy Transition), or would you like to browse our courses?`,
+      timestamp: Date.now(),
+    };
+    setMessages((prev) => [...prev, introMsg]);
+  };
+
+  const handleLeadCaptureSubmit = async (courseTitle: string) => {
+    if (!leadCaptureEmail || !leadCaptureEmail.includes('@') || leadCaptureSubmitting) return;
+
+    setLeadCaptureSubmitting(true);
+    setLeadCaptureStatus('idle');
+
+    const res = await subscribeToMailchimp({
+      email: leadCaptureEmail.trim(),
+      interest: courseTitle || 'Course Syllabus Request',
+    });
+
+    setLeadCaptureSubmitting(false);
+    if (res.result === 'success') {
+      setLeadCaptureStatus('success');
+      setLeadCaptureMsg(res.msg);
+      // Append a polite confirmation from PANA AI
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now().toString(),
+          role: 'assistant',
+          content: `📬 Thank you! We have registered **${leadCaptureEmail.trim()}** to receive the official syllabus, cohort schedules, and corporate training specifications for **${courseTitle}** via our Mailchimp training desk.`,
+          timestamp: Date.now(),
+        },
+      ]);
+      setLeadCaptureEmail('');
+    } else {
+      setLeadCaptureStatus('error');
+      setLeadCaptureMsg(res.msg || 'Failed to submit. Please try again.');
+    }
+  };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -538,6 +624,18 @@ export const PanaAiWidget: React.FC = () => {
         cleanText = cleanText.replace(newsActionMatch[0], '').trim();
       } catch (e) {
         console.warn('Failed to parse news action json:', e);
+      }
+    }
+
+    const leadCaptureMatch = content.match(/```action:lead_capture\s*([\s\S]*?)```/);
+    let parsedLeadCapture: { courseTitle?: string; reason?: string } | null = null;
+
+    if (leadCaptureMatch) {
+      try {
+        parsedLeadCapture = JSON.parse(leadCaptureMatch[1].trim());
+        cleanText = cleanText.replace(leadCaptureMatch[0], '').trim();
+      } catch (e) {
+        console.warn('Failed to parse lead capture action json:', e);
       }
     }
 
@@ -1001,30 +1099,100 @@ export const PanaAiWidget: React.FC = () => {
             )}
           </div>
         )}
+
+        {/* Interactive Mailchimp Lead Capture & Syllabus Card */}
+        {parsedLeadCapture && (
+          <div className="mt-3 p-3.5 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 text-white border border-red-500/30 shadow-xl space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-red-400 flex items-center gap-1.5">
+                <Mail className="w-3.5 h-3.5 text-red-500" /> Syllabus & Corporate Brochure
+              </span>
+              <Badge variant="outline" className="text-[10px] text-red-300 border-red-500/30 bg-red-500/10">
+                Mailchimp Desk
+              </Badge>
+            </div>
+
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Receive the complete curriculum, schedules, and corporate packages for <strong className="text-white">{parsedLeadCapture.courseTitle || 'this program'}</strong> directly in your inbox.
+            </p>
+
+            {leadCaptureStatus === 'success' ? (
+              <div className="p-2.5 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-xs text-emerald-200 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>{leadCaptureMsg || 'Details sent! Check your inbox shortly.'}</span>
+              </div>
+            ) : (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleLeadCaptureSubmit(parsedLeadCapture!.courseTitle || 'PANA Program');
+                }}
+                className="space-y-2 pt-1"
+              >
+                <div className="flex gap-1.5">
+                  <Input
+                    type="email"
+                    value={leadCaptureEmail}
+                    onChange={(e) => setLeadCaptureEmail(e.target.value)}
+                    placeholder="Enter your work or personal email..."
+                    required
+                    disabled={leadCaptureSubmitting}
+                    className="h-8 text-xs bg-slate-950/80 border-slate-700 text-white placeholder:text-slate-400 focus-visible:ring-red-500 rounded-xl"
+                  />
+                  <Button
+                    type="submit"
+                    size="sm"
+                    disabled={leadCaptureSubmitting || !leadCaptureEmail.includes('@')}
+                    className="h-8 px-3 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-semibold shrink-0 gap-1.5 shadow"
+                  >
+                    {leadCaptureSubmitting ? (
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                    ) : (
+                      <>
+                        <Send className="w-3 h-3" />
+                        Send
+                      </>
+                    )}
+                  </Button>
+                </div>
+                {leadCaptureStatus === 'error' && (
+                  <p className="text-[11px] text-red-400 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" /> {leadCaptureMsg}
+                  </p>
+                )}
+                <p className="text-[10px] text-slate-400">
+                  🔒 No spam. Instant delivery to your email powered by PANA Institute.
+                </p>
+              </form>
+            )}
+          </div>
+        )}
       </div>
     );
   };
 
-  const displayName = profile?.full_name ? profile.full_name.split(' ')[0] : 'there';
+  const displayName = profile?.full_name 
+    ? profile.full_name.split(' ')[0] 
+    : (guestName || 'there');
 
   return (
-    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end font-sans max-w-[100vw]">
-      {/* Tidio-Inspired Floating Chat Window */}
+    <div className="fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end font-sans max-w-[100vw]">
+      {/* Floating Chat Window */}
       {isOpen && (
         <div
           className={cn(
-            'flex flex-col bg-background border border-border/80 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.35)] transition-all duration-300 ring-1 ring-black/5 dark:ring-white/10 mb-3 sm:mb-4',
-            // On mobile (under 640px): Full width, height pegged to safe viewport height, rounded edges
-            // On tablet/desktop: floating capsule with rounded-[28px]
-            'w-[calc(100vw-24px)] sm:w-[390px] h-[calc(100dvh-95px)] sm:h-[640px] max-h-[720px] rounded-[24px] sm:rounded-[28px] overflow-hidden',
-            isExpanded && 'sm:w-[680px] sm:h-[85vh] sm:max-h-[850px]'
+            'flex flex-col bg-background border border-border/80 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.35)] transition-all duration-300 ring-1 ring-black/5 dark:ring-white/10 mb-2 sm:mb-4',
+            // On mobile (<640px): Compact floating modal that respects viewport margins and keyboard
+            // On desktop: fixed 390px width capsule
+            'w-[calc(100vw-24px)] sm:w-[390px] h-[min(540px,calc(100dvh-80px))] sm:h-[620px] max-h-[680px] rounded-[20px] sm:rounded-[28px] overflow-hidden',
+            isExpanded && 'sm:w-[680px] sm:h-[82vh] sm:max-h-[820px]'
           )}
         >
           {/* VIEW: HOME TAB */}
           {activeTab === 'home' && (
             <div className="flex-1 flex flex-col overflow-hidden bg-slate-50/70 dark:bg-slate-950/40">
-              {/* Tidio-Style Hero Header with Team / Background Image & Gradient */}
-              <div className="relative shrink-0 overflow-hidden text-white pt-6 pb-9 px-6 bg-gradient-to-br from-red-600 via-rose-600 to-red-800 shadow-lg">
+              {/* Hero Header with compact padding on mobile */}
+              <div className="relative shrink-0 overflow-hidden text-white pt-4 pb-6 px-4 sm:pt-6 sm:pb-9 sm:px-6 bg-gradient-to-br from-red-600 via-rose-600 to-red-800 shadow-lg">
                 {/* Background photo underlay with subtle blend */}
                 <div 
                   className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-30 pointer-events-none scale-105"
@@ -1034,12 +1202,12 @@ export const PanaAiWidget: React.FC = () => {
                 <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full bg-amber-400/20 blur-2xl pointer-events-none" />
 
                 {/* Top Brand Bar & Action Controls */}
-                <div className="relative z-10 flex items-center justify-between mb-4">
+                <div className="relative z-10 flex items-center justify-between mb-2.5 sm:mb-4">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md p-1.5 flex items-center justify-center border border-white/25 shadow-sm">
-                      <Sparkles className="w-4 h-4 text-white" />
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/20 backdrop-blur-md p-1.5 flex items-center justify-center border border-white/25 shadow-sm">
+                      <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
                     </div>
-                    <span className="font-bold tracking-tight text-sm text-white/95">
+                    <span className="font-bold tracking-tight text-xs sm:text-sm text-white/95">
                       PANA Institute
                     </span>
                   </div>
@@ -1096,8 +1264,8 @@ export const PanaAiWidget: React.FC = () => {
                 </div>
 
                 {/* Hero Greeting Text */}
-                <div className="relative z-10 space-y-1">
-                  <h2 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+                <div className="relative z-10 space-y-0.5 sm:space-y-1">
+                  <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
                     Hi {displayName}! <span className="animate-wiggle">👋</span>
                   </h2>
                   <p className="text-white/90 text-xs sm:text-sm font-normal max-w-[280px] leading-relaxed">
@@ -1107,7 +1275,7 @@ export const PanaAiWidget: React.FC = () => {
               </div>
 
               {/* Scrollable Hub Content with Overlapping Cards */}
-              <ScrollArea className="flex-1 px-4 -mt-4 pb-4">
+              <ScrollArea className="flex-1 px-3 sm:px-4 -mt-3 sm:-mt-4 pb-3 sm:pb-4">
                 <div className="space-y-3 pt-1">
                   {/* Card 1: Discovery & Quick Access Menu */}
                   <div className="bg-card text-card-foreground rounded-2xl border border-border/80 shadow-md divide-y divide-border/60 overflow-hidden">
@@ -1369,6 +1537,55 @@ export const PanaAiWidget: React.FC = () => {
                     </div>
                   )}
 
+                  {/* Minimal Visitor Introduction Card */}
+                  {!user && !profile?.role && !guestName && (
+                    <form
+                      onSubmit={handleIntroSubmit}
+                      className="p-3 rounded-2xl bg-slate-900/90 text-white border border-red-500/25 shadow-lg space-y-2 my-2 backdrop-blur-sm animate-in fade-in slide-in-from-bottom-2"
+                    >
+                      <div className="flex items-center justify-between text-xs font-semibold text-slate-200">
+                        <span className="flex items-center gap-1.5 text-white">
+                          <UserIcon className="w-3.5 h-3.5 text-red-500" /> Let's get acquainted
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-normal">Fast 1-step intro</span>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                        <Input
+                          type="text"
+                          value={introNameInput}
+                          onChange={(e) => setIntroNameInput(e.target.value)}
+                          placeholder="Your Name *"
+                          required
+                          className="h-8 text-xs bg-slate-950 border-slate-700 text-white placeholder:text-slate-400 focus-visible:ring-red-500 rounded-xl"
+                        />
+                        <Input
+                          type="email"
+                          value={introEmailInput}
+                          onChange={(e) => setIntroEmailInput(e.target.value)}
+                          placeholder="Your Email *"
+                          required
+                          className="h-8 text-xs bg-slate-950 border-slate-700 text-white placeholder:text-slate-400 focus-visible:ring-red-500 rounded-xl"
+                        />
+                      </div>
+
+                      <Button
+                        type="submit"
+                        size="sm"
+                        disabled={!introNameInput.trim() || !introEmailInput.trim() || introSubmitting}
+                        className="w-full h-8 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-semibold shadow transition-all flex items-center justify-center gap-1.5"
+                      >
+                        {introSubmitting ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <>
+                            <Check className="w-3.5 h-3.5" /> Start Chatting
+                          </>
+                        )}
+                      </Button>
+                    </form>
+                  )}
+
                   <div ref={messagesEndRef} />
                 </div>
               </ScrollArea>
@@ -1429,8 +1646,10 @@ export const PanaAiWidget: React.FC = () => {
                         profile?.role === 'admin'
                           ? 'Ask or say "replace hero image"...'
                           : profile?.role === 'student'
-                          ? 'Ask course questions, assignments, certs...'
-                          : 'Ask anything about PANA Institute...'
+                          ? `Ask course questions, ${displayName}...`
+                          : guestName
+                          ? `Ask anything, ${guestName}...`
+                          : 'Type your message or introduce yourself...'
                       }
                       className="rounded-full pl-4 pr-3 py-2 bg-muted/50 border-border focus-visible:ring-red-500 text-xs sm:text-sm h-10 shadow-inner"
                       disabled={loading}
@@ -1500,7 +1719,7 @@ export const PanaAiWidget: React.FC = () => {
         </div>
       )}
 
-      {/* TIDIO-STYLE FLOATING LAUNCHER / CLOSE BUTTON */}
+      {/* FLOATING LAUNCHER / CLOSE BUTTON */}
       <div className="relative group">
         {!isOpen ? (
           <>
@@ -1509,11 +1728,11 @@ export const PanaAiWidget: React.FC = () => {
 
             <button
               onClick={() => setIsOpen(true)}
-              className="relative flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white dark:bg-slate-900 border-2 border-red-500/30 shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300"
+              className="relative flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-white dark:bg-slate-900 border-2 border-red-500/30 shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300"
               aria-label="Open PANA AI Chat"
             >
               {/* PANA AI Custom Avatar */}
-              <div className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-full overflow-hidden bg-white dark:bg-slate-900 flex items-center justify-center p-1.5 shadow-inner border border-slate-200 dark:border-slate-700">
+              <div className="relative w-8 h-8 sm:w-11 sm:h-11 rounded-full overflow-hidden bg-white dark:bg-slate-900 flex items-center justify-center p-1 sm:p-1.5 shadow-inner border border-slate-200 dark:border-slate-700">
                 <img
                   src="/pana-ai-avatar.png"
                   alt="PANA AI"
@@ -1525,29 +1744,29 @@ export const PanaAiWidget: React.FC = () => {
               </div>
 
               {/* Online Pulse Indicator */}
-              <span className="absolute bottom-1 right-1 flex h-3.5 w-3.5">
+              <span className="absolute bottom-0.5 right-0.5 sm:bottom-1 sm:right-1 flex h-3 w-3 sm:h-3.5 sm:w-3.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-red-600 border-2 border-white dark:border-slate-900"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 sm:h-3.5 sm:w-3.5 bg-red-600 border-2 border-white dark:border-slate-900"></span>
               </span>
 
               {/* Sparkle Icon Badge */}
-              <div className="absolute -top-1 -right-1 p-1 rounded-full bg-gradient-to-tr from-amber-400 to-yellow-300 text-slate-900 shadow">
-                <Sparkles className="w-2.5 h-2.5" />
+              <div className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 p-0.5 sm:p-1 rounded-full bg-gradient-to-tr from-amber-400 to-yellow-300 text-slate-900 shadow">
+                <Sparkles className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
               </div>
             </button>
 
-            {/* Proactive Guest Teaser Bubble (Tidio-style timed prompt after 10 seconds) */}
+            {/* Proactive Guest Teaser Bubble */}
             {showGuestTeaser && (
               <div 
                 onClick={handleOpenFromTeaser}
-                className="absolute right-0 bottom-18 sm:bottom-20 w-[calc(100vw-32px)] sm:w-80 max-w-[340px] p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-red-500/30 shadow-[0_20px_50px_rgba(0,0,0,0.25)] text-foreground z-10 cursor-pointer animate-in fade-in slide-in-from-bottom-3 duration-300 group/bubble"
+                className="absolute right-0 bottom-15 sm:bottom-20 w-[calc(100vw-36px)] sm:w-80 max-w-[320px] p-3 sm:p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-red-500/30 shadow-[0_20px_50px_rgba(0,0,0,0.25)] text-foreground z-10 cursor-pointer animate-in fade-in slide-in-from-bottom-3 duration-300 group/bubble"
               >
-                <div className="flex items-start justify-between gap-2 mb-1.5">
+                <div className="flex items-start justify-between gap-2 mb-1">
                   <div className="flex items-center gap-1.5">
-                    <div className="w-5 h-5 rounded-full bg-red-600 text-white flex items-center justify-center p-0.5">
-                      <Sparkles className="w-3 h-3" />
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-red-600 text-white flex items-center justify-center p-0.5">
+                      <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                     </div>
-                    <span className="text-xs font-bold text-red-600 dark:text-red-400">PANA AI Guide</span>
+                    <span className="text-[11px] sm:text-xs font-bold text-red-600 dark:text-red-400">PANA AI Guide</span>
                   </div>
                   <button
                     onClick={handleDismissTeaser}
@@ -1558,18 +1777,18 @@ export const PanaAiWidget: React.FC = () => {
                   </button>
                 </div>
 
-                <p className="text-xs text-muted-foreground leading-relaxed pr-2">
+                <p className="text-[11px] sm:text-xs text-muted-foreground leading-relaxed pr-1">
                   👋 Looking for a specific engineering certification or corporate training program? I can recommend the right course for you!
                 </p>
 
-                <div className="mt-2.5 pt-2 border-t border-border/60 flex items-center justify-between text-[11px] font-semibold text-red-600 dark:text-red-400 group-hover/bubble:translate-x-0.5 transition-transform">
+                <div className="mt-2 pt-1.5 border-t border-border/60 flex items-center justify-between text-[10px] sm:text-[11px] font-semibold text-red-600 dark:text-red-400 group-hover/bubble:translate-x-0.5 transition-transform">
                   <span>Chat with PANA AI</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
+                  <ChevronRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 </div>
               </div>
             )}
 
-            {/* Hover Tooltip Capsule (only shown if teaser is not active) */}
+            {/* Hover Tooltip Capsule */}
             {!showGuestTeaser && (
               <div className="absolute right-20 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/90 text-white text-xs font-medium backdrop-blur shadow-xl border border-white/10 whitespace-nowrap pointer-events-none transition-opacity duration-200">
                 <span>Ask PANA AI</span>
@@ -1582,10 +1801,10 @@ export const PanaAiWidget: React.FC = () => {
         ) : (
           <button
             onClick={() => setIsOpen(false)}
-            className="flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300"
+            className="flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300"
             aria-label="Close PANA AI Chat"
           >
-            <X className="w-7 h-7 stroke-[2.5]" />
+            <X className="w-6 h-6 sm:w-7 sm:h-7 stroke-[2.5]" />
           </button>
         )}
       </div>
