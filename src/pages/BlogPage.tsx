@@ -104,96 +104,22 @@ export default function BlogPage() {
 
           {/* ======================= MEDIA PAGE CONTENT ======================= */}
           {isMediaPage && (
-            <section id="media" className="py-20 bg-white">
+            <section id="media" className="py-16 sm:py-20 bg-white">
               <div className="max-w-7xl mx-auto px-6 lg:px-8">
-                <div className="text-center max-w-3xl mx-auto mb-16">
-                  <span className="text-red-600 font-bold text-xs uppercase tracking-wider block mb-2">Visual Documentation</span>
-                  <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Programme & Facility Gallery</h2>
-                  <p className="text-base sm:text-lg text-gray-600 leading-relaxed">
-                    Experiential training on live plant equipment, valve testing facilities, calibration laboratories, and site inspections.
-                  </p>
-                </div>
-
-                <div className="grid md:grid-cols-3 gap-8">
-                  {/* Gallery 01 */}
-                  <div className="bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group">
-                    <div className="h-60 relative overflow-hidden bg-zinc-900">
-                      <img 
-                        src={heroSlide1} 
-                        alt="Project based HCD, PE Energy and Chevron" 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                      <span className="absolute bottom-4 left-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-md">
-                        Field Training
+                {mediaPosts.length > 0 ? (
+                  <div className="space-y-10">
+                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-gray-200 pb-6">
+                      <div>
+                        <span className="text-blue-600 font-bold text-xs uppercase tracking-wider block mb-1.5 flex items-center gap-1.5">
+                          <Images className="w-4 h-4" /> Activity Photo Albums & Gallery
+                        </span>
+                        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                          Media Activities & Photo Records
+                        </h2>
+                      </div>
+                      <span className="text-xs text-muted-foreground font-medium">
+                        Showing {mediaPosts.length} published {mediaPosts.length === 1 ? 'record' : 'records'}
                       </span>
-                    </div>
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">
-                        Project-Based HCD, PE Energy & Chevron
-                      </h3>
-                      <p className="text-gray-600 text-sm leading-relaxed">
-                        Fifty trainees on the Makaraba Utonana gas flare project, covering valve assembly and testing, flow drives, and hydraulics, including visits to the Afam power plant.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Gallery 02 */}
-                  <div className="bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group">
-                    <div className="h-60 relative overflow-hidden bg-zinc-900">
-                      <img 
-                        src={heroTraining} 
-                        alt="PIDWAL and TotalEnergies HCD" 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                      <span className="absolute bottom-4 left-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-md">
-                        Laboratory Workshop
-                      </span>
-                    </div>
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">
-                        PIDWAL & TotalEnergies HCD
-                      </h3>
-                      <p className="text-gray-600 text-sm leading-relaxed">
-                        Hands-on instruction at the Port Harcourt center, including industrial flow measurement training delivered by original equipment measurement specialists.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Gallery 03 */}
-                  <div className="bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group">
-                    <div className="h-60 relative overflow-hidden bg-zinc-900">
-                      <img 
-                        src={heroSlide3} 
-                        alt="Assessment on site" 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                      <span className="absolute bottom-4 left-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-md">
-                        Live Assessment
-                      </span>
-                    </div>
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">
-                        On-Site Competency Assessment
-                      </h3>
-                      <p className="text-gray-600 text-sm leading-relaxed">
-                        Independent competency assessment witnessed and certified on-site by Chevron and NCDMB at the Institute's specialized Port Harcourt facility.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Published Media Activities & Galleries from Admin */}
-                {mediaPosts.length > 0 && (
-                  <div className="pt-16 mt-16 border-t border-gray-200">
-                    <div className="text-center max-w-2xl mx-auto mb-12">
-                      <span className="text-blue-600 font-bold text-xs uppercase tracking-wider block mb-2 flex items-center justify-center gap-1.5">
-                        <Images className="w-4 h-4" /> Activity Photo Albums & Gallery
-                      </span>
-                      <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Media Activities & Photo Galleries</h3>
-                      <p className="text-sm text-gray-600">High-resolution photographic documentation, live equipment exercises, graduations, and trainee activity galleries.</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -202,7 +128,7 @@ export default function BlogPage() {
                           key={post.id}
                           initial={{ opacity: 0, y: 20 }}
                           whileInView={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.5, delay: idx * 0.1 }}
+                          transition={{ duration: 0.4, delay: idx * 0.05 }}
                           viewport={{ once: true }}
                         >
                           <Card 
@@ -275,6 +201,14 @@ export default function BlogPage() {
                       ))}
                     </div>
                   </div>
+                ) : (
+                  <div className="text-center py-20 bg-gray-50 rounded-2xl border border-gray-200">
+                    <Images className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                    <h3 className="text-lg font-bold text-gray-900 mb-1">No Media Posts Published Yet</h3>
+                    <p className="text-sm text-gray-500 max-w-sm mx-auto">
+                      Media activities, field training photos, and gallery records will appear here once published from the dashboard.
+                    </p>
+                  </div>
                 )}
               </div>
             </section>
@@ -282,51 +216,22 @@ export default function BlogPage() {
 
           {/* ======================= NEWS PAGE CONTENT ======================= */}
           {isNewsPage && (
-            <section id="news" className="py-20 bg-gray-50">
+            <section id="news" className="py-16 sm:py-20 bg-gray-50">
               <div className="max-w-7xl mx-auto px-6 lg:px-8">
-                <div className="text-center max-w-3xl mx-auto mb-16">
-                  <span className="text-red-600 font-bold text-xs uppercase tracking-wider block mb-2">Institutional Updates</span>
-                  <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Latest News & Press</h2>
-                  <p className="text-base sm:text-lg text-gray-600 leading-relaxed">
-                    Announcements, project completions, and strategic partnership developments across our competency network.
-                  </p>
-                </div>
-
-                <div className="grid md:grid-cols-3 gap-8 mb-16">
-                  {/* Item 01 */}
-                  <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm border-t-4 border-t-red-600 hover:shadow-md transition-shadow">
-                    <div className="text-xs font-bold text-red-600 uppercase tracking-wider mb-2">2026 Milestone</div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">PANA Academy Evolves to PANA Institute</h3>
-                    <p className="text-gray-600 text-sm leading-relaxed">
-                      The Academy is formally elevated to Institute status with a broadened continental mandate across competency assessment and development, applied research, consultancy, sustainability, and global engagement.
-                    </p>
-                  </div>
-
-                  {/* Item 02 */}
-                  <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm border-t-4 border-t-blue-600 hover:shadow-md transition-shadow">
-                    <div className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2">Strategic Partnership</div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">DigitalEnergy Asia Joins Partner Network</h3>
-                    <p className="text-gray-600 text-sm leading-relaxed">
-                      An advanced upstream oil and gas digital curriculum is integrated into executive training delivery, extending institutional collaboration into Southeast Asia.
-                    </p>
-                  </div>
-
-                  {/* Item 03 */}
-                  <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm border-t-4 border-t-emerald-600 hover:shadow-md transition-shadow">
-                    <div className="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-2">Programme Completion</div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">Chevron HCD Gas Flare Project Concluded</h3>
-                    <p className="text-gray-600 text-sm leading-relaxed">
-                      The multi-month Human Capital Development programme for the Makaraba Utonana gas flare initiative is successfully delivered and assessed on-site.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Published Articles from Database */}
-                {newsPosts.length > 0 && (
-                  <div className="pt-12 border-t border-gray-200">
-                    <div className="text-center max-w-2xl mx-auto mb-12">
-                      <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Published Press & Insights</h3>
-                      <p className="text-sm text-gray-600">Thought leadership and official press releases from Institute specialists.</p>
+                {newsPosts.length > 0 ? (
+                  <div className="space-y-10">
+                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-gray-200 pb-6">
+                      <div>
+                        <span className="text-red-600 font-bold text-xs uppercase tracking-wider block mb-1.5 flex items-center gap-1.5">
+                          <Newspaper className="w-4 h-4" /> Official Press Releases & Insights
+                        </span>
+                        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                          News, Milestone Releases & Industry Insights
+                        </h2>
+                      </div>
+                      <span className="text-xs text-muted-foreground font-medium">
+                        Showing {newsPosts.length} published {newsPosts.length === 1 ? 'article' : 'articles'}
+                      </span>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -335,7 +240,7 @@ export default function BlogPage() {
                           key={post.id}
                           initial={{ opacity: 0, y: 20 }}
                           whileInView={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.5, delay: idx * 0.1 }}
+                          transition={{ duration: 0.4, delay: idx * 0.05 }}
                           viewport={{ once: true }}
                         >
                           <Card 
@@ -354,6 +259,9 @@ export default function BlogPage() {
                                   PANA Institute
                                 </div>
                               )}
+                              <span className="absolute bottom-3 left-3 bg-red-600 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-md">
+                                News & Press
+                              </span>
                             </div>
                             <CardContent className="p-6 flex-1 flex flex-col">
                               <div className="flex items-center gap-4 text-xs text-gray-500 mb-3 font-medium uppercase tracking-wider">
@@ -382,6 +290,14 @@ export default function BlogPage() {
                       ))}
                     </div>
                   </div>
+                ) : (
+                  <div className="text-center py-20 bg-white rounded-2xl border border-gray-200">
+                    <Newspaper className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                    <h3 className="text-lg font-bold text-gray-900 mb-1">No News Articles Published Yet</h3>
+                    <p className="text-sm text-gray-500 max-w-sm mx-auto">
+                      Official announcements, articles, and milestones will be displayed here once published.
+                    </p>
+                  </div>
                 )}
               </div>
             </section>
@@ -389,153 +305,125 @@ export default function BlogPage() {
 
           {/* ======================= RESOURCES PAGE CONTENT ======================= */}
           {isResourcesPage && (
-            <section id="resources" className="py-20 bg-white">
+            <section id="resources" className="py-16 sm:py-20 bg-white">
               <div className="max-w-7xl mx-auto px-6 lg:px-8">
-                <div className="text-center max-w-3xl mx-auto mb-16">
-                  <span className="text-red-600 font-bold text-xs uppercase tracking-wider block mb-2">Institutional Material</span>
-                  <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Governance, Documents & Media Assets</h2>
-                  <p className="text-base sm:text-lg text-gray-600 leading-relaxed">
-                    Official compliance frameworks, governance codes, and brand kits available for institutional partners and the press.
-                  </p>
-                </div>
-
-                <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                  {/* Resource 01 - Policies */}
-                  <div className="p-8 bg-gray-50 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between hover:border-red-600 transition-colors">
-                    <div>
-                      <div className="w-12 h-12 rounded-xl bg-red-100 text-red-600 flex items-center justify-center mb-6">
-                        <ShieldCheck className="w-6 h-6" />
+                {resourcesPosts.length > 0 ? (
+                  <div className="space-y-10">
+                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-gray-200 pb-6">
+                      <div>
+                        <span className="text-emerald-600 font-bold text-xs uppercase tracking-wider block mb-1.5 flex items-center gap-1.5">
+                          <FileText className="w-4 h-4" /> Official Policies, Brochures & Documents
+                        </span>
+                        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                          Resources & Governance Library
+                        </h2>
                       </div>
-                      <div className="text-xs font-bold text-red-600 uppercase tracking-wider mb-2">Governance</div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
-                        Policies & Compliance
-                      </h3>
-                      <p className="text-gray-600 text-sm leading-relaxed mb-6">
-                        The Institute's policy library, including health, safety, environmental protocols, ethics, and anti-bribery governance material.
-                      </p>
-                    </div>
-                    <a href="mailto:info@pana-institute.com?subject=Policy%20Resource%20Request" className="no-underline">
-                      <Button className="w-full bg-zinc-900 hover:bg-zinc-800 text-white font-semibold">
-                        Request Policy Access
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Button>
-                    </a>
-                  </div>
-
-                  {/* Resource 02 - Marcomms / Media Kit */}
-                  <div className="p-8 bg-gray-50 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between hover:border-red-600 transition-colors">
-                    <div>
-                      <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mb-6">
-                        <ImageIcon className="w-6 h-6" />
-                      </div>
-                      <div className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2">Brand & Press</div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-3">
-                        Marcomms Media Kit
-                      </h3>
-                      <p className="text-gray-600 text-sm leading-relaxed mb-6">
-                        Official brand guidelines, approved vector wordmarks, corporate typography, executive photos, and fact sheets for accredited journalists.
-                      </p>
-                    </div>
-                    <a href="mailto:info@pana-institute.com?subject=Marcomms%20Media%20Assets%20Request" className="no-underline">
-                      <Button variant="outline" className="w-full border-zinc-900 text-zinc-900 hover:bg-zinc-100 font-semibold">
-                        Request Media Kit
-                        <Download className="w-4 h-4 ml-2" />
-                      </Button>
-                    </a>
-                  </div>
-
-                  {/* Resource 03 - Programme Directory */}
-                  <div className="p-8 bg-gray-50 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between hover:border-red-600 transition-colors">
-                    <div>
-                      <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center mb-6">
-                        <BookOpen className="w-6 h-6" />
-                      </div>
-                      <div className="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-2">Curriculum</div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-3">
-                        Curriculum Catalog
-                      </h3>
-                      <p className="text-gray-600 text-sm leading-relaxed mb-6">
-                        Complete competency frameworks, syllabus structures, and ISO 21001-aligned learning outcomes across all 13 training categories.
-                      </p>
-                    </div>
-                    <a href="/courses" className="no-underline">
-                      <Button variant="outline" className="w-full border-red-600 text-red-600 hover:bg-red-50 font-semibold">
-                        Browse Course Syllabus
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Button>
-                    </a>
-                  </div>
-                </div>
-
-                {/* Published Institutional Documents & Policies from Admin */}
-                {resourcesPosts.length > 0 && (
-                  <div className="pt-16 mt-16 border-t border-gray-200">
-                    <div className="text-center max-w-2xl mx-auto mb-12">
-                      <span className="text-emerald-600 font-bold text-xs uppercase tracking-wider block mb-2">Policy & Document Library</span>
-                      <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Published Policies & Documents</h3>
-                      <p className="text-sm text-gray-600">Official institutional documentation, governance standards, and operational guidelines.</p>
+                      <span className="text-xs text-muted-foreground font-medium">
+                        Showing {resourcesPosts.length} published {resourcesPosts.length === 1 ? 'document' : 'documents'}
+                      </span>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                      {resourcesPosts.map((post, idx) => (
-                        <motion.div
-                          key={post.id}
-                          initial={{ opacity: 0, y: 20 }}
-                          whileInView={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.5, delay: idx * 0.1 }}
-                          viewport={{ once: true }}
-                        >
-                          <Card 
-                            className="overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer h-full border-gray-200 group flex flex-col bg-white"
-                            onClick={() => navigate(`/blog/${post.slug}`)}
+                      {resourcesPosts.map((post, idx) => {
+                        const hasPdf = !!post.pdf_url;
+                        return (
+                          <motion.div
+                            key={post.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, delay: idx * 0.05 }}
+                            viewport={{ once: true }}
                           >
-                            {post.cover_image ? (
-                              <div className="h-52 overflow-hidden relative bg-gray-100">
-                                <img 
-                                  src={post.cover_image} 
-                                  alt={post.title} 
-                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                                />
-                                <span className="absolute bottom-3 left-3 bg-emerald-600 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-md">
-                                  Policy / Document
-                                </span>
-                              </div>
-                            ) : (
-                              <div className="p-6 pb-2 flex items-center gap-3">
-                                <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
-                                  <FileText className="w-6 h-6" />
+                            <Card 
+                              className="overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer h-full border-gray-200 group flex flex-col bg-white"
+                              onClick={() => navigate(`/blog/${post.slug}`)}
+                            >
+                              {post.cover_image ? (
+                                <div className="h-52 overflow-hidden relative bg-gray-100">
+                                  <img 
+                                    src={post.cover_image} 
+                                    alt={post.title} 
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                                  />
+                                  <div className="absolute top-3 right-3 flex items-center gap-1.5">
+                                    {hasPdf && (
+                                      <span className="bg-emerald-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md flex items-center gap-1">
+                                        <Download className="w-3 h-3" /> PDF
+                                      </span>
+                                    )}
+                                  </div>
+                                  <span className="absolute bottom-3 left-3 bg-zinc-900/90 backdrop-blur-sm text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-md">
+                                    Policy / Document
+                                  </span>
                                 </div>
-                                <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">
-                                  Official Document
-                                </span>
-                              </div>
-                            )}
-                            <CardContent className="p-6 flex-1 flex flex-col">
-                              <div className="flex items-center gap-4 text-xs text-gray-500 mb-3 font-medium uppercase tracking-wider">
-                                <span className="flex items-center">
-                                  <Calendar className="w-3 h-3 mr-1 text-emerald-600" />
-                                  {new Date(post.published_at || post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                </span>
-                              </div>
-                              
-                              <h4 className="text-lg font-bold mb-3 text-gray-900 group-hover:text-emerald-600 transition-colors line-clamp-2 leading-snug">
-                                {post.title}
-                              </h4>
-                              
-                              <p className="text-gray-600 text-sm line-clamp-3 mb-6 flex-1 leading-relaxed">
-                                {post.excerpt || 'Read official policy guidelines, documentation and regulatory compliance information...'}
-                              </p>
-                              
-                              <div className="mt-auto pt-4 border-t border-gray-100">
-                                <span className="text-xs font-bold text-emerald-600 group-hover:text-emerald-700 uppercase tracking-wider inline-flex items-center">
-                                  Read Document & Policy <span className="ml-1.5 group-hover:translate-x-1 transition-transform">→</span>
-                                </span>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        </motion.div>
-                      ))}
+                              ) : (
+                                <div className="p-6 pb-2 flex items-center justify-between">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                                      <FileText className="w-6 h-6" />
+                                    </div>
+                                    <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">
+                                      Official Document
+                                    </span>
+                                  </div>
+                                  {hasPdf && (
+                                    <span className="bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase flex items-center gap-1">
+                                      <Download className="w-3 h-3" /> PDF
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+                              <CardContent className="p-6 flex-1 flex flex-col">
+                                <div className="flex items-center gap-4 text-xs text-gray-500 mb-3 font-medium uppercase tracking-wider">
+                                  <span className="flex items-center">
+                                    <Calendar className="w-3 h-3 mr-1 text-emerald-600" />
+                                    {new Date(post.published_at || post.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                  </span>
+                                  {post.pdf_size && (
+                                    <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-mono text-[11px]">
+                                      {post.pdf_size}
+                                    </span>
+                                  )}
+                                </div>
+                                
+                                <h4 className="text-lg font-bold mb-3 text-gray-900 group-hover:text-emerald-600 transition-colors line-clamp-2 leading-snug">
+                                  {post.title}
+                                </h4>
+                                
+                                <p className="text-gray-600 text-sm line-clamp-3 mb-6 flex-1 leading-relaxed">
+                                  {post.excerpt || 'Access official policy guidelines, documentation and regulatory compliance material...'}
+                                </p>
+                                
+                                <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
+                                  <span className="text-xs font-bold text-emerald-600 group-hover:text-emerald-700 uppercase tracking-wider inline-flex items-center">
+                                    {hasPdf ? 'View & Download PDF' : 'Read Document'} <span className="ml-1.5 group-hover:translate-x-1 transition-transform">→</span>
+                                  </span>
+                                  {hasPdf && (
+                                    <a
+                                      href={post.pdf_url}
+                                      download
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="p-1.5 rounded-lg text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 transition-colors"
+                                      title="Direct PDF download"
+                                    >
+                                      <Download className="w-4 h-4" />
+                                    </a>
+                                  )}
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </motion.div>
+                        );
+                      })}
                     </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-20 bg-gray-50 rounded-2xl border border-gray-200">
+                    <FileText className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                    <h3 className="text-lg font-bold text-gray-900 mb-1">No Documents Published Yet</h3>
+                    <p className="text-sm text-gray-500 max-w-sm mx-auto">
+                      Brochures, institutional policies, and compliance manuals will be listed here once published from the admin panel.
+                    </p>
                   </div>
                 )}
               </div>

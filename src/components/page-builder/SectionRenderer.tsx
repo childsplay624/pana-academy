@@ -64,45 +64,77 @@ export const HeroSection = ({ content }: { content: any }) => {
   );
 };
 
-export const ContentSection = ({ content }: { content: any }) => (
-  <section className="py-20 bg-muted/30">
-    <div className="container px-4 mx-auto max-w-5xl">
-      {content.imageUrl && (
-        <div className="mb-10 overflow-hidden rounded-3xl shadow-xl max-h-[450px]">
-          <img src={content.imageUrl} alt="Content visual" className="w-full h-full object-cover" />
-        </div>
-      )}
-      <div 
-        className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-bold prose-a:text-primary"
-        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content.body || '<p>Edit this content in the page builder.</p>') }} 
-      />
-    </div>
-  </section>
-);
+export const ContentSection = ({ content }: { content: any }) => {
+  const bodyText = content?.body || '';
+  if (
+    bodyText.includes("Africa's leading Competency Hub") ||
+    (bodyText.includes("Our Vision") && bodyText.includes("Our Mission"))
+  ) {
+    return null;
+  }
 
-export const FeaturesSection = ({ content }: { content: any }) => (
-  <section className="py-24 bg-background">
-    <div className="container px-4 mx-auto">
-      <div className="text-center max-w-3xl mx-auto mb-16">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">{content.title || 'Key Features'}</h2>
-        <p className="text-muted-foreground text-lg">{content.subtitle || ''}</p>
+  return (
+    <section className="py-20 bg-muted/30">
+      <div className="container px-4 mx-auto max-w-5xl">
+        {content.imageUrl && (
+          <div className="mb-10 overflow-hidden rounded-3xl shadow-xl max-h-[450px]">
+            <img src={content.imageUrl} alt="Content visual" className="w-full h-full object-cover" />
+          </div>
+        )}
+        <div 
+          className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-bold prose-a:text-primary"
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content.body || '<p>Edit this content in the page builder.</p>') }} 
+        />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {(content.features || []).map((feature: any, i: number) => (
-          <Card key={i} className="border-2 hover:border-primary/50 transition-all duration-300 group">
-            <CardContent className="p-8">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
-                <CheckCircle2 className="w-6 h-6" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">{feature.title || 'Feature Title'}</h3>
-              <p className="text-muted-foreground leading-relaxed">{feature.description || 'Feature description goes here.'}</p>
-            </CardContent>
-          </Card>
-        ))}
+    </section>
+  );
+};
+
+export const FeaturesSection = ({ content }: { content: any }) => {
+  // Check if this is the "Our Offices" or "Why Choose" section requested to be disabled
+  const isOfficesSection = 
+    content?.title?.toLowerCase().trim() === 'our offices' ||
+    content?.features?.some((f: any) => 
+      f?.title?.toLowerCase().includes('d-line') || 
+      f?.description?.toLowerCase().includes('emekuku')
+    );
+
+  const isWhyChooseSection =
+    content?.title?.toLowerCase().trim().startsWith('why choose') ||
+    content?.features?.some((f: any) =>
+      f?.title?.toLowerCase().includes('expert faculty') ||
+      f?.title?.toLowerCase().includes('global reach') ||
+      f?.title?.toLowerCase().includes('comprehensive programs')
+    );
+
+  if (isOfficesSection || isWhyChooseSection) {
+    return null;
+  }
+
+  return (
+    <section className="py-24 bg-background">
+      <div className="container px-4 mx-auto">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">{content.title || 'Key Features'}</h2>
+          <p className="text-muted-foreground text-lg">{content.subtitle || ''}</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {(content.features || []).map((feature: any, i: number) => (
+            <Card key={i} className="border-2 hover:border-primary/50 transition-all duration-300 group">
+              <CardContent className="p-8">
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                  <CheckCircle2 className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl font-bold mb-3">{feature.title || 'Feature Title'}</h3>
+                <p className="text-muted-foreground leading-relaxed">{feature.description || 'Feature description goes here.'}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 export const TestimonialsSection = ({ content }: { content: any }) => (
   <section className="py-24 bg-muted/50 overflow-hidden">
@@ -155,25 +187,37 @@ export const FAQSection = ({ content }: { content: any }) => (
   </section>
 );
 
-export const CTASection = ({ content }: { content: any }) => (
-  <section className="py-20">
-    <div className="container px-4 mx-auto">
-      <div className="bg-primary rounded-[3rem] p-12 md:p-20 text-primary-foreground text-center relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl" />
-        
-        <div className="relative z-10 max-w-3xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">{content.title || 'Ready to Start?'}</h2>
-          <p className="text-xl opacity-90 mb-10 leading-relaxed">{content.description || 'Join thousands of students and start your learning journey today.'}</p>
-          <Button variant="secondary" size="lg" className="rounded-full px-10 h-14 text-lg font-bold shadow-2xl hover:scale-105 transition-transform">
-            {content.buttonText || 'Contact Us'}
-            <ChevronRight className="w-5 h-5 ml-2" />
-          </Button>
+export const CTASection = ({ content }: { content: any }) => {
+  const title = (content?.title || '').toLowerCase();
+  const desc = (content?.description || '').toLowerCase();
+  if (
+    title.includes('ready to start your learning journey') ||
+    desc.includes('advancing their careers with') ||
+    (title.includes('ready to start') && content?.buttonText?.toLowerCase().includes('browse courses'))
+  ) {
+    return null;
+  }
+
+  return (
+    <section className="py-20">
+      <div className="container px-4 mx-auto">
+        <div className="bg-primary rounded-[3rem] p-12 md:p-20 text-primary-foreground text-center relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl" />
+          
+          <div className="relative z-10 max-w-3xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">{content.title || 'Ready to Start?'}</h2>
+            <p className="text-xl opacity-90 mb-10 leading-relaxed">{content.description || 'Join thousands of students and start your learning journey today.'}</p>
+            <Button variant="secondary" size="lg" className="rounded-full px-10 h-14 text-lg font-bold shadow-2xl hover:scale-105 transition-transform">
+              {content.buttonText || 'Contact Us'}
+              <ChevronRight className="w-5 h-5 ml-2" />
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 // ── NEW SECTION TYPES ───────────────────────────────────────────────
 

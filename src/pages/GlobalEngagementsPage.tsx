@@ -89,15 +89,15 @@ const GlobalEngagementsPage = () => {
               <div className="space-y-6 animate-fade-in max-w-4xl mx-auto">
                 <div className="inline-flex items-center gap-2.5 bg-white/10 backdrop-blur-md px-5 py-2.5 rounded-full text-white text-xs font-bold uppercase tracking-wider border border-white/20">
                   <FontAwesomeIcon name="fa-solid fa-earth-americas" className="text-red-500" />
-                  <span>Global Engagements & Partnerships</span>
+                  <span>{get('hero_badge', 'Global Engagements & Partnerships')}</span>
                 </div>
 
                 <h1 className="text-4xl md:text-6xl font-bold leading-[1.25] pb-2 text-white drop-shadow-lg">
-                  Global Engagements & <span className="text-red-500">International Alliances</span>
+                  {get('hero_title', 'Global Engagements & ')}<span className="text-red-500">{get('hero_subtitle', 'International Alliances')}</span>
                 </h1>
 
                 <p className="text-lg md:text-xl text-zinc-200 max-w-3xl mx-auto leading-relaxed drop-shadow-md">
-                  Connecting African industrial talent, technical labs, and energy assets with international consortia, cross-border workforce development, and global accreditation bodies.
+                  {get('hero_description', 'Connecting African industrial talent, technical labs, and energy assets with international consortia, cross-border workforce development, and global accreditation bodies.')}
                 </p>
 
 
@@ -202,19 +202,19 @@ const GlobalEngagementsPage = () => {
           {/* Partnership CTA */}
           <section id="contact" className="py-20 bg-red-600 text-white text-center">
             <div className="max-w-4xl mx-auto px-6 lg:px-8">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Partner on Global Engagements?</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">{get('cta_title', 'Ready to Partner on Global Engagements?')}</h2>
               <p className="text-red-100 max-w-2xl mx-auto mb-8 text-base leading-relaxed">
-                Connect with our international Directorate to discuss cross-border workforce development, joint R&D consortia, or operating model advisory.
+                {get('cta_subtitle', 'Connect with our international Directorate to discuss cross-border workforce development, joint R&D consortia, or operating model advisory.')}
               </p>
               <div className="flex flex-wrap justify-center gap-4">
-                <Link to="/contact">
+                <Link to={get('cta_button_1_link', '/contact')}>
                   <Button size="lg" className="bg-white text-red-600 hover:bg-gray-100 font-bold px-8">
-                    Contact Global Directorate
+                    {get('cta_button_1_text', 'Contact Global Directorate')}
                   </Button>
                 </Link>
-                <Link to="/about">
+                <Link to={get('cta_button_2_link', '/about')}>
                   <Button size="lg" variant="outline" className="bg-transparent text-white border-white hover:bg-white/10 font-semibold px-8">
-                    Explore Our Institute
+                    {get('cta_button_2_text', 'Explore Our Institute')}
                   </Button>
                 </Link>
               </div>

@@ -4,6 +4,8 @@ import Footer from "@/components/Footer";
 import { TrainingCalendar } from "@/components/TrainingCalendar";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { usePageContent } from "@/hooks/usePageContent";
+import { DynamicPageSections } from "@/components/page-builder/DynamicPageSections";
 
 // Mock data - replace with actual API call in production
 const mockCourses = [
@@ -62,6 +64,9 @@ const mockCourses = [
 ];
 
 const TrainingCalendarPage = () => {
+  const { get } = usePageContent('training-calendar');
+  const headerImage = get('header_image', 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1471&q=80');
+
   const handleDateSelect = (date: Date) => {
     // Handle date selection if needed
     console.log("Selected date:", date);
@@ -70,29 +75,29 @@ const TrainingCalendarPage = () => {
   return (
     <>
       <Helmet>
-        <title>Training Calendar | PANA Institute</title>
-        <meta name="description" content="View and manage upcoming training programs with our interactive training calendar." />
+        <title>{get('hero_title', 'Training Calendar')} | PANA Institute</title>
+        <meta name="description" content={get('hero_subtitle', 'View and manage upcoming training programs with our interactive training calendar.')} />
       </Helmet>
       
-      <div className="min-h-screen bg-gradient-subtle">
+      <div className="min-h-screen bg-gradient-subtle flex flex-col">
         <Navigation />
         
         {/* Header with Image */}
-        <div className="relative h-64 w-full overflow-hidden bg-pana-navy">
-          <div className="absolute inset-0 bg-gradient-to-r from-pana-navy/90 to-pana-gold/30 z-10">
+        <div className="relative h-72 w-full overflow-hidden bg-pana-navy">
+          <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/90 via-zinc-900/80 to-red-950/70 z-10">
             <div className="container mx-auto h-full flex items-center px-4 sm:px-6 lg:px-8">
               <div className="max-w-2xl text-white">
-                <h1 className="text-4xl font-bold mb-4">Training Calendar</h1>
-                <p className="text-lg text-gray-100">
-                  Explore our upcoming training programs and enhance your skills with industry experts.
+                <h1 className="text-4xl md:text-5xl font-bold mb-4">{get('hero_title', 'Training Calendar')}</h1>
+                <p className="text-lg text-gray-200">
+                  {get('hero_subtitle', 'Explore our upcoming training programs and enhance your skills with industry experts.')}
                 </p>
               </div>
             </div>
           </div>
           <div 
-            className="absolute inset-0 bg-cover bg-center z-0 opacity-30"
+            className="absolute inset-0 bg-cover bg-center z-0 opacity-40"
             style={{
-              backgroundImage: 'url("https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1471&q=80")',
+              backgroundImage: `url("${headerImage}")`,
             }}
           />
         </div>
@@ -101,9 +106,9 @@ const TrainingCalendarPage = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
               <div>
-                <h1 className="text-2xl font-bold text-pana-navy">Upcoming Programs</h1>
+                <h1 className="text-2xl font-bold text-pana-navy">{get('section_heading', 'Upcoming Programs')}</h1>
                 <p className="mt-1 text-gray-600">
-                  Browse and register for upcoming training sessions
+                  {get('section_subheading', 'Browse and register for upcoming training sessions')}
                 </p>
               </div>
               <Button className="mt-4 md:mt-0 bg-pana-gold hover:bg-pana-gold/90 text-pana-navy">
@@ -158,6 +163,9 @@ const TrainingCalendarPage = () => {
           </div>
         </main>
         
+        {/* Modular Sections from Page Builder */}
+        <DynamicPageSections slug="training-calendar" />
+
         <Footer />
       </div>
     </>

@@ -5,7 +5,7 @@ import Footer from '@/components/Footer';
 import { blogService, BlogPost } from '@/services/blogService';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, ChevronRight, Loader2, Calendar, Images, X, Maximize2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Loader2, Calendar, Images, X, Maximize2, FileText, Download, ExternalLink } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import 'react-quill/dist/quill.snow.css';
 
@@ -154,6 +154,51 @@ export default function BlogPostPage() {
             <ChevronLeft className="w-4 h-4 mr-2" />
             {backLabel}
           </Button>
+
+          {/* Attached Official PDF Document Card */}
+          {post.pdf_url && (
+            <div className="mb-10 p-6 bg-gradient-to-br from-emerald-50 to-teal-50/50 border border-emerald-200/80 rounded-2xl shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+              <div className="flex items-center gap-4 min-w-0">
+                <div className="w-14 h-14 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                  <FileText className="w-7 h-7" />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-full inline-block mb-1">
+                    Official Attached Document
+                  </span>
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 truncate">
+                    {post.pdf_name || 'Download Official Document (PDF)'}
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    {post.pdf_size ? `${post.pdf_size} • ` : ''}Authorized institutional release (PDF format)
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 w-full sm:w-auto shrink-0">
+                <a
+                  href={post.pdf_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex-1 sm:flex-initial"
+                >
+                  <Button variant="outline" className="w-full bg-white hover:bg-gray-50 border-gray-200 text-gray-800 font-semibold text-xs shadow-sm">
+                    <ExternalLink className="w-3.5 h-3.5 mr-1.5 text-emerald-600" />
+                    Open in Tab
+                  </Button>
+                </a>
+                <a
+                  href={post.pdf_url}
+                  download={post.pdf_name || 'document.pdf'}
+                  className="flex-1 sm:flex-initial"
+                >
+                  <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md">
+                    <Download className="w-3.5 h-3.5 mr-1.5" />
+                    Download PDF
+                  </Button>
+                </a>
+              </div>
+            </div>
+          )}
           
           <article 
             className="prose prose-lg md:prose-xl prose-red max-w-none 

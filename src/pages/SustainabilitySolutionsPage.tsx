@@ -43,19 +43,17 @@ const SustainabilitySolutionsPage = () => {
               <div className="space-y-8 animate-fade-in">
                 <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full text-white/90 text-sm font-medium border border-white/20">
                   <Zap className="w-5 h-5 text-pana-gold" />
-                  <span>Sustainability as a Business</span>
+                  <span>{get('hero_badge', 'Sustainability as a Business')}</span>
                   <ArrowRight className="w-4 h-4" />
                 </div>
 
                 <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-[1.25] pb-2 text-white">
-                  Sustainability Solutions <span className="text-red-600">& Climate Services</span>
+                  {get('hero_title', 'Sustainability Solutions ')}<span className="text-red-600">{get('hero_subtitle', '& Climate Services')}</span>
                 </h1>
 
                 <p className="text-xl md:text-2xl text-gray-200 max-w-4xl mx-auto leading-relaxed">
-                  Driving value through decarbonisation, ESG and green innovation. A move from compliance to execution, delivering measurable environmental and financial value.
+                  {get('hero_description', 'Driving value through decarbonisation, ESG and green innovation. A move from compliance to execution, delivering measurable environmental and financial value.')}
                 </p>
-
-
               </div>
             </div>
           </section>
@@ -341,20 +339,20 @@ const SustainabilitySolutionsPage = () => {
           {/* CTA Section */}
           <section className="bg-zinc-950 text-white py-20">
             <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Transition From Compliance to Action</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">{get('cta_title', 'Transition From Compliance to Action')}</h2>
               <p className="text-xl text-zinc-300 max-w-3xl mx-auto mb-8">
-                Partner with PANA Institute to deploy carbon reduction roadmaps, ESG frameworks, and climate technology.
+                {get('cta_subtitle', 'Partner with PANA Institute to deploy carbon reduction roadmaps, ESG frameworks, and climate technology.')}
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="/contact" className="no-underline">
+                <a href={get('cta_button_1_link', '/contact')} className="no-underline">
                   <Button className="bg-red-600 hover:bg-red-700 text-white px-8 py-6 text-lg font-semibold group">
-                    Schedule Decarbonisation Audit
+                    {get('cta_button_1_text', 'Schedule Decarbonisation Audit')}
                     <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </a>
-                <a href="mailto:info@pana-institute.com" className="no-underline">
+                <a href={`mailto:${get('cta_email', 'info@pana-institute.com')}`} className="no-underline">
                   <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white/10 px-8 py-6 text-lg group">
-                    Contact Climate Services
+                    {get('cta_button_2_text', 'Contact Climate Services')}
                     <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </a>

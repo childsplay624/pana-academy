@@ -16,6 +16,9 @@ export interface BlogPost {
   updated_at: string;
   category: BlogCategory;
   gallery: string[];
+  pdf_url?: string;
+  pdf_name?: string;
+  pdf_size?: string;
 }
 
 export const CATEGORY_LABELS: Record<BlogCategory, string> = {
@@ -56,6 +59,24 @@ export function extractGallery(content?: string): string[] {
   return [];
 }
 
+export function extractPdf(content?: string): { url?: string; name?: string; size?: string } {
+  if (!content) return {};
+  const match = content.match(/<!--pdf:(.*?)-->/);
+  if (match && match[1]) {
+    try {
+      const decoded = decodeURIComponent(match[1]);
+      return JSON.parse(decoded);
+    } catch {
+      try {
+        return JSON.parse(match[1]);
+      } catch {
+        return {};
+      }
+    }
+  }
+  return {};
+}
+
 export function stripCategoryTag(content?: string): string {
   if (!content) return '';
   return content.replace(/<!--category:(news|media|resources)-->/g, '').trim();
@@ -66,33 +87,42 @@ export function stripMetadataTags(content?: string): string {
   return content
     .replace(/<!--category:(news|media|resources)-->/g, '')
     .replace(/<!--gallery:.*?-->/g, '')
+    .replace(/<!--pdf:.*?-->/g, '')
     .trim();
 }
 
 export function embedMetadataTags(
   content?: string,
   category: BlogCategory = 'news',
-  gallery: string[] = []
+  gallery: string[] = [],
+  pdf?: { url?: string; name?: string; size?: string }
 ): string {
   const clean = stripMetadataTags(content);
   const galleryTag = gallery && gallery.length > 0 
     ? `<!--gallery:${encodeURIComponent(JSON.stringify(gallery))}-->` 
     : '';
-  return `<!--category:${category}-->${galleryTag}${clean}`;
+  const pdfTag = pdf && pdf.url
+    ? `<!--pdf:${encodeURIComponent(JSON.stringify(pdf))}-->`
+    : '';
+  return `<!--category:${category}-->${galleryTag}${pdfTag}${clean}`;
 }
 
 export function embedCategoryTag(content?: string, category: BlogCategory = 'news'): string {
-  return embedMetadataTags(content, category, []);
+  return embedMetadataTags(content, category, [], undefined);
 }
 
 const formatPost = (post: any): BlogPost => {
   if (!post) return post;
   const category = extractCategory(post.content, post.category);
   const gallery = extractGallery(post.content);
+  const pdf = extractPdf(post.content);
   return {
     ...post,
     category,
     gallery,
+    pdf_url: post.pdf_url || pdf.url,
+    pdf_name: post.pdf_name || pdf.name,
+    pdf_size: post.pdf_size || pdf.size,
     content: stripMetadataTags(post.content),
   };
 };
@@ -159,10 +189,11 @@ export const blogService = {
 
     const category = postData.category || 'news';
     const gallery = postData.gallery || [];
-    const content = embedMetadataTags(postData.content, category, gallery);
+    const pdf = postData.pdf_url ? { url: postData.pdf_url, name: postData.pdf_name, size: postData.pdf_size } : undefined;
+    const content = embedMetadataTags(postData.content, category, gallery, pdf);
 
-    // Omit category and gallery columns to prevent schema mismatch if column doesn't exist
-    const { category: _c, gallery: _g, ...restPostData } = postData;
+    // Omit category, gallery, and pdf columns to prevent schema mismatch if column doesn't exist
+    const { category: _c, gallery: _g, pdf_url: _pu, pdf_name: _pn, pdf_size: _ps, ...restPostData } = postData;
 
     const { data, error } = await supabase
       .from('blog_posts')
@@ -183,12 +214,13 @@ export const blogService = {
   updatePost: async (id: string, postData: Partial<BlogPost>) => {
     const category = postData.category || 'news';
     const gallery = postData.gallery || [];
+    const pdf = postData.pdf_url ? { url: postData.pdf_url, name: postData.pdf_name, size: postData.pdf_size } : undefined;
     let content = postData.content;
-    if (content !== undefined || postData.gallery !== undefined) {
-      content = embedMetadataTags(content, category, gallery);
+    if (content !== undefined || postData.gallery !== undefined || postData.pdf_url !== undefined) {
+      content = embedMetadataTags(content, category, gallery, pdf);
     }
 
-    const { category: _c, gallery: _g, ...restPostData } = postData;
+    const { category: _c, gallery: _g, pdf_url: _pu, pdf_name: _pn, pdf_size: _ps, ...restPostData } = postData;
     const updatePayload: any = { ...restPostData };
     if (content !== undefined) {
       updatePayload.content = content;

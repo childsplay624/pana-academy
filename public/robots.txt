@@ -1,3 +1,17 @@
+# PANA Institute - robots.txt
+# https://pana-institute.com
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /auth/
+Disallow: /reset-password
+Disallow: /verify-email
+Disallow: /payment/
+Disallow: /test
+
+# Major Search Engine Crawlers
 User-agent: Googlebot
 Allow: /
 
@@ -10,5 +24,5 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
-User-agent: *
-Allow: /
+# XML Sitemap
+Sitemap: https://pana-institute.com/sitemap.xml

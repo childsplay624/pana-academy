@@ -55,8 +55,9 @@ export async function sendPanaAiMessage({
         const candidateText =
           data.candidates?.[0]?.content?.parts?.[0]?.text ||
           "I'm sorry, I couldn't process that response. Please try again.";
-        if (onDelta) onDelta(candidateText);
-        return candidateText;
+        const cleaned = cleanPanaAiResponse(candidateText);
+        if (onDelta) onDelta(cleaned);
+        return cleaned;
       } else {
         const errData = await res.json().catch(() => ({}));
         console.error('Gemini API Error in client:', errData);
@@ -89,8 +90,9 @@ export async function sendPanaAiMessage({
       if (response.ok) {
         const data = await response.json();
         if (data && data.text) {
-          if (onDelta) onDelta(data.text);
-          return data.text;
+          const cleaned = cleanPanaAiResponse(data.text);
+          if (onDelta) onDelta(cleaned);
+          return cleaned;
         }
       }
     } catch (err) {
@@ -100,7 +102,22 @@ export async function sendPanaAiMessage({
 
 
   // 3. Graceful offline intelligent rule-based responder (ensures zero crashes and immediate assistance)
-  return getOfflineSmartResponse(messages[messages.length - 1]?.content || '', context);
+  return cleanPanaAiResponse(getOfflineSmartResponse(messages[messages.length - 1]?.content || '', context));
+}
+
+/**
+ * Sanitizes response to eliminate raw ### headings and course calendar links
+ */
+export function cleanPanaAiResponse(text: string): string {
+  if (!text) return '';
+  return text
+    // Convert markdown heading lines like "### Heading" or "## Heading" to "**Heading**"
+    .replace(/^#{1,6}\s+(.+)$/gm, '**$1**')
+    // Remove any remaining stray ### markers
+    .replace(/#{2,6}\s*/g, '')
+    // Replace any course/training calendar links or mentions with course catalog
+    .replace(/\[([^\]]*(?:training|course)\s*calendar[^\]]*)\]\([^)]+\)/gi, '[Browse Courses](/courses)')
+    .replace(/\/training-calendar/gi, '/courses');
 }
 
 /**
@@ -109,22 +126,75 @@ export async function sendPanaAiMessage({
 function getOfflineSmartResponse(query: string, context: PanaAiRoleContext): string {
   const lower = query.toLowerCase();
 
-  if (lower.includes('course') || lower.includes('program') || lower.includes('class') || lower.includes('training')) {
-    return `Welcome to **PANA Institute**! We offer world-class technical engineering programs in:
-- **Instrumentation & Process Automation**
-- **Valves & Actuation Systems**
-- **Power & Industrial Drives**
-- **Safety & Process Hazard Analysis (HAZOP/LOPA)**
-- **Sustainability & Energy Transition**
-- **Field & Marine Operations**
+  if (lower.includes('syllabus') || lower.includes('brochure') || lower.includes('curriculum') || lower.includes('outline')) {
+    return `Here are the details for our specialized technical training curriculums. We would be pleased to email you the full syllabus, module schedule, and corporate pricing.
 
-👉 You can explore all our accredited programs on the [Course Catalog](/courses). Are you looking for beginner or advanced specialized modules?`;
+\`\`\`action:lead_capture
+{
+  "courseTitle": "PANA Technical Program Syllabus",
+  "reason": "Official curriculum syllabus and brochure"
+}
+\`\`\``;
+  }
+
+  if (lower.includes('course') || lower.includes('program') || lower.includes('class') || lower.includes('training') || lower.includes('recommend')) {
+    return `Welcome to **PANA Institute**! We offer world-class technical engineering programs across several specialized pillars:
+- **Instrumentation & Process Automation** (PLC, SCADA, field transmitters, loop checks)
+- **Valves & Actuation Systems** (sizing, calibration, diagnostics)
+- **Power & Industrial Drives** (switchgear, motors, VFDs)
+- **Safety & Process Hazard Analysis** (HAZOP, LOPA, SIL, functional safety)
+- **Sustainability & Energy Transition** (decarbonization, carbon management, renewables)
+- **Field & Marine Operations** (offshore asset integrity, maintenance)
+
+👉 Explore our full syllabus and enroll at [Browse All Courses](/courses), or enter your email below to receive the official syllabus & brochure directly:
+
+\`\`\`action:lead_capture
+{
+  "courseTitle": "Engineering Training Catalog",
+  "reason": "Send official syllabus and corporate pricing brochure"
+}
+\`\`\``;
+  }
+
+  if (lower.includes('corporate') || lower.includes('company') || lower.includes('bespoke') || lower.includes('onsite') || lower.includes('team')) {
+    return `**PANA Institute** designs tailored corporate technical training programs and asset integrity workshops for national & international energy organizations.
+- We support **on-premise plant training**, **live instructor-led virtual sessions**, and **blended e-learning**.
+- You can submit inquiries or request an RFP directly through our [Contact Page](/contact), or leave your corporate email below to receive our executive corporate training pack:
+
+\`\`\`action:lead_capture
+{
+  "courseTitle": "Corporate Technical Training Package",
+  "reason": "Corporate on-site and bespoke training prospectus"
+}
+\`\`\``;
+  }
+
+  if (lower.includes('about') && (lower.includes('pana') || lower.includes('institute') || lower.includes('academy') || lower.includes('company') || lower.includes('who are you') || lower.includes('what is pana'))) {
+    return `**PANA Institute** (PANA Energy Services Ltd) is a premier center of excellence for technical engineering training, capacity building, consulting, research & development (R&D), and sustainability solutions across Energy, Oil & Gas, Power, and Industrial Automation.
+
+**Our Core Pillars:**
+- **Technical Competence & Certifications:** Practical hands-on training aligned with international engineering standards (API, ISO, IEC, IEEE, ASME, ISA) and local regulatory bodies (NCDMB).
+- **Engineering Consultancy:** Asset integrity management, debottlenecking, instrumentation audits, and process optimization.
+- **R&D & Innovation:** Industry-sponsored applied research, test-bench verification, and prototyping.
+- **Sustainability & Energy Transition:** Carbon management, emissions reduction, and renewable energy integration.
+
+👉 Explore our [Course Catalog](/courses), learn about [Consulting Services](/consulting-services), or read our full story on the [About Page](/about).`;
+  }
+
+  if (lower.includes('consult') || lower.includes('consulting') || lower.includes('engineering service')) {
+    return `**PANA Institute Engineering Consultancy Services** delivers high-impact technical advisory, asset integrity assessments, and process safety solutions to energy operators and industrial plants:
+- **Asset Integrity & Reliability:** FMECA, RCM audits, and lifecycle management.
+- **Process Automation & Instrumentation Audits:** Control valve diagnostics, SCADA/PLC calibration, and loop health checks.
+- **Process Safety & Risk Assessment:** HAZOP, LOPA, SIL calculations, and HSE regulatory compliance.
+- **Facility Debottlenecking:** Flow assurance, energy efficiency, and emissions reduction.
+
+👉 You can review our full consulting portfolio at [Consulting Services](/consulting-services), or submit an RFP through our [Contact Page](/contact).`;
   }
 
   if (lower.includes('certificate') || lower.includes('verify') || lower.includes('credential')) {
-    return `Every credential issued by PANA Institute is cryptographically secured with a verification code and QR code.
-- **To verify a credential:** Visit the public [Verify Certificate Portal](/verify-certificate) and enter the certificate ID.
-- **For students:** You can access, share to LinkedIn, or download your certificates directly from [My Certificates](/student/certificates).`;
+    return `Every credential issued by PANA Institute is cryptographically secured with a unique Certificate ID and QR code aligned with international standards (API, ISO, IEC, IEEE, NCDMB).
+- **Public Verification:** Anyone, including employers or clients, can verify a credential instantly at the [Verify Certificate Portal](/verify-certificate).
+- **For Enrolled Students:** View, download, or share your stamped PDF certificates on LinkedIn via [My Certificates](/student/certificates) (or [Dashboard Certificates](/dashboard/certificates)).`;
   }
 
   if (lower.includes('contact') || lower.includes('reach') || lower.includes('phone') || lower.includes('email') || lower.includes('location')) {

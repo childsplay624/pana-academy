@@ -8,19 +8,37 @@ const Footer = () => {
 
   useEffect(() => {
     const fetchFooterData = async () => {
-      // 1. Fetch dynamic pages marked for footer
+      // 1. Fetch custom dynamic pages marked for footer (excluding static pages)
       const { data: pageData } = await supabase
         .from('pages')
         .select('title, slug')
         .eq('status', 'published')
         .eq('show_in_footer', true);
       
+      const EXCLUDED_SLUGS = new Set([
+        'contact', 'careers', 'consulting-services', 'rnd-services',
+        'training-delivery', 'sustainability-solutions', 'global-engagements',
+        'safety', 'our-journey', 'training-calendar', 'testimonials',
+        'our-institute', 'about', 'home'
+      ]);
+
+      const EXCLUDED_NAMES = new Set([
+        'contact us', 'contact', 'careers', 'consulting services',
+        'research & development', 'research and development',
+        'training delivery', 'sustainability solutions',
+        'global engagements', 'safety standards & hse', 'safety standards',
+        'our journey & milestones', 'our journey', 'training calendar',
+        'client testimonials', 'our institute', 'about us', 'home'
+      ]);
+
       let customLinksList: { name: string, href: string }[] = [];
       if (pageData) {
-        customLinksList = pageData.map(p => ({
-          name: p.title,
-          href: `/p/${p.slug}`
-        }));
+        customLinksList = pageData
+          .filter(p => !EXCLUDED_SLUGS.has(p.slug))
+          .map(p => ({
+            name: p.title,
+            href: `/p/${p.slug}`
+          }));
       }
 
       // 2. Fetch footer layout settings
@@ -66,19 +84,32 @@ const Footer = () => {
             links: [
               { name: "Media", href: "/media" },
               { name: "News", href: "/news" },
-              { name: "Resources", href: "/resources" },
-              { name: "Contact us", href: "/contact" }
+              { name: "Resources", href: "/resources" }
             ]
           }
         ];
       }
 
-      // Append custom pages to the last column automatically
+      // Ensure Media and Resources never contains the excluded static pages
+      layout = layout.map((col: any) => {
+        if (col.title?.toLowerCase().includes('media') || col.id === 'col-3') {
+          return {
+            ...col,
+            links: (col.links || []).filter((l: any) => !EXCLUDED_NAMES.has(l.name?.trim().toLowerCase()))
+          };
+        }
+        return col;
+      });
+
+      // Append any truly custom pages (non-static) to the last column if applicable
       if (customLinksList.length > 0 && layout.length > 0) {
-        layout[layout.length - 1].links = [
-          ...layout[layout.length - 1].links,
-          ...customLinksList
-        ];
+        const lastCol = layout[layout.length - 1];
+        if (lastCol) {
+          lastCol.links = [
+            ...lastCol.links,
+            ...customLinksList
+          ];
+        }
       }
 
       setFooterColumns(layout);

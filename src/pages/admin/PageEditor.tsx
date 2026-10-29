@@ -11,7 +11,7 @@ import {
   MousePointer2, MoveUp, MoveDown, FileCode, AlertCircle, 
   CheckSquare, MessageSquare, HelpCircle, X, ChevronDown, ChevronUp, ChevronRight, Loader2, TrendingUp
 } from 'lucide-react';
-import { pageService, Page, PageSection } from '@/services/pageService';
+import { pageService, Page, PageSection, getPageUrl } from '@/services/pageService';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -22,6 +22,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -49,8 +50,14 @@ import {
 } from '@/components/page-builder/SectionRenderer';
 import { ImagePicker } from '@/components/admin/ImagePicker';
 
+export interface StaticFieldDef {
+  key: string;
+  label: string;
+  type: 'text' | 'textarea' | 'url' | 'image';
+}
+
 // Maps a static page slug to its editable content field definitions
-const STATIC_PAGE_FIELDS: Record<string, { key: string; label: string; type: 'text' | 'textarea' | 'url' | 'image' }[]> = {
+const STATIC_PAGE_FIELDS: Record<string, StaticFieldDef[]> = {
   'about': [
     { key: 'header_image', label: 'Header Hero Background Image', type: 'image' },
     { key: 'title', label: 'Page Title (Browser Tab)', type: 'text' },
@@ -59,63 +66,171 @@ const STATIC_PAGE_FIELDS: Record<string, { key: string; label: string; type: 'te
     { key: 'hero_title', label: 'Hero Title', type: 'text' },
     { key: 'hero_subtitle', label: 'Hero Subtitle', type: 'text' },
     { key: 'hero_description', label: 'Hero Description', type: 'textarea' },
+    { key: 'who_we_are_badge', label: 'Who We Are Badge', type: 'text' },
+    { key: 'who_we_are_title', label: 'Who We Are Title', type: 'text' },
+    { key: 'who_we_are_description', label: 'Who We Are Description', type: 'textarea' },
     { key: 'vision_body', label: 'Vision Body Text', type: 'textarea' },
     { key: 'mission_body', label: 'Mission Body Text', type: 'textarea' },
-    { key: 'mission_body_2', label: 'Mission Body (Paragraph 2)', type: 'textarea' },
     { key: 'purpose_body', label: 'Purpose Body Text', type: 'textarea' },
+    { key: 'programmes_button_text', label: 'Programmes Button Label', type: 'text' },
+    { key: 'mandates_title', label: 'Core Mandates Title', type: 'text' },
     { key: 'highlights_title', label: 'Highlights Section Title', type: 'text' },
     { key: 'highlights_subtitle', label: 'Highlights Section Subtitle', type: 'textarea' },
     { key: 'cta_title', label: 'CTA Title', type: 'text' },
     { key: 'cta_subtitle', label: 'CTA Subtitle', type: 'textarea' },
+    { key: 'cta_button_text', label: 'CTA Button Label', type: 'text' },
   ],
   'training-delivery': [
     { key: 'header_image', label: 'Header Hero Background Image', type: 'image' },
-    { key: 'hero_title', label: 'Page Title', type: 'text' },
-    { key: 'hero_subtitle', label: 'Page Subtitle', type: 'textarea' },
-    { key: 'intro_body', label: 'Introduction Text', type: 'textarea' },
+    { key: 'hero_badge', label: 'Hero Badge Text', type: 'text' },
+    { key: 'hero_title', label: 'Hero Title', type: 'text' },
+    { key: 'hero_subtitle', label: 'Hero Subtitle', type: 'text' },
+    { key: 'hero_description', label: 'Hero Description', type: 'textarea' },
+    { key: 'section_badge', label: 'Programmes Section Badge', type: 'text' },
+    { key: 'section_title', label: 'Programmes Section Title', type: 'text' },
+    { key: 'section_description', label: 'Programmes Section Description', type: 'textarea' },
     { key: 'cta_title', label: 'CTA Section Title', type: 'text' },
-    { key: 'cta_button', label: 'CTA Button Label', type: 'text' },
+    { key: 'cta_subtitle', label: 'CTA Section Subtitle', type: 'textarea' },
+    { key: 'cta_button_1_text', label: 'CTA Primary Button Label', type: 'text' },
+    { key: 'cta_button_2_text', label: 'CTA Secondary Button Label', type: 'text' },
   ],
   'contact': [
+    { key: 'hero_badge', label: 'Hero Badge Text', type: 'text' },
     { key: 'hero_title', label: 'Page Title', type: 'text' },
-    { key: 'hero_subtitle', label: 'Page Subtitle', type: 'textarea' },
-    { key: 'address_ph_coe', label: 'Port Harcourt - Center of Excellence Address', type: 'textarea' },
-    { key: 'address_ph_dline', label: 'Port Harcourt - D-Line Address', type: 'textarea' },
+    { key: 'hero_subtitle', label: 'Page Tagline / Subtitle', type: 'text' },
+    { key: 'hero_description', label: 'Page Introduction Text', type: 'textarea' },
+    { key: 'offices_badge', label: 'Offices Section Badge', type: 'text' },
+    { key: 'offices_heading', label: 'Offices Section Heading', type: 'text' },
+    { key: 'address_ph', label: 'Port Harcourt Centre of Excellence Address', type: 'textarea' },
+    { key: 'phone_ph', label: 'Port Harcourt Phone', type: 'text' },
     { key: 'address_abuja', label: 'Abuja Office Address', type: 'textarea' },
-    { key: 'phone', label: 'Phone Numbers', type: 'text' },
-    { key: 'email', label: 'Contact Email', type: 'text' },
+    { key: 'phone_abuja', label: 'Abuja Phone', type: 'text' },
+    { key: 'address_kampala', label: 'Kampala Office Address', type: 'textarea' },
+    { key: 'address_dubai', label: 'Dubai Office Address', type: 'textarea' },
+    { key: 'email', label: 'Central Direct Contact Email', type: 'text' },
+    { key: 'map_url', label: 'Google Maps Embed URL', type: 'url' },
   ],
   'careers': [
     { key: 'header_image', label: 'Header Hero Background Image', type: 'image' },
-    { key: 'hero_title', label: 'Hero Title (White text)', type: 'text' },
-    { key: 'hero_subtitle', label: 'Hero Subtitle (Red text)', type: 'text' },
+    { key: 'hero_badge', label: 'Hero Badge Text', type: 'text' },
+    { key: 'hero_title', label: 'Hero Title', type: 'text' },
+    { key: 'hero_subtitle', label: 'Hero Subtitle (Highlight text)', type: 'text' },
     { key: 'hero_description', label: 'Hero Description', type: 'textarea' },
+    { key: 'hero_button_text', label: 'Hero Button Label', type: 'text' },
+    { key: 'register_title', label: 'Registration Section Title', type: 'text' },
+    { key: 'register_description', label: 'Registration Section Description', type: 'textarea' },
+    { key: 'register_instructions', label: 'Registration Instructions Text', type: 'textarea' },
+    { key: 'register_email', label: 'Recruitment Email Address', type: 'text' },
+    { key: 'cta_title', label: 'CTA Section Title', type: 'text' },
+    { key: 'cta_subtitle', label: 'CTA Subtitle', type: 'textarea' },
+    { key: 'cta_button_text', label: 'CTA Button Label', type: 'text' },
+    { key: 'cta_button_link', label: 'CTA Button Link URL', type: 'url' },
   ],
   'consulting-services': [
     { key: 'header_image', label: 'Header Hero Background Image', type: 'image' },
-    { key: 'hero_title', label: 'Hero Title (White text)', type: 'text' },
-    { key: 'hero_subtitle', label: 'Hero Subtitle (Red text)', type: 'text' },
+    { key: 'hero_badge', label: 'Hero Badge Text', type: 'text' },
+    { key: 'hero_title', label: 'Hero Title', type: 'text' },
+    { key: 'hero_subtitle', label: 'Hero Subtitle', type: 'text' },
     { key: 'hero_description', label: 'Hero Description', type: 'textarea' },
+    { key: 'button_deliver_text', label: 'Hero Button 1 Label', type: 'text' },
+    { key: 'button_work_text', label: 'Hero Button 2 Label', type: 'text' },
+    { key: 'cta_title', label: 'CTA Title', type: 'text' },
+    { key: 'cta_subtitle', label: 'CTA Subtitle', type: 'textarea' },
+    { key: 'cta_button_1_text', label: 'CTA Primary Button Label', type: 'text' },
+    { key: 'cta_button_2_text', label: 'CTA Secondary Button Label', type: 'text' },
   ],
   'rnd-services': [
     { key: 'header_image', label: 'Header Hero Background Image', type: 'image' },
-    { key: 'hero_title', label: 'Hero Title (White text)', type: 'text' },
-    { key: 'hero_subtitle', label: 'Hero Subtitle (Red text)', type: 'text' },
+    { key: 'hero_badge', label: 'Hero Badge Text', type: 'text' },
+    { key: 'hero_title', label: 'Hero Title', type: 'text' },
+    { key: 'hero_subtitle', label: 'Hero Subtitle', type: 'text' },
     { key: 'hero_description', label: 'Hero Description', type: 'textarea' },
+    { key: 'button_centres_text', label: 'Hero Button Label', type: 'text' },
+    { key: 'cta_title', label: 'CTA Title', type: 'text' },
+    { key: 'cta_subtitle', label: 'CTA Subtitle', type: 'textarea' },
+    { key: 'cta_button_1_text', label: 'CTA Primary Button Label', type: 'text' },
+    { key: 'cta_button_2_text', label: 'CTA Secondary Button Label', type: 'text' },
   ],
   'sustainability-solutions': [
     { key: 'header_image', label: 'Header Hero Background Image', type: 'image' },
-    { key: 'hero_title', label: 'Hero Title (White text)', type: 'text' },
-    { key: 'hero_subtitle', label: 'Hero Subtitle (Red text)', type: 'text' },
+    { key: 'hero_badge', label: 'Hero Badge Text', type: 'text' },
+    { key: 'hero_title', label: 'Hero Title', type: 'text' },
+    { key: 'hero_subtitle', label: 'Hero Subtitle', type: 'text' },
     { key: 'hero_description', label: 'Hero Description', type: 'textarea' },
+    { key: 'cta_title', label: 'CTA Title', type: 'text' },
+    { key: 'cta_subtitle', label: 'CTA Subtitle', type: 'textarea' },
+    { key: 'cta_button_1_text', label: 'CTA Primary Button Label', type: 'text' },
+    { key: 'cta_button_2_text', label: 'CTA Secondary Button Label', type: 'text' },
   ],
   'global-engagements': [
     { key: 'header_image', label: 'Header Hero Background Image', type: 'image' },
-    { key: 'hero_title', label: 'Hero Title (White text)', type: 'text' },
-    { key: 'hero_subtitle', label: 'Hero Subtitle (Red text)', type: 'text' },
+    { key: 'hero_badge', label: 'Hero Badge Text', type: 'text' },
+    { key: 'hero_title', label: 'Hero Title', type: 'text' },
+    { key: 'hero_subtitle', label: 'Hero Subtitle', type: 'text' },
+    { key: 'hero_description', label: 'Hero Description', type: 'textarea' },
+    { key: 'cta_title', label: 'CTA Title', type: 'text' },
+    { key: 'cta_subtitle', label: 'CTA Subtitle', type: 'textarea' },
+    { key: 'cta_button_1_text', label: 'CTA Primary Button Label', type: 'text' },
+    { key: 'cta_button_2_text', label: 'CTA Secondary Button Label', type: 'text' },
+  ],
+  'safety': [
+    { key: 'header_image', label: 'Header Hero Background Image', type: 'image' },
+    { key: 'hero_badge', label: 'Hero Badge Text', type: 'text' },
+    { key: 'hero_title', label: 'Hero Title', type: 'text' },
+    { key: 'hero_subtitle', label: 'Hero Subtitle', type: 'text' },
+    { key: 'hero_description', label: 'Hero Description', type: 'textarea' },
+    { key: 'cta_title', label: 'CTA Title', type: 'text' },
+    { key: 'cta_subtitle', label: 'CTA Subtitle', type: 'textarea' },
+    { key: 'cta_button_1_text', label: 'CTA Primary Button Label', type: 'text' },
+    { key: 'cta_button_2_text', label: 'CTA Secondary Button Label', type: 'text' },
+  ],
+  'our-journey': [
+    { key: 'header_image', label: 'Header Hero Background Image', type: 'image' },
+    { key: 'hero_badge', label: 'Hero Badge Text', type: 'text' },
+    { key: 'hero_title', label: 'Hero Title', type: 'text' },
+    { key: 'hero_subtitle', label: 'Hero Subtitle', type: 'text' },
     { key: 'hero_description', label: 'Hero Description', type: 'textarea' },
   ],
+  'training-calendar': [
+    { key: 'header_image', label: 'Header Banner Background Image', type: 'image' },
+    { key: 'hero_title', label: 'Page Hero Title', type: 'text' },
+    { key: 'hero_subtitle', label: 'Hero Subtitle & Description', type: 'textarea' },
+    { key: 'section_heading', label: 'Calendar Section Heading', type: 'text' },
+    { key: 'section_subheading', label: 'Calendar Subheading / Instructions', type: 'text' },
+  ],
+  'testimonials': [
+    { key: 'header_image', label: 'Header Background Image', type: 'image' },
+    { key: 'hero_badge', label: 'Hero Badge Text', type: 'text' },
+    { key: 'hero_title', label: 'Hero Main Title', type: 'text' },
+    { key: 'hero_subtitle', label: 'Hero Subtitle Description', type: 'textarea' },
+    { key: 'cta_title', label: 'CTA Title', type: 'text' },
+    { key: 'cta_subtitle', label: 'CTA Subtitle', type: 'textarea' },
+    { key: 'cta_button_text', label: 'CTA Button Label', type: 'text' },
+  ],
+  'our-institute': [
+    { key: 'header_image', label: 'Header Background Image', type: 'image' },
+    { key: 'hero_badge', label: 'Hero Badge Text', type: 'text' },
+    { key: 'hero_title', label: 'Hero Main Title', type: 'text' },
+    { key: 'hero_subtitle', label: 'Hero Subtitle', type: 'text' },
+    { key: 'hero_description', label: 'Hero Description', type: 'textarea' },
+    { key: 'charter_title', label: 'Charter Section Title', type: 'text' },
+    { key: 'charter_body', label: 'Charter Section Body', type: 'textarea' },
+    { key: 'cta_title', label: 'CTA Title', type: 'text' },
+    { key: 'cta_subtitle', label: 'CTA Subtitle', type: 'textarea' },
+    { key: 'cta_button_text', label: 'CTA Button Label', type: 'text' },
+  ],
 };
+
+const DEFAULT_STATIC_FIELDS: StaticFieldDef[] = [
+  { key: 'header_image', label: 'Header Hero Background Image', type: 'image' },
+  { key: 'hero_badge', label: 'Hero Badge Text', type: 'text' },
+  { key: 'hero_title', label: 'Page Hero Title', type: 'text' },
+  { key: 'hero_subtitle', label: 'Hero Subtitle / Tagline', type: 'text' },
+  { key: 'hero_description', label: 'Main Introduction / Description', type: 'textarea' },
+  { key: 'main_content', label: 'Body Content (Text / HTML)', type: 'textarea' },
+  { key: 'cta_title', label: 'Call To Action Title', type: 'text' },
+  { key: 'cta_button', label: 'Call To Action Button Label', type: 'text' },
+];
 
 const SECTION_TEMPLATES = {
   hero: { 
@@ -200,6 +315,13 @@ export default function PageEditor() {
   const [page, setPage] = useState<Page | null>(null);
   const [sections, setSections] = useState<PageSection[]>([]);
   const [staticContent, setStaticContent] = useState<Record<string, string>>({});
+  const [customFields, setCustomFields] = useState<StaticFieldDef[]>([]);
+  const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
+  const [newFieldData, setNewFieldData] = useState<{ key: string; label: string; type: 'text' | 'textarea' | 'image' | 'url' }>({
+    key: '',
+    label: '',
+    type: 'text'
+  });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [isAddSectionOpen, setIsAddSectionOpen] = useState(false);
@@ -219,12 +341,22 @@ export default function PageEditor() {
       if (error) throw error;
       setPage(data);
 
-      if (data.page_type === 'static') {
-        const content = await pageService.getPageContent(data.slug);
-        setStaticContent(content);
-      }
+      const content = await pageService.getPageContent(data.slug);
+      setStaticContent(content || {});
+
+      // Auto-discover any custom keys stored in database that aren't in predefined schemas
+      const baseFields = STATIC_PAGE_FIELDS[data.slug] || DEFAULT_STATIC_FIELDS;
+      const baseKeys = new Set(baseFields.map(f => f.key));
+      const extraFields: StaticFieldDef[] = Object.keys(content || {})
+        .filter(k => !baseKeys.has(k))
+        .map(k => ({
+          key: k,
+          label: k.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+          type: k.includes('image') ? 'image' : (k.includes('body') || k.includes('content') || k.includes('description') ? 'textarea' : 'text')
+        }));
+      setCustomFields(extraFields);
       
-      const sectionData = await pageService.getPageSections(pageId);
+      const sectionData = await pageService.getPageSections(data.id);
       setSections(sectionData || []);
       
       const initialExpanded: Record<string, boolean> = {};
@@ -236,6 +368,29 @@ export default function PageEditor() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAddCustomField = () => {
+    if (!newFieldData.key.trim()) return;
+    const cleanKey = newFieldData.key.toLowerCase().trim().replace(/[^a-z0-9_]/g, '_');
+    const newDef: StaticFieldDef = {
+      key: cleanKey,
+      label: newFieldData.label.trim() || cleanKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      type: newFieldData.type
+    };
+    setCustomFields(prev => [...prev.filter(f => f.key !== cleanKey), newDef]);
+    setIsAddFieldOpen(false);
+    setNewFieldData({ key: '', label: '', type: 'text' });
+    toast({ title: 'Field Added', description: `Added custom field: ${newDef.label}` });
+  };
+
+  const handleRemoveCustomField = (key: string) => {
+    setCustomFields(prev => prev.filter(f => f.key !== key));
+    setStaticContent(prev => {
+      const copy = { ...prev };
+      delete copy[key];
+      return copy;
+    });
   };
 
   const handleSave = async () => {
@@ -333,6 +488,19 @@ export default function PageEditor() {
     );
   }
 
+  if (!page) {
+    return (
+      <DashboardLayout>
+        <div className="flex flex-col items-center justify-center h-96 gap-4 text-center">
+          <p className="text-lg font-semibold text-muted-foreground">The requested page could not be found or loaded.</p>
+          <Button variant="outline" onClick={() => navigate('/dashboard/pages')}>
+            <ChevronLeft className="w-4 h-4 mr-2" /> Back to Pages
+          </Button>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout>
       <div className="space-y-6 w-full">
@@ -346,17 +514,17 @@ export default function PageEditor() {
               <h1 className="text-2xl font-bold tracking-tight">{page?.title}</h1>
               <div className="flex items-center gap-2 mt-1">
                 <Badge variant="outline" className={`text-[10px] h-5 ${page?.page_type === 'static' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-green-50 text-green-600 border-green-200'}`}>
-                  {page?.page_type === 'static' ? '⚡ Static' : '🧩 Dynamic'}
+                  {page?.page_type === 'static' ? '⚡ Static Content' : '🧩 Dynamic Modular'}
                 </Badge>
-                <code className="text-[10px] bg-muted px-2 py-0.5 rounded text-muted-foreground">
-                  {page?.page_type === 'static' ? `/${page?.slug}` : `/p/${page?.slug}`}
+                <code className="text-[10px] bg-muted px-2 py-0.5 rounded text-muted-foreground font-mono">
+                  {getPageUrl(page)}
                 </code>
               </div>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="ghost" className="hidden sm:flex" onClick={() => window.open(page?.page_type === 'static' ? `/${page?.slug}` : `/p/${page?.slug}`, '_blank')}>
-              <Eye className="w-4 h-4 mr-2" /> Preview
+            <Button variant="ghost" className="hidden sm:flex" onClick={() => window.open(getPageUrl(page), '_blank')}>
+              <Eye className="w-4 h-4 mr-2" /> Preview Live
             </Button>
             <Button onClick={handleSave} disabled={saving} className="bg-primary hover:bg-primary/90 px-6 font-bold shadow-lg shadow-primary/20">
               {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
@@ -392,38 +560,119 @@ export default function PageEditor() {
                       <div className="p-2 bg-blue-500 rounded-lg text-white"><AlertCircle className="w-5 h-5" /></div>
                       <div>
                         <h4 className="font-bold text-blue-900 leading-none mb-2">Static Page Mode</h4>
-                        <p className="text-sm text-blue-700/80">You are editing a static page. Update text blocks, headers, and media overrides directly below.</p>
+                        <p className="text-sm text-blue-700/80">
+                          Edit headers, text blocks, banners, and media overrides. You can also append dynamic modular blocks in the &ldquo;Page Outline (Sections)&rdquo; tab.
+                        </p>
                       </div>
                     </CardContent>
                   </Card>
 
                   <Card className="shadow-sm border-border">
-                    <CardHeader><CardTitle className="text-lg">Editable Content & Media</CardTitle></CardHeader>
+                    <CardHeader className="flex flex-row items-center justify-between pb-4">
+                      <div>
+                        <CardTitle className="text-lg">Editable Content & Media</CardTitle>
+                        <CardDescription>Configure copy, hero imagery, and custom data blocks</CardDescription>
+                      </div>
+                      <Dialog open={isAddFieldOpen} onOpenChange={setIsAddFieldOpen}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" size="sm" className="h-8 text-xs font-semibold">
+                            <Plus className="w-3.5 h-3.5 mr-1" /> Add Custom Field
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Add Custom Content Field</DialogTitle>
+                            <DialogDescription>Define a new editable field key for this page.</DialogDescription>
+                          </DialogHeader>
+                          <div className="space-y-4 py-3">
+                            <div className="space-y-1.5">
+                              <Label className="text-xs font-bold">Field Key (database identifier)</Label>
+                              <Input
+                                placeholder="e.g. director_quote or notice_banner"
+                                value={newFieldData.key}
+                                onChange={e => setNewFieldData(p => ({ ...p, key: e.target.value }))}
+                              />
+                            </div>
+                            <div className="space-y-1.5">
+                              <Label className="text-xs font-bold">Display Label</Label>
+                              <Input
+                                placeholder="e.g. Director's Quote"
+                                value={newFieldData.label}
+                                onChange={e => setNewFieldData(p => ({ ...p, label: e.target.value }))}
+                              />
+                            </div>
+                            <div className="space-y-1.5">
+                              <Label className="text-xs font-bold">Field Type</Label>
+                              <Select
+                                value={newFieldData.type}
+                                onValueChange={(v: any) => setNewFieldData(p => ({ ...p, type: v }))}
+                              >
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="text">Single Line Text</SelectItem>
+                                  <SelectItem value="textarea">Multi-line Paragraph / HTML</SelectItem>
+                                  <SelectItem value="image">Image Asset Picker</SelectItem>
+                                  <SelectItem value="url">External Link URL</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <Button variant="outline" onClick={() => setIsAddFieldOpen(false)}>Cancel</Button>
+                            <Button onClick={handleAddCustomField}>Add Field</Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    </CardHeader>
                     <CardContent className="space-y-6">
-                      {(STATIC_PAGE_FIELDS[page.slug] || []).map(field => (
-                        <div key={field.key} className="space-y-2">
-                          <Label className="text-xs font-bold text-muted-foreground uppercase">{field.label}</Label>
-                          {field.type === 'image' ? (
-                            <ImagePicker 
-                              value={staticContent[field.key] || ''} 
-                              onSelect={url => setStaticContent(p => ({ ...p, [field.key]: url }))}
-                              label={`Select ${field.label}`}
-                            />
-                          ) : field.type === 'textarea' ? (
-                            <Textarea 
-                              value={staticContent[field.key] || ''} 
-                              onChange={e => setStaticContent(p => ({ ...p, [field.key]: e.target.value }))}
-                              className="min-h-[120px] focus-visible:ring-primary"
-                            />
-                          ) : (
-                            <Input 
-                              value={staticContent[field.key] || ''} 
-                              onChange={e => setStaticContent(p => ({ ...p, [field.key]: e.target.value }))}
-                              className="focus-visible:ring-primary"
-                            />
-                          )}
-                        </div>
-                      ))}
+                      {[
+                        ...(page ? (STATIC_PAGE_FIELDS[page.slug] || DEFAULT_STATIC_FIELDS) : DEFAULT_STATIC_FIELDS),
+                        ...customFields
+                      ].map(field => {
+                        const isCustom = customFields.some(cf => cf.key === field.key);
+                        return (
+                          <div key={field.key} className="space-y-2 p-3 rounded-xl bg-card border border-border/40 relative group">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <Label className="text-xs font-bold text-foreground uppercase tracking-wide">{field.label}</Label>
+                                <code className="text-[10px] text-muted-foreground font-mono bg-muted px-1.5 py-0.5 rounded">
+                                  {field.key}
+                                </code>
+                              </div>
+                              {isCustom && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-6 w-6 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                                  onClick={() => handleRemoveCustomField(field.key)}
+                                  title="Remove custom field"
+                                >
+                                  <X className="w-3.5 h-3.5" />
+                                </Button>
+                              )}
+                            </div>
+                            {field.type === 'image' ? (
+                              <ImagePicker 
+                                value={staticContent[field.key] || ''} 
+                                onSelect={url => setStaticContent(p => ({ ...p, [field.key]: url }))}
+                                label={`Select ${field.label}`}
+                              />
+                            ) : field.type === 'textarea' ? (
+                              <Textarea 
+                                value={staticContent[field.key] || ''} 
+                                onChange={e => setStaticContent(p => ({ ...p, [field.key]: e.target.value }))}
+                                className="min-h-[120px] focus-visible:ring-primary text-sm leading-relaxed"
+                              />
+                            ) : (
+                              <Input 
+                                value={staticContent[field.key] || ''} 
+                                onChange={e => setStaticContent(p => ({ ...p, [field.key]: e.target.value }))}
+                                className="focus-visible:ring-primary text-sm"
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
                     </CardContent>
                   </Card>
                 </div>
@@ -448,6 +697,7 @@ export default function PageEditor() {
                           <SelectContent>
                             <SelectItem value="draft">Draft</SelectItem>
                             <SelectItem value="published">Published</SelectItem>
+                            <SelectItem value="archived">Archived</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -533,13 +783,27 @@ export default function PageEditor() {
                               exit={{ opacity: 0, x: -20 }}
                               key={section.id}
                             >
-                              <div className="flex items-center gap-2 mb-6 border-b pb-4">
-                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-muted shrink-0" onClick={() => setActiveSectionId(null)}>
-                                  <ChevronLeft className="w-4 h-4" />
-                                </Button>
-                                <div className="truncate">
-                                  <h3 className="font-bold text-lg capitalize truncate">{section.section_type.replace(/_/g, ' ')}</h3>
-                                  <p className="text-xs text-muted-foreground">Editing section properties</p>
+                              <div className="flex items-center justify-between gap-2 mb-6 border-b pb-4">
+                                <div className="flex items-center gap-2 truncate">
+                                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-muted shrink-0" onClick={() => setActiveSectionId(null)}>
+                                    <ChevronLeft className="w-4 h-4" />
+                                  </Button>
+                                  <div className="truncate">
+                                    <h3 className="font-bold text-lg capitalize truncate">{section.section_type.replace(/_/g, ' ')}</h3>
+                                    <p className="text-xs text-muted-foreground">Editing section properties</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2 shrink-0">
+                                  <Label htmlFor={`active-${section.id}`} className="text-xs font-medium cursor-pointer">
+                                    {section.is_active ? 'Active' : 'Disabled'}
+                                  </Label>
+                                  <Switch
+                                    id={`active-${section.id}`}
+                                    checked={section.is_active ?? true}
+                                    onCheckedChange={(checked) => {
+                                      setSections(prev => prev.map(s => s.id === section.id ? { ...s, is_active: checked } : s));
+                                    }}
+                                  />
                                 </div>
                               </div>
 
@@ -993,7 +1257,10 @@ export default function PageEditor() {
              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                <div className="lg:col-span-2 space-y-6">
                   <Card className="rounded-3xl shadow-sm border-border">
-                    <CardHeader><CardTitle>Search Optimization (SEO)</CardTitle></CardHeader>
+                    <CardHeader>
+                      <CardTitle>Page Configuration & Architecture</CardTitle>
+                      <CardDescription>Manage routing, page model, and search engine optimization</CardDescription>
+                    </CardHeader>
                     <CardContent className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
@@ -1008,22 +1275,93 @@ export default function PageEditor() {
                           </div>
                         </div>
                       </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Page Architecture</Label>
+                          <Select 
+                            value={page?.page_type} 
+                            onValueChange={(v: 'static' | 'dynamic') => setPage(p => p ? { ...p, page_type: v } : null)}
+                          >
+                            <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="dynamic">🧩 Dynamic Modular (Drag-and-drop sections)</SelectItem>
+                              <SelectItem value="static">⚡ Static Page (Custom content keys & template)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <p className="text-[11px] text-muted-foreground">
+                            Dynamic pages render at <code>/p/{page?.slug}</code>. Static pages map directly to root routes <code>/{page?.slug}</code>.
+                          </p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Publication Status</Label>
+                          <Select 
+                            value={page?.status} 
+                            onValueChange={(v: any) => setPage(p => p ? { ...p, status: v } : null)}
+                          >
+                            <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="draft">Draft (Admin preview only)</SelectItem>
+                              <SelectItem value="published">Published (Live public access)</SelectItem>
+                              <SelectItem value="archived">Archived (Unlisted)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Internal Description / Notes</Label>
+                        <Input 
+                          value={page?.description || ''} 
+                          onChange={e => setPage(p => p ? { ...p, description: e.target.value } : null)} 
+                          placeholder="Purpose of this page..." 
+                        />
+                      </div>
+
                       <Separator />
+
                       <div className="space-y-4">
                         <div className="space-y-2">
-                          <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Meta Title (Browser Tab)</Label>
-                          <Input value={page?.meta_title || ''} onChange={e => setPage(p => p ? { ...p, meta_title: e.target.value } : null)} placeholder={page?.title} />
+                          <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Meta Title (Browser Tab & Google)</Label>
+                          <Input value={page?.meta_title || ''} onChange={e => setPage(p => p ? { ...p, meta_title: e.target.value } : null)} placeholder={page?.title ? `${page.title} | PANA Institute` : ''} />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Meta Description</Label>
-                          <Textarea value={page?.meta_description || ''} onChange={e => setPage(p => p ? { ...p, meta_description: e.target.value } : null)} placeholder="Brief summary of the page..." className="h-24" />
+                          <Label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Meta Description (SEO snippet)</Label>
+                          <Textarea value={page?.meta_description || ''} onChange={e => setPage(p => p ? { ...p, meta_description: e.target.value } : null)} placeholder="Concise summary for search engine results..." className="h-24" />
                         </div>
                       </div>
                     </CardContent>
-                    <CardFooter className="bg-muted/10 py-3 text-[10px] text-muted-foreground">
-                       Created {page ? new Date(page.created_at).toLocaleString() : 'N/A'}
+                    <CardFooter className="bg-muted/10 py-3 text-[10px] text-muted-foreground flex justify-between">
+                       <span>Created {page ? new Date(page.created_at).toLocaleString() : 'N/A'}</span>
+                       <span className="font-mono">Live Route: {getPageUrl(page)}</span>
                     </CardFooter>
                   </Card>
+               </div>
+
+               <div className="space-y-6">
+                 <Card className="shadow-sm border-border overflow-hidden">
+                   <CardHeader className="bg-muted/30 py-3">
+                     <CardTitle className="text-sm font-bold uppercase italic">Site Visibility</CardTitle>
+                   </CardHeader>
+                   <CardContent className="p-6 space-y-6">
+                     <div className="flex items-center justify-between">
+                       <div>
+                         <Label htmlFor="set-nav" className="text-sm font-medium">Show in Navbar</Label>
+                         <p className="text-[11px] text-muted-foreground">Display link in main site header</p>
+                       </div>
+                       <Switch id="set-nav" checked={page?.show_in_navbar} onCheckedChange={v => setPage(p => p ? { ...p, show_in_navbar: v } : null)} />
+                     </div>
+                     <Separator />
+                     <div className="flex items-center justify-between">
+                       <div>
+                         <Label htmlFor="set-footer" className="text-sm font-medium">Show in Footer</Label>
+                         <p className="text-[11px] text-muted-foreground">Display in footer links columns</p>
+                       </div>
+                       <Switch id="set-footer" checked={page?.show_in_footer} onCheckedChange={v => setPage(p => p ? { ...p, show_in_footer: v } : null)} />
+                     </div>
+                   </CardContent>
+                 </Card>
                </div>
              </div>
           </TabsContent>

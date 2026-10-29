@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import Navigation from '@/components/Navigation';
+import SEO from '@/components/SEO';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -301,6 +302,11 @@ const PublicCoursesPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <SEO
+        title="Industrial Programmes & Professional Certifications"
+        description="Explore PANA Institute accredited engineering, technical skills, and industrial certifications across Power, Oil & Gas, Automation, and Construction."
+        canonical="/courses"
+      />
       <Navigation />
       {/* Hero Section with Background Image */}
       <div className="relative min-h-[500px] bg-cover bg-center mt-20">

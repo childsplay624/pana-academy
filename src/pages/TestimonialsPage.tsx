@@ -8,13 +8,17 @@ import { Star, Quote, MessageSquare, Award, Users, ArrowRight, CheckCircle2 } fr
 import { supabase } from "@/integrations/supabase/client";
 import { Testimonial } from "@/types/testimonial.types";
 import { useSiteImage } from "@/hooks/useSiteImage";
+import { usePageContent } from "@/hooks/usePageContent";
+import { DynamicPageSections } from "@/components/page-builder/DynamicPageSections";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
 const TestimonialsPage = () => {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
-  const { imageUrl: heroImage } = useSiteImage('header_testimonials');
+  const { imageUrl: defaultHeroImage } = useSiteImage('header_testimonials');
+  const { get } = usePageContent('testimonials');
+  const heroImage = get('header_image') || defaultHeroImage;
 
   useEffect(() => {
     fetchTestimonials();
@@ -44,12 +48,12 @@ const TestimonialsPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
       <Helmet>
-        <title>Success Stories | PANA Institute - Client Testimonials</title>
+        <title>{get('hero_title', 'Voices of Excellence')} | PANA Institute - Client Testimonials</title>
         <meta
           name="description"
-          content="Hear from our clients who have transformed their careers and improved their organizational performance through PANA Institute's Solutions and Services."
+          content={get('hero_subtitle', "Hear from our clients who have transformed their careers and improved their organizational performance through PANA Institute's Solutions and Services.")}
         />
       </Helmet>
 
@@ -79,15 +83,15 @@ const TestimonialsPage = () => {
           >
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full text-pana-gold text-sm font-medium border border-white/20 mb-6">
               <MessageSquare className="w-4 h-4" />
-              <span>Real Stories, Real Results</span>
+              <span>{get('hero_badge', 'Real Stories, Real Results')}</span>
             </div>
 
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-[1.25] pb-2">
-              Voices of <span className="text-red-600">Excellence</span>
+              {get('hero_title', 'Voices of Excellence')}
             </h1>
 
             <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-10 leading-relaxed">
-              Discover how PANA Institute has empowered professionals and organizations across the globe to achieve unprecedented growth and technical mastery.
+              {get('hero_subtitle', 'Discover how PANA Institute has empowered professionals and organizations across the globe to achieve unprecedented growth and technical mastery.')}
             </p>
 
             {/* Quick Stats */}
@@ -236,19 +240,22 @@ const TestimonialsPage = () => {
       <section className="py-24 bg-red-600 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-1/3 h-full bg-red-700 -skew-x-12 translate-x-1/2" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white z-10">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6">Join Our Success Stories</h2>
+          <h2 className="text-3xl md:text-5xl font-bold mb-6">{get('cta_title', 'Join Our Success Stories')}</h2>
           <p className="text-xl text-red-50 max-w-2xl mx-auto mb-10 opacity-90">
-            Ready to transform your career or organization? Get in touch with us today to discuss your goals.
+            {get('cta_subtitle', 'Ready to transform your career or organization? Get in touch with us today to discuss your goals.')}
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <Link to="/contact">
+            <Link to={get('cta_button_link', '/contact')}>
               <Button size="lg" className="bg-white text-red-600 hover:bg-slate-100 px-8 h-14 text-lg font-bold">
-                Get Started Today
+                {get('cta_button_text', 'Get Started Today')}
               </Button>
             </Link>
           </div>
         </div>
       </section>
+
+      {/* Modular Sections from Page Builder */}
+      <DynamicPageSections slug="testimonials" />
 
       <Footer />
     </div>

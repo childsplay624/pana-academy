@@ -5,6 +5,7 @@ import { ShieldCheck, ArrowRight, Zap, CheckCircle2, FileCheck, ShieldAlert, Awa
 import { Button } from "@/components/ui/button";
 import { useSiteImage } from "@/hooks/useSiteImage";
 import { usePageContent } from "@/hooks/usePageContent";
+import { DynamicPageSections } from "@/components/page-builder/DynamicPageSections";
 import { Card3D } from "@/components/ui/Card3D";
 
 const SafetyPage = () => {
@@ -15,8 +16,8 @@ const SafetyPage = () => {
   return (
     <>
       <Helmet>
-        <title>Safety at PANA Institute | Health, Safety & Environment (HSE)</title>
-        <meta name="description" content="Health, safety and environment standards built into every programme. ISO 14001 and ISO 45001 targeted for completion in 2027." />
+        <title>{get('hero_title', 'Safety at PANA Institute')} | Health, Safety & Environment (HSE)</title>
+        <meta name="description" content={get('hero_description', 'Health, safety and environment standards built into every programme. ISO 14001 and ISO 45001 targeted for completion in 2027.')} />
       </Helmet>
 
       <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -42,16 +43,22 @@ const SafetyPage = () => {
               <div className="space-y-8 animate-fade-in">
                 <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full text-white/90 text-sm font-medium border border-white/20">
                   <ShieldCheck className="w-5 h-5 text-red-500" />
-                  <span>Our Institute · Safety</span>
+                  <span>{get('hero_badge', 'Our Institute · Safety')}</span>
                   <ArrowRight className="w-4 h-4" />
                 </div>
 
                 <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-[1.25] pb-2 text-white">
-                  Safety at <span className="text-red-600">PANA Institute</span>
+                  {get('hero_title', 'Safety at PANA Institute')}
                 </h1>
 
+                {get('hero_subtitle') && (
+                  <p className="text-xl md:text-2xl text-red-400 font-semibold max-w-3xl mx-auto">
+                    {get('hero_subtitle')}
+                  </p>
+                )}
+
                 <p className="text-xl md:text-2xl text-gray-200 max-w-4xl mx-auto leading-relaxed">
-                  Health, safety and environment standards are built into every programme, from curriculum design through to delivery on live equipment. Safety is taught the way it is practised on a working site, not as a separate module.
+                  {get('hero_description', 'Health, safety and environment standards are built into every programme, from curriculum design through to delivery on live equipment. Safety is taught the way it is practised on a working site, not as a separate module.')}
                 </p>
 
                 <div className="flex justify-center gap-4 mt-8">
@@ -158,20 +165,20 @@ const SafetyPage = () => {
           {/* CTA Section */}
           <section className="bg-zinc-900 text-white py-20">
             <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Learn With Uncompromising HSE Standards</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">{get('cta_title', 'Learn With Uncompromising HSE Standards')}</h2>
               <p className="text-xl text-zinc-300 max-w-3xl mx-auto mb-8">
-                All training programmes follow strict operational safety protocols mirroring live industrial sites.
+                {get('cta_subtitle', 'All training programmes follow strict operational safety protocols mirroring live industrial sites.')}
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="/courses" className="no-underline">
+                <a href={get('cta_button_1_link', '/courses')} className="no-underline">
                   <Button className="bg-red-600 hover:bg-red-700 text-white px-8 py-6 text-lg font-semibold group">
-                    Explore Programmes
+                    {get('cta_button_1_text', 'Explore Programmes')}
                     <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </a>
-                <a href="/about" className="no-underline">
+                <a href={get('cta_button_2_link', '/about')} className="no-underline">
                   <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white/10 px-8 py-6 text-lg group">
-                    About Our Institute
+                    {get('cta_button_2_text', 'About Our Institute')}
                     <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </a>
@@ -179,6 +186,9 @@ const SafetyPage = () => {
             </div>
           </section>
         </main>
+
+        {/* Dynamic Sections from Page Builder */}
+        <DynamicPageSections slug="safety" />
 
         <Footer />
       </div>

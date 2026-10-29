@@ -38,6 +38,7 @@ import {
 import { fetchCourseById, formatCourseDate, isStartingSoon, isCourseDatePassed, isCoursePriceTbd, type Course, type Lesson } from '@/services/courseService';
 import { ModuleManager } from '@/components/course-management/ModuleManager';
 import { usePlatformSettings } from '@/hooks/usePlatformSettings';
+import { SEO } from '@/components/SEO';
 import { useAuth } from '@/hooks/useAuth';
 import { checkEnrollment } from '@/services/enrollmentService';
 import { PaymentButton } from '@/components/payment/PaymentButton';
@@ -192,8 +193,42 @@ export default function CourseDetails() {
   const ratingValue = course.rating && course.rating > 0 ? course.rating : null;
   const categoryName = course.category_name || (course.category as string)?.replace(/_/g, ' ') || 'Technical Training';
 
+  const courseSchema = {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "name": course.title,
+    "description": course.description || `${course.title} professional certification course at PANA Institute.`,
+    "provider": {
+      "@type": "EducationalOrganization",
+      "name": "PANA Institute",
+      "sameAs": "https://pana-institute.com"
+    },
+    ...(course.instructor_name ? {
+      "instructor": {
+        "@type": "Person",
+        "name": course.instructor_name
+      }
+    } : {}),
+    ...(course.course_area ? { "occupationalCategory": course.course_area } : {}),
+    ...(course.code ? { "courseCode": course.code } : {}),
+    "hasCourseInstance": {
+      "@type": "CourseInstance",
+      "courseMode": course.course_type === 'onsite' ? 'onsite' : 'online',
+      ...(course.start_date ? { "startDate": course.start_date } : {}),
+      ...(course.end_date ? { "endDate": course.end_date } : {}),
+      ...(course.duration_hours ? { "courseWorkload": `PT${course.duration_hours}H` } : {})
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 font-sans">
+      <SEO
+        title={`${course.code ? `[${course.code}] ` : ''}${course.title}`}
+        description={course.description || `Enroll in ${course.title} at PANA Institute. Accredited competency training and certification.`}
+        canonical={`/course/${course.code || course.id}`}
+        ogImage={course.thumbnail_url || '/logo.png'}
+        schema={courseSchema}
+      />
       <Navigation />
 
       <main className="flex-1 w-full pt-16">

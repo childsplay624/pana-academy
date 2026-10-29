@@ -51,22 +51,22 @@ const RnDServicesPage = () => {
               <div className="space-y-8 animate-fade-in">
                 <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full text-white/90 text-sm font-medium border border-white/20">
                   <Zap className="w-5 h-5 text-pana-gold" />
-                  <span>Research and Development</span>
+                  <span>{get('hero_badge', 'Research and Development')}</span>
                   <ArrowRight className="w-4 h-4" />
                 </div>
 
                 <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-[1.25] pb-2 text-white">
-                  Five Centres of <span className="text-red-600">Excellence</span>
+                  {get('hero_title', 'Five Centres of ')}<span className="text-red-600">{get('hero_subtitle', 'Excellence')}</span>
                 </h1>
 
                 <p className="text-xl md:text-2xl text-gray-200 max-w-4xl mx-auto leading-relaxed">
-                  Five centres of excellence sit inside Research and Development. Each supplies subject authority to every division and drives revenue in a partnership led mode, keeping the Institute's training current.
+                  {get('hero_description', "Five centres of excellence sit inside Research and Development. Each supplies subject authority to every division and drives revenue in a partnership led mode, keeping the Institute's training current.")}
                 </p>
 
                 <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
                   <a href="#centres-of-excellence" className="no-underline">
                     <Button className="bg-red-600 hover:bg-red-700 text-white px-8 py-6 text-lg font-semibold group">
-                      Explore Centres
+                      {get('button_centres_text', 'Explore Centres')}
                       <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </Button>
                   </a>
@@ -238,26 +238,29 @@ const RnDServicesPage = () => {
           {/* CTA Section */}
           <section className="bg-zinc-900 text-white py-20">
             <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Partner With Our R&D Centres</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">{get('cta_title', 'Partner With Our R&D Centres')}</h2>
               <p className="text-xl text-zinc-300 max-w-3xl mx-auto mb-8">
-                Connect with our Centre Directors, access laboratory testbeds, or sponsor a research chair.
+                {get('cta_subtitle', 'Connect with our Centre Directors, access laboratory testbeds, or sponsor a research chair.')}
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="/contact" className="no-underline">
+                <a href={get('cta_button_1_link', '/contact')} className="no-underline">
                   <Button className="bg-red-600 hover:bg-red-700 text-white px-8 py-6 text-lg font-semibold group">
-                    Start Your R&D Project
+                    {get('cta_button_1_text', 'Start Your R&D Project')}
                     <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </a>
-                <a href="mailto:info@pana-institute.com" className="no-underline">
+                <a href={`mailto:${get('cta_email', 'info@pana-institute.com')}`} className="no-underline">
                   <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white/10 px-8 py-6 text-lg group">
-                    Contact R&D Directorate
+                    {get('cta_button_2_text', 'Contact R&D Directorate')}
                     <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </a>
               </div>
             </div>
           </section>
+
+          {/* Dynamic Page Builder Sections */}
+          <DynamicPageSections slug="rnd-services" />
         </main>
 
         <Footer />
