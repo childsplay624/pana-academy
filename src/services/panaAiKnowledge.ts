@@ -7,11 +7,14 @@
 export const PANA_INSTITUTE_KNOWLEDGE = `
 # PANA INSTITUTE - COMPREHENSIVE KNOWLEDGE BASE
 
-## 1. ABOUT PANA INSTITUTE
+## 1. ABOUT PANA INSTITUTE & EXECUTIVE LEADERSHIP
 - **Name:** PANA Institute (PANA Energy Services Ltd).
 - **Core Mission:** Premier center of excellence for technical training, engineering capacity building, consulting, research & development (R&D), and sustainability solutions across Energy, Oil & Gas, Power, Industrial Automation, and Emerging Technologies.
 - **Headquarters / Operations:** Nigeria and Sub-Saharan Africa, serving global technical professionals, international oil companies (IOCs), national oil companies (NOCs), and engineering firms.
 - **Accreditation & Standards:** Fully aligned with international engineering standards (API, ISO, IEC, IEEE, ASME, ISA) and local regulatory requirements (NCDMB).
+- **Executive Leadership & Governance:**
+  - **Dr. Daere Afonya-a Akobo, FCIoD (London):** Chairman & Group CEO of PANA Holdings (encompassing PANA Institute, PE Energy Ltd, Synergy E&P Ltd, AKD Digital Solutions, and affiliated entities). He is a visionary entrepreneur, electrical engineer, and respected business leader with over 25 years of cross-industry experience across oil & gas, flow measurement, and technology innovation.
+  - **Mrs. Iyenemi Akobo:** Executive Director, Research & Advisory / Global Business Services. A seasoned business administrator and IMD Business School alumna with extensive executive leadership in corporate governance, HR, and commercial management, and official co-signatory on PANA Institute credentials.
 - **Key Pillars:**
   1. Technical Competence Training & Certifications.
   2. Engineering Consultancy & Asset Integrity.

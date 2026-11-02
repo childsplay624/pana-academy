@@ -169,6 +169,14 @@ function getOfflineSmartResponse(query: string, context: PanaAiRoleContext): str
 \`\`\``;
   }
 
+  if (lower.includes('akobo') || lower.includes('founder') || lower.includes('ceo') || lower.includes('chairman') || lower.includes('leadership') || (lower.includes('head') && (lower.includes('pana') || lower.includes('institute')))) {
+    return `**PANA Institute** (operated under PANA Holdings) is led by:
+- **Dr. Daere Afonya-a Akobo, FCIoD (London):** Chairman & Group CEO of PANA Holdings. He is an electrical engineer and entrepreneur with over 25 years of leadership across energy, oil & gas, and industrial technology.
+- **Mrs. Iyenemi Akobo:** Executive Director, Research & Advisory / Global Business Services, overseeing corporate governance, commercial services, and human capital development.
+
+👉 You can learn more about our executive leadership and board on the [About Page](/about) or explore our [Leadership Team](/team).`;
+  }
+
   if (lower.includes('about') && (lower.includes('pana') || lower.includes('institute') || lower.includes('academy') || lower.includes('company') || lower.includes('who are you') || lower.includes('what is pana'))) {
     return `**PANA Institute** (PANA Energy Services Ltd) is a premier center of excellence for technical engineering training, capacity building, consulting, research & development (R&D), and sustainability solutions across Energy, Oil & Gas, Power, and Industrial Automation.
 
