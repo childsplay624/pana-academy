@@ -1748,11 +1748,6 @@ export const PanaAiWidget: React.FC = () => {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 sm:h-3.5 sm:w-3.5 bg-red-600 border-2 border-white dark:border-slate-900"></span>
               </span>
-
-              {/* Sparkle Icon Badge */}
-              <div className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 p-0.5 sm:p-1 rounded-full bg-gradient-to-tr from-amber-400 to-yellow-300 text-slate-900 shadow">
-                <Sparkles className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
-              </div>
             </button>
 
             {/* Proactive Guest Teaser Bubble */}
