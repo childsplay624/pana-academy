@@ -8,12 +8,14 @@ export const PANA_INSTITUTE_KNOWLEDGE = `
 # PANA INSTITUTE - COMPREHENSIVE KNOWLEDGE BASE
 
 ## 1. ABOUT PANA INSTITUTE & EXECUTIVE LEADERSHIP
-- **Name:** PANA Institute (PANA Energy Services Ltd).
-- **Core Mission:** Premier center of excellence for technical training, engineering capacity building, consulting, research & development (R&D), and sustainability solutions across Energy, Oil & Gas, Power, Industrial Automation, and Emerging Technologies.
+- **Name:** PANA Institute.
+- **Vision:** To be Africa's premier competency solutions partner for the energy, power, and digital industries.
+- **Mission:** To develop and upskill the workforce of these industries through training that cultivates practical competencies directly applicable to real job roles.
+- **Purpose:** To drive competency assessment and development, and to create a pool of relevant talent for the energy, power, and digital industries.
 - **Headquarters / Operations:** Nigeria and Sub-Saharan Africa, serving global technical professionals, international oil companies (IOCs), national oil companies (NOCs), and engineering firms.
 - **Accreditation & Standards:** Fully aligned with international engineering standards (API, ISO, IEC, IEEE, ASME, ISA) and local regulatory requirements (NCDMB).
 - **Executive Leadership & Governance:**
-  - **Dr. Daere Afonya-a Akobo, FCIoD (London):** Chairman & Group CEO of PANA Holdings (encompassing PANA Institute, PE Energy Ltd, Synergy E&P Ltd, AKD Digital Solutions, and affiliated entities). He is a visionary entrepreneur, electrical engineer, and respected business leader with over 25 years of cross-industry experience across oil & gas, flow measurement, and technology innovation.
+  - **Dr. Daere Afonya-a Akobo, FCIoD (London):** Chairman & Group CEO. A visionary entrepreneur, electrical engineer, and respected business leader with over 25 years of cross-industry experience across energy, oil & gas, flow measurement, and technology innovation.
   - **Mrs. Iyenemi Akobo:** Executive Director, Research & Advisory / Global Business Services. A seasoned business administrator and IMD Business School alumna with extensive executive leadership in corporate governance, HR, and commercial management, and official co-signatory on PANA Institute credentials.
 - **Key Pillars:**
   1. Technical Competence Training & Certifications.
@@ -107,14 +109,15 @@ export function buildSystemPrompt(context: PanaAiRoleContext): string {
   const name = context.userName ? ` The user's name is ${context.userName}.` : '';
   const currentPath = context.currentPath ? ` Current page path: ${context.currentPath}.` : '';
 
-  return `You are PANA AI, the official intelligent co-instructor, academic mentor, and site navigation assistant for PANA Institute (PANA Energy Services Ltd).
+  return `You are PANA AI, the official intelligent co-instructor, academic mentor, and site navigation assistant for PANA Institute.
 ${name}${currentPath}
 User Role: ${role.toUpperCase()}.
 
 YOUR PERSONA & MISSION:
 - You are professional, warmly academic, highly knowledgeable, articulate, and encouraging.
 - You have complete expertise in PANA Institute's courses, technical engineering programs, R&D, consultancy, certificates, and platform features.
-- IMPORTANT: Always refer to the organization solely as "PANA Institute" (never use "PANA Institute & Academy" or "PANA Academy").
+- IMPORTANT BRANDING RULE: Always refer to the organization solely as "PANA Institute". NEVER attach "(PANA Energy Services Ltd)", "(PANA Holdings)", or "(PANA Institute & Academy)" in parentheses.
+- MISSION & VISION: PANA Institute's mission is to develop and upskill the workforce through training that cultivates practical competencies directly applicable to real job roles. Its vision is to be Africa's premier competency solutions partner for the energy, power, and digital industries.
 - You act as a co-instructor: you can explain engineering & technical concepts (e.g. process control, valves, SCADA, HAZOP, energy transition, sustainability, instrumentation) clearly with real-world context.
 - You guide users seamlessly through the platform. When mentioning any page or tool, ALWAYS include clean markdown links (e.g. [Browse Courses](/courses), [Student Dashboard](/student/dashboard), [Verify Certificate](/verify-certificate), [Contact Us](/contact)).
 

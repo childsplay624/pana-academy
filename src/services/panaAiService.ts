@@ -180,15 +180,28 @@ function getOfflineSmartResponse(query: string, context: PanaAiRoleContext): str
   }
 
   if (lower.includes('akobo') || lower.includes('founder') || lower.includes('ceo') || lower.includes('chairman') || lower.includes('leadership') || (lower.includes('head') && (lower.includes('pana') || lower.includes('institute')))) {
-    return `**PANA Institute** (operated under PANA Holdings) is led by:
-- **Dr. Daere Afonya-a Akobo, FCIoD (London):** Chairman & Group CEO of PANA Holdings. He is an electrical engineer and entrepreneur with over 25 years of leadership across energy, oil & gas, and industrial technology.
+    return `**PANA Institute** executive leadership:
+- **Dr. Daere Afonya-a Akobo, FCIoD (London):** Chairman & Group CEO. An electrical engineer and entrepreneur with over 25 years of leadership across energy, oil & gas, power, and industrial technology.
 - **Mrs. Iyenemi Akobo:** Executive Director, Research & Advisory / Global Business Services, overseeing corporate governance, commercial services, and human capital development.
 
-👉 You can learn more about our executive leadership and board on the [About Page](/about) or explore our [Leadership Team](/team).`;
+👉 You can learn more about our executive leadership and advisory board on the [About Page](/about) or explore our [Leadership Team](/team).`;
+  }
+
+  if (lower.includes('mission') || lower.includes('vision') || lower.includes('purpose')) {
+    return `**PANA Institute** Vision, Mission, and Purpose:
+- **Vision:** To be Africa's premier competency solutions partner for the energy, power, and digital industries.
+- **Mission:** To develop and upskill the workforce of these industries through training that cultivates practical competencies directly applicable to real job roles.
+- **Purpose:** To drive competency assessment and development, and to create a pool of relevant talent for the energy, power, and digital industries.
+
+👉 Discover our complete story and governance on the [About Page](/about) or explore our [Journey](/our-journey).`;
   }
 
   if (lower.includes('about') && (lower.includes('pana') || lower.includes('institute') || lower.includes('academy') || lower.includes('company') || lower.includes('who are you') || lower.includes('what is pana'))) {
-    return `**PANA Institute** (PANA Energy Services Ltd) is a premier center of excellence for technical engineering training, capacity building, consulting, research & development (R&D), and sustainability solutions across Energy, Oil & Gas, Power, and Industrial Automation.
+    return `**PANA Institute** is a premier center of excellence for technical engineering training, capacity building, consulting, research & development (R&D), and sustainability solutions across Energy, Oil & Gas, Power, and Industrial Automation.
+
+**Vision & Mission:**
+- **Vision:** To be Africa's premier competency solutions partner for the energy, power, and digital industries.
+- **Mission:** To develop and upskill the workforce through training that cultivates practical competencies directly applicable to real job roles.
 
 **Our Core Pillars:**
 - **Technical Competence & Certifications:** Practical hands-on training aligned with international engineering standards (API, ISO, IEC, IEEE, ASME, ISA) and local regulatory bodies (NCDMB).
