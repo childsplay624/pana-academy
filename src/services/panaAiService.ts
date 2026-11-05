@@ -196,20 +196,23 @@ function getOfflineSmartResponse(query: string, context: PanaAiRoleContext): str
 👉 Discover our complete story and governance on the [About Page](/about) or explore our [Journey](/our-journey).`;
   }
 
-  if (lower.includes('about') && (lower.includes('pana') || lower.includes('institute') || lower.includes('academy') || lower.includes('company') || lower.includes('who are you') || lower.includes('what is pana'))) {
-    return `**PANA Institute** is a premier center of excellence for technical engineering training, capacity building, consulting, research & development (R&D), and sustainability solutions across Energy, Oil & Gas, Power, and Industrial Automation.
+  if (lower.includes('nutshell') || (lower.includes('about') && (lower.includes('pana') || lower.includes('institute') || lower.includes('academy') || lower.includes('company') || lower.includes('who are you') || lower.includes('what is pana')))) {
+    return `In a nutshell, **PANA Institute** is Africa's premier center of excellence for technical engineering training, capacity building, consultancy, applied R&D, and sustainability solutions across Energy, Oil & Gas, Power, and Industrial Automation.
 
-**Vision & Mission:**
-- **Vision:** To be Africa's premier competency solutions partner for the energy, power, and digital industries.
-- **Mission:** To develop and upskill the workforce through training that cultivates practical competencies directly applicable to real job roles.
+🎯 **Vision:**
+To be Africa's premier competency solutions partner for the energy, power, and digital industries.
 
-**Our Core Pillars:**
-- **Technical Competence & Certifications:** Practical hands-on training aligned with international engineering standards (API, ISO, IEC, IEEE, ASME, ISA) and local regulatory bodies (NCDMB).
-- **Engineering Consultancy:** Asset integrity management, debottlenecking, instrumentation audits, and process optimization.
-- **R&D & Innovation:** Industry-sponsored applied research, test-bench verification, and prototyping.
-- **Sustainability & Energy Transition:** Carbon management, emissions reduction, and renewable energy integration.
+🚀 **Mission:**
+To develop and upskill the workforce through experiential training that cultivates practical competencies directly applicable to real job roles.
 
-👉 Explore our [Course Catalog](/courses), learn about [Consulting Services](/consulting-services), or read our full story on the [About Page](/about).`;
+⚙️ **Our Core Areas:**
+- **Technical Competence & Verifiable Certifications:** Practical hands-on training aligned with international engineering standards (API, ISO, IEC, IEEE, ASME, ISA) and local regulatory bodies (NCDMB).
+- **Engineering Consultancy & Asset Integrity:** FMECA, RCM audits, control valve diagnostics, and facility debottlenecking.
+- **R&D & Innovation Labs:** Industry-sponsored applied research, test-bench verification, and prototyping.
+- **Sustainability & Energy Transition:** Carbon management, methane abatement, and renewable energy integration.
+- **Corporate Training:** Custom on-premise industrial plant programs, instructor-led virtual sessions, and hybrid labs.
+
+👉 You can explore our [Course Catalog](/courses), learn about [Consulting Services](/consulting-services), or read our story on the [About Page](/about).`;
   }
 
   if (lower.includes('consult') || lower.includes('consulting') || lower.includes('engineering service')) {
