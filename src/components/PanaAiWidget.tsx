@@ -211,14 +211,42 @@ export const PanaAiWidget: React.FC = () => {
     return `Hello! I'm **PANA AI**, your guide to PANA Institute. May I have your name and email so I can address you and assist your learning path?`;
   };
 
-  const [messages, setMessages] = useState<ChatMessage[]>(() => [
-    {
-      id: 'welcome',
-      role: 'assistant',
-      content: getGreeting(),
-      timestamp: Date.now(),
-    },
-  ]);
+  const PANA_AI_CHAT_STORAGE_KEY = 'pana_ai_chat_history_v1';
+
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    try {
+      const saved = localStorage.getItem(PANA_AI_CHAT_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to parse saved PANA AI conversation history:', e);
+    }
+    return [
+      {
+        id: 'welcome',
+        role: 'assistant',
+        content: getGreeting(),
+        timestamp: Date.now(),
+      },
+    ];
+  });
+
+  // Persist conversation history to localStorage on change (capped at last 50 messages)
+  useEffect(() => {
+    try {
+      if (messages && messages.length > 0) {
+        // Keep up to 50 most recent messages to protect localStorage size
+        const toSave = messages.slice(-50);
+        localStorage.setItem(PANA_AI_CHAT_STORAGE_KEY, JSON.stringify(toSave));
+      }
+    } catch (e) {
+      console.warn('Failed to save PANA AI conversation history:', e);
+    }
+  }, [messages]);
 
   // Context-aware suggested prompts
   const getQuickSuggestions = () => {
@@ -322,6 +350,11 @@ export const PanaAiWidget: React.FC = () => {
   };
 
   const resetChat = () => {
+    try {
+      localStorage.removeItem(PANA_AI_CHAT_STORAGE_KEY);
+    } catch (e) {
+      console.warn('Failed to clear PANA AI conversation history:', e);
+    }
     setMessages([
       {
         id: 'welcome',
