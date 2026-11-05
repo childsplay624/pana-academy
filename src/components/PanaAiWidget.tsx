@@ -31,8 +31,11 @@ import {
   Clock,
   Check,
   Mail,
-  User as UserIcon
+  User as UserIcon,
+  Calendar
 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { formatCourseDate } from '@/services/courseService';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -110,6 +113,85 @@ export const PanaAiWidget: React.FC = () => {
   });
   const [introNameInput, setIntroNameInput] = useState('');
   const [introEmailInput, setIntroEmailInput] = useState('');
+
+  const [upcomingCourses, setUpcomingCourses] = useState<Array<{
+    id: string;
+    code: string | null;
+    title: string;
+    start_date: string | null;
+    level: string | null;
+    price: number | null;
+    is_price_tbd?: boolean;
+    is_free?: boolean;
+    thumbnail_url: string | null;
+    duration_hours?: number;
+    category?: string;
+  }>>([]);
+  const [loadingUpcomingCourses, setLoadingUpcomingCourses] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadUpcoming = async () => {
+      setLoadingUpcomingCourses(true);
+      try {
+        const now = new Date().toISOString();
+        const { data } = await supabase
+          .from('courses')
+          .select('id, code, title, start_date, level, price, is_price_tbd, is_free, duration_hours, thumbnail_url, category_id, course_categories(name)')
+          .eq('status', 'published')
+          .gte('start_date', now)
+          .order('start_date', { ascending: true })
+          .limit(6);
+
+        if (isMounted && data && data.length > 0) {
+          setUpcomingCourses(data.map((c: any) => ({
+            id: c.id,
+            code: c.code,
+            title: c.title,
+            start_date: c.start_date,
+            level: c.level,
+            price: c.price,
+            is_price_tbd: c.is_price_tbd,
+            is_free: c.is_free,
+            duration_hours: c.duration_hours,
+            thumbnail_url: c.thumbnail_url,
+            category: c.course_categories?.name || 'Technical Engineering'
+          })));
+        } else if (isMounted) {
+          // Fallback to any published courses with start_date
+          const { data: fallbackData } = await supabase
+            .from('courses')
+            .select('id, code, title, start_date, level, price, is_price_tbd, is_free, duration_hours, thumbnail_url, category_id, course_categories(name)')
+            .eq('status', 'published')
+            .not('start_date', 'is', null)
+            .order('start_date', { ascending: true })
+            .limit(6);
+          if (fallbackData) {
+            setUpcomingCourses(fallbackData.map((c: any) => ({
+              id: c.id,
+              code: c.code,
+              title: c.title,
+              start_date: c.start_date,
+              level: c.level,
+              price: c.price,
+              is_price_tbd: c.is_price_tbd,
+              is_free: c.is_free,
+              duration_hours: c.duration_hours,
+              thumbnail_url: c.thumbnail_url,
+              category: c.course_categories?.name || 'Technical Engineering'
+            })));
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to load upcoming courses for PANA AI:', err);
+      } finally {
+        if (isMounted) setLoadingUpcomingCourses(false);
+      }
+    };
+
+    loadUpcoming();
+    return () => { isMounted = false; };
+  }, []);
 
   // Initial welcome message
   const getGreeting = () => {
@@ -627,6 +709,23 @@ export const PanaAiWidget: React.FC = () => {
       }
     }
 
+    const upcomingCoursesMatch = content.match(/```action:upcoming_courses\s*([\s\S]*?)```/);
+    let hasUpcomingCoursesAction = false;
+    let customUpcomingCourses: any[] | null = null;
+
+    if (upcomingCoursesMatch) {
+      hasUpcomingCoursesAction = true;
+      try {
+        const parsed = JSON.parse(upcomingCoursesMatch[1].trim());
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          customUpcomingCourses = parsed;
+        }
+      } catch (e) {
+        // Fallback uses state upcomingCourses
+      }
+      cleanText = cleanText.replace(upcomingCoursesMatch[0], '').trim();
+    }
+
     const leadCaptureMatch = content.match(/```action:lead_capture\s*([\s\S]*?)```/);
     let parsedLeadCapture: { courseTitle?: string; reason?: string } | null = null;
 
@@ -1097,6 +1196,100 @@ export const PanaAiWidget: React.FC = () => {
                 )}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Interactive Upcoming Courses 6-Card Grid */}
+        {hasUpcomingCoursesAction && (
+          <div className="mt-3 p-3 sm:p-3.5 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 text-white border border-red-500/30 shadow-2xl space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-red-400 flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-red-500" /> Next 6 Upcoming Courses
+              </span>
+              <Badge variant="outline" className="text-[10px] text-red-300 border-red-500/30 bg-red-500/10">
+                Live Schedule
+              </Badge>
+            </div>
+
+            {loadingUpcomingCourses ? (
+              <div className="py-6 flex items-center justify-center gap-2 text-xs text-slate-300">
+                <Loader2 className="w-4 h-4 animate-spin text-red-500" />
+                <span>Loading latest course start dates...</span>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                {((customUpcomingCourses && customUpcomingCourses.length > 0) ? customUpcomingCourses : upcomingCourses).slice(0, 6).map((crs) => (
+                  <div
+                    key={crs.id}
+                    onClick={() => {
+                      navigate(`/course/${crs.id}`);
+                      if (window.innerWidth < 768) setIsOpen(false);
+                    }}
+                    className="group/card cursor-pointer rounded-xl bg-slate-950/80 border border-white/10 hover:border-red-500/60 transition-all p-2.5 flex flex-col justify-between hover:shadow-lg hover:shadow-red-950/30"
+                  >
+                    <div>
+                      {crs.thumbnail_url ? (
+                        <div className="relative w-full aspect-[16/9] rounded-lg overflow-hidden bg-black/60 mb-2 border border-white/5">
+                          <img
+                            src={crs.thumbnail_url}
+                            alt={crs.title}
+                            className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-300"
+                          />
+                          <div className="absolute top-1.5 left-1.5">
+                            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-red-600 text-white shadow">
+                              {crs.code || 'PANA'}
+                            </span>
+                          </div>
+                          {crs.level && (
+                            <div className="absolute top-1.5 right-1.5">
+                              <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold uppercase bg-black/70 backdrop-blur-xs text-slate-200 border border-white/10">
+                                {crs.level}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1.5 mb-1.5">
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-red-600 text-white">
+                            {crs.code || 'PANA'}
+                          </span>
+                          {crs.level && (
+                            <span className="text-[10px] text-slate-400 capitalize">
+                              • {crs.level}
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      <h4 className="text-xs font-bold text-white group-hover/card:text-red-400 transition-colors line-clamp-2 leading-snug">
+                        {crs.title}
+                      </h4>
+                    </div>
+
+                    <div className="mt-2.5 pt-2 border-t border-white/5 flex items-center justify-between text-[10px]">
+                      <div className="flex items-center gap-1 text-red-300 font-medium">
+                        <Calendar className="w-3 h-3 text-red-400 shrink-0" />
+                        <span>{crs.start_date ? `Starts ${formatCourseDate(crs.start_date)}` : 'Based on Request'}</span>
+                      </div>
+                      <span className="text-white font-bold group-hover/card:translate-x-0.5 transition-transform flex items-center gap-0.5">
+                        View <ChevronRight className="w-3 h-3 text-red-400" />
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <Button
+              size="sm"
+              onClick={() => {
+                navigate('/courses');
+                if (window.innerWidth < 768) setIsOpen(false);
+              }}
+              className="w-full bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-semibold h-8 flex items-center justify-center gap-1.5 shadow"
+            >
+              <BookOpen className="w-3.5 h-3.5" /> Explore All Available Courses
+            </Button>
           </div>
         )}
 

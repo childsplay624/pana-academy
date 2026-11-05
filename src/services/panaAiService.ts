@@ -126,6 +126,16 @@ export function cleanPanaAiResponse(text: string): string {
 function getOfflineSmartResponse(query: string, context: PanaAiRoleContext): string {
   const lower = query.toLowerCase();
 
+  if (lower.includes('upcoming') || lower.includes('schedule') || lower.includes('next course') || lower.includes('next training') || lower.includes('start date') || lower.includes('starting soon')) {
+    return `Here are our upcoming scheduled courses at **PANA Institute**, ordered chronologically by start date:
+
+\`\`\`action:upcoming_courses
+{}
+\`\`\`
+
+👉 You can click on any course card above to explore its full curriculum or register. For the complete catalog, visit [Browse All Courses](/courses).`;
+  }
+
   if (lower.includes('syllabus') || lower.includes('brochure') || lower.includes('curriculum') || lower.includes('outline')) {
     return `Here are the details for our specialized technical training curriculums. We would be pleased to email you the full syllabus, module schedule, and corporate pricing.
 
