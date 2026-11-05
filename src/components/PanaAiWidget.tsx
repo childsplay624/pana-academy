@@ -76,6 +76,7 @@ export const PanaAiWidget: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const latestMessageRef = useRef<HTMLDivElement>(null);
   const chatInputRef = useRef<HTMLInputElement>(null);
 
   // Proactive guest prompt timer: fires after 10 seconds for visitors if not dismissed or opened
@@ -287,10 +288,14 @@ export const PanaAiWidget: React.FC = () => {
     ];
   };
 
-  // Scroll to bottom on new message
+  // Scroll to the start of the latest message (or top if user sent a query), so the user reads from the beginning of the reply rather than jumping to the last sentence
   useEffect(() => {
     if (activeTab === 'chat') {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      if (latestMessageRef.current) {
+        latestMessageRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   }, [messages, loading, activeTab]);
 
@@ -1708,11 +1713,13 @@ export const PanaAiWidget: React.FC = () => {
               {/* Messages Area */}
               <ScrollArea className="flex-1 px-4 py-3.5">
                 <div className="space-y-4">
-                  {messages.map((msg) => {
+                  {messages.map((msg, idx) => {
                     const isAssistant = msg.role === 'assistant';
+                    const isLatest = idx === messages.length - 1;
                     return (
                       <div
                         key={msg.id}
+                        ref={isLatest ? latestMessageRef : undefined}
                         className={cn(
                           'flex gap-2.5 max-w-[88%]',
                           isAssistant ? 'self-start mr-auto' : 'self-end ml-auto flex-row-reverse'
