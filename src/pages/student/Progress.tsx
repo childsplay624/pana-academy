@@ -9,6 +9,7 @@ import { LevelProgress } from '@/components/gamification/LevelProgress';
 import { BadgeDisplay } from '@/components/gamification/BadgeDisplay';
 import { Leaderboard } from '@/components/gamification/Leaderboard';
 import { PointsHistory } from '@/components/gamification/PointsHistory';
+import { DailyLoginChallenge } from '@/components/gamification/DailyLoginChallenge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -278,6 +279,11 @@ export default function ProgressPage() {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Daily Login Quest & Streaks */}
+        <div className="mb-8">
+          <DailyLoginChallenge />
         </div>
 
         {/* Gamification Overview */}

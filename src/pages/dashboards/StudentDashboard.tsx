@@ -31,6 +31,7 @@ import { EmptyState } from '@/components/dashboard/EmptyState';
 import { DeadlinesWidget } from '@/components/dashboard/DeadlinesWidget';
 import { ProfileEdit } from '@/components/student/ProfileEdit';
 import { LevelProgress } from '@/components/gamification/LevelProgress';
+import { DailyLoginChallenge } from '@/components/gamification/DailyLoginChallenge';
 
 // Define interfaces for our data models
 interface UserProfile {
@@ -341,6 +342,11 @@ export default function StudentDashboard() {
                 isLoading={isLoading}
                 className="h-full border-orange-200 bg-orange-50/10"
               />
+            </div>
+
+            {/* Daily Login Quest & Streaks */}
+            <div className="mb-8">
+              <DailyLoginChallenge />
             </div>
 
             {/* Gamification Level Progress */}
