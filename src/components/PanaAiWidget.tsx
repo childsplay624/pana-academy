@@ -32,7 +32,8 @@ import {
   Check,
   Mail,
   User as UserIcon,
-  Calendar
+  Calendar,
+  Download
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { formatCourseDate } from '@/services/courseService';
@@ -462,13 +463,13 @@ export const PanaAiWidget: React.FC = () => {
     if (res.result === 'success') {
       setLeadCaptureStatus('success');
       setLeadCaptureMsg(res.msg);
-      // Append a polite confirmation from PANA AI
+      // Append a polite confirmation from PANA AI with instant download link
       setMessages((prev) => [
         ...prev,
         {
           id: Date.now().toString(),
           role: 'assistant',
-          content: `📬 Thank you! We have registered **${leadCaptureEmail.trim()}** to receive the official syllabus, cohort schedules, and corporate training specifications for **${courseTitle}** via our Mailchimp training desk.`,
+          content: `📬 Thank you! We have registered **${leadCaptureEmail.trim()}** for the official syllabus and training calendar.\n\n📄 **Instant Download:** You can also download the official brochure right now using the button below or link: [Download PANA Institute Brochure (PDF)](/PANA_Institute_Corporate_Brochure.pdf).`,
           timestamp: Date.now(),
         },
       ]);
@@ -1358,9 +1359,20 @@ export const PanaAiWidget: React.FC = () => {
             </p>
 
             {leadCaptureStatus === 'success' ? (
-              <div className="p-2.5 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-xs text-emerald-200 flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>{leadCaptureMsg || 'Details sent! Check your inbox shortly.'}</span>
+              <div className="space-y-2.5">
+                <div className="p-2.5 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-xs text-emerald-200 flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>{leadCaptureMsg || 'Details registered! Your brochure is ready.'}</span>
+                </div>
+                <a
+                  href="/PANA_Institute_Corporate_Brochure.pdf"
+                  download="PANA_Institute_Corporate_Brochure.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full h-9 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white text-xs font-semibold shadow-md flex items-center justify-center gap-2 no-underline transition-all"
+                >
+                  <Download className="w-3.5 h-3.5" /> Download Official Brochure (PDF)
+                </a>
               </div>
             ) : (
               <form

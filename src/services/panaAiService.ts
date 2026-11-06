@@ -137,7 +137,11 @@ function getOfflineSmartResponse(query: string, context: PanaAiRoleContext): str
   }
 
   if (lower.includes('syllabus') || lower.includes('brochure') || lower.includes('curriculum') || lower.includes('outline')) {
-    return `Here are the details for our specialized technical training curriculums. We would be pleased to email you the full syllabus, module schedule, and corporate pricing.
+    return `You can download our official technical programme brochure immediately or receive tailored cohort packages via email:
+
+📄 **[Download Official PANA Institute Brochure (PDF)](/PANA_Institute_Corporate_Brochure.pdf)**
+
+Or enter your email below to receive cohort schedules, syllabi, and corporate pricing:
 
 \`\`\`action:lead_capture
 {
